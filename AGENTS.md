@@ -28,3 +28,14 @@
 - 실제 제품 역할에는 대표 공인중개사, 보조원, 임대인과 임차인이 포함됩니다.
 - 기록은 개인 직원이 아니라 집·계약·사무소 업무에 연결합니다.
 - 집의 이력은 이어지되 이전 계약자의 개인정보는 자동으로 이어지지 않습니다.
+
+## 집신 에이전트 시스템
+
+- 공통 규칙은 `agent-system/agents/shared-rules.md`를 따릅니다.
+- 총괄비서 역할은 `agent-system/agents/chief-of-staff.md`를 따릅니다.
+- 기획·디자인 역할은 `agent-system/agents/product-design.md`를 따릅니다.
+- 설계·개발 역할은 `agent-system/agents/architecture-development.md`를 따릅니다.
+- 검수·비판 역할은 `agent-system/agents/quality-critic.md`를 따릅니다.
+- 새로운 프로젝트나 여러 영역에 영향을 주는 큰 기능은 `zipsin-project-kickoff` 스킬과 네 역할의 최초 회의로 시작합니다.
+- 실제 작업에는 `agent-system/skills/`의 관련 스킬을 적용합니다.
+- 에이전트 시스템은 사용자의 최종 승인 전까지 `승인 대기` 상태입니다.

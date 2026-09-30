@@ -11,6 +11,8 @@
 - [핵심 업무 흐름](04-core-workflows.md)
 - [MVP 범위와 다음 단계](05-mvp-plan.md)
 - [에이전트 지침 설계](06-agent-instructions.md)
+- [에이전트 시스템과 스킬](07-agent-system-and-skills.md)
+- [에이전트 회의 기록](meetings/README.md)
 - [결정 기록](decisions/README.md)
 - [대화 기록](conversations/README.md)
 - [작업 보고서](worklogs/README.md)
