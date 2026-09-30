@@ -62,3 +62,19 @@ GitHub 저장소와 Vercel 자동 배포를 연결했습니다. `main` 브랜치
 - 랜딩페이지: https://start.zipsin.net
 
 Figma 링크가 제공되지 않아 Figma MCP 연동은 수행하지 않았습니다. 첨부 PNG 3장을 기준으로 구현했습니다.
+
+## 제품기획 문서
+
+- [작업 운영 규칙](docs/00-working-rules.md)
+- [제품 개요](docs/01-product-brief.md)
+- [기능 정의](docs/02-feature-definition.md)
+- [사용자와 권한](docs/03-roles-and-access.md)
+- [핵심 업무 흐름](docs/04-core-workflows.md)
+- [MVP 범위와 다음 단계](docs/05-mvp-plan.md)
+- [결정 기록](docs/decisions/README.md)
+- [대화 기록](docs/conversations/README.md)
+- [작업 보고서](docs/worklogs/README.md)
+
+## 작업 기록 원칙
+
+모든 작업은 계획 보고 → 기존 상태 확인 → 실행 → 문서 반영 → 검증 → 결과 보고 → Git 저장 순서로 진행합니다. 긴 제품 대화와 중요한 결정은 날짜별 문서로 보존합니다.

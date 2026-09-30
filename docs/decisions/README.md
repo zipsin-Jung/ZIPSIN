@@ -1,0 +1,8 @@
+# 결정 기록
+
+제품 방향에 장기 영향을 주는 결정을 날짜와 번호로 기록합니다.
+
+- [DEC-001: 집신의 제품 중심과 초기 고객](DEC-001-product-center-and-entry-customer.md)
+- [DEC-002: 기록 소유와 접근 원칙](DEC-002-record-ownership-and-access.md)
+- [DEC-003: 문서화와 Git 운영 원칙](DEC-003-documentation-and-git.md)
+
