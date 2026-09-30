@@ -5,4 +5,4 @@
 - [DEC-001: 집신의 제품 중심과 초기 고객](DEC-001-product-center-and-entry-customer.md)
 - [DEC-002: 기록 소유와 접근 원칙](DEC-002-record-ownership-and-access.md)
 - [DEC-003: 문서화와 Git 운영 원칙](DEC-003-documentation-and-git.md)
-
+- [DEC-004: 바탕화면 문서함과 GitHub 이중 보관](DEC-004-desktop-document-library.md)
