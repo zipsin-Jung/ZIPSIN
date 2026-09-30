@@ -1,0 +1,6 @@
+'use client';
+import {Check,ArrowRight} from 'lucide-react';
+import {plans,type Plan} from '@/lib/data';
+import {Button} from './ui/button';
+export default function PricingSection({onSelect}:{onSelect:(p:Plan)=>void}){return <section id="pricing" className="section pricing-section"><div className="container"><div className="section-heading"><span className="eyebrow">한 채부터, 사무소까지</span><h2>내 상황에 맞게<br className="mobile-break"/> 시작하세요.</h2><p>거주 중인 집 1채는 무료. 필요한 만큼 선택하세요.</p></div><div className="pricing-grid">{plans.map(p=><article key={p.id} className={`price-card ${p.id==='PRO'?'featured':''}`}>
+ {p.id==='PRO'&&<span className="price-ribbon">여러 집을 한눈에</span>}<span className="plan-name">{p.id}</span><p>{p.who}</p><div className="price"><strong>{p.price}</strong><span>원{p.id!=='FREE'&&' / 월'}</span></div><ul>{p.features.map(f=><li key={f}><Check size={16}/>{f}</li>)}</ul><Button variant={p.id==='PRO'||p.id==='BUSINESS'?'default':'outline'} onClick={()=>onSelect(p.id)}>{p.id==='FREE'?'무료로 시작하기':p.id==='BUSINESS'?'사전 회원 가입 하기':`${p.id} 시작하기`}<ArrowRight size={16}/></Button></article>)}</div><p className="pricing-note">출시 전 예상 요금제입니다. 제공 범위와 가격은 정식 출시 시 변경될 수 있으며, 지금은 결제되지 않습니다.</p></div></section>}

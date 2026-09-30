@@ -1,0 +1,2 @@
+import Brand from './Brand';
+export default function Footer(){return <footer className="footer"><div className="container footer-top"><a href="#" aria-label="집신 처음으로"><Brand/></a><span>집을 계획하는 순간부터.</span><a href="#signup">사전가입 안내</a><a href="#why">집신 소개</a></div><div className="container footer-bottom"><span>© 2026 ZIPSIN. All rights reserved.</span><span>출시 준비 중인 서비스입니다. 화면 속 자료는 예시입니다.</span></div></footer>}

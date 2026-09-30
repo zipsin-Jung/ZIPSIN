@@ -1,0 +1,2 @@
+export default function Brand(){return <span className="brand"><span className="brand-icon"><img className="brand-logo-image" src="/images/zipsin-company-logo.jpg" alt="" aria-hidden="true"/></span><span><strong>집신</strong><small>ZIPSIN</small></span></span>}
+export function Mascot({pose='hello',className=''}:{pose?:'hello'|'happy'|'wink';className?:string}){return <span role="img" aria-label="초록 지붕 모자를 쓴 집신이 캐릭터" className={`mascot mascot-${pose} ${className}`}/>}
