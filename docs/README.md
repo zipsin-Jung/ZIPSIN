@@ -10,6 +10,7 @@
 - [사용자와 권한](03-roles-and-access.md)
 - [핵심 업무 흐름](04-core-workflows.md)
 - [MVP 범위와 다음 단계](05-mvp-plan.md)
+- [에이전트 지침 설계](06-agent-instructions.md)
 - [결정 기록](decisions/README.md)
 - [대화 기록](conversations/README.md)
 - [작업 보고서](worklogs/README.md)
@@ -22,4 +23,3 @@
 - 매 작업의 순서와 결과는 `worklogs/`에 저장합니다.
 - 같은 문서는 바탕화면의 `코덱스랑/집신` 문서함에도 함께 반영합니다.
 - 개인정보, 실제 연락처, 계좌번호와 원본 계약서는 저장하지 않습니다.
-

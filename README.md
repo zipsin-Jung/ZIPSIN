@@ -71,6 +71,7 @@ Figma 링크가 제공되지 않아 Figma MCP 연동은 수행하지 않았습�
 - [사용자와 권한](docs/03-roles-and-access.md)
 - [핵심 업무 흐름](docs/04-core-workflows.md)
 - [MVP 범위와 다음 단계](docs/05-mvp-plan.md)
+- [에이전트 지침 설계](docs/06-agent-instructions.md)
 - [결정 기록](docs/decisions/README.md)
 - [대화 기록](docs/conversations/README.md)
 - [작업 보고서](docs/worklogs/README.md)

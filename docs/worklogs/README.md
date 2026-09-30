@@ -4,3 +4,4 @@
 
 - [2026-09-30: 초기 문서 체계 구축](2026-09-30-initial-documentation.md)
 - [2026-09-30: 바탕화면 문서함 구성](2026-09-30-desktop-document-library.md)
+- [2026-09-30: 에이전트 지침 설계](2026-09-30-agent-instructions.md)
