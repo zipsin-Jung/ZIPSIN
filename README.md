@@ -55,11 +55,10 @@ npm run build
 `npm run build`와 TypeScript 검사 통과. 정적 HTML과 로컬 자산 경로 검사, 데스크톱 브라우저에서 주요 화면과 캐릭터 겹침 여부를 확인했습니다. 배포 후에는 시크릿 창과 모바일 화면에서 한 번 더 확인합니다.
 
 ## GitHub / Vercel
-현재 GitHub 저장소 생성 및 Vercel 연결을 진행 중입니다.
-1. GitHub에 이 프로젝트를 업로드합니다. `node_modules`, `.next`는 제외합니다.
-2. Vercel에서 해당 저장소를 가져와 Next.js 프로젝트로 배포합니다.
-3. 배포 주소를 아래에 기록합니다.
+GitHub 저장소와 Vercel 자동 배포를 연결했습니다. `main` 브랜치에 반영된 변경사항은 Vercel에서 다시 배포됩니다.
 
-Vercel URL: 연결 후 입력
+- GitHub: https://github.com/zipsin-Jung/ZIPSIN
+- Vercel: https://zipsin.vercel.app
+- 랜딩페이지: https://start.zipsin.net
 
 Figma 링크가 제공되지 않아 Figma MCP 연동은 수행하지 않았습니다. 첨부 PNG 3장을 기준으로 구현했습니다.

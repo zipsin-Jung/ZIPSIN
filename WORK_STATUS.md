@@ -73,3 +73,9 @@
 - `npm run typecheck`, `npm run build`를 다시 실행해 성공을 확인했습니다.
 - GitHub 업로드 전 로컬 Git 저장소를 준비하고 있습니다.
 - 데스크톱 브라우저에서 Hero 캐릭터가 휴대폰 UI와 겹치지 않는 것을 확인했습니다.
+
+## 2026-09-30 GitHub / Vercel 배포 완료
+- GitHub 공개 저장소: https://github.com/zipsin-Jung/ZIPSIN
+- Vercel 기본 주소: https://zipsin.vercel.app
+- 가비아 DNS에 `start` CNAME을 추가해 https://start.zipsin.net 연결.
+- 공용 DNS CNAME 전파, HTTPS 인증서 검증, HTTP 200 응답을 확인했습니다.
