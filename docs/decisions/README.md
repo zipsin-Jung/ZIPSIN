@@ -6,3 +6,4 @@
 - [DEC-002: 기록 소유와 접근 원칙](DEC-002-record-ownership-and-access.md)
 - [DEC-003: 문서화와 Git 운영 원칙](DEC-003-documentation-and-git.md)
 - [DEC-004: 바탕화면 문서함과 GitHub 이중 보관](DEC-004-desktop-document-library.md)
+- [DEC-005: 네 에이전트와 여섯 스킬 공식 적용](DEC-005-agent-system-approved.md)

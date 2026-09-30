@@ -6,3 +6,4 @@
 - [2026-09-30: 바탕화면 문서함 구성](2026-09-30-desktop-document-library.md)
 - [2026-09-30: 에이전트 지침 설계](2026-09-30-agent-instructions.md)
 - [2026-09-30: 에이전트 시스템과 스킬 생성](2026-09-30-agent-system-and-skills.md)
+- [2026-09-30: 에이전트 시스템 승인 반영](2026-09-30-agent-system-approval.md)
