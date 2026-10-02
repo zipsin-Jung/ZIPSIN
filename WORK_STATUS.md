@@ -6,7 +6,10 @@
 - Google Workspace 메일용 MX·SPF·DKIM·TXT 기록과 `admin`, `start` 서브도메인은 유지했습니다.
 - Vercel에서 루트 도메인 정상 연결과 `www` → 루트 308 영구 이동을 설정했습니다.
 - 네이버 소유확인 메타태그, canonical, robots, sitemap 코드를 추가했고 Next.js 프로덕션 빌드를 통과했습니다.
-- GitHub·Vercel 프로덕션 반영과 실제 주소 검증, 네이버 소유확인은 이어서 진행합니다.
+- GitHub 반영과 Vercel 프로덕션 승격을 완료했습니다.
+- 새 Vercel 원본에서 네이버 메타태그, canonical, robots, sitemap과 `www` 308 이동을 확인했습니다.
+- 일부 DNS 캐시에서는 이전 Netlify 응답이 남아 있어 전파 대기 중입니다.
+- 네이버 소유확인은 자동등록 방지 문자(CAPTCHA) 입력 단계에서 사용자 확인을 기다립니다.
 
 ## 2026-10-02 공개형 서비스 V1 구현계획
 
