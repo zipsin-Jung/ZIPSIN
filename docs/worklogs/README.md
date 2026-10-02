@@ -5,6 +5,7 @@
 - [2026-10-02 테스트 플랫폼 킥오프](2026-10-02-test-platform-kickoff.md)
 - [2026-10-02 테스트 플랫폼 예시 홈 화면](2026-10-02-test-platform-home-concept.md)
 - [2026-10-02 테스트 홈 단순화](2026-10-02-test-platform-home-simplification.md)
+- [2026-10-02 테스트 플랫폼 예시 이미지 5종](2026-10-02-test-platform-five-examples.md)
 
 각 작업에서 계획한 순서, 실제 변경 내용, 검증 결과와 남은 일을 기록합니다.
 
