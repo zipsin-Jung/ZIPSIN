@@ -1,5 +1,7 @@
 # 결정 기록
 
+- [DEC-007: 테스트 홈은 세 가지 기본 행동만 보여준다](DEC-007-simple-test-home.md)
+
 - [DEC-006 사업계획서와 초기 유료 검증 전략](DEC-006-business-plan-validation-strategy.md)
 
 제품 방향에 장기 영향을 주는 결정을 날짜와 번호로 기록합니다.
