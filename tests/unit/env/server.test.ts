@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { getServerEnv, parseServerEnv } from '@/lib/env/server';
+import {
+  getAdminEnv,
+  getServerEnv,
+  parseAdminEnv,
+  parseServerEnv,
+} from '@/lib/env/server';
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -29,6 +34,19 @@ describe('parseServerEnv', () => {
     expect(getServerEnv()).toEqual({
       supabaseUrl: 'https://server.supabase.co',
       supabaseAnonKey: 'server-public-key',
+    });
+  });
+
+  it('관리자 키가 없는 서버 설정을 거부한다', () => {
+    expect(() => parseAdminEnv({})).toThrow('SUPABASE_SERVICE_ROLE_KEY');
+  });
+
+  it('관리자 키는 공개 이름 없이 서버에서만 읽는다', () => {
+    vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://admin.supabase.co');
+    vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY', 'service-role-secret');
+    expect(getAdminEnv()).toEqual({
+      supabaseUrl: 'https://admin.supabase.co',
+      serviceRoleKey: 'service-role-secret',
     });
   });
 });

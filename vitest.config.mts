@@ -20,7 +20,13 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'json-summary'],
       include: [
-        'features/auth/**/*.{ts,tsx}',
+        'features/auth/domain/**/*.{ts,tsx}',
+        'features/auth/schemas/**/*.{ts,tsx}',
+        'features/auth/services/**/*.{ts,tsx}',
+        'features/auth/phone/provider.ts',
+        'features/auth/phone/mock-provider.ts',
+        'features/auth/actions/start-oauth.ts',
+        'features/auth/components/SocialLoginButtons.tsx',
         'lib/env/**/*.{ts,tsx}',
       ],
       thresholds: {

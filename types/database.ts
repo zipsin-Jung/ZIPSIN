@@ -56,9 +56,9 @@ export type Database = {
         Relationships: [];
       };
       phone_verification_states: {
-        Row: { user_id: string; verified_at: string; provider_reference_hash: string | null };
-        Insert: { user_id: string; verified_at?: string; provider_reference_hash?: string | null };
-        Update: { verified_at?: string; provider_reference_hash?: string | null };
+        Row: { user_id: string; challenge_id: string; phone_e164: string; verified_at: string; provider_reference_hash: string | null };
+        Insert: { user_id: string; challenge_id: string; phone_e164: string; verified_at?: string; provider_reference_hash?: string | null };
+        Update: { challenge_id?: string; phone_e164?: string; verified_at?: string; provider_reference_hash?: string | null };
         Relationships: [];
       };
       user_roles: {
@@ -80,7 +80,20 @@ export type Database = {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      complete_signup: {
+        Args: {
+          p_display_name: string;
+          p_email: string;
+          p_challenge_id: string;
+          p_terms_version: string;
+          p_privacy_version: string;
+          p_marketing_sms: boolean;
+          p_marketing_email: boolean;
+        };
+        Returns: undefined;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

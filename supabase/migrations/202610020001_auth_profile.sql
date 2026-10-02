@@ -24,6 +24,8 @@ create table public.consent_acceptances (
 
 create table public.phone_verification_states (
   user_id uuid primary key references auth.users(id) on delete cascade,
+  challenge_id text not null,
+  phone_e164 text not null,
   verified_at timestamptz not null default now(),
   provider_reference_hash text
 );
@@ -71,3 +73,54 @@ create policy "roles_update_own" on public.user_roles
 
 revoke all on public.phone_verification_states from anon, authenticated;
 grant select on public.phone_verification_states to authenticated;
+
+create or replace function public.complete_signup(
+  p_display_name text,
+  p_email text,
+  p_challenge_id text,
+  p_terms_version text,
+  p_privacy_version text,
+  p_marketing_sms boolean,
+  p_marketing_email boolean
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  verified public.phone_verification_states%rowtype;
+begin
+  select * into verified
+  from public.phone_verification_states
+  where user_id = auth.uid() and challenge_id = p_challenge_id;
+
+  if verified.user_id is null then
+    raise exception 'phone_not_verified';
+  end if;
+
+  insert into public.profiles (
+    user_id, display_name, email, phone_e164, phone_verified_at
+  ) values (
+    auth.uid(), p_display_name, p_email, verified.phone_e164, verified.verified_at
+  ) on conflict (user_id) do update set
+    display_name = excluded.display_name,
+    email = excluded.email,
+    phone_e164 = excluded.phone_e164,
+    phone_verified_at = excluded.phone_verified_at,
+    updated_at = now();
+
+  insert into public.consent_acceptances (
+    user_id, document_type, document_version, accepted
+  ) values
+    (auth.uid(), 'terms', p_terms_version, true),
+    (auth.uid(), 'privacy', p_privacy_version, true),
+    (auth.uid(), 'age_over_14', p_terms_version, true),
+    (auth.uid(), 'marketing_sms', p_terms_version, p_marketing_sms),
+    (auth.uid(), 'marketing_email', p_terms_version, p_marketing_email)
+  on conflict (user_id, document_type, document_version)
+  do update set accepted = excluded.accepted, accepted_at = now();
+end;
+$$;
+
+revoke all on function public.complete_signup(text, text, text, text, text, boolean, boolean) from public;
+grant execute on function public.complete_signup(text, text, text, text, text, boolean, boolean) to authenticated;
