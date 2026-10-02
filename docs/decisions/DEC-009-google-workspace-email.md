@@ -30,9 +30,14 @@
 
 ## 현재 확인 상태
 
-- 결정 시점에 `zipsin.net`의 MX, SPF, DKIM, DMARC 레코드는 확인되지 않았다.
-- DNS 값은 Google 관리자 화면에서 발급된 값을 기준으로 등록한다.
-- Google 공식 안내의 신규 MX 값은 `smtp.google.com`, 우선순위 1이다.
+- 2026-10-02 Google Workspace Starter 가입과 관리자 계정 생성 완료
+- `zipsin.net` 도메인 소유권 확인 완료
+- MX `smtp.google.com`, 우선순위 1 등록 및 공개 DNS 조회 확인 완료
+- Gmail 활성화 완료
+- SPF `v=spf1 include:_spf.google.com ~all` 등록 및 공개 DNS 조회 확인 완료
+- DKIM은 Google의 도메인 준비·DNS 확인이 끝나지 않아 키 발급 대기 중
+- DMARC는 SPF와 DKIM 안정화 후 관찰 모드로 적용 예정
+- 실제 외부 주소와의 송수신 시험은 아직 수행하지 않음
 
 ## 안전 원칙
 
