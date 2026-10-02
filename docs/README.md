@@ -12,6 +12,7 @@
 - [MVP 범위와 다음 단계](05-mvp-plan.md)
 - [`test` 페이지 기능 정의표](09-test-page-feature-definition.md)
 - [테스트 플랫폼 제작·배포 계획](10-test-platform-delivery-plan.md)
+- [공개형 서비스 V1 제품 명세](12-public-self-service-v1-spec.md)
 - [사업계획서 요약](08-business-plan.md)
 - [에이전트 지침 설계](06-agent-instructions.md)
 - [에이전트 시스템과 스킬](07-agent-system-and-skills.md)
