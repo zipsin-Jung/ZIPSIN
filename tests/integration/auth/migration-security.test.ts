@@ -28,5 +28,12 @@ describe('auth migration security boundary', () => {
     expect(migration).toContain("document_type = 'terms'");
     expect(migration).toContain("document_type = 'privacy'");
     expect(migration).toContain("document_type = 'age_over_14'");
+    expect(migration).toContain("document_version = '2026-10-02'");
+  });
+
+  it('가입 RPC가 임의의 동의 문서 버전을 거부한다', () => {
+    expect(migration).toContain("p_terms_version <> '2026-10-02'");
+    expect(migration).toContain("p_privacy_version <> '2026-10-02'");
+    expect(migration).toContain("raise exception 'invalid_document_version'");
   });
 });

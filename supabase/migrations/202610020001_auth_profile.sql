@@ -84,6 +84,10 @@ as $$
 declare
   verified public.phone_verification_states%rowtype;
 begin
+  if p_terms_version <> '2026-10-02' or p_privacy_version <> '2026-10-02' then
+    raise exception 'invalid_document_version';
+  end if;
+
   select * into verified
   from public.phone_verification_states
   where user_id = auth.uid()
@@ -142,13 +146,13 @@ begin
     where user_id = auth.uid() and phone_verified_at is not null
   ) or not exists (
     select 1 from public.consent_acceptances
-    where user_id = auth.uid() and document_type = 'terms' and accepted
+    where user_id = auth.uid() and document_type = 'terms' and document_version = '2026-10-02' and accepted
   ) or not exists (
     select 1 from public.consent_acceptances
-    where user_id = auth.uid() and document_type = 'privacy' and accepted
+    where user_id = auth.uid() and document_type = 'privacy' and document_version = '2026-10-02' and accepted
   ) or not exists (
     select 1 from public.consent_acceptances
-    where user_id = auth.uid() and document_type = 'age_over_14' and accepted
+    where user_id = auth.uid() and document_type = 'age_over_14' and document_version = '2026-10-02' and accepted
   ) then
     raise exception 'signup_incomplete';
   end if;

@@ -20,14 +20,19 @@ export async function POST(request: NextRequest) {
     }
 
     const admin = createAdminSupabaseClient();
-    const { error } = await admin
+    const { data: updated, error } = await admin
       .from('phone_verification_states')
       .update({ verified_at: result.verifiedAt })
       .eq('user_id', data.user.id)
       .eq('challenge_id', challengeId ?? '')
       .is('consumed_at', null)
-      .gt('expires_at', new Date().toISOString());
+      .gt('expires_at', new Date().toISOString())
+      .select('user_id')
+      .maybeSingle();
     if (error) return NextResponse.json({ error: 'save_failed' }, { status: 500 });
+    if (!updated) {
+      return NextResponse.json({ error: 'expired_or_invalid_challenge' }, { status: 400 });
+    }
     return NextResponse.json({ ok: true });
   } catch (error) {
     const unavailable = error instanceof Error && error.message.includes('공급자');

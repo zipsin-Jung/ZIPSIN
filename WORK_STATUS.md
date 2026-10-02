@@ -4,7 +4,7 @@
 
 - 기존 랜딩을 보존하고 Supabase 서버 세션, 세 소셜 로그인 진입, 전화 인증·동의, 역할 선택과 보호된 빈 홈을 구현했습니다.
 - 독립 검수에서 인증 우회 가능성을 발견해 직접 쓰기 권한을 제거하고 전용 가입·역할 RPC, 인증 만료·일회성 소비를 보강했습니다.
-- 타입 검사, 49개 단위·통합 테스트, 네 커버리지 지표 80% 이상, 빌드, 320·390·1440px Chromium 시나리오를 통과했습니다.
+- 타입 검사, 50개 단위·통합 테스트, 네 커버리지 지표 80% 이상, 빌드, 320·390·1440px Chromium 시나리오를 통과했습니다.
 - 상세 연결표는 `docs/traceability/public-v1-auth.md`, 작업 결과는 `docs/worklogs/2026-10-02-public-v1-auth.md`에 기록했습니다.
 - 실제 Supabase Preview migration, Google·Kakao·Naver 제공자 키, 문자 공급자 연결은 남아 있습니다.
 - 현재 품질 상태는 조건부 통과입니다. 실제 Postgres RLS와 외부 제공자 Preview 검수 전에는 Production에 반영하지 않습니다.
