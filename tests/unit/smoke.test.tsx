@@ -15,5 +15,6 @@ describe('기존 랜딩페이지', () => {
     expect(
       screen.getAllByRole('link', { name: '사전 회원 가입 하기' }).length,
     ).toBeGreaterThan(0);
+    expect(screen.getAllByRole('link', { name: /로그인|무료로 시작하기/ })[0]).toHaveAttribute('href', '/login');
   });
 });

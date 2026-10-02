@@ -27,6 +27,8 @@ export default defineConfig({
         'features/auth/phone/mock-provider.ts',
         'features/auth/actions/start-oauth.ts',
         'features/auth/components/SocialLoginButtons.tsx',
+        'features/auth/components/VerificationForm.tsx',
+        'features/auth/guards/**/*.{ts,tsx}',
         'lib/env/**/*.{ts,tsx}',
       ],
       thresholds: {

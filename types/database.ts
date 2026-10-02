@@ -56,9 +56,9 @@ export type Database = {
         Relationships: [];
       };
       phone_verification_states: {
-        Row: { user_id: string; challenge_id: string; phone_e164: string; verified_at: string; provider_reference_hash: string | null };
-        Insert: { user_id: string; challenge_id: string; phone_e164: string; verified_at?: string; provider_reference_hash?: string | null };
-        Update: { challenge_id?: string; phone_e164?: string; verified_at?: string; provider_reference_hash?: string | null };
+        Row: { user_id: string; challenge_id: string; phone_e164: string; sent_at: string; expires_at: string; verified_at: string | null; consumed_at: string | null; provider_reference_hash: string | null };
+        Insert: { user_id: string; challenge_id: string; phone_e164: string; sent_at?: string; expires_at: string; verified_at?: string | null; consumed_at?: string | null; provider_reference_hash?: string | null };
+        Update: { challenge_id?: string; phone_e164?: string; sent_at?: string; expires_at?: string; verified_at?: string | null; consumed_at?: string | null; provider_reference_hash?: string | null };
         Relationships: [];
       };
       user_roles: {
@@ -91,6 +91,10 @@ export type Database = {
           p_marketing_sms: boolean;
           p_marketing_email: boolean;
         };
+        Returns: undefined;
+      };
+      set_primary_role: {
+        Args: { p_primary_role: string };
         Returns: undefined;
       };
     };

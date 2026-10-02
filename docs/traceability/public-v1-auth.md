@@ -17,7 +17,7 @@
 
 | 대표 기능 | 소스 | 바로 대응하는 테스트 |
 |---|---|---|
-| 안전한 로그인 복귀 | `lib/auth/redirect.ts` | `tests/unit/auth/redirect.test.ts` |
+| 안전한 로그인 복귀 | `features/auth/domain/redirect.ts` | `tests/unit/auth/redirect.test.ts` |
 | OAuth 제공자 선택 | `features/auth/domain/providers.ts`, `features/auth/actions/start-oauth.ts` | `tests/unit/auth/providers.test.ts` |
 | OAuth 콜백 | `app/(auth)/auth/callback/route.ts` | `tests/integration/auth/callback.test.ts` |
 | 전화 인증 규칙 | `features/auth/schemas/verification.ts`, `features/auth/phone/mock-provider.ts` | `tests/unit/auth/verification.test.ts` |
@@ -29,8 +29,8 @@
 | 구분 | 명령 | 결과 |
 |---|---|---|
 | 타입 | `npm run typecheck` | 성공 |
-| 단위·통합·커버리지 | `npm run test:coverage` | 12개 파일, 45개 테스트 통과 |
-| 커버리지 | 같은 명령 | Statements 94.44%, Branches 88.05%, Functions 96.15%, Lines 95.12% |
+| 단위·통합·커버리지 | `npm run test:coverage` | 14개 파일, 49개 테스트 통과 |
+| 커버리지 | 같은 명령 | Statements 92.12%, Branches 85.26%, Functions 96.96%, Lines 92.30% |
 | 프로덕션 빌드 | `npm run build` | 성공, 정적 `/`와 서버 인증 경로 생성 확인 |
 | 브라우저 | `npm run test:e2e` | Chromium 4개 시나리오 통과; 320·390·1440px 로그인과 랜딩 이동·새로고침 확인 |
 
@@ -42,6 +42,14 @@
 - Google·Kakao·Naver의 실제 Client ID·비밀값·콜백 URL을 Preview에 설정해야 한다.
 - 실제 문자 인증 공급자를 선정하고 어댑터를 연결해야 한다. 현재 모의 공급자는 Production에서 실행되지 않는다.
 - 실제 계정으로 로그인 취소, 세션 복구, 전화 인증, 역할 저장을 Preview 브라우저에서 왕복 검수해야 한다.
+
+## 독립 검수와 수정
+
+- 독립 코드리뷰에서 인증 사용자가 민감한 프로필·동의 값을 직접 쓸 수 있는 P1 우회가 발견됐습니다.
+- 직접 INSERT/UPDATE 정책과 권한을 제거하고, 가입·역할 저장을 사전조건을 확인하는 전용 RPC로 제한했습니다.
+- 인증 결과에 만료·소비 시각을 추가하고 가입 완료 트랜잭션에서 일회성으로 소비하도록 수정했습니다.
+- 가입 성공 뒤 역할 선택 이동, 랜딩의 `/login` 진입, 이력 덮어쓰기 방지와 보안 회귀 테스트를 추가했습니다.
+- 수정 코드의 자동 검증은 통과했지만 실제 Postgres RLS 음성 테스트는 Preview DB가 준비되어야 실행할 수 있습니다. 품질 상태는 **조건부 통과·사용자 승인 대기**입니다.
 
 따라서 현재 상태는 **코드와 로컬 자동 검증 완료**이며, **실제 회원가입 서비스 개시 완료가 아니다**.
 

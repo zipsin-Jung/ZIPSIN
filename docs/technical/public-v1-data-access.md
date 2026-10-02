@@ -13,7 +13,7 @@
 ## 접근 원칙
 
 - 네 테이블 모두 RLS를 활성화한다.
-- `profiles`, `consent_acceptances`, `user_roles`는 `auth.uid() = user_id`인 본인만 읽고 쓸 수 있다.
+- `profiles`, `consent_acceptances`, `user_roles`는 `auth.uid() = user_id`인 본인만 읽을 수 있다. 민감한 쓰기는 검증된 `SECURITY DEFINER` RPC로만 수행한다.
 - `phone_verification_states`는 본인이 결과만 읽을 수 있고 쓰기는 서버 전용 경로만 수행한다.
 - 역할 선택은 집·사무소·계약 참여 레코드를 만들지 않는다.
 - 서비스 관리자용 우회 정책은 이번 단계에 추가하지 않는다.
@@ -22,7 +22,7 @@
 
 - 타인 UUID 변조: RLS와 서버 세션 사용자 ID를 함께 검사한다.
 - 전화 인증 결과 위조: 브라우저 쓰기 권한을 회수하고 공급자 검증 성공 후 서버만 기록한다.
-- 동의 이력 덮어쓰기: 문서 종류·버전의 유일 제약으로 새 버전을 별도 보존한다.
+- 동의 이력 덮어쓰기: 같은 문서 종류·버전은 처음 기록을 유지하고, 새 버전은 별도 행으로 보존한다.
 - 비밀키 노출: 공개 환경변수에는 Supabase URL과 anon key만 허용한다.
 
 ## migration과 되돌림

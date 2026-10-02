@@ -11,4 +11,7 @@ test('기존 랜딩페이지의 핵심 안내와 가입 이동을 유지한다',
   ).toBeVisible();
   await page.getByRole('link', { name: '사전 회원 가입 하기' }).first().click();
   await expect(page.locator('#signup')).toBeInViewport();
+
+  await page.getByRole('link', { name: '무료로 시작하기' }).click();
+  await expect(page).toHaveURL(/\/login$/);
 });

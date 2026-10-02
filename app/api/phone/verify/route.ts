@@ -20,12 +20,13 @@ export async function POST(request: NextRequest) {
     }
 
     const admin = createAdminSupabaseClient();
-    const { error } = await admin.from('phone_verification_states').upsert({
-      user_id: data.user.id,
-      challenge_id: challengeId ?? '',
-      phone_e164: result.phoneE164,
-      verified_at: result.verifiedAt,
-    });
+    const { error } = await admin
+      .from('phone_verification_states')
+      .update({ verified_at: result.verifiedAt })
+      .eq('user_id', data.user.id)
+      .eq('challenge_id', challengeId ?? '')
+      .is('consumed_at', null)
+      .gt('expires_at', new Date().toISOString());
     if (error) return NextResponse.json({ error: 'save_failed' }, { status: 500 });
     return NextResponse.json({ ok: true });
   } catch (error) {

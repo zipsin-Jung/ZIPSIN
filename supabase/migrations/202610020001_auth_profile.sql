@@ -26,7 +26,10 @@ create table public.phone_verification_states (
   user_id uuid primary key references auth.users(id) on delete cascade,
   challenge_id text not null,
   phone_e164 text not null,
-  verified_at timestamptz not null default now(),
+  sent_at timestamptz not null default now(),
+  expires_at timestamptz not null,
+  verified_at timestamptz,
+  consumed_at timestamptz,
   provider_reference_hash text
 );
 
@@ -46,33 +49,24 @@ alter table public.user_roles enable row level security;
 
 create policy "profiles_select_own" on public.profiles
   for select using ((select auth.uid()) = user_id);
-create policy "profiles_insert_own" on public.profiles
-  for insert with check ((select auth.uid()) = user_id);
-create policy "profiles_update_own" on public.profiles
-  for update using ((select auth.uid()) = user_id)
-  with check ((select auth.uid()) = user_id);
 
 create policy "consents_select_own" on public.consent_acceptances
   for select using ((select auth.uid()) = user_id);
-create policy "consents_insert_own" on public.consent_acceptances
-  for insert with check ((select auth.uid()) = user_id);
-create policy "consents_update_own" on public.consent_acceptances
-  for update using ((select auth.uid()) = user_id)
-  with check ((select auth.uid()) = user_id);
 
 create policy "phone_state_select_own" on public.phone_verification_states
   for select using ((select auth.uid()) = user_id);
 
 create policy "roles_select_own" on public.user_roles
   for select using ((select auth.uid()) = user_id);
-create policy "roles_insert_own" on public.user_roles
-  for insert with check ((select auth.uid()) = user_id);
-create policy "roles_update_own" on public.user_roles
-  for update using ((select auth.uid()) = user_id)
-  with check ((select auth.uid()) = user_id);
 
+revoke all on public.profiles from anon, authenticated;
+revoke all on public.consent_acceptances from anon, authenticated;
 revoke all on public.phone_verification_states from anon, authenticated;
+revoke all on public.user_roles from anon, authenticated;
+grant select on public.profiles to authenticated;
+grant select on public.consent_acceptances to authenticated;
 grant select on public.phone_verification_states to authenticated;
+grant select on public.user_roles to authenticated;
 
 create or replace function public.complete_signup(
   p_display_name text,
@@ -92,11 +86,20 @@ declare
 begin
   select * into verified
   from public.phone_verification_states
-  where user_id = auth.uid() and challenge_id = p_challenge_id;
+  where user_id = auth.uid()
+    and challenge_id = p_challenge_id
+    and verified_at is not null
+    and expires_at > now()
+    and consumed_at is null
+  for update;
 
   if verified.user_id is null then
     raise exception 'phone_not_verified';
   end if;
+
+  update public.phone_verification_states
+  set consumed_at = now()
+  where user_id = auth.uid() and challenge_id = p_challenge_id;
 
   insert into public.profiles (
     user_id, display_name, email, phone_e164, phone_verified_at
@@ -117,10 +120,46 @@ begin
     (auth.uid(), 'age_over_14', p_terms_version, true),
     (auth.uid(), 'marketing_sms', p_terms_version, p_marketing_sms),
     (auth.uid(), 'marketing_email', p_terms_version, p_marketing_email)
-  on conflict (user_id, document_type, document_version)
-  do update set accepted = excluded.accepted, accepted_at = now();
+  on conflict (user_id, document_type, document_version) do nothing;
 end;
 $$;
 
 revoke all on function public.complete_signup(text, text, text, text, text, boolean, boolean) from public;
 grant execute on function public.complete_signup(text, text, text, text, text, boolean, boolean) to authenticated;
+
+create or replace function public.set_primary_role(p_primary_role text) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if p_primary_role not in ('principal_broker', 'assistant', 'landlord', 'tenant') then
+    raise exception 'invalid_role';
+  end if;
+
+  if not exists (
+    select 1 from public.profiles
+    where user_id = auth.uid() and phone_verified_at is not null
+  ) or not exists (
+    select 1 from public.consent_acceptances
+    where user_id = auth.uid() and document_type = 'terms' and accepted
+  ) or not exists (
+    select 1 from public.consent_acceptances
+    where user_id = auth.uid() and document_type = 'privacy' and accepted
+  ) or not exists (
+    select 1 from public.consent_acceptances
+    where user_id = auth.uid() and document_type = 'age_over_14' and accepted
+  ) then
+    raise exception 'signup_incomplete';
+  end if;
+
+  insert into public.user_roles (user_id, primary_role)
+  values (auth.uid(), p_primary_role)
+  on conflict (user_id) do update set
+    primary_role = excluded.primary_role,
+    updated_at = now();
+end;
+$$;
+
+revoke all on function public.set_primary_role(text) from public;
+grant execute on function public.set_primary_role(text) to authenticated;

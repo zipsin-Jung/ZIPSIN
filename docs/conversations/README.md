@@ -1,6 +1,7 @@
 # 대화 기록
 
 - [2026-10-02 집신 사업계획서](2026-10-02-business-plan.md)
+- [2026-10-02 공개형 서비스 V1](2026-10-02-public-service-v1.md)
 - [2026-10-02 `test` 페이지 기능 정의](2026-10-02-test-page-feature-definition.md)
 - [2026-10-02 테스트 플랫폼 작업 순서](2026-10-02-test-platform-order.md)
 

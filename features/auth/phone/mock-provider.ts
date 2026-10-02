@@ -65,6 +65,7 @@ export class MockPhoneVerificationProvider implements PhoneVerificationProvider 
       ok: true,
       phoneE164: entry.phoneE164,
       verifiedAt: this.now().toISOString(),
+      expiresAt: entry.expiresAt.toISOString(),
     };
   }
 }

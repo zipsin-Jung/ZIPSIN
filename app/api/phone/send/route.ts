@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { normalizeKoreanMobile, maskPhone } from '@/features/auth/schemas/verification';
 import { getPhoneVerificationProvider } from '@/features/auth/phone/runtime-provider';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createAdminSupabaseClient } from '@/lib/supabase/admin';
 
 export async function POST(request: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -11,8 +12,27 @@ export async function POST(request: NextRequest) {
   try {
     const { phone } = (await request.json()) as { phone?: string };
     const phoneE164 = normalizeKoreanMobile(phone ?? '');
+    const admin = createAdminSupabaseClient();
+    const { data: previous } = await admin
+      .from('phone_verification_states')
+      .select('sent_at')
+      .eq('user_id', data.user.id)
+      .maybeSingle();
+    if (previous && Date.now() - new Date(previous.sent_at).getTime() < 60_000) {
+      return NextResponse.json({ error: 'rate_limited' }, { status: 429 });
+    }
     const provider = getPhoneVerificationProvider();
     const challenge = await provider.sendCode(phoneE164, data.user.id);
+    const { error: saveError } = await admin.from('phone_verification_states').upsert({
+      user_id: data.user.id,
+      challenge_id: challenge.id,
+      phone_e164: phoneE164,
+      sent_at: new Date().toISOString(),
+      expires_at: challenge.expiresAt,
+      verified_at: null,
+      consumed_at: null,
+    });
+    if (saveError) return NextResponse.json({ error: 'save_failed' }, { status: 500 });
     return NextResponse.json({
       challengeId: challenge.id,
       expiresAt: challenge.expiresAt,

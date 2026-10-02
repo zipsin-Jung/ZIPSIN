@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { completeSignup } from '@/features/auth/actions/complete-signup';
 
 export function VerificationForm({ email = '', displayName = '' }) {
+  const router = useRouter();
   const [challengeId, setChallengeId] = useState('');
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
@@ -51,7 +53,12 @@ export function VerificationForm({ email = '', displayName = '' }) {
       marketingSmsAccepted: formData.get('marketingSmsAccepted') === 'on',
       marketingEmailAccepted: formData.get('marketingEmailAccepted') === 'on',
     });
-    setMessage(result.ok ? '가입 정보가 저장됐습니다. 다음으로 역할을 선택해 주세요.' : '입력 내용을 확인해 주세요.');
+    if (result.ok) {
+      router.replace('/onboarding/role');
+      router.refresh();
+      return;
+    }
+    setMessage('입력 내용을 확인해 주세요.');
   }
 
   return (

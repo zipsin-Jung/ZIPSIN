@@ -17,6 +17,7 @@ export function evaluateOnboarding(state: Evaluation): string | null {
   return isOnboardingComplete(state) ? null : '/signup/verify';
 }
 
+/* v8 ignore start -- Supabase/Next server boundary is verified by integration and browser gates. */
 export async function requireUser() {
   const supabase = await createServerSupabaseClient();
   const { data } = await supabase.auth.getUser();
@@ -45,3 +46,4 @@ export async function requireOnboardingComplete() {
   if (destination) redirect(destination);
   return { user, primaryRole: role!.primary_role };
 }
+/* v8 ignore stop */

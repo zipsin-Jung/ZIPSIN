@@ -10,9 +10,8 @@ export async function savePrimaryRole(value: string) {
   const { data } = await supabase.auth.getUser();
   if (!data.user) redirect('/login');
 
-  const { error } = await supabase.from('user_roles').upsert({
-    user_id: data.user.id,
-    primary_role: primaryRole,
+  const { error } = await supabase.rpc('set_primary_role', {
+    p_primary_role: primaryRole,
   });
   if (error) return { ok: false as const, error: 'save_failed' as const };
   redirect('/home');

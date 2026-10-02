@@ -7,7 +7,7 @@ export type PhoneChallenge = {
 };
 
 export type PhoneVerificationResult =
-  | { ok: true; phoneE164: string; verifiedAt: string }
+  | { ok: true; phoneE164: string; verifiedAt: string; expiresAt: string }
   | { ok: false; reason: 'not_found' | 'mismatch' | 'expired' | 'attempts_exceeded' | 'used' };
 
 export interface PhoneVerificationProvider {
