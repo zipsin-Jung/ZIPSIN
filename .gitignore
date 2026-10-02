@@ -6,3 +6,6 @@ out/
 .DS_Store
 .codex-build/
 .codex-finalizer/
+coverage/
+playwright-report/
+test-results/
