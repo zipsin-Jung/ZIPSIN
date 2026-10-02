@@ -35,7 +35,8 @@
 - MX `smtp.google.com`, 우선순위 1 등록 및 공개 DNS 조회 확인 완료
 - Gmail 활성화 완료
 - SPF `v=spf1 include:_spf.google.com ~all` 등록 및 공개 DNS 조회 확인 완료
-- DKIM은 Google의 도메인 준비·DNS 확인이 끝나지 않아 키 발급 대기 중
+- DKIM 공개키를 `google._domainkey.zipsin.net`에 등록하고 공개 DNS 조회 확인 완료
+- Google 관리자 콘솔에서 `DKIM을 사용하여 이메일 인증 중입니다` 상태 확인 완료
 - DMARC는 SPF와 DKIM 안정화 후 관찰 모드로 적용 예정
 - 실제 외부 주소와의 송수신 시험은 아직 수행하지 않음
 
