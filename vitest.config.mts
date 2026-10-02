@@ -5,6 +5,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(import.meta.dirname),
+      'server-only': path.resolve(
+        import.meta.dirname,
+        'tests/stubs/server-only.ts',
+      ),
     },
   },
   test: {
@@ -18,7 +22,6 @@ export default defineConfig({
       include: [
         'features/auth/**/*.{ts,tsx}',
         'lib/env/**/*.{ts,tsx}',
-        'lib/supabase/**/*.{ts,tsx}',
       ],
       thresholds: {
         lines: 80,
