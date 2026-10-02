@@ -1,5 +1,6 @@
 # 결정 기록
 
+- [DEC-011: Supabase 인증과 네이버 Custom OAuth](DEC-011-supabase-auth-with-naver-custom-oauth.md)
 - [DEC-010: 공개형 서비스와 테스트 결제 우선 개발](DEC-010-public-service-and-test-payment.md)
 - [DEC-009: Google Workspace 회사 이메일](DEC-009-google-workspace-email.md)
 - [DEC-008: 간편가입과 최소 개인정보 구조](DEC-008-social-signup-and-minimum-data.md)
