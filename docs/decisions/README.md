@@ -1,5 +1,7 @@
 # 결정 기록
 
+- [DEC-006 사업계획서와 초기 유료 검증 전략](DEC-006-business-plan-validation-strategy.md)
+
 제품 방향에 장기 영향을 주는 결정을 날짜와 번호로 기록합니다.
 
 - [DEC-001: 집신의 제품 중심과 초기 고객](DEC-001-product-center-and-entry-customer.md)

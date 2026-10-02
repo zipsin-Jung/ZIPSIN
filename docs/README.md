@@ -10,6 +10,7 @@
 - [사용자와 권한](03-roles-and-access.md)
 - [핵심 업무 흐름](04-core-workflows.md)
 - [MVP 범위와 다음 단계](05-mvp-plan.md)
+- [사업계획서 요약](08-business-plan.md)
 - [에이전트 지침 설계](06-agent-instructions.md)
 - [에이전트 시스템과 스킬](07-agent-system-and-skills.md)
 - [에이전트 회의 기록](meetings/README.md)
