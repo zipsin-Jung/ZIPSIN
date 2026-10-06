@@ -9,6 +9,27 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      account_usernames: {
+        Row: {
+          user_id: string;
+          username_normalized: string;
+          status: 'pending' | 'active';
+          created_at: string;
+          activated_at: string | null;
+        };
+        Insert: {
+          user_id: string;
+          username_normalized: string;
+          status?: 'pending' | 'active';
+          created_at?: string;
+          activated_at?: string | null;
+        };
+        Update: {
+          status?: 'pending' | 'active';
+          activated_at?: string | null;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           user_id: string;
@@ -81,6 +102,10 @@ export type Database = {
     };
     Views: Record<string, never>;
     Functions: {
+      claim_username: {
+        Args: { p_username: string };
+        Returns: boolean;
+      };
       complete_signup: {
         Args: {
           p_display_name: string;
