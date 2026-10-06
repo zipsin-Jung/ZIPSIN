@@ -1,16 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { resetPasswordForEmail, getUser, updateUser, signOut } = vi.hoisted(() => ({
+const { resetPasswordForEmail, getUser, updateUser, signOut, rpc } = vi.hoisted(() => ({
   resetPasswordForEmail: vi.fn(),
   getUser: vi.fn(),
   updateUser: vi.fn(),
   signOut: vi.fn(),
+  rpc: vi.fn(),
 }));
 
 vi.mock('next/navigation', () => ({ redirect: (url: string) => { throw new Error(`REDIRECT:${url}`); } }));
 vi.mock('@/lib/supabase/server', () => ({
   createServerSupabaseClient: async () => ({ auth: { resetPasswordForEmail, getUser, updateUser, signOut } }),
 }));
+vi.mock('@/lib/supabase/admin', () => ({ createAdminSupabaseClient: () => ({ rpc }) }));
 
 import { requestAccountRecoveryAction } from '@/features/auth/actions/request-account-recovery';
 import { updatePasswordAction } from '@/features/auth/actions/update-password';
@@ -27,6 +29,8 @@ describe('account recovery actions', () => {
     getUser.mockResolvedValue({ data: { user: { id: 'user-1' } } });
     updateUser.mockResolvedValue({ error: null });
     signOut.mockResolvedValue({});
+    rpc.mockResolvedValue({ data: true, error: null });
+    process.env.AUTH_RATE_LIMIT_HMAC_SECRET = 'test-rate-limit-secret-at-least-32';
   });
 
   it('rejects an invalid recovery email', async () => {
@@ -36,6 +40,7 @@ describe('account recovery actions', () => {
   it('always returns the generic sent page after a recovery request', async () => {
     await expect(requestAccountRecoveryAction(emailForm('USER@example.com'))).rejects.toThrow('REDIRECT:/account-recovery?notice=sent');
     expect(resetPasswordForEmail).toHaveBeenCalledWith('user@example.com', expect.objectContaining({ redirectTo: expect.stringContaining('/auth/callback') }));
+    expect(rpc).toHaveBeenCalledWith('consume_auth_rate_limit', expect.objectContaining({ p_scope: 'account_recovery', p_limit: 3 }));
   });
 
   it('updates a valid recovery session then signs it out', async () => {

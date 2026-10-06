@@ -10,7 +10,7 @@ type CreateAuthResult =
 export type PasswordAccountRepository = {
   createAuthUser(input: { email: string; password: string; username: string }): Promise<CreateAuthResult>;
   reserveUsername(userId: string, username: string): Promise<boolean>;
-  deleteAuthUser(userId: string): Promise<void>;
+  deleteAuthUser(userId: string): Promise<boolean>;
 };
 
 export type RegisterResult =
@@ -42,6 +42,6 @@ export async function registerPasswordAccount(
     // Compensate only the user created by this request.
   }
 
-  await repository.deleteAuthUser(created.userId);
-  return { ok: false, error: 'account_unavailable' };
+  const deleted = await repository.deleteAuthUser(created.userId);
+  return { ok: false, error: deleted ? 'account_unavailable' : 'service_unavailable' };
 }

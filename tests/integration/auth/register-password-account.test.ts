@@ -15,7 +15,7 @@ function repository() {
   return {
     createAuthUser: vi.fn().mockResolvedValue({ userId: 'user-1' }),
     reserveUsername: vi.fn().mockResolvedValue(true),
-    deleteAuthUser: vi.fn().mockResolvedValue(undefined),
+    deleteAuthUser: vi.fn().mockResolvedValue(true),
   };
 }
 
@@ -58,5 +58,13 @@ describe('registerPasswordAccount', () => {
 
     await expect(registerPasswordAccount(repo, input)).resolves.toEqual({ ok: false, error: 'service_unavailable' });
     expect(repo.reserveUsername).not.toHaveBeenCalled();
+  });
+
+  it('returns a service error when compensating deletion cannot be completed', async () => {
+    const repo = repository();
+    repo.reserveUsername.mockResolvedValue(false);
+    repo.deleteAuthUser.mockResolvedValue(false);
+
+    await expect(registerPasswordAccount(repo, input)).resolves.toEqual({ ok: false, error: 'service_unavailable' });
   });
 });

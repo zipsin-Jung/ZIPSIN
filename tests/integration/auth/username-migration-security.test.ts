@@ -25,4 +25,20 @@ describe('account username migration security', () => {
     expect(sql).toMatch(/on conflict \(username_normalized\) do nothing/i);
     expect(sql).toMatch(/grant execute on function public\.claim_username\(text\) to authenticated/i);
   });
+
+  it('stores only hashed rate-limit keys and exposes consumption to service role only', () => {
+    expect(sql).toMatch(/create table public\.auth_rate_limits/i);
+    expect(sql).toMatch(/key_hash text not null/i);
+    expect(sql).toMatch(/digest\(p_key, 'sha256'\)/i);
+    expect(sql).toMatch(/function public\.consume_auth_rate_limit\(/i);
+    expect(sql).toMatch(/grant execute on function public\.consume_auth_rate_limit\([\s\S]*?\) to service_role/i);
+    expect(sql).toMatch(/revoke all on public\.auth_rate_limits from anon, authenticated/i);
+  });
+
+  it('keeps failed signup cleanup records private to the service role', () => {
+    expect(sql).toMatch(/create table public\.auth_cleanup_queue/i);
+    expect(sql).toMatch(/alter table public\.auth_cleanup_queue enable row level security/i);
+    expect(sql).toMatch(/revoke all on public\.auth_cleanup_queue from anon, authenticated/i);
+    expect(sql).toMatch(/grant select, insert, update on public\.auth_cleanup_queue to service_role/i);
+  });
 });

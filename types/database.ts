@@ -30,6 +30,18 @@ export type Database = {
         };
         Relationships: [];
       };
+      auth_rate_limits: {
+        Row: { scope: string; key_hash: string; window_start: string; attempts: number };
+        Insert: { scope: string; key_hash: string; window_start: string; attempts?: number };
+        Update: { attempts?: number };
+        Relationships: [];
+      };
+      auth_cleanup_queue: {
+        Row: { user_id: string; reason: string; created_at: string; resolved_at: string | null };
+        Insert: { user_id: string; reason?: string; created_at?: string; resolved_at?: string | null };
+        Update: { reason?: string; resolved_at?: string | null };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           user_id: string;
@@ -104,6 +116,10 @@ export type Database = {
     Functions: {
       claim_username: {
         Args: { p_username: string };
+        Returns: boolean;
+      };
+      consume_auth_rate_limit: {
+        Args: { p_scope: string; p_key: string; p_limit: number; p_window_seconds: number };
         Returns: boolean;
       };
       complete_signup: {

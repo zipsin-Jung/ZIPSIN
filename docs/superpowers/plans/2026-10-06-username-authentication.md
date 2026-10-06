@@ -100,7 +100,7 @@
 - [ ] **Step 3: 계정 상태별 동일 외부 오류와 이메일 비노출 통합 테스트 작성**
 - [ ] **Step 4: 통합 테스트 예상 실패 확인** — `npm test -- tests/integration/auth/login-with-username.test.ts`
 - [ ] **Step 5: `server-only` 아이디 조회→Auth 이메일 조회→`signInWithPassword` 서비스 구현**
-- [ ] **Step 6: 속도 제한 어댑터와 `PASSWORD_LOGIN_ENABLED` 실패 폐쇄 구현**
+- [ ] **Step 6: DB 기반 원자 속도 제한과 `PASSWORD_LOGIN_ENABLED` 실패 폐쇄 구현**
 - [ ] **Step 7: 서버 액션과 아이디 로그인 폼 구현 후 이메일 로그인 파일 제거**
 - [ ] **Step 8: 관련 테스트·타입 검사 통과 및 커밋** — `git commit -m "feat: add secure username login"`
 

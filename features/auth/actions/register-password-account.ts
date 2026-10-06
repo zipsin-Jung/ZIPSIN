@@ -1,10 +1,12 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 import { createAdminSupabaseClient } from '@/lib/supabase/admin';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { passwordSignupSchema } from '@/features/auth/schemas/password-signup';
 import { registerPasswordAccount } from '@/features/auth/services/register-password-account';
+import { createRateLimitKey, getRateLimitSecret } from '@/features/auth/domain/rate-limit-key';
 
 export async function registerPasswordAccountAction(formData: FormData) {
   const parsed = passwordSignupSchema.safeParse({
@@ -21,8 +23,28 @@ export async function registerPasswordAccountAction(formData: FormData) {
 
   const supabase = await createServerSupabaseClient();
   const admin = createAdminSupabaseClient();
+  const requestHeaders = await headers();
+  const origin = requestHeaders.get('x-vercel-forwarded-for')
+    ?? requestHeaders.get('x-forwarded-for')?.split(',')[0]?.trim()
+    ?? 'unknown-origin';
+  const rateLimitSecret = getRateLimitSecret();
   let sessionCreated = false;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+
+  const limits = [
+    { scope: 'password_signup_origin', key: origin, limit: 10 },
+    { scope: 'password_signup_email', key: parsed.data.email, limit: 3 },
+    { scope: 'password_signup_username', key: parsed.data.username, limit: 3 },
+  ] as const;
+  for (const limit of limits) {
+    const { data, error } = await admin.rpc('consume_auth_rate_limit', {
+      p_scope: limit.scope,
+      p_key: createRateLimitKey(limit.key, rateLimitSecret),
+      p_limit: limit.limit,
+      p_window_seconds: 3600,
+    });
+    if (error || data !== true) redirect('/signup?error=service_unavailable');
+  }
 
   const result = await registerPasswordAccount({
     async createAuthUser({ email, password, username }) {
@@ -35,6 +57,7 @@ export async function registerPasswordAccountAction(formData: FormData) {
         },
       });
       sessionCreated = Boolean(data.session);
+      if (data.user?.identities?.length === 0) return { error: 'email_exists' as const };
       if (error || !data.user) {
         return {
           error: error?.code === 'user_already_exists' ? 'email_exists' as const : 'service_error' as const,
@@ -51,7 +74,13 @@ export async function registerPasswordAccountAction(formData: FormData) {
       return !error;
     },
     async deleteAuthUser(userId) {
-      await admin.auth.admin.deleteUser(userId);
+      const { error } = await admin.auth.admin.deleteUser(userId);
+      if (!error) return true;
+      const { error: queueError } = await admin.from('auth_cleanup_queue').insert({ user_id: userId });
+      if (queueError) {
+        console.error('auth_cleanup_queue_insert_failed', { userId });
+      }
+      return false;
     },
   }, parsed.data);
 

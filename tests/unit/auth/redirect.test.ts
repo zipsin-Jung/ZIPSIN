@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { sanitizeNextPath } from '@/features/auth/domain/redirect';
 
 describe('sanitizeNextPath', () => {
-  it.each(['https://evil.example', '//evil.example', 'javascript:alert(1)', 'home'])(
+  it.each(['https://evil.example', '//evil.example', '/\\evil.example', '/%5cevil.example', 'javascript:alert(1)', 'home'])(
     '외부 또는 상대 경로 %s를 홈으로 바꾼다',
     (value) => {
       expect(sanitizeNextPath(value)).toBe('/home');

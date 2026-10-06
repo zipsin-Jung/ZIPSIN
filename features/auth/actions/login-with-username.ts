@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { sanitizeNextPath } from '@/features/auth/domain/redirect';
+import { createRateLimitKey, getRateLimitSecret } from '@/features/auth/domain/rate-limit-key';
 import { usernameSchema } from '@/features/auth/domain/username';
 import { loginWithUsername } from '@/features/auth/services/login-with-username';
 import { createAdminSupabaseClient } from '@/lib/supabase/admin';
@@ -12,20 +13,6 @@ const inputSchema = z.object({
   username: usernameSchema,
   password: z.string().min(8).max(128),
 });
-
-const attempts = new Map<string, { count: number; resetAt: number }>();
-
-function allowPreviewAttempt(username: string): boolean {
-  const now = Date.now();
-  const current = attempts.get(username);
-  if (!current || current.resetAt <= now) {
-    attempts.set(username, { count: 1, resetAt: now + 60_000 });
-    return true;
-  }
-  if (current.count >= 8) return false;
-  current.count += 1;
-  return true;
-}
 
 export async function loginWithUsernameAction(formData: FormData, nextValue?: string) {
   const parsed = inputSchema.safeParse({
@@ -38,8 +25,13 @@ export async function loginWithUsernameAction(formData: FormData, nextValue?: st
   const supabase = await createServerSupabaseClient();
   const result = await loginWithUsername({
     async allowAttempt(username) {
-      if (process.env.NODE_ENV === 'production' && process.env.AUTH_RATE_LIMIT_PROVIDER !== 'configured') return false;
-      return allowPreviewAttempt(username);
+      const { data, error } = await admin.rpc('consume_auth_rate_limit', {
+        p_scope: 'username_login',
+        p_key: createRateLimitKey(username, getRateLimitSecret()),
+        p_limit: 8,
+        p_window_seconds: 60,
+      });
+      return !error && data === true;
     },
     async resolveUsername(username) {
       const { data } = await admin.from('account_usernames')

@@ -20,20 +20,28 @@
 - 모바일에서 인증 영역을 먼저 표시
 - 이메일 확인 뒤 기존 전화 인증·동의·역할 선택 흐름 연결
 - 계정 존재 여부를 노출하지 않는 공통 로그인·복구 응답
+- 서버리스 인스턴스와 무관하게 동작하는 DB 기반 로그인·복구 요청 제한과 해시 키 저장
+- 회원가입 출처·이메일·아이디 기준 DB 요청 제한과 서버 비밀값 HMAC 키 보호
+- 가입 보상 삭제 실패 시 비공개 정리 대기열 기록
+- 정리 대기열 기록까지 실패하면 오류 원문 없이 고정 이벤트명과 사용자 UUID로 구조화된 서버 경보 기록
+- 변형된 역슬래시 외부 복귀 경로 차단
+- Supabase의 기존 이메일 obfuscated 응답에서 아이디를 잘못 예약하거나 기존 계정을 삭제하지 않도록 차단
 
 ## 검증 결과
 
 - `npm run typecheck`: 성공
-- `npm test`: 25개 파일, 104개 테스트 통과
-- `npm run test:coverage`: Statements 86.03%, Branches 80%, Functions 86.88%, Lines 86.75%
+- `npm test`: 26개 파일, 113개 테스트 통과
+- `npm run test:coverage`: Statements 90.8%, Branches 84.81%, Functions 90.32%, Lines 91.25%
 - `npm run build`: 성공
-- `PLAYWRIGHT_PORT=3014 npm run test:e2e`: Chromium 4개 시나리오 통과
+- `PLAYWRIGHT_PORT=3016 npm run test:e2e`: Chromium 4개 시나리오 통과
 - 데스크톱·모바일 로컬 스크린샷 시각 확인
+- 최종 독립 재검수: P0 0건, P1 0건, P2 0건, 로컬 병합 승인
 
 ## 남은 일과 제한
 
 - 신규 migration은 아직 Supabase Preview에 적용하지 않았다.
 - 실제 이메일 확인·복구 메일 왕복은 미검증이다.
 - Google·카카오·네이버 실제 로그인 왕복은 제공자 키 설정 뒤 검증해야 한다.
-- Production 분산 요청 제한 설정 전 아이디 로그인 기능을 공개하지 않는다.
+- 신규 요청 제한 migration을 Preview DB에 적용하고 실제 누적·해제를 확인하기 전에는 아이디 로그인을 공개하지 않는다.
+- 추가 독립 검수에서 회원가입 요청 제한 누락 P1과 단순 해시·보상 삭제 실패 P2를 확인했다. 모든 항목을 테스트 우선으로 보강했고 최종 재검수에서 P0·P1·P2 0건과 로컬 병합 승인을 받았다. Preview 실DB 검증 전에는 배포하지 않는다.
 - Production 공개는 사용자 별도 승인 대상이다.

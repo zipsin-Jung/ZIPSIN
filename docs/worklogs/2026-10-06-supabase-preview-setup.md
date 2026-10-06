@@ -21,6 +21,7 @@ Supabase 프로젝트를 Vercel Preview에 연결하고, Production에 영향을
   - `NEXT_PUBLIC_SUPABASE_URL`
   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
   - `SUPABASE_SERVICE_ROLE_KEY`
+- 아이디 인증 확장 배포 시에는 32자 이상의 무작위 `AUTH_RATE_LIMIT_HMAC_SECRET`도 Preview에 추가해야 합니다. 값은 Git과 문서에 기록하지 않습니다.
 - 적용 범위는 Preview로 제한했고 Production 환경은 변경하지 않았습니다.
 - 기존 `codex/public-v1-auth` 배포를 최신 프로젝트 설정으로 재배포했습니다.
 
