@@ -36,7 +36,7 @@ describe('social providers', () => {
     await user.click(screen.getByRole('button', { name: 'Google로 계속하기' }));
     expect(onSelect).toHaveBeenCalledWith('google');
 
-    const naver = screen.getByRole('button', { name: 'Naver로 계속하기 준비 중' });
+    const naver = screen.getByRole('button', { name: '네이버로 계속하기 준비 중' });
     expect(naver).toBeDisabled();
     expect(onSelect).toHaveBeenCalledTimes(1);
   });

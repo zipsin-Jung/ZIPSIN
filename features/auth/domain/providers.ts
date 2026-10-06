@@ -2,8 +2,8 @@ export type SocialProviderId = 'google' | 'kakao' | 'naver';
 
 export const SUPPORTED_PROVIDERS = [
   { id: 'google', label: 'Google' },
-  { id: 'kakao', label: 'Kakao' },
-  { id: 'naver', label: 'Naver' },
+  { id: 'kakao', label: '카카오' },
+  { id: 'naver', label: '네이버' },
 ] as const satisfies ReadonlyArray<{
   id: SocialProviderId;
   label: string;

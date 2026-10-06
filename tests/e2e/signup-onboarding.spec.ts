@@ -5,12 +5,22 @@ for (const viewport of [
   { width: 390, height: 844 },
   { width: 1440, height: 900 },
 ]) {
-  test(`로그인 화면은 ${viewport.width}px에서 세 제공자 상태를 설명한다`, async ({ page }) => {
+  test(`로그인 화면은 ${viewport.width}px에서 간편 로그인과 아이디 로그인을 제공한다`, async ({ page }) => {
     await page.setViewportSize(viewport);
     await page.goto('/login');
-    await expect(page.getByRole('heading', { name: '간편하게 시작하세요' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Google로 계속하기 준비 중' })).toBeDisabled();
+    await expect(page.getByRole('heading', { name: '집신 시작하기' })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Google로 계속하기/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /카카오로 계속하기/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /네이버로 계속하기/ })).toBeVisible();
+    await expect(page.getByLabel('아이디')).toBeVisible();
+    await expect(page.getByRole('textbox', { name: '비밀번호', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: '로그인' })).toBeVisible();
+    await expect(page.getByRole('link', { name: '회원가입', exact: true })).toBeVisible();
+    await expect(page.getByLabel('이메일 주소')).toHaveCount(0);
+    await expect(page.getByText('계약·입주 기록')).toBeVisible();
+    await expect(page.getByText('수리·사진 보관')).toBeVisible();
+    await expect(page.getByText('일정·비용 관리')).toBeVisible();
     await page.reload();
-    await expect(page.getByRole('heading', { name: '간편하게 시작하세요' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: '집신 시작하기' })).toBeVisible();
   });
 }
