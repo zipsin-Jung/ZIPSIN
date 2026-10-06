@@ -13,6 +13,7 @@
 - [`test` 페이지 기능 정의표](09-test-page-feature-definition.md)
 - [테스트 플랫폼 제작·배포 계획](10-test-platform-delivery-plan.md)
 - [공개형 서비스 V1 제품 명세](12-public-self-service-v1-spec.md)
+- [공인중개사 영업용 3분 데모 명세](13-broker-sales-demo-spec.md)
 - [공개형 서비스 V1 구현 로드맵](superpowers/plans/2026-10-02-public-service-v1-roadmap.md)
 - [사업계획서 요약](08-business-plan.md)
 - [에이전트 지침 설계](06-agent-instructions.md)
