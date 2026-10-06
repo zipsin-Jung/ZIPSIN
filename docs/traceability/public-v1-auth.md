@@ -1,8 +1,8 @@
 # 공개형 서비스 V1 1단계 인증 추적표
 
-- 기준일: 2026-10-02
-- 범위: `PSV1-AUTH-001`, `PSV1-AUTH-002`, `PSV1-ROLE-001`
-- 상태: 로컬 구현·자동 검증 완료, 외부 서비스 Preview 연동 대기
+- 기준일: 2026-10-06
+- 범위: `PSV1-AUTH-001`~`004`, `PSV1-ROLE-001`
+- 상태: 아이디 인증 로컬 구현·자동 검증 완료, Preview DB·외부 제공자 연동 대기
 
 ## 요구사항과 구현 증거
 
@@ -10,6 +10,8 @@
 |---|---|---|---|---|
 | `PSV1-AUTH-001` 세 간편가입 진입 | `/login`, `/auth/callback`; 준비 중·취소·오류·성공 복귀 | `features/auth/components/SocialLoginButtons.tsx`, `features/auth/actions/start-oauth.ts`, `app/(auth)/auth/callback/route.ts` | `tests/unit/auth/providers.test.ts`, `tests/integration/auth/callback.test.ts`, `tests/e2e/signup-onboarding.spec.ts` | 제공자 구분, 키보드 버튼, 안전한 복귀 경로와 오류 복구 자동 테스트 통과. 실제 제공자 왕복은 Preview 키 설정 후 필요 |
 | `PSV1-AUTH-002` 전화 인증·동의 | `/signup/verify`, `/api/phone/send`, `/api/phone/verify`; 만료·불일치·제한·성공 | `features/auth/phone/provider.ts`, `features/auth/phone/mock-provider.ts`, `features/auth/actions/complete-signup.ts`, `supabase/migrations/202610020001_auth_profile.sql` | `tests/unit/auth/verification.test.ts`, `tests/integration/auth/complete-signup.test.ts` | 인증 성공·필수 동의 전 가입 차단, 동의 버전 저장, 운영 모의 인증 차단 테스트 통과. 실제 문자 공급자 연동은 대기 |
+| `PSV1-AUTH-003` 아이디 가입·로그인 | `/signup`, `/login`; 중복·확인 대기·공통 실패·성공 | `features/auth/domain/username.ts`, `features/auth/services/register-password-account.ts`, `features/auth/services/login-with-username.ts`, `supabase/migrations/202610060001_account_usernames.sql` | `tests/unit/auth/password-signup.test.ts`, `tests/integration/auth/register-password-account.test.ts`, `tests/integration/auth/login-with-username.test.ts`, `tests/e2e/signup-onboarding.spec.ts` | 이메일 없는 아이디 로그인, 비공개 매핑, 중복 방지, 계정 열거 방지와 반응형 화면 자동 테스트 통과. Preview migration 적용 대기 |
+| `PSV1-AUTH-004` 계정 복구 | `/account-recovery`, `/reset-password`; 동일 안내·만료·변경 | `features/auth/services/account-recovery.ts`, `features/auth/actions/request-account-recovery.ts`, `features/auth/actions/update-password.ts` | `tests/integration/auth/account-recovery.test.ts`, `tests/unit/auth/recovery-actions.test.ts` | 계정 상태와 무관한 요청 응답, 유효 세션 확인과 변경 후 로그아웃 자동 테스트 통과. 실제 메일 왕복 대기 |
 | `PSV1-ROLE-001` 역할 선택 | `/onboarding/role`, `/home`; 미선택·저장·오류·완료 | `features/auth/components/RolePicker.tsx`, `features/auth/actions/save-role.ts`, `features/auth/guards/require-onboarding.ts`, `app/(app)/layout.tsx` | `tests/unit/auth/role.test.tsx`, `tests/integration/auth/guards.test.ts` | 네 역할 설명, 미인증 접근 차단, 역할이 자원 권한을 만들지 않는 구조 확인 |
 | 기존 랜딩 보존 | `/`에서 `/login` 진입 | `app/page.tsx`, `components/*` | `tests/unit/smoke.test.tsx`, `tests/e2e/landing.spec.ts` | 기존 핵심 안내와 가입 이동 브라우저 테스트 통과 |
 
@@ -23,6 +25,22 @@
 | 전화 인증 규칙 | `features/auth/schemas/verification.ts`, `features/auth/phone/mock-provider.ts` | `tests/unit/auth/verification.test.ts` |
 | 가입 완료 조건 | `features/auth/actions/complete-signup.ts`, `features/auth/domain/profile.ts` | `tests/integration/auth/complete-signup.test.ts`, `tests/unit/auth/profile.test.ts` |
 | 역할 선택·보호 | `features/auth/domain/roles.ts`, `features/auth/guards/require-onboarding.ts` | `tests/unit/auth/role.test.tsx`, `tests/integration/auth/guards.test.ts` |
+| 아이디 규칙·중복 차단 | `features/auth/domain/username.ts`, `supabase/migrations/202610060001_account_usernames.sql` | `tests/unit/auth/username.test.ts`, `tests/integration/auth/username-migration-security.test.ts` |
+| 아이디 회원가입 | `features/auth/schemas/password-signup.ts`, `features/auth/services/register-password-account.ts` | `tests/unit/auth/password-signup.test.ts`, `tests/integration/auth/register-password-account.test.ts` |
+| 아이디 로그인 | `features/auth/services/login-with-username.ts`, `features/auth/actions/login-with-username.ts` | `tests/integration/auth/login-with-username.test.ts`, `tests/unit/auth/username-login-action.test.ts` |
+| 계정 복구 | `features/auth/services/account-recovery.ts`, `features/auth/actions/update-password.ts` | `tests/integration/auth/account-recovery.test.ts`, `tests/unit/auth/recovery-actions.test.ts` |
+
+## 2026-10-06 아이디 인증 검증 결과
+
+| 구분 | 명령 | 결과 |
+|---|---|---|
+| 타입 | `npm run typecheck` | 성공 |
+| 단위·통합 | `npm test` | 25개 파일, 104개 테스트 통과 |
+| 커버리지 | `npm run test:coverage` | Statements 86.03%, Branches 80%, Functions 86.88%, Lines 86.75% |
+| 프로덕션 빌드 | `npm run build` | 성공 |
+| 로컬 브라우저 | `PLAYWRIGHT_PORT=3014 npm run test:e2e` | Chromium 4개 시나리오 통과, 320·390·1440px 확인 |
+
+빌드 성공과 브라우저 검수는 별도 증거다. 실제 Preview DB migration, 이메일, 세 OAuth 왕복은 아직 검증하지 않았다.
 
 ## 2026-10-02 검증 결과
 
