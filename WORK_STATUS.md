@@ -1,12 +1,21 @@
 # 집신 작업 현황
 
+## 2026-10-06 Supabase Preview 연결 및 재배포
+
+- Supabase 서울 리전 무료 프로젝트에 인증 V1 migration을 적용했습니다.
+- Vercel의 Preview 환경에만 프로젝트 URL, 공개 키, 서버 전용 비밀키를 등록했습니다. Production 환경은 변경하지 않았습니다.
+- `codex/public-v1-auth` 기존 배포를 최신 설정으로 재배포했고 Vercel 상태 `Ready`를 확인했습니다.
+- 새 Preview에서 랜딩과 `/login`이 열리는 것을 확인했고, Supabase REST 요청이 실제 DB에 도달하며 익명 `profiles` 조회가 권한 정책으로 차단되는 것도 확인했습니다.
+- Google·Kakao·Naver 제공자 설정과 실제 로그인 왕복, 문자 인증 공급자 연결은 아직 남아 있습니다.
+- 상세 기록은 `docs/worklogs/2026-10-06-supabase-preview-setup.md`를 확인합니다.
+
 ## 2026-10-02 공개형 서비스 V1 1단계 인증 구현
 
 - 기존 랜딩을 보존하고 Supabase 서버 세션, 세 소셜 로그인 진입, 전화 인증·동의, 역할 선택과 보호된 빈 홈을 구현했습니다.
 - 독립 검수에서 인증 우회 가능성을 발견해 직접 쓰기 권한을 제거하고 전용 가입·역할 RPC, 인증 만료·일회성 소비를 보강했습니다.
 - 타입 검사, 50개 단위·통합 테스트, 네 커버리지 지표 80% 이상, 빌드, 320·390·1440px Chromium 시나리오를 통과했습니다.
 - 상세 연결표는 `docs/traceability/public-v1-auth.md`, 작업 결과는 `docs/worklogs/2026-10-02-public-v1-auth.md`에 기록했습니다.
-- 실제 Supabase Preview migration, Google·Kakao·Naver 제공자 키, 문자 공급자 연결은 남아 있습니다.
+- Google·Kakao·Naver 제공자 키와 실제 로그인 왕복, 문자 공급자 연결은 남아 있습니다. Supabase Preview migration과 Vercel 환경 연결은 2026-10-06 완료했습니다.
 - 현재 품질 상태는 조건부 통과입니다. 실제 Postgres RLS와 외부 제공자 Preview 검수 전에는 Production에 반영하지 않습니다.
 
 ## 2026-10-02 공개형 서비스 V1 구현계획
