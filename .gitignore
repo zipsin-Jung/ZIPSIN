@@ -3,4 +3,8 @@ node_modules/
 out/
 *.tsbuildinfo
 .env*
+!.env.example
 .DS_Store
+.codex-build/
+.codex-finalizer/
+coverage/
