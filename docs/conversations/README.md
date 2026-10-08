@@ -1,5 +1,6 @@
 # 대화 기록
 
+- [2026-10-08 집 키·홈 화면 방향](2026-10-08-home-key-and-dashboard-direction.md)
 - [2026-10-02 집신 사업계획서](2026-10-02-business-plan.md)
 - [2026-10-02 공개형 서비스 V1](2026-10-02-public-service-v1.md)
 - [2026-10-02 `test` 페이지 기능 정의](2026-10-02-test-page-feature-definition.md)
