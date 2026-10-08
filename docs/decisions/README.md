@@ -1,5 +1,8 @@
 # 결정 기록
 
+- [DEC-013: 집신 혼합 권한 모델](DEC-013-hybrid-authorization-model.md) — 권고안·사용자 승인 대기
+- [DEC-012: 대표 도메인과 검색 등록 기준](DEC-012-primary-domain-and-search-registration.md)
+
 - [DEC-011: Supabase 인증과 네이버 Custom OAuth](DEC-011-supabase-auth-with-naver-custom-oauth.md)
 - [DEC-010: 공개형 서비스와 테스트 결제 우선 개발](DEC-010-public-service-and-test-payment.md)
 - [DEC-009: Google Workspace 회사 이메일](DEC-009-google-workspace-email.md)

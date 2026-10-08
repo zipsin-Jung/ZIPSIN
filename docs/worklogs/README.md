@@ -1,5 +1,7 @@
 # 작업 보고서
 
+- [2026-10-08 코칭 조언·권한 모델 검토](2026-10-08-coaching-and-authorization-review.md)
+
 - [2026-10-06 공인중개사 영업용 3분 데모 구현](2026-10-06-broker-sales-demo-implementation.md)
 - [2026-10-06 공인중개사 영업용 3분 데모 품질 검수](2026-10-06-broker-sales-demo-quality.md)
 - [2026-10-02 집신 사업계획서 PPT](2026-10-02-business-plan-ppt.md)
