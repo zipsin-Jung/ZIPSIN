@@ -3,5 +3,5 @@ import type {MetadataRoute} from 'next';
 export const dynamic = 'force-static';
 
 export default function sitemap():MetadataRoute.Sitemap {
-  return [{url:'https://zipsin.net',changeFrequency:'weekly',priority:1}];
+  return [{url:'https://zipsin.net',changeFrequency:'weekly',priority:1},{url:'https://zipsin.net/records',changeFrequency:'daily',priority:.7}];
 }
