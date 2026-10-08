@@ -69,13 +69,14 @@ CRUD는 서버 런타임이 필요하므로 정적 export를 사용하지 않습
 `/records`는 미션 요구에 따라 로그인·사용자별 권한·RLS 정책을 구현하지 않았습니다. 브라우저가 DB를 직접 접근하지는 못하지만, 웹 화면을 통해 누구나 가상 기록을 수정·삭제할 수 있습니다. 실제 운영은 미션 7에서 인증·소유권·RLS를 적용한 후에만 가능합니다.
 
 ## 검증 상태
-2026-10-08 기준 자동 테스트 30개, 커버리지 문장 88.39%·분기 81.03%·함수 89.79%·라인 95.41%, TypeScript 검사, Next.js 프로덕션 빌드가 통과했습니다. 실제 Supabase·배포 QA는 `docs/qa/2026-10-08-mission5-crud-checklist.md`에 별도로 기록합니다.
+2026-10-08 기준 자동 테스트 30개, 커버리지 문장 88.39%·분기 81.03%·함수 89.79%·라인 95.41%, TypeScript 검사, Next.js 프로덕션 빌드가 통과했습니다. Vercel 미리보기에서 Supabase 등록·조회·수정·삭제·새로고침 유지·404를 실제 확인했습니다. 파일 형식·크기·업로드 실패 처리는 자동 테스트로 확인했으며, 브라우저 파일 선택을 포함한 Storage 업로드 최종 수동 점검은 체크리스트에 구분해 기록했습니다.
 
 ## GitHub / Vercel
 GitHub 저장소와 Vercel 자동 배포를 연결했습니다. `main` 브랜치에 반영된 변경사항은 Vercel에서 다시 배포됩니다.
 
 - GitHub: https://github.com/zipsin-Jung/ZIPSIN
 - Vercel: https://zipsin.vercel.app
+- 미션 5 미리보기: https://zipsin-git-codex-mission5-crud-zipsin-jung.vercel.app/records
 - 랜딩페이지: https://start.zipsin.net
 
 Figma 링크가 제공되지 않아 Figma MCP 연동은 수행하지 않았습니다. 첨부 PNG 3장을 기준으로 구현했습니다.

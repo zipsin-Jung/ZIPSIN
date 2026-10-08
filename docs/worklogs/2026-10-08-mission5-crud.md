@@ -23,7 +23,9 @@
 - `npm run typecheck`: 통과
 - `npm run build`: 통과, `/records` 경로는 서버 동적 라우트로 생성
 - `npm audit --omit=dev`: Next.js를 16.4.0으로 올린 후 취약점 0건
-- Supabase 비밀값과 프로젝트가 작업공간에 없어 실 DB·Storage·배포 CRUD는 아직 미검증
+- Supabase `ZIPSIN Preview`에 테이블·비공개 Storage 버킷을 적용하고 Vercel Preview/Production 환경 변수를 등록
+- Vercel 로그에서 `service_role` 테이블 권한 누락을 발견해 실제 DB와 마이그레이션에 CRUD 권한 추가
+- 미리보기 배포에서 빈 폼 오류, 등록, 상세, 새로고침 유지, 수정, 삭제 확인, 없는 상세 404를 실제 통과
 - 브라우저에서 1440·390·320px 가로 넘침 없음, 빈 폼 오류 5개와 첫 오류 초점, 환경 변수 없음 안내를 확인
-- 실 DB·Storage 전체 순환과 배포 브라우저 검수는 Supabase 환경 적용 후 수행 필요
-- 독립 품질 재검수: P0 0건, P1 0건, `조건부 통과·사용자 승인 대기`
+- 파일 없음 화면과 파일 검증·업로드 실패·정리 자동 테스트는 통과했으나, 자동화 환경의 파일 선택 제약으로 실제 Storage 업로드 수동 점검 1건은 남음
+- `zipsin.net` DNS·도메인·배포 설정은 변경하지 않음

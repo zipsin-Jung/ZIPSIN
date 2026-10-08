@@ -14,6 +14,8 @@ create table if not exists public.repair_records (
 );
 
 alter table public.repair_records enable row level security;
+grant usage on schema public to service_role;
+grant select, insert, update, delete on table public.repair_records to service_role;
 create index if not exists repair_records_updated_at_idx on public.repair_records (updated_at desc);
 create index if not exists repair_records_status_updated_at_idx on public.repair_records (status, updated_at desc);
 
