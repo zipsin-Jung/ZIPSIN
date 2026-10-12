@@ -52,9 +52,9 @@ export type Database = {
         Relationships: [];
       };
       records: {
-        Row: { id: string; home_id: string; office_id: string | null; contract_id: string | null; record_space: 'office_internal' | 'current_contract' | 'shared_history'; record_kind: 'note' | 'photo' | 'document' | 'repair' | 'schedule' | 'task'; title: string; body: string | null; created_by: string; idempotency_key: string; occurred_at: string; created_at: string; updated_at: string };
-        Insert: { id?: string; home_id: string; office_id?: string | null; contract_id?: string | null; record_space: 'office_internal' | 'current_contract' | 'shared_history'; record_kind: 'note' | 'photo' | 'document' | 'repair' | 'schedule' | 'task'; title: string; body?: string | null; created_by: string; idempotency_key: string; occurred_at?: string; created_at?: string; updated_at?: string };
-        Update: { title?: string; body?: string | null; occurred_at?: string; updated_at?: string };
+        Row: { id: string; home_id: string; office_id: string | null; contract_id: string | null; record_space: 'office_internal' | 'current_contract' | 'shared_history'; record_kind: 'note' | 'photo' | 'document' | 'repair' | 'schedule' | 'task'; title: string; body: string | null; task_status: 'todo' | 'in_progress' | 'done' | null; task_due_at: string | null; task_assigned_to: string | null; created_by: string; idempotency_key: string; occurred_at: string; created_at: string; updated_at: string };
+        Insert: { id?: string; home_id: string; office_id?: string | null; contract_id?: string | null; record_space: 'office_internal' | 'current_contract' | 'shared_history'; record_kind: 'note' | 'photo' | 'document' | 'repair' | 'schedule' | 'task'; title: string; body?: string | null; task_status?: 'todo' | 'in_progress' | 'done' | null; task_due_at?: string | null; task_assigned_to?: string | null; created_by: string; idempotency_key: string; occurred_at?: string; created_at?: string; updated_at?: string };
+        Update: { title?: string; body?: string | null; task_status?: 'todo' | 'in_progress' | 'done' | null; task_due_at?: string | null; task_assigned_to?: string | null; occurred_at?: string; updated_at?: string };
         Relationships: [];
       };
       attachments: {
@@ -190,6 +190,8 @@ export type Database = {
       revoke_office_invitation: { Args: { p_invitation_id: string }; Returns: undefined };
       assign_office_member_to_home: { Args: { p_office_id: string; p_home_id: string; p_user_id: string }; Returns: string };
       end_office_home_assignment: { Args: { p_assignment_id: string }; Returns: undefined };
+      create_home_record: { Args: { p_home_id: string; p_office_id: string | null; p_contract_id: string | null; p_space: string; p_kind: string; p_title: string; p_body: string; p_idempotency_key: string; p_task_due_at: string | null; p_task_assigned_to: string | null }; Returns: string };
+      update_task_state: { Args: { p_record_id: string; p_status: string }; Returns: undefined };
       claim_username: {
         Args: { p_username: string };
         Returns: boolean;

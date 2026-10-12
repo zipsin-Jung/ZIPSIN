@@ -58,6 +58,7 @@ export default async function HomeDetailPage({
               담당자 관리
             </Link>
           )}
+          <Link href={`/homes/${homeId}/records/new`} className="rounded-2xl border border-white/40 bg-white/10 px-5 py-3 text-sm font-bold text-white">새 기록 남기기</Link>
         </div>
       </section>
       <section className="mt-8">

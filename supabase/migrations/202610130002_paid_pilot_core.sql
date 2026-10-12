@@ -607,4 +607,75 @@ grant execute on function public.revoke_office_invitation(uuid) to authenticated
 grant execute on function public.assign_office_member_to_home(uuid, uuid, uuid) to authenticated;
 grant execute on function public.end_office_home_assignment(uuid) to authenticated;
 
+alter table public.records add column task_status text;
+alter table public.records add column task_due_at timestamptz;
+alter table public.records add column task_assigned_to uuid references auth.users(id) on delete restrict;
+alter table public.records add constraint records_task_fields check (
+  (record_kind = 'task' and task_status in ('todo', 'in_progress', 'done'))
+  or (record_kind <> 'task' and task_status is null and task_due_at is null and task_assigned_to is null)
+);
+
+create or replace function public.create_home_record(
+  p_home_id uuid, p_office_id uuid, p_contract_id uuid, p_space text, p_kind text,
+  p_title text, p_body text, p_idempotency_key uuid, p_task_due_at timestamptz, p_task_assigned_to uuid
+) returns uuid
+language plpgsql security definer set search_path = public
+as $$
+declare v_user_id uuid := auth.uid(); v_record_id uuid; v_existing public.records%rowtype;
+  v_title text := btrim(p_title); v_body text := nullif(btrim(p_body), '');
+begin
+  if v_user_id is null then raise exception 'authentication_required'; end if;
+  if p_idempotency_key is null or char_length(v_title) not between 1 and 120
+    or char_length(v_body) > 10000 then raise exception 'invalid_input'; end if;
+  if not public.can_create_record(p_home_id, p_office_id, p_contract_id, p_space, p_kind)
+    then raise exception 'permission_denied'; end if;
+  if p_kind = 'task' and (p_space <> 'office_internal' or p_office_id is null) then raise exception 'invalid_input'; end if;
+  if p_kind <> 'task' and (p_task_due_at is not null or p_task_assigned_to is not null) then raise exception 'invalid_input'; end if;
+  if p_task_assigned_to is not null and not exists (
+    select 1 from public.office_home_assignments assignment
+    where assignment.office_id = p_office_id and assignment.home_id = p_home_id
+      and assignment.assigned_user_id = p_task_assigned_to and assignment.status = 'active'
+      and assignment.ended_at is null and assignment.started_at <= now()
+  ) then raise exception 'relation_ended'; end if;
+  perform pg_advisory_xact_lock(hashtextextended(v_user_id::text || ':' || p_idempotency_key::text, 0));
+  select * into v_existing from public.records where created_by = v_user_id and idempotency_key = p_idempotency_key;
+  if found then
+    if v_existing.home_id is distinct from p_home_id or v_existing.office_id is distinct from p_office_id
+      or v_existing.contract_id is distinct from p_contract_id or v_existing.record_space is distinct from p_space
+      or v_existing.record_kind is distinct from p_kind or v_existing.title is distinct from v_title
+      or v_existing.body is distinct from v_body then raise exception 'conflict'; end if;
+    return v_existing.id;
+  end if;
+  insert into public.records (home_id, office_id, contract_id, record_space, record_kind, title, body,
+    created_by, idempotency_key, task_status, task_due_at, task_assigned_to)
+  values (p_home_id, p_office_id, p_contract_id, p_space, p_kind, v_title, v_body,
+    v_user_id, p_idempotency_key, case when p_kind = 'task' then 'todo' else null end, p_task_due_at, p_task_assigned_to)
+  returning id into v_record_id;
+  insert into public.access_audit_events (actor_user_id, action, resource_type, resource_id, office_id, home_id, outcome, reason_code)
+  values (v_user_id, 'create', 'record', v_record_id, p_office_id, p_home_id, 'allowed', 'home_record_created');
+  return v_record_id;
+end;
+$$;
+
+create or replace function public.update_task_state(p_record_id uuid, p_status text) returns void
+language plpgsql security definer set search_path = public
+as $$
+declare v_user_id uuid := auth.uid(); v_record public.records%rowtype;
+begin
+  if p_status not in ('todo', 'in_progress', 'done') then raise exception 'invalid_input'; end if;
+  select * into v_record from public.records where id = p_record_id and record_kind = 'task' for update;
+  if not found then raise exception 'invalid_input'; end if;
+  if v_record.office_id is null or v_record.record_space <> 'office_internal'
+    or not public.has_active_office_home_access(v_record.home_id) then raise exception 'permission_denied'; end if;
+  update public.records set task_status = p_status, updated_at = now() where id = v_record.id;
+  insert into public.access_audit_events (actor_user_id, action, resource_type, resource_id, office_id, home_id, outcome, reason_code)
+  values (v_user_id, 'update_task_state', 'record', v_record.id, v_record.office_id, v_record.home_id, 'allowed', p_status);
+end;
+$$;
+
+revoke all on function public.create_home_record(uuid, uuid, uuid, text, text, text, text, uuid, timestamptz, uuid) from public, anon, authenticated;
+revoke all on function public.update_task_state(uuid, text) from public, anon, authenticated;
+grant execute on function public.create_home_record(uuid, uuid, uuid, text, text, text, text, uuid, timestamptz, uuid) to authenticated;
+grant execute on function public.update_task_state(uuid, text) to authenticated;
+
 commit;
