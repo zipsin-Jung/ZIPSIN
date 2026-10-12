@@ -20,6 +20,7 @@
 10. 작성하거나 갱신한 문서는 `/Users/zipsin/Desktop/코덱스랑/집신/`에도 같은 구조로 복사해 사용자가 바탕화면에서 확인할 수 있게 합니다.
 
 상세 운영 절차는 `docs/00-working-rules.md`를 따릅니다.
+사용자가 제공한 통합 지침 원문은 `docs/20-zipsin-ai-integrated-operating-prompt.md`에 보존하며, 기존 문서와 충돌하지 않는 범위에서 함께 적용합니다.
 
 ## 제품 방향 기준
 
