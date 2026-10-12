@@ -467,4 +467,144 @@ $$;
 revoke all on function public.create_home_for_office(uuid, text, text, text, uuid) from public, anon, authenticated;
 grant execute on function public.create_home_for_office(uuid, text, text, text, uuid) to authenticated;
 
+create or replace function public.create_office_invitation(
+  p_office_id uuid, p_role text, p_token text, p_expires_at timestamptz
+) returns uuid
+language plpgsql security definer set search_path = public
+as $$
+declare v_user_id uuid := auth.uid(); v_invitation_id uuid;
+begin
+  if v_user_id is null then raise exception 'authentication_required'; end if;
+  if p_role not in ('associate_broker', 'assistant') or char_length(p_token) < 32
+    or p_expires_at <= now() or p_expires_at > now() + interval '7 days'
+  then raise exception 'invalid_input'; end if;
+  perform 1 from public.office_memberships membership
+  where membership.office_id = p_office_id and membership.user_id = v_user_id
+    and membership.office_role = 'principal_broker' and membership.status = 'active'
+    and membership.ended_at is null and membership.started_at <= now() for share;
+  if not found then raise exception 'permission_denied'; end if;
+  insert into public.invitations (
+    token_hash, invitation_kind, office_id, intended_role,
+    invited_identifier_hash, created_by, expires_at
+  ) values (
+    encode(digest(p_token, 'sha256'), 'hex'), 'office_member', p_office_id, p_role,
+    encode(digest('link:' || p_token, 'sha256'), 'hex'), v_user_id, p_expires_at
+  ) returning id into v_invitation_id;
+  insert into public.access_audit_events (actor_user_id, action, resource_type, resource_id, office_id, outcome, reason_code)
+  values (v_user_id, 'invite', 'office_membership', v_invitation_id, p_office_id, 'allowed', 'office_invitation_created');
+  return v_invitation_id;
+end;
+$$;
+
+create or replace function public.accept_office_invitation(p_token text) returns uuid
+language plpgsql security definer set search_path = public
+as $$
+declare v_user_id uuid := auth.uid(); v_invitation public.invitations%rowtype;
+begin
+  if v_user_id is null then raise exception 'authentication_required'; end if;
+  if char_length(p_token) < 32 then raise exception 'invalid_input'; end if;
+  select * into v_invitation from public.invitations
+  where token_hash = encode(digest(p_token, 'sha256'), 'hex')
+    and invitation_kind = 'office_member' for update;
+  if not found then raise exception 'invalid_input'; end if;
+  if v_invitation.revoked_at is not null then raise exception 'invitation_revoked'; end if;
+  if v_invitation.accepted_at is not null then raise exception 'invitation_used'; end if;
+  if v_invitation.expires_at <= now() then raise exception 'invitation_expired'; end if;
+  if exists (select 1 from public.office_memberships where office_id = v_invitation.office_id
+    and user_id = v_user_id and status = 'active' and ended_at is null) then raise exception 'conflict'; end if;
+  insert into public.office_memberships (office_id, user_id, office_role, invited_by)
+  values (v_invitation.office_id, v_user_id, v_invitation.intended_role, v_invitation.created_by);
+  update public.invitations set accepted_at = now(), accepted_by = v_user_id where id = v_invitation.id;
+  insert into public.access_audit_events (actor_user_id, action, resource_type, resource_id, office_id, outcome, reason_code)
+  values (v_user_id, 'accept_invitation', 'office_membership', v_invitation.id, v_invitation.office_id, 'allowed', 'office_invitation_accepted');
+  return v_invitation.office_id;
+end;
+$$;
+
+create or replace function public.preview_office_invitation(p_token text) returns jsonb
+language plpgsql security definer set search_path = public
+as $$
+declare v_invitation public.invitations%rowtype; v_office_name text; v_state text := 'ready';
+begin
+  if auth.uid() is null then raise exception 'authentication_required'; end if;
+  if char_length(p_token) < 32 then raise exception 'invalid_input'; end if;
+  select * into v_invitation from public.invitations
+  where token_hash = encode(digest(p_token, 'sha256'), 'hex') and invitation_kind = 'office_member';
+  if not found then raise exception 'invalid_input'; end if;
+  if v_invitation.revoked_at is not null then v_state := 'invitation_revoked';
+  elsif v_invitation.accepted_at is not null then v_state := 'invitation_used';
+  elsif v_invitation.expires_at <= now() then v_state := 'invitation_expired'; end if;
+  select name into v_office_name from public.offices where id = v_invitation.office_id;
+  return jsonb_build_object('officeName', v_office_name, 'role', v_invitation.intended_role, 'state', v_state);
+end;
+$$;
+
+create or replace function public.revoke_office_invitation(p_invitation_id uuid) returns void
+language plpgsql security definer set search_path = public
+as $$
+declare v_user_id uuid := auth.uid(); v_invitation public.invitations%rowtype;
+begin
+  select * into v_invitation from public.invitations where id = p_invitation_id
+    and invitation_kind = 'office_member' for update;
+  if not found then raise exception 'invalid_input'; end if;
+  if not public.is_principal_office_member(v_invitation.office_id) then raise exception 'permission_denied'; end if;
+  if v_invitation.accepted_at is not null then raise exception 'invitation_used'; end if;
+  if v_invitation.revoked_at is not null then raise exception 'invitation_revoked'; end if;
+  update public.invitations set revoked_at = now() where id = v_invitation.id;
+  insert into public.access_audit_events (actor_user_id, action, resource_type, resource_id, office_id, outcome, reason_code)
+  values (v_user_id, 'revoke_invitation', 'office_membership', v_invitation.id, v_invitation.office_id, 'allowed', 'office_invitation_revoked');
+end;
+$$;
+
+create or replace function public.assign_office_member_to_home(
+  p_office_id uuid, p_home_id uuid, p_user_id uuid
+) returns uuid
+language plpgsql security definer set search_path = public
+as $$
+declare v_actor uuid := auth.uid(); v_assignment_id uuid;
+begin
+  if not public.is_principal_office_member(p_office_id) then raise exception 'permission_denied'; end if;
+  perform 1 from public.homes home where home.id = p_home_id
+    and home.office_id = p_office_id and home.status = 'active' for share;
+  if not found then raise exception 'invalid_input'; end if;
+  perform 1 from public.office_memberships membership where membership.office_id = p_office_id
+    and membership.user_id = p_user_id and membership.status = 'active'
+    and membership.ended_at is null and membership.started_at <= now() for share;
+  if not found then raise exception 'relation_ended'; end if;
+  insert into public.office_home_assignments (office_id, home_id, assigned_user_id, assigned_by)
+  values (p_office_id, p_home_id, p_user_id, v_actor) returning id into v_assignment_id;
+  insert into public.access_audit_events (actor_user_id, action, resource_type, resource_id, office_id, home_id, outcome, reason_code)
+  values (v_actor, 'assign', 'home_assignment', v_assignment_id, p_office_id, p_home_id, 'allowed', 'home_assignee_added');
+  return v_assignment_id;
+end;
+$$;
+
+create or replace function public.end_office_home_assignment(p_assignment_id uuid) returns void
+language plpgsql security definer set search_path = public
+as $$
+declare v_actor uuid := auth.uid(); v_assignment public.office_home_assignments%rowtype;
+begin
+  select * into v_assignment from public.office_home_assignments where id = p_assignment_id for update;
+  if not found then raise exception 'invalid_input'; end if;
+  if not public.is_principal_office_member(v_assignment.office_id) then raise exception 'permission_denied'; end if;
+  if v_assignment.status <> 'active' or v_assignment.ended_at is not null then raise exception 'relation_ended'; end if;
+  update public.office_home_assignments set status = 'ended', ended_at = now() where id = v_assignment.id;
+  insert into public.access_audit_events (actor_user_id, action, resource_type, resource_id, office_id, home_id, outcome, reason_code)
+  values (v_actor, 'unassign', 'home_assignment', v_assignment.id, v_assignment.office_id, v_assignment.home_id, 'allowed', 'home_assignee_ended');
+end;
+$$;
+
+revoke all on function public.create_office_invitation(uuid, text, text, timestamptz) from public, anon, authenticated;
+revoke all on function public.accept_office_invitation(text) from public, anon, authenticated;
+revoke all on function public.preview_office_invitation(text) from public, anon, authenticated;
+revoke all on function public.revoke_office_invitation(uuid) from public, anon, authenticated;
+revoke all on function public.assign_office_member_to_home(uuid, uuid, uuid) from public, anon, authenticated;
+revoke all on function public.end_office_home_assignment(uuid) from public, anon, authenticated;
+grant execute on function public.create_office_invitation(uuid, text, text, timestamptz) to authenticated;
+grant execute on function public.accept_office_invitation(text) to authenticated;
+grant execute on function public.preview_office_invitation(text) to authenticated;
+grant execute on function public.revoke_office_invitation(uuid) to authenticated;
+grant execute on function public.assign_office_member_to_home(uuid, uuid, uuid) to authenticated;
+grant execute on function public.end_office_home_assignment(uuid) to authenticated;
+
 commit;

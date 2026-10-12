@@ -184,6 +184,12 @@ export type Database = {
       can_create_record: { Args: { p_home_id: string; p_office_id: string | null; p_contract_id: string | null; p_record_space: string; p_record_kind: string }; Returns: boolean };
       create_office: { Args: { p_name: string }; Returns: string };
       create_home_for_office: { Args: { p_office_id: string; p_address_line1: string; p_address_detail: string; p_home_label: string; p_idempotency_key: string }; Returns: string };
+      create_office_invitation: { Args: { p_office_id: string; p_role: string; p_token: string; p_expires_at: string }; Returns: string };
+      accept_office_invitation: { Args: { p_token: string }; Returns: string };
+      preview_office_invitation: { Args: { p_token: string }; Returns: Json };
+      revoke_office_invitation: { Args: { p_invitation_id: string }; Returns: undefined };
+      assign_office_member_to_home: { Args: { p_office_id: string; p_home_id: string; p_user_id: string }; Returns: string };
+      end_office_home_assignment: { Args: { p_assignment_id: string }; Returns: undefined };
       claim_username: {
         Args: { p_username: string };
         Returns: boolean;

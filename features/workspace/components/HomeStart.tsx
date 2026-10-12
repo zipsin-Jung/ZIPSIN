@@ -35,7 +35,7 @@ export function HomeStart({
             <span className="text-sm font-bold text-[#41657a]">함께 일하는 방법</span>
             <h2 className="mt-3 text-2xl font-extrabold text-[#102a43]">구성원 초대하기</h2>
             <p className="mt-3 leading-7 text-[#59717f]">대표 계정을 공유하지 않고, 각자의 계정에 역할과 담당 집만 연결합니다.</p>
-            <span className="mt-7 inline-flex rounded-full bg-[#edf3f7] px-4 py-2 text-sm font-bold text-[#496273]">집마다 담당자 연결</span>
+            {(office.canRegisterHome ?? primaryRole === 'principal_broker') ? <Link href="/office/members" className="mt-7 inline-flex rounded-full bg-[#edf3f7] px-4 py-2 text-sm font-bold text-[#345d70]">구성원 관리 →</Link> : <span className="mt-7 inline-flex rounded-full bg-[#edf3f7] px-4 py-2 text-sm font-bold text-[#496273]">집마다 담당자 연결</span>}
           </article>
         </section>
       </main>

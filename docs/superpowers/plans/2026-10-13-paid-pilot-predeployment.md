@@ -79,10 +79,10 @@
 **Interfaces:**
 - Produces: `create_office_invitation`, `accept_office_invitation`, `revoke_invitation`, `assign_office_member_to_home`, `end_office_home_assignment`
 
-- [ ] 토큰 해시·만료·철회·재사용·동시 수락·대표 전용·보조원 권한 제한 실패 테스트를 작성한다.
-- [ ] 담당 대상 동일 사무소·활성 관계·중복·종료 테스트를 작성한다.
-- [ ] 원자 RPC, 서버 액션, 초대 수락과 담당 UI를 최소 구현한다.
-- [ ] 전체 테스트 후 `feat: add office invitations and home assignments`로 커밋한다.
+- [x] 토큰 해시·만료·철회·재사용·동시 수락·대표 전용·보조원 권한 제한 실패 테스트를 작성한다.
+- [x] 담당 대상 동일 사무소·활성 관계·중복·종료 테스트를 작성한다.
+- [x] 원자 RPC, 서버 액션, 초대 수락과 담당 UI를 최소 구현한다.
+- [x] 전체 테스트 후 `feat: add office invitations and home assignments`로 커밋한다.
 
 ### Task 4: 집 상세·타임라인·기록·할 일
 
