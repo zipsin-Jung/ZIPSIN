@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 공인중개사무소가 집 5채를 등록하고 직원·임대인·임차인과 기록·파일·할 일을 안전하게 이어갈 수 있는 유료 파일럿을 배포 직전 상태까지 완성한다.
+**Goal:** 공인중개사무소가 집 5채를 등록하고 직원·임대인·임차인과 기록·파일·할 일·집별 대화를 안전하게 이어갈 수 있는 유료 파일럿을 배포 직전 상태까지 완성한다.
 
-**Architecture:** 기존 인증과 `202610130001_office_home_records.sql`을 보존하고 후속 hardening migration에서 직접 쓰기를 원자 RPC로 교체한다. Next.js App Router 서버 액션이 입력을 검증하고 RPC를 호출하며, 조회는 RLS와 관계 기반 쿼리를 함께 사용한다. 첨부파일은 Supabase private bucket과 5분 signed URL만 사용한다.
+**Architecture:** 기존 인증과 migration을 보존하고 후속 migration에서 직접 쓰기를 원자 RPC로 교체한다. Next.js App Router 서버 액션이 입력을 검증하고 RPC를 호출하며, 조회는 RLS와 관계 기반 쿼리를 함께 사용한다. 첨부파일은 Supabase private bucket과 5분 signed URL만 사용한다. 채팅 권한은 별도 참가자 목록이 아니라 활성 사무소·담당·현재 계약 관계에서 매 요청마다 계산한다.
 
 **Tech Stack:** Next.js App Router, TypeScript, Tailwind CSS, Supabase Auth/Postgres/Storage, Zod, Vitest, React Testing Library, Playwright
 
@@ -17,7 +17,8 @@
 - 집 생성·초대 수락·담당 배정·권한 종료는 원자 RPC로 처리한다.
 - 사무소 내부 기록과 현재 계약 공유 기록을 분리한다.
 - 이전 계약자의 개인정보와 파일은 다음 계약에 노출하지 않는다.
-- 실제 결제·채팅·PDF·OCR·AI·영구 집 키·공개 주소 검색은 제외한다.
+- 실제 결제·PDF 생성·OCR·AI·영구 집 키·공개 주소 검색은 제외한다.
+- 채팅은 집별 사무소 대화와 계약별 공유 대화만 제공하고 일대일·임의 단체방·외부 알림은 제외한다.
 - Production migration·배포·원격 푸시는 사용자 최종 승인 전 실행하지 않는다.
 - 새 제품 코드까지 포함해 Statements, Branches, Functions, Lines 각각 80% 이상을 유지한다.
 
@@ -130,7 +131,24 @@
 - [ ] 직원 종료 시 활성 담당도 함께 종료하고 모든 종료를 감사 기록에 남긴다.
 - [ ] 관계자 초대와 종료 UI를 구현하고 전체 테스트 후 `feat: add contract participants and access revocation`으로 커밋한다.
 
-### Task 7: 실제 사무소 업무 홈과 앱 내비게이션
+### Task 7: 집별 채팅과 앱 안 알림
+
+**Files:**
+- Create: `supabase/migrations/202610130004_home_chat.sql`, `supabase/migrations/202610130005_chat_private_attachments.sql`
+- Create: `app/(app)/chats/page.tsx`, `app/(app)/chats/[roomId]/page.tsx`
+- Create: `features/chat/*`, `app/api/chat-attachments/[attachmentId]/url/route.ts`
+- Test: `tests/unit/chat/*.test.tsx`, `tests/integration/chat/chat-access.test.ts`, `tests/integration/chat/chat-message.test.ts`
+
+**Interfaces:**
+- Produces: `can_access_chat_room`, `can_send_chat_message`, `send_chat_message`, `mark_chat_read`; room scopes `office_internal|current_contract`
+
+- [ ] 다른 사무소·미배정 직원·외부 관계자의 내부방·이전 계약·종료 관계 접근 거부 테스트를 먼저 실패시킨다.
+- [ ] 중복 전송·빈 본문·길이·첨부 제한·읽음 역행·알림 개인정보 비저장 테스트를 먼저 실패시킨다.
+- [ ] RLS·원자 RPC·비공개 첨부·5분 접근 주소·최근 메시지 페이지네이션을 구현한다.
+- [ ] 채팅 목록·대화·전송 실패 입력 보존·읽지 않은 수·앱 안 알림을 구현한다.
+- [ ] 전체 테스트 후 `feat: add house scoped chat`으로 커밋한다.
+
+### Task 8: 실제 사무소 업무 홈과 앱 내비게이션
 
 **Files:**
 - Create: `components/app/AppNavigation.tsx`, `features/dashboard/*`
@@ -138,14 +156,14 @@
 - Test: `tests/unit/dashboard/*.test.tsx`, `tests/e2e/paid-pilot-navigation.spec.ts`
 
 **Interfaces:**
-- Consumes: homes, records, tasks, memberships from Tasks 2~6
-- Produces: 역할별 `홈/집/할 일/마이`, 대표 `구성원 관리`, 오늘 할 일·최근 집·확인 기록·최근 활동
+- Consumes: homes, records, tasks, memberships, chat from Tasks 2~7
+- Produces: 역할별 `홈/집/채팅/할 일/마이`, 대표 `구성원 관리`, 오늘 할 일·최근 집·읽지 않은 대화·최근 활동
 
 - [ ] 역할별 노출·빈/로딩/오류/종료·모바일 내비게이션 테스트를 먼저 실패시킨다.
 - [ ] 320px·390px·1440px와 44px 터치 영역을 만족하는 셸과 홈을 구현한다.
 - [ ] 전체 테스트 후 `feat: add paid pilot workspace dashboard`로 커밋한다.
 
-### Task 8: 시나리오·스트레스·커버리지·추적 문서
+### Task 9: 시나리오·스트레스·커버리지·추적 문서
 
 **Files:**
 - Create: `tests/e2e/paid-pilot-happy-path.spec.ts`, `tests/e2e/paid-pilot-permissions.spec.ts`
@@ -156,14 +174,15 @@
 **Interfaces:**
 - Produces: REQ/AC/FLOW/SCREEN/SOURCE/TEST 실행 증거와 최종 품질 판정
 
-- [ ] 대표→집 5채→직원→담당→기록→파일→관계자→종료 E2E와 권한 음성 시나리오를 작성한다.
+- [ ] 대표→집 5채→직원→담당→기록→파일→관계자→집별 대화→종료 E2E와 권한 음성 시나리오를 작성한다.
+- [ ] 다른 사무소·이전 계약·종료 사용자 채팅 차단과 중복 전송 복구 시나리오를 검증한다.
 - [ ] 합성 데이터로 초대 10회 동시 수락, 기록 20회 중복 요청, 집 50채/기록 500건 경계 테스트를 안전한 로컬/Preview에서 실행한다.
 - [ ] `npm run typecheck`, `npm test`, `npm run test:coverage`, `npm run build`, Chromium/WebKit E2E와 접근성 검사를 분리 실행한다.
 - [ ] 실제 Preview가 준비된 경우 6계정 RLS 시나리오를 수행하고, 준비되지 않으면 미검증으로 명시한다.
 - [ ] 네 커버리지 지표 80% 이상과 P0·P1 0건을 확인하고 문서·바탕화면을 동기화한다.
 - [ ] `test: verify paid pilot predeployment`와 `docs: trace paid pilot delivery`로 커밋한다.
 
-### Task 9: 독립 검수와 배포 승인 대기
+### Task 10: 독립 검수와 배포 승인 대기
 
 **Files:**
 - Modify: 검수에서 발견된 결함의 해당 테스트·소스·품질 보고서

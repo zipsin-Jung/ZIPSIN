@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1122" height="1500" viewBox="0 0 1122 1500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F8FBFF"/><stop offset="1" stop-color="#EEF5F7"/></linearGradient>
+    <linearGradient id="active" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#E8F3FF"/><stop offset="1" stop-color="#DDF7F1"/></linearGradient>
+    <linearGradient id="cta" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#073B4C"/><stop offset="1" stop-color="#087F6A"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#07273B" flood-opacity=".08"/></filter>
+    <style>
+      text{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;fill:#0A1F36}
+      .title{font-size:66px;font-weight:800;letter-spacing:-3px}.sub{font-size:30px;font-weight:500;fill:#52667A}
+      .step{font-size:31px;font-weight:750;letter-spacing:-1px}.desc{font-size:21px;font-weight:500;fill:#455C70}
+      .badge{font-size:20px;font-weight:750}.num{font-size:25px;font-weight:800;fill:white}.small{font-size:19px;font-weight:650}
+    </style>
+  </defs>
+  <rect width="1122" height="1500" fill="url(#bg)"/>
+  <text class="title" x="561" y="105" text-anchor="middle">집신, 지금 어디까지 왔나요?</text>
+  <text class="sub" x="561" y="158" text-anchor="middle">정식 출시까지 한눈에 보기</text>
+
+  <line x1="102" y1="287" x2="102" y2="1165" stroke="#C4D0DB" stroke-width="8" stroke-linecap="round"/>
+  <line x1="102" y1="287" x2="102" y2="690" stroke="#0AA17E" stroke-width="8" stroke-linecap="round"/>
+
+  <g filter="url(#shadow)">
+    <rect x="145" y="215" width="885" height="170" rx="28" fill="#FFFFFF"/>
+    <circle cx="102" cy="300" r="39" fill="#0AA17E"/><text class="num" x="102" y="309" text-anchor="middle">✓</text>
+    <text class="step" x="190" y="275">가입 · 사무소 · 첫 집</text>
+    <text class="desc" x="190" y="322">로그인하고 사무소를 만든 뒤 첫 집을 등록할 수 있어요.</text>
+    <rect x="860" y="246" width="130" height="48" rx="24" fill="#DDF7EE"/><text class="badge" x="925" y="277" text-anchor="middle" fill="#08765F">완료</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="145" y="410" width="885" height="170" rx="28" fill="#FFFFFF"/>
+    <circle cx="102" cy="495" r="39" fill="#0AA17E"/><text class="num" x="102" y="504" text-anchor="middle">✓</text>
+    <text class="step" x="190" y="470">직원 초대 · 담당 배정</text>
+    <text class="desc" x="190" y="517">직원마다 자기 계정으로 들어와 담당 집만 볼 수 있어요.</text>
+    <rect x="860" y="441" width="130" height="48" rx="24" fill="#DDF7EE"/><text class="badge" x="925" y="472" text-anchor="middle" fill="#08765F">완료</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="145" y="605" width="885" height="190" rx="28" fill="url(#active)" stroke="#87BDF5" stroke-width="2"/>
+    <circle cx="102" cy="700" r="43" fill="#1677E8" stroke="#B9DBFF" stroke-width="9"/><text class="num" x="102" y="709" text-anchor="middle">3</text>
+    <text class="step" x="190" y="666">집 기록 · 사진 · 문서</text>
+    <text class="desc" x="190" y="713">메모와 할 일은 완성. 비공개 사진·PDF의</text>
+    <text class="desc" x="190" y="747">실패 복구와 실제 저장소 검증을 마무리하고 있어요.</text>
+    <rect x="830" y="636" width="160" height="48" rx="24" fill="#CCE7FF"/><text class="badge" x="910" y="667" text-anchor="middle" fill="#0A5CB8">지금 하는 중</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="145" y="820" width="885" height="170" rx="28" fill="#FFFFFF"/>
+    <circle cx="102" cy="905" r="39" fill="#AEBBC7"/><text class="num" x="102" y="914" text-anchor="middle">4</text>
+    <text class="step" x="190" y="880">임대인 · 임차인 연결</text>
+    <text class="desc" x="190" y="927">현재 계약에 필요한 기록만 공유하고 종료되면 바로 막아요.</text>
+    <rect x="860" y="851" width="130" height="48" rx="24" fill="#EDF1F4"/><text class="badge" x="925" y="882" text-anchor="middle" fill="#52667A">다음</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="145" y="1015" width="885" height="190" rx="28" fill="#FFFFFF"/>
+    <circle cx="102" cy="1110" r="39" fill="#AEBBC7"/><text class="num" x="102" y="1119" text-anchor="middle">5</text>
+    <text class="step" x="190" y="1074">집별 채팅 · 앱 안 알림</text>
+    <text class="desc" x="190" y="1121">사무소 대화와 현재 계약 대화를 분리해</text>
+    <text class="desc" x="190" y="1155">담당자가 바뀌어도 집의 업무 맥락이 이어지게 만들어요.</text>
+    <rect x="844" y="1046" width="146" height="48" rx="24" fill="#EDF1F4"/><text class="badge" x="917" y="1077" text-anchor="middle" fill="#52667A">설계 완료</text>
+  </g>
+
+  <rect x="56" y="1245" width="1010" height="92" rx="26" fill="#E3F7F0"/>
+  <text class="small" x="561" y="1302" text-anchor="middle" fill="#076A58">현재 검사 결과  ·  자동 테스트 221개 통과  ·  타입 검사·빌드 통과  ·  실제 브라우저 검수는 남음</text>
+  <rect x="56" y="1360" width="1010" height="100" rx="28" fill="url(#cta)"/>
+  <text x="561" y="1422" text-anchor="middle" font-size="29" font-weight="800" fill="#FFFFFF">다음 작업: 업로드 마무리 → 관계자 연결 → 집별 채팅 구현</text>
+</svg>
