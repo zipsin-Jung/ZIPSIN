@@ -224,6 +224,48 @@ $$;
 create trigger homes_immutable_identity before update on public.homes
   for each row execute function public.guard_home_office_update();
 
+-- All office entry points require a relationship whose start has already arrived.
+-- CREATE OR REPLACE retains the original authenticated-only function grants.
+create or replace function public.is_active_office_member(p_office_id uuid) returns boolean
+language sql stable security definer set search_path = public
+as $$
+  select exists (
+    select 1 from public.office_memberships
+    where office_id = p_office_id and user_id = auth.uid()
+      and status = 'active' and ended_at is null and started_at <= now()
+  );
+$$;
+
+create or replace function public.is_principal_office_member(p_office_id uuid) returns boolean
+language sql stable security definer set search_path = public
+as $$
+  select exists (
+    select 1 from public.office_memberships
+    where office_id = p_office_id and user_id = auth.uid()
+      and office_role = 'principal_broker'
+      and status = 'active' and ended_at is null and started_at <= now()
+  );
+$$;
+
+create or replace function public.can_perform_office_action(
+  p_office_id uuid,
+  p_action text
+) returns boolean
+language sql stable security definer set search_path = public
+as $$
+  select exists (
+    select 1 from public.office_memberships
+    where office_id = p_office_id and user_id = auth.uid()
+      and status = 'active' and ended_at is null and started_at <= now()
+      and (
+        p_action in ('upload_photo', 'manage_schedule', 'organize_document')
+        or (p_action in ('explain_property', 'negotiate_terms', 'approve_contract')
+          and office_role in ('principal_broker', 'associate_broker'))
+        or (p_action in ('manage_members', 'manage_billing') and office_role = 'principal_broker')
+      )
+  );
+$$;
+
 -- A principal can see all active homes in their office, even with no active assignee.
 create or replace function public.has_active_office_home_access(p_home_id uuid) returns boolean
 language sql stable security definer set search_path = public

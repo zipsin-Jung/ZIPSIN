@@ -41,3 +41,13 @@
 - 외부 migration 적용 전 기존 데이터 검토·백업이 필요하다. 모호한 사무소·불일치 조합·중복 활성·종료 시각 누락은 자동 정리하지 않는다.
 - 바탕화면 복사는 지정 작업트리 안에서만 작업하라는 이번 위임 범위에 따라 총괄의 최종 문서 동기화에 남겼다. 원격 푸시·배포도 실행하지 않았다.
 - 로컬 커밋 메시지: `fix: harden paid pilot access boundaries`. 정확한 해시는 `.superpowers/sdd/2026-10-13-paid-pilot-predeployment/task-1-report.md`에 기록한다.
+
+## 독립 검수 수정
+
+- 최초 구현 커밋: `c640bd36fd2fbb0bbeda07291d85d76f0f3b6bf7`.
+- 지적: 기존 사무소 권한 helper 세 함수의 미래 소속 시작 시각 검사가 누락되었고 일부 SQL 정규식이 뒤에 있는 다른 테이블·함수의 조건을 읽어 통과할 수 있었다.
+- RED: `is_active_office_member`, `is_principal_office_member`, `can_perform_office_action` 후속 교체 및 `started_at <= now()`를 확인하는 세 검사를 추가했다. 집중 실행에서 51개 중 세 개가 후속 함수 미존재를 이유로 실패했다.
+- 수정: 기존 migration을 보존하고 후속 migration에서 세 helper를 교체했다. 역할별 행동과 기존 함수 실행 권한은 유지했다. SQL 검사는 정확한 ALTER TABLE 제약 문장, 인덱스 문장과 해당 함수의 `$$` 본문까지만 읽도록 좁혔다.
+- 검증 강도 확인: 기록/사무소 FK만 임시 제거한 경우 한 테스트가 실패했다. 소속 lifecycle 조건과 첫 helper의 시작 조건만 임시 제거한 경우 두 테스트가 각각 정확한 대상을 이유로 실패했다. 뒤의 테이블·함수에 같은 조건이 남아도 통과하지 않는 것을 확인했고 모든 임시 변형을 복구했다.
+- 최종 GREEN: 집중 51/51, 전체 30파일 177/177, 타입 검사·diff 형식·기존 migration 불변 검사 모두 종료 코드 0.
+- 실제 Postgres·Preview RLS·브라우저는 미검증이다. 외부 호출·migration·푸시·배포는 실행하지 않았다.
