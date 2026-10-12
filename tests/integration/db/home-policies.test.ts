@@ -84,4 +84,11 @@ describe('office and home access migration', () => {
     expect(migration).toMatch(/revoke all on public\.access_audit_events from anon, authenticated/i);
     expect(migration).toMatch(/grant select, insert on public\.access_audit_events to service_role/i);
   });
+
+  it('creates an office and its principal membership atomically for a principal broker', () => {
+    expect(migration).toMatch(/function public\.create_office\(p_name text\)/i);
+    expect(migration).toMatch(/primary_role = 'principal_broker'/i);
+    expect(migration).toMatch(/insert into public\.offices[\s\S]*insert into public\.office_memberships/i);
+    expect(migration).toMatch(/office_role[\s\S]*'principal_broker'/i);
+  });
 });

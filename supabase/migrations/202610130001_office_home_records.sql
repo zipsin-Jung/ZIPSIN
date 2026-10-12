@@ -317,6 +317,53 @@ as $$
   );
 $$;
 
+create or replace function public.create_office(p_name text) returns uuid
+language plpgsql security definer set search_path = public
+as $$
+declare
+  v_user_id uuid := auth.uid();
+  v_office_id uuid;
+  v_name text := trim(p_name);
+begin
+  if v_user_id is null then
+    raise exception 'authentication_required';
+  end if;
+
+  if char_length(v_name) < 2 or char_length(v_name) > 100 then
+    raise exception 'invalid_office_name';
+  end if;
+
+  if not exists (
+    select 1 from public.user_roles
+    where user_id = v_user_id and primary_role = 'principal_broker'
+  ) then
+    raise exception 'principal_broker_required';
+  end if;
+
+  if exists (
+    select 1 from public.office_memberships
+    where user_id = v_user_id and status = 'active' and ended_at is null
+  ) then
+    raise exception 'active_office_exists';
+  end if;
+
+  insert into public.offices (name, created_by)
+  values (v_name, v_user_id)
+  returning id into v_office_id;
+
+  insert into public.office_memberships (office_id, user_id, office_role)
+  values (v_office_id, v_user_id, 'principal_broker');
+
+  insert into public.access_audit_events (
+    actor_user_id, action, resource_type, resource_id, office_id, outcome, reason_code
+  ) values (
+    v_user_id, 'create', 'office', v_office_id, v_office_id, 'allowed', 'principal_created_office'
+  );
+
+  return v_office_id;
+end;
+$$;
+
 revoke all on function public.is_active_office_member(uuid) from public;
 revoke all on function public.is_principal_office_member(uuid) from public;
 revoke all on function public.can_perform_office_action(uuid, text) from public;
@@ -331,6 +378,8 @@ grant execute on function public.has_active_home_access(uuid) to authenticated;
 grant execute on function public.has_active_office_home_access(uuid) to authenticated;
 grant execute on function public.can_access_contract(uuid) to authenticated;
 grant execute on function public.can_access_record(uuid) to authenticated;
+revoke all on function public.create_office(text) from public;
+grant execute on function public.create_office(text) to authenticated;
 
 create policy "offices_select_member" on public.offices
   for select using (public.is_active_office_member(id));

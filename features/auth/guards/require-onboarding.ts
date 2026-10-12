@@ -44,6 +44,6 @@ export async function requireOnboardingComplete() {
     primaryRole: role?.primary_role ?? null,
   });
   if (destination) redirect(destination);
-  return { user, primaryRole: role!.primary_role };
+  return { supabase, user, primaryRole: role!.primary_role };
 }
 /* v8 ignore stop */

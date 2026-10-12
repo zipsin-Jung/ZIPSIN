@@ -181,6 +181,7 @@ export type Database = {
       has_active_office_home_access: { Args: { p_home_id: string }; Returns: boolean };
       can_access_contract: { Args: { p_contract_id: string }; Returns: boolean };
       can_access_record: { Args: { p_record_id: string }; Returns: boolean };
+      create_office: { Args: { p_name: string }; Returns: string };
       claim_username: {
         Args: { p_username: string };
         Returns: boolean;
