@@ -41,7 +41,7 @@ export default function CheckSummary({candidate, canCompare, onBack, onAdd, onCo
         <button type="button" onClick={onAdd}>다른 집 추가하기</button>
         {canCompare && <button type="button" className={styles.primary} onClick={onCompare}>후보 집 비교하기</button>}
       </div>
-      <a className={styles.signupCta} href="/#signup"><strong>집신에 이어서 보관하고 싶나요?</strong><span>현재는 이 기기에만 저장되는 체험판이에요. 집신 가입 안내 보기 →</span></a>
+      <a className={styles.signupCta} href="/#signup"><strong>집신에 이어서 보관하고 싶나요?</strong><span>현재는 이 기기에만 저장되며 계정에는 아직 저장되지 않아요. 집신 가입 안내 보기 →</span></a>
     </main>
   );
 }

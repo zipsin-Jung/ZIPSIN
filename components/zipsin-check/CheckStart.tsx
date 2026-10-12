@@ -8,11 +8,14 @@ type Props = {
   candidates: Candidate[];
   onStart: (depth: CheckDepth, alias: string) => void;
   onResume: (id: string) => void;
+  onArchive: (id: string) => void;
+  onRestore: (id: string) => void;
 };
 
-export default function CheckStart({candidates, onStart, onResume}: Props) {
+export default function CheckStart({candidates, onStart, onResume, onArchive, onRestore}: Props) {
   const [alias, setAlias] = useState('');
   const active = candidates.filter((candidate) => !candidate.archived);
+  const archived = candidates.filter((candidate) => candidate.archived);
 
   return (
     <main className={styles.start}>
@@ -26,14 +29,17 @@ export default function CheckStart({candidates, onStart, onResume}: Props) {
       {active.length > 0 && (
         <section className={styles.resume} aria-labelledby="resume-title">
           <h2 id="resume-title">이어서 확인할 집</h2>
-          {active.map((candidate) => (
-            <button key={candidate.id} type="button" onClick={() => onResume(candidate.id)}>
-              <strong>{candidate.alias} 이어서 보기</strong>
-              <span>{candidate.depth === 'quick' ? '빠르게 체크' : '꼼꼼하게 체크'}</span>
-            </button>
-          ))}
+          {active.map((candidate) => <div className={styles.resumeRow} key={candidate.id}>
+            <button type="button" onClick={() => onResume(candidate.id)}><strong>{candidate.alias} 이어서 보기</strong><span>{candidate.depth === 'quick' ? '빠르게 체크' : '꼼꼼하게 체크'}</span></button>
+            <button type="button" onClick={() => onArchive(candidate.id)} aria-label={`${candidate.alias} 비교에서 제외`}>제외</button>
+          </div>)}
         </section>
       )}
+
+      {archived.length > 0 && <section className={styles.archived} aria-label="비교에서 제외한 집">
+        <h2>비교에서 제외한 집</h2>
+        {archived.map((candidate) => <button key={candidate.id} type="button" onClick={() => onRestore(candidate.id)} disabled={active.length >= 3}>{candidate.alias} 다시 포함</button>)}
+      </section>}
 
       <div className={styles.field}>
         <label htmlFor="candidate-alias">후보 별칭</label>
@@ -42,17 +48,18 @@ export default function CheckStart({candidates, onStart, onResume}: Props) {
       </div>
 
       <section className={styles.depthGrid} aria-label="체크 방식 선택">
-        <button type="button" className={styles.depthCard} onClick={() => onStart('quick', alias)} aria-label={`${alias ? `${alias} ` : '별칭 없이 '}빠르게 체크 시작, 3~5분`}>
+        <button type="button" className={styles.depthCard} disabled={active.length >= 3} onClick={() => onStart('quick', alias)} aria-label={`${alias ? `${alias} ` : '별칭 없이 '}빠르게 체크 시작, 3~5분`}>
           <span className={styles.time}>3~5분 · 핵심 9개</span>
           <strong>빠르게 체크</strong>
           <span>꼭 봐야 할 것만 현장에서 확인해요.</span>
         </button>
-        <button type="button" className={`${styles.depthCard} ${styles.deep}`} onClick={() => onStart('thorough', alias)} aria-label={`${alias ? `${alias} ` : '별칭 없이 '}꼼꼼하게 체크 시작, 10~15분`}>
+        <button type="button" className={`${styles.depthCard} ${styles.deep}`} disabled={active.length >= 3} onClick={() => onStart('thorough', alias)} aria-label={`${alias ? `${alias} ` : '별칭 없이 '}꼼꼼하게 체크 시작, 10~15분`}>
           <span className={styles.time}>10~15분 · 공간별 추가</span>
           <strong>꼼꼼하게 체크</strong>
           <span>방·욕실·주방·계약까지 놓치지 않아요.</span>
         </button>
       </section>
+      {active.length >= 3 && <p className={styles.limit}>후보는 3개까지 비교할 수 있어요. 한 집을 비교에서 제외하면 새로 추가할 수 있어요.</p>}
 
       <aside className={styles.privacy}>이 기기에만 임시 저장돼요. 공용 기기에서는 다른 사람이 볼 수 있어요. 정확 주소·비밀번호·연락처는 적지 마세요.</aside>
     </main>
