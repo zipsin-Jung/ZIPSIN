@@ -5,9 +5,10 @@ import {createCandidate} from '@/lib/zipsin-check/state';
 import {loadCheckState} from '@/lib/zipsin-check/storage';
 import type {Candidate, CheckDepth} from '@/lib/zipsin-check/types';
 import CheckStart from './CheckStart';
+import CheckFlow from './CheckFlow';
 import styles from './ZipsinCheck.module.css';
 
-type Screen = 'start' | 'check';
+type Screen = 'start' | 'check' | 'summary';
 
 export default function ZipsinCheckApp() {
   const [screen, setScreen] = useState<Screen>('start');
@@ -36,17 +37,15 @@ export default function ZipsinCheckApp() {
     setScreen('check');
   }
 
+  function changeCandidate(next: Candidate) {
+    setCandidates((current) => current.map((candidate) => candidate.id === next.id ? next : candidate));
+  }
+
   if (screen === 'start' || !activeCandidate) {
     return <div className={styles.app}><CheckStart candidates={candidates} onStart={start} onResume={resume}/></div>;
   }
 
-  return (
-    <div className={styles.app}>
-      <main className={styles.shell}>
-        <button type="button" className={styles.back} onClick={() => setScreen('start')}>← 시작으로</button>
-        <h1 tabIndex={-1}>{activeCandidate.alias} 체크를 준비했어요.</h1>
-        <p>이제 한 항목씩 확인할 수 있어요.</p>
-      </main>
-    </div>
-  );
+  if (screen === 'check') return <div className={styles.app}><CheckFlow candidate={activeCandidate} onChange={changeCandidate} onFinish={() => setScreen('summary')} onBack={() => setScreen('start')}/></div>;
+
+  return <div className={styles.app}><main className={styles.shell}><button type="button" className={styles.back} onClick={() => setScreen('check')}>← 체크로</button><h1>{activeCandidate.alias} 요약</h1><p>확인한 내용을 정리하고 있어요.</p></main></div>;
 }
