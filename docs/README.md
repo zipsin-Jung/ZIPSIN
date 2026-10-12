@@ -21,6 +21,7 @@
 - [집신체크 서브서비스 킥오프](18-zipsin-check-kickoff.md)
 - [에이전트 지침 설계](06-agent-instructions.md)
 - [에이전트 시스템과 스킬](07-agent-system-and-skills.md)
+- [에이전트 시스템 6역할 확장 결정안](decisions/DEC-015-six-role-agent-system-and-quality-gates.md)
 - [에이전트 회의 기록](meetings/README.md)
 - [결정 기록](decisions/README.md)
 - [대화 기록](conversations/README.md)

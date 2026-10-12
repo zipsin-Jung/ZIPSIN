@@ -33,9 +33,11 @@
 
 - 공통 규칙은 `agent-system/agents/shared-rules.md`를 따릅니다.
 - 총괄비서 역할은 `agent-system/agents/chief-of-staff.md`를 따릅니다.
-- 기획·디자인 역할은 `agent-system/agents/product-design.md`를 따릅니다.
+- 제품기획 역할은 `agent-system/agents/product-planning.md`를 따릅니다.
+- UX·UI 디자인 역할은 `agent-system/agents/ux-ui-design.md`를 따릅니다.
 - 설계·개발 역할은 `agent-system/agents/architecture-development.md`를 따릅니다.
 - 검수·비판 역할은 `agent-system/agents/quality-critic.md`를 따릅니다.
-- 새로운 프로젝트나 여러 영역에 영향을 주는 큰 기능은 `zipsin-project-kickoff` 스킬과 네 역할의 최초 회의로 시작합니다.
+- 시간선·대안 분석 역할은 `agent-system/agents/timeline-analyst.md`를 따릅니다.
+- 새 프로젝트·서브프로젝트·새 기능·처음 다루는 구조 변경은 `zipsin-project-kickoff` 스킬과 여섯 역할의 최초 회의로 시작합니다.
 - 실제 작업에는 `agent-system/skills/`의 관련 스킬을 적용합니다.
 - 에이전트 시스템은 2026-09-30 사용자 승인을 받아 집신의 공식 작업 체계로 적용합니다.
