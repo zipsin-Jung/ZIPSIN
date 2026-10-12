@@ -1,5 +1,6 @@
 # 작업 보고서
 
+- [2026-10-13 다른 Codex 종합 인수인계](2026-10-13-codex-master-handoff.md)
 - [2026-10-08 집 키·홈 화면 방향 정리](2026-10-08-home-key-and-dashboard-summary.md)
 - [2026-10-02 집신 사업계획서 PPT](2026-10-02-business-plan-ppt.md)
 - [2026-10-02 `test` 페이지 기능 정의](2026-10-02-test-page-feature-definition.md)
