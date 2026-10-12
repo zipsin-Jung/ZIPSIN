@@ -1,5 +1,6 @@
 # 작업 보고서
 
+- [2026-10-12 사무소 구성원 개인 계정 검토](2026-10-12-office-member-account-review.md)
 - [2026-10-08 코칭 조언·권한 모델 검토](2026-10-08-coaching-and-authorization-review.md)
 
 - [2026-10-06 공인중개사 영업용 3분 데모 구현](2026-10-06-broker-sales-demo-implementation.md)

@@ -186,3 +186,9 @@ Amazon Verified Permissions나 Cedar 도입은 정책 수가 많아지고 여러
 - Amazon Verified Permissions 용어: https://docs.aws.amazon.com/verifiedpermissions/latest/userguide/terminology.html
 - Cedar 권한 설계 패턴: https://docs.cedarpolicy.com/overview/patterns.html
 - NIST ABAC 정의: https://www.nist.gov/publications/guide-attribute-based-access-control-abac-definition-and-considerations-0
+
+## 13. 사무소 구성원 계정 보완
+
+2026-10-12 사용자 제안을 반영해 사무소 구성원은 각자 개인 계정을 사용하고 대표가 초대·역할·담당 집·접근 종료를 관리하는 방식을 권고한다. 대표 계정 공유와 대표가 구성원 비밀번호를 관리하는 방식은 사용하지 않는다.
+
+`개업공인중개사`, `소속공인중개사`, `중개보조원`을 구분하며, 대표가 부여한 앱 권한도 중개보조원의 법적 업무 범위를 넘을 수 없다. 상세 내용은 `docs/15-office-member-account-permissions.md`에 기록한다.

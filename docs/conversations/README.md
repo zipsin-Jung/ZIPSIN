@@ -1,5 +1,6 @@
 # 대화 기록
 
+- [2026-10-12 사무소 구성원 개인 계정 논의](2026-10-12-office-member-accounts.md)
 - [2026-10-08 코칭 조언과 권한 모델 대화 정리](2026-10-08-coaching-and-authorization.md)
 
 - [2026-10-02 집신 사업계획서](2026-10-02-business-plan.md)
