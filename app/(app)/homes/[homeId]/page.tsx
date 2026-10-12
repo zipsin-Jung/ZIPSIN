@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { z } from "zod";
 import { requireOnboardingComplete } from "@/features/auth/guards/require-onboarding";
+import { AttachmentUploader } from "@/features/attachments/components/AttachmentUploader";
+import { AttachmentLink } from "@/features/attachments/components/AttachmentLink";
 
 export default async function HomeDetailPage({
   params,
@@ -35,6 +37,10 @@ export default async function HomeDetailPage({
     .eq("home_id", homeId)
     .order("occurred_at", { ascending: false })
     .limit(20);
+  const recordIds = records?.map((record) => record.id) ?? [];
+  const { data: attachments } = recordIds.length
+    ? await supabase.from("attachments").select("id, record_id, original_name").in("record_id", recordIds).eq("status", "ready")
+    : { data: [] };
   return (
     <main className="mx-auto max-w-6xl px-5 py-10 sm:py-16">
       <Link href="/homes" className="text-sm font-bold text-[#0b695c]">
@@ -76,6 +82,8 @@ export default async function HomeDetailPage({
                 <time className="mt-2 block text-sm text-[#607785]">
                   {new Date(record.occurred_at).toLocaleDateString("ko-KR")}
                 </time>
+                <div className="mt-3 flex flex-wrap gap-3">{attachments?.filter((attachment) => attachment.record_id === record.id).map((attachment) => <AttachmentLink key={attachment.id} attachmentId={attachment.id} name={attachment.original_name} />)}</div>
+                <AttachmentUploader recordId={record.id} />
               </li>
             ))}
           </ul>

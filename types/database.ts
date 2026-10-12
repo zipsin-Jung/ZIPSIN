@@ -192,6 +192,8 @@ export type Database = {
       end_office_home_assignment: { Args: { p_assignment_id: string }; Returns: undefined };
       create_home_record: { Args: { p_home_id: string; p_office_id: string | null; p_contract_id: string | null; p_space: string; p_kind: string; p_title: string; p_body: string; p_idempotency_key: string; p_task_due_at: string | null; p_task_assigned_to: string | null }; Returns: string };
       update_task_state: { Args: { p_record_id: string; p_status: string }; Returns: undefined };
+      prepare_attachment_upload: { Args: { p_record_id: string; p_original_name: string; p_media_type: string; p_byte_size: number }; Returns: Json };
+      complete_attachment_upload: { Args: { p_attachment_id: string; p_checksum_sha256: string }; Returns: undefined };
       claim_username: {
         Args: { p_username: string };
         Returns: boolean;
