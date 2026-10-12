@@ -1,5 +1,6 @@
 # 결정 기록
 
+- [DEC-014: 집신체크 서브서비스 방향](DEC-014-zipsin-check-subservice-direction.md) — 제안·사용자 승인 대기
 - [DEC-013: 집신 혼합 권한 모델](DEC-013-hybrid-authorization-model.md) — 권고안·사용자 승인 대기
 - [DEC-012: 대표 도메인과 검색 등록 기준](DEC-012-primary-domain-and-search-registration.md)
 
