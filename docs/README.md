@@ -19,6 +19,7 @@
 - [2027 연간 사업 실행계획](16-2027-annual-business-execution-plan.md)
 - [초보 창업자를 위한 제품·권한·고객검증 교과서](17-beginner-product-and-permission-guide.md)
 - [집신체크 서브서비스 킥오프](18-zipsin-check-kickoff.md)
+- [AI 복사·붙여넣기용 통합 운영 프롬프트](19-zipsin-ai-master-prompt.md)
 - [에이전트 지침 설계](06-agent-instructions.md)
 - [에이전트 시스템과 스킬](07-agent-system-and-skills.md)
 - [에이전트 시스템 6역할 확장 결정안](decisions/DEC-015-six-role-agent-system-and-quality-gates.md)
