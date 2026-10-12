@@ -22,9 +22,9 @@ export type Database = {
         Relationships: [];
       };
       homes: {
-        Row: { id: string; office_id: string | null; address_line1: string; address_detail: string | null; address_fingerprint: string; created_by: string; status: 'active' | 'archived'; created_at: string; updated_at: string };
-        Insert: { id?: string; office_id: string; address_line1: string; address_detail?: string | null; address_fingerprint: string; created_by: string; status?: 'active' | 'archived'; created_at?: string; updated_at?: string };
-        Update: { address_line1?: string; address_detail?: string | null; status?: 'active' | 'archived'; updated_at?: string };
+        Row: { id: string; office_id: string | null; address_line1: string; address_detail: string | null; home_label: string | null; idempotency_key: string | null; address_fingerprint: string; created_by: string; status: 'active' | 'archived'; created_at: string; updated_at: string };
+        Insert: { id?: string; office_id: string; address_line1: string; address_detail?: string | null; home_label?: string | null; idempotency_key: string; address_fingerprint: string; created_by: string; status?: 'active' | 'archived'; created_at?: string; updated_at?: string };
+        Update: { address_line1?: string; address_detail?: string | null; home_label?: string | null; status?: 'active' | 'archived'; updated_at?: string };
         Relationships: [];
       };
       office_home_assignments: {
@@ -183,6 +183,7 @@ export type Database = {
       can_access_record: { Args: { p_record_id: string }; Returns: boolean };
       can_create_record: { Args: { p_home_id: string; p_office_id: string | null; p_contract_id: string | null; p_record_space: string; p_record_kind: string }; Returns: boolean };
       create_office: { Args: { p_name: string }; Returns: string };
+      create_home_for_office: { Args: { p_office_id: string; p_address_line1: string; p_address_detail: string; p_home_label: string; p_idempotency_key: string }; Returns: string };
       claim_username: {
         Args: { p_username: string };
         Returns: boolean;

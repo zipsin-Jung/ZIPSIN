@@ -63,10 +63,10 @@
 **Interfaces:**
 - Produces: `create_home_for_office(p_office_id,p_address_line1,p_address_detail,p_home_label,p_idempotency_key) returns uuid`
 
-- [ ] 주소 검증·입력 유지·중복 제출·다른 사무소·자동 병합 금지 테스트를 먼저 실패시킨다.
-- [ ] RPC에서 집·대표 담당·감사 기록을 원자 생성하고 서버 액션/화면을 구현한다.
-- [ ] 성공 시 집 상세로 이동하고 실패 시 입력을 유지한다.
-- [ ] 집중·전체 테스트 후 `feat: add first office home registration`으로 커밋한다.
+- [x] 주소 검증·입력 유지·중복 제출·다른 사무소·자동 병합 금지 테스트를 먼저 실패시킨다.
+- [x] RPC에서 집·대표 담당·감사 기록을 원자 생성하고 서버 액션/화면을 구현한다.
+- [x] 성공 시 집 상세로 이동하고 실패 시 입력을 유지한다.
+- [x] 집중·전체 테스트 후 `feat: add first office home registration`으로 커밋한다.
 
 ### Task 3: 직원 초대와 담당 배정
 
@@ -172,4 +172,3 @@
 - [ ] P0·P1은 재현 테스트 RED→수정→GREEN→전체 회귀 한 번의 수정 패스로 처리한다.
 - [ ] 최종 Git 상태와 커밋을 확인하고 민감정보·미추적 산출물을 검사한다.
 - [ ] 원격 푸시·Preview migration·Vercel 배포는 실행하지 않고 사용자에게 각각의 영향과 함께 최종 승인을 요청한다.
-

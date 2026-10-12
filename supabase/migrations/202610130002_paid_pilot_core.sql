@@ -396,4 +396,75 @@ revoke all on function public.guard_active_assignment() from public, anon, authe
 revoke all on function public.can_create_record(uuid, uuid, uuid, text, text) from public;
 grant execute on function public.can_create_record(uuid, uuid, uuid, text, text) to authenticated;
 
+-- NULL request keys are retained only for pre-pilot rows; addresses are never unique.
+alter table public.homes add column home_label text;
+alter table public.homes add column idempotency_key uuid;
+alter table public.homes add constraint homes_pilot_creation_scope
+  check (idempotency_key is null or office_id is not null);
+alter table public.homes add constraint homes_detail_length
+  check (address_detail is null or char_length(address_detail) <= 120);
+alter table public.homes add constraint homes_label_length
+  check (home_label is null or char_length(home_label) between 1 and 80);
+create unique index homes_creator_idempotency_unique on public.homes (created_by, idempotency_key)
+  where idempotency_key is not null;
+
+create or replace function public.create_home_for_office(
+  p_office_id uuid,
+  p_address_line1 text,
+  p_address_detail text,
+  p_home_label text,
+  p_idempotency_key uuid
+) returns uuid
+language plpgsql security definer set search_path = public
+as $$
+declare
+  v_user_id uuid := auth.uid();
+  v_home_id uuid;
+  v_existing public.homes%rowtype;
+  v_address text := btrim(p_address_line1);
+  v_detail text := nullif(btrim(p_address_detail), '');
+  v_label text := nullif(btrim(p_home_label), '');
+begin
+  if v_user_id is null then raise exception 'authentication_required'; end if;
+  if p_office_id is null or p_idempotency_key is null or v_address is null
+    or char_length(v_address) not between 5 and 200
+    or char_length(v_detail) > 120 or char_length(v_label) > 80
+    or v_address ~ '[[:cntrl:]]' or v_detail ~ '[[:cntrl:]]' or v_label ~ '[[:cntrl:]]'
+  then raise exception 'invalid_input'; end if;
+  -- Hold membership through commit, so ending membership cannot race creation.
+  perform 1 from public.office_memberships membership
+  where membership.office_id = p_office_id and membership.user_id = v_user_id
+    and membership.office_role = 'principal_broker'
+    and membership.status = 'active' and membership.ended_at is null and membership.started_at <= now()
+  for share;
+  if not found then raise exception 'permission_denied'; end if;
+  -- Serialize same user/key retries, including requests to different offices.
+  perform pg_advisory_xact_lock(hashtextextended(v_user_id::text || ':' || p_idempotency_key::text, 0));
+  select * into v_existing from public.homes
+  where created_by = v_user_id and idempotency_key = p_idempotency_key;
+  if found then
+    if v_existing.office_id is distinct from p_office_id
+      or v_existing.address_line1 is distinct from v_address
+      or v_existing.address_detail is distinct from v_detail
+      or v_existing.home_label is distinct from v_label
+    then raise exception 'conflict'; end if;
+    if v_existing.status <> 'active' then raise exception 'relation_ended'; end if;
+    return v_existing.id;
+  end if;
+  -- Fingerprint is a candidate hint only; never search or merge on address.
+  insert into public.homes (office_id, address_line1, address_detail, home_label, address_fingerprint, created_by, idempotency_key)
+  values (p_office_id, v_address, v_detail, v_label,
+    encode(digest(lower(v_address) || ':' || coalesce(v_detail, ''), 'sha256'), 'hex'), v_user_id, p_idempotency_key)
+  returning id into v_home_id;
+  insert into public.office_home_assignments (office_id, home_id, assigned_user_id, assigned_by)
+  values (p_office_id, v_home_id, v_user_id, v_user_id);
+  insert into public.access_audit_events (
+    actor_user_id, action, resource_type, resource_id, office_id, home_id, outcome, reason_code
+  ) values (v_user_id, 'create', 'home', v_home_id, p_office_id, v_home_id, 'allowed', 'home_created_with_assignment');
+  return v_home_id;
+end;
+$$;
+revoke all on function public.create_home_for_office(uuid, text, text, text, uuid) from public, anon, authenticated;
+grant execute on function public.create_home_for_office(uuid, text, text, text, uuid) to authenticated;
+
 commit;
