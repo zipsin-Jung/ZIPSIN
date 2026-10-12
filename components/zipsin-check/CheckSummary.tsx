@@ -1,5 +1,6 @@
 'use client';
 
+import {useEffect, useRef} from 'react';
 import {buildSummary} from '@/lib/zipsin-check/state';
 import type {Candidate, CheckStatus} from '@/lib/zipsin-check/types';
 import styles from './ZipsinCheck.module.css';
@@ -14,12 +15,14 @@ const SECTIONS: {status: CheckStatus; title: string; mark: string; empty: string
 
 export default function CheckSummary({candidate, canCompare, onBack, onAdd, onCompare}: Props) {
   const summary = buildSummary(candidate);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  useEffect(() => { headingRef.current?.focus(); }, []);
   return (
     <main className={styles.results}>
       <button type="button" className={styles.back} onClick={onBack}>← 체크로 돌아가기</button>
       <header className={styles.resultHero}>
         <p>{candidate.alias} 방문 요약</p>
-        <h1>좋고 나쁨 대신,<br/>다시 볼 것을 정리했어요.</h1>
+        <h1 ref={headingRef} tabIndex={-1}>좋고 나쁨 대신,<br/>다시 볼 것을 정리했어요.</h1>
         <div className={styles.counts}>
           <span><b>!</b> 주의 {summary.caution.length}</span>
           <span><b>?</b> 미확인 {summary.unverified.length}</span>
@@ -41,7 +44,7 @@ export default function CheckSummary({candidate, canCompare, onBack, onAdd, onCo
         <button type="button" onClick={onAdd}>다른 집 추가하기</button>
         {canCompare && <button type="button" className={styles.primary} onClick={onCompare}>후보 집 비교하기</button>}
       </div>
-      <a className={styles.signupCta} href="/#signup"><strong>집신에 이어서 보관하고 싶나요?</strong><span>현재는 이 기기에만 저장되며 계정에는 아직 저장되지 않아요. 집신 가입 안내 보기 →</span></a>
+      <a className={styles.signupCta} href="/#signup"><strong>집신 가입 안내 보기</strong><span>계정에는 아직 저장되지 않아요. 지금 결과는 이 기기에만 있어요 →</span></a>
     </main>
   );
 }

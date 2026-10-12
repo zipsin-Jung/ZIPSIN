@@ -1,13 +1,17 @@
 import {CHECK_ITEMS, CORE_ITEM_IDS, getItemsForDepth} from './catalog';
 import type {Candidate, CheckAnswer, CheckDepth, CheckSummary, ComparisonRow} from './types';
 
-type NewCandidate = {id: string; alias: string; depth: CheckDepth; now: string};
+type NewCandidate = {id: string; alias: string; depth: CheckDepth; now: string; locationLabel?: string; discoverySource?: string; housingType?: string; transactionType?: string};
 
-export function createCandidate({id, alias, depth, now}: NewCandidate): Candidate {
+export function createCandidate({id, alias, depth, now, locationLabel, discoverySource, housingType, transactionType}: NewCandidate): Candidate {
   return {
     id,
     alias: alias.trim() || '후보 1',
     depth,
+    ...(locationLabel?.trim() ? {locationLabel: locationLabel.trim()} : {}),
+    ...(discoverySource ? {discoverySource} : {}),
+    ...(housingType ? {housingType} : {}),
+    ...(transactionType ? {transactionType} : {}),
     answers: {},
     archived: false,
     createdAt: now,

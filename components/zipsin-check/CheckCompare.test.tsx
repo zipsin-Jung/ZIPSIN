@@ -19,5 +19,9 @@ describe('후보 비교', () => {
     expect(screen.getAllByText('미확인').length).toBeGreaterThan(0);
     expect(screen.queryByText('콘센트·통신')).not.toBeInTheDocument();
     expect(screen.getByText(/추가 항목 수가 달라도 불리하게 계산하지 않아요/)).toBeInTheDocument();
+    expect(screen.getByRole('article', {name: /A집 비교 카드/})).toBeInTheDocument();
+    expect(screen.getByRole('article', {name: /B집 비교 카드/})).toBeInTheDocument();
+    expect(screen.getAllByText(/전문가 확인 0/)).toHaveLength(2);
+    expect(screen.getByRole('heading', {name: '후보 집 비교'})).toHaveFocus();
   });
 });

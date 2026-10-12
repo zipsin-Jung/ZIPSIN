@@ -1,4 +1,4 @@
-import type {Candidate, StoredCheckState} from './types';
+import type {Candidate, CheckAnswer, EvidenceSource, CheckStatus, StoredCheckState} from './types';
 
 export const CHECK_STORAGE_KEY = 'zipsin-check:v1';
 
@@ -8,16 +8,38 @@ type LoadResult =
 
 type SaveResult = {ok: true} | {ok: false; reason: 'unavailable'};
 
+const STATUSES = new Set<CheckStatus>(['confirmed', 'caution', 'unverified', 'expert']);
+const SOURCES = new Set<EvidenceSource>(['observed', 'explained', 'document', 'expert']);
+
+function isAnswer(value: unknown): value is CheckAnswer {
+  if (!value || typeof value !== 'object') return false;
+  const answer = value as Partial<CheckAnswer>;
+  return STATUSES.has(answer.status as CheckStatus)
+    && SOURCES.has(answer.source as EvidenceSource)
+    && (answer.memo === undefined || typeof answer.memo === 'string');
+}
+
 function isCandidate(value: unknown): value is Candidate {
   if (!value || typeof value !== 'object') return false;
   const candidate = value as Partial<Candidate>;
   return typeof candidate.id === 'string'
     && typeof candidate.alias === 'string'
     && (candidate.depth === 'quick' || candidate.depth === 'thorough')
+    && !!candidate.answers
     && typeof candidate.answers === 'object'
+    && !Array.isArray(candidate.answers)
+    && Object.values(candidate.answers).every(isAnswer)
     && typeof candidate.archived === 'boolean'
     && typeof candidate.createdAt === 'string'
-    && typeof candidate.updatedAt === 'string';
+    && typeof candidate.updatedAt === 'string'
+    && isOptionalString(candidate.locationLabel)
+    && isOptionalString(candidate.discoverySource)
+    && isOptionalString(candidate.housingType)
+    && isOptionalString(candidate.transactionType);
+}
+
+function isOptionalString(value: unknown) {
+  return value === undefined || typeof value === 'string';
 }
 
 function isStoredCheckState(value: unknown): value is StoredCheckState {

@@ -17,14 +17,18 @@ export default function ZipsinCheckApp({storage}: {storage?: Storage}) {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [activeId, setActiveId] = useState<string>();
   const [hydrated, setHydrated] = useState(false);
+  const [persistenceEnabled, setPersistenceEnabled] = useState(false);
   const [storageError, setStorageError] = useState('');
   const activeCandidate = candidates.find((candidate) => candidate.id === activeId);
 
   useEffect(() => {
     const loaded = loadCheckState(storage ?? window.localStorage);
-    if (loaded.ok && loaded.state) {
-      setCandidates(loaded.state.candidates);
-      setActiveId(loaded.state.activeCandidateId);
+    if (loaded.ok) {
+      setPersistenceEnabled(true);
+      if (loaded.state) {
+        setCandidates(loaded.state.candidates);
+        setActiveId(loaded.state.activeCandidateId);
+      }
     } else if (!loaded.ok) {
       setStorageError('이 기기의 이전 기록을 불러오지 못했어요. 현재 화면에서 새로 시작할 수 있어요.');
     }
@@ -32,14 +36,15 @@ export default function ZipsinCheckApp({storage}: {storage?: Storage}) {
   }, [storage]);
 
   useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated || !persistenceEnabled) return;
     const saved = saveCheckState({schemaVersion: 1, candidates, ...(activeId ? {activeCandidateId: activeId} : {})}, storage ?? window.localStorage);
     setStorageError(saved.ok ? '' : '현재 체크는 유지되지만 이 기기에 저장하지 못했어요. 브라우저 저장 설정을 확인해 주세요.');
-  }, [activeId, candidates, hydrated, storage]);
+  }, [activeId, candidates, hydrated, persistenceEnabled, storage]);
 
-  function start(depth: CheckDepth, alias: string) {
+  function start(depth: CheckDepth, details: {alias: string; locationLabel: string; discoverySource: string; housingType: string; transactionType: string}) {
     const id = `candidate-${Date.now()}-${candidates.length + 1}`;
-    const candidate = createCandidate({id, alias: alias || `후보 ${candidates.filter((item) => !item.archived).length + 1}`, depth, now: new Date().toISOString()});
+    const candidate = createCandidate({...details, id, alias: details.alias || `후보 ${candidates.filter((item) => !item.archived).length + 1}`, depth, now: new Date().toISOString()});
+    setPersistenceEnabled(true);
     setCandidates((current) => [...current, candidate]);
     setActiveId(id);
     setScreen('check');

@@ -25,6 +25,10 @@ export type Candidate = {
   id: string;
   alias: string;
   depth: CheckDepth;
+  locationLabel?: string;
+  discoverySource?: string;
+  housingType?: string;
+  transactionType?: string;
   answers: Record<string, CheckAnswer>;
   archived: boolean;
   createdAt: string;

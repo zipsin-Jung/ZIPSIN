@@ -36,6 +36,16 @@ describe('집신체크 로컬 저장', () => {
     expect(localStorage.getItem(CHECK_STORAGE_KEY)).toBe(raw);
   });
 
+  it('답변 객체와 상태·근거 값까지 검증한다', () => {
+    const invalidAnswers = JSON.stringify({...state, candidates: [{...state.candidates[0], answers: null}]});
+    localStorage.setItem(CHECK_STORAGE_KEY, invalidAnswers);
+    expect(loadCheckState(localStorage)).toMatchObject({ok: false, reason: 'corrupt'});
+
+    const invalidStatus = JSON.stringify({...state, candidates: [{...state.candidates[0], answers: {moisture: {status: 'great', source: 'observed'}}}]});
+    localStorage.setItem(CHECK_STORAGE_KEY, invalidStatus);
+    expect(loadCheckState(localStorage)).toMatchObject({ok: false, reason: 'corrupt'});
+  });
+
   it('저장소 접근·용량 오류를 사용자 복구용 결과로 바꾼다', () => {
     const blocked = {getItem: () => { throw new Error('blocked'); }} as unknown as Storage;
     const full = {setItem: () => { throw new Error('quota'); }} as unknown as Storage;
