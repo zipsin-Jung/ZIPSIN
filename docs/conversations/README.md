@@ -1,5 +1,6 @@
 # 대화 기록
 
+- [2026-10-13 집신 웹앱 준비와 초보자 학습 요청](2026-10-13-beginner-product-permission-study.md)
 - [2026-10-12 2027년 연간 목표와 세 가지 계획 논의](2026-10-12-annual-plan.md)
 - [2026-10-12 사무소 구성원 개인 계정 논의](2026-10-12-office-member-accounts.md)
 - [2026-10-08 코칭 조언과 권한 모델 대화 정리](2026-10-08-coaching-and-authorization.md)
