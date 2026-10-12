@@ -9,22 +9,15 @@ beforeEach(() => localStorage.clear());
 afterEach(cleanup);
 
 describe('집신체크 시작', () => {
-  it('공개 도구 첫 화면에서 집 정보와 체크 방식을 한 번에 받는다', () => {
+  it('필수 입력 없이 한 번 눌러 현장 체크를 시작한다', () => {
     render(<ZipsinCheckApp/>);
 
-    expect(screen.getByRole('heading', {name: /설레는 집 보기.*빠뜨리지 말고 확인해요/})).toBeInTheDocument();
-    expect(screen.getByRole('button', {name: /빠르게 체크/})).toHaveTextContent('3~5분');
-    expect(screen.getByRole('button', {name: /꼼꼼하게 체크/})).toHaveTextContent('10~15분');
-    expect(screen.getByLabelText('후보 별칭')).toBeInTheDocument();
-    expect(screen.getByLabelText('동네 또는 건물 별칭')).toBeInTheDocument();
-    expect(screen.getByText(/상세 주소는 적지 마세요/)).toBeInTheDocument();
-    expect(screen.getByLabelText('이 집을 어떻게 알게 됐나요?')).toBeInTheDocument();
-    expect(screen.getByLabelText('주택 유형')).toBeInTheDocument();
-    expect(screen.getByLabelText('거래 유형')).toBeInTheDocument();
+    expect(screen.getByRole('heading', {name: '집 보면서 바로 체크하세요.'})).toBeInTheDocument();
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
     expect(screen.queryByText(/데모|체험판/)).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', {name: /별칭 없이 빠르게 체크 시작/}));
-    expect(screen.getByRole('heading', {name: /후보 1 체크/})).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', {name: '바로 체크 시작'}));
+    expect(screen.getByRole('heading', {name: /오늘 본 집 1 체크/})).toBeInTheDocument();
   });
 
   it('기기에 저장된 후보가 있으면 이어보기를 제안한다', async () => {
@@ -34,7 +27,7 @@ describe('집신체크 시작', () => {
     render(<ZipsinCheckApp/>);
 
     expect(await screen.findByRole('button', {name: /햇살 좋은 집 이어서 보기/})).toBeInTheDocument();
-    expect(screen.getByText(/공용 기기에서는 다른 사람이 볼 수 있으니/)).toBeInTheDocument();
+    expect(screen.getByText(/이 브라우저에만 저장되고 외부로 전송되지 않아요/)).toBeInTheDocument();
   });
 
   it('저장 실패를 알려도 현재 체크는 유지한다', async () => {
@@ -44,9 +37,9 @@ describe('집신체크 시작', () => {
     } as unknown as Storage;
     render(<ZipsinCheckApp storage={failingStorage}/>);
 
-    fireEvent.click(screen.getByRole('button', {name: /별칭 없이 빠르게 체크 시작/}));
+    fireEvent.click(screen.getByRole('button', {name: '바로 체크 시작'}));
 
-    expect(screen.getByRole('heading', {name: /후보 1 체크/})).toBeInTheDocument();
+    expect(screen.getByRole('heading', {name: /오늘 본 집 1 체크/})).toBeInTheDocument();
     expect(await screen.findByRole('alert')).toHaveTextContent(/기기에 저장하지 못했어요/);
   });
 
@@ -63,8 +56,8 @@ describe('집신체크 시작', () => {
 
   it('요약에서 실제 계정 저장이 아닌 가입 안내임을 밝힌다', () => {
     render(<ZipsinCheckApp/>);
-    fireEvent.click(screen.getByRole('button', {name: /별칭 없이 빠르게 체크 시작/}));
-    fireEvent.click(screen.getByRole('button', {name: '체크 결과 정리하기'}));
+    fireEvent.click(screen.getByRole('button', {name: '바로 체크 시작'}));
+    fireEvent.click(screen.getByRole('button', {name: '방문 끝내기'}));
 
     const link = screen.getByRole('link', {name: /집신 가입 안내 보기/});
     expect(link).toHaveAttribute('href', '/#signup');
@@ -82,14 +75,14 @@ describe('집신체크 시작', () => {
     render(<ZipsinCheckApp/>);
 
     fireEvent.click(await screen.findByRole('button', {name: /A집 이어서 보기/}));
-    fireEvent.click(screen.getByRole('button', {name: '습기·곰팡이 주의'}));
-    fireEvent.click(screen.getByRole('button', {name: '체크 결과 정리하기'}));
+    fireEvent.click(screen.getByRole('button', {name: '습기·곰팡이 확인 필요'}));
+    fireEvent.click(screen.getByRole('button', {name: '방문 끝내기'}));
     fireEvent.click(screen.getByRole('button', {name: '후보 집 비교하기'}));
     expect(screen.getByRole('heading', {name: '후보 집 비교'})).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', {name: /요약으로 돌아가기/}));
     fireEvent.click(screen.getByRole('button', {name: /체크로 돌아가기/}));
-    fireEvent.click(screen.getByRole('button', {name: /나가기/}));
+    fireEvent.click(screen.getByRole('button', {name: /목록/}));
     fireEvent.click(screen.getByRole('button', {name: 'A집 비교에서 제외'}));
     expect(screen.getByRole('button', {name: /A집 다시 포함/})).toBeInTheDocument();
   });
