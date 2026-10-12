@@ -7,7 +7,12 @@ export default defineConfig({
     environment: 'jsdom',
     coverage: {
       provider: 'v8',
-      include: ['lib/demo-state.ts', 'components/SalesDemo.tsx'],
+      include: [
+        'lib/demo-state.ts',
+        'components/SalesDemo.tsx',
+        'lib/zipsin-check/{catalog,state,storage}.ts',
+        'components/zipsin-check/{ZipsinCheckApp,CheckStart,CheckFlow,CheckSummary,CheckCompare}.tsx',
+      ],
       thresholds: {lines: 80, functions: 80, branches: 80, statements: 80},
       reporter: ['text', 'json-summary'],
     },

@@ -64,4 +64,26 @@ describe('집신체크 시작', () => {
     expect(link).toHaveAttribute('href', '/#signup');
     expect(link).toHaveTextContent(/계정에는 아직 저장되지 않아요/);
   });
+
+  it('복구한 두 후보의 답을 바꾸고 비교한 뒤 한 후보를 제외한다', async () => {
+    const now = '2026-10-13T00:00:00.000Z';
+    const candidates = [
+      createCandidate({id: 'a', alias: 'A집', depth: 'quick', now}),
+      createCandidate({id: 'b', alias: 'B집', depth: 'thorough', now}),
+    ];
+    localStorage.setItem(CHECK_STORAGE_KEY, JSON.stringify({schemaVersion: 1, candidates, activeCandidateId: 'a'}));
+    render(<ZipsinCheckApp/>);
+
+    fireEvent.click(await screen.findByRole('button', {name: /A집 이어서 보기/}));
+    fireEvent.click(screen.getByRole('button', {name: '주의'}));
+    fireEvent.click(screen.getByRole('button', {name: '지금까지 요약 보기'}));
+    fireEvent.click(screen.getByRole('button', {name: '후보 집 비교하기'}));
+    expect(screen.getByRole('heading', {name: '후보 집 비교'})).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', {name: /요약으로 돌아가기/}));
+    fireEvent.click(screen.getByRole('button', {name: /체크로 돌아가기/}));
+    fireEvent.click(screen.getByRole('button', {name: /나가기/}));
+    fireEvent.click(screen.getByRole('button', {name: 'A집 비교에서 제외'}));
+    expect(screen.getByRole('button', {name: /A집 다시 포함/})).toBeInTheDocument();
+  });
 });

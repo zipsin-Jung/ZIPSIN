@@ -1,7 +1,7 @@
 # 집신체크 V1 제품 명세
 
 - 작성일: 2026-10-13
-- 상태: 제품 명세 작성 완료 · 사용자 G1/G2 승인 대기 · 구현 전
+- 상태: G1/G2 사용자 승인 · V1 구현 및 자동·브라우저 검수 완료 · 독립 검수 중
 - 선행 문서: `18-zipsin-check-kickoff.md`, `DEC-014-zipsin-check-subservice-direction.md`
 
 ## 1. 제품 목표
@@ -282,6 +282,21 @@
 | ZC-008 | 강제 없이 집신으로 이어짐 | 01~04 | S08 취소·실패·완료 | 비회원 결과 열람, 실패 복구 | T013, T014 |
 
 구현 후 SOURCE 파일·심볼과 실제 테스트 파일·테스트명·실행 증거를 이 표에 추가한다.
+
+### 구현 추적 증거
+
+| REQ-ID | 실제 소스 | 자동 테스트 | 실행 증거 |
+|---|---|---|---|
+| ZC-001 | `catalog.ts#getItemsForDepth`, `CheckStart`, `ZipsinCheckApp` | `catalog.test.ts`, `ZipsinCheckApp.test.tsx` 시작·복구 | Vitest 34개 전체 통과 |
+| ZC-002 | `catalog.ts`, `CheckFlow` | `catalog.test.ts`, `CheckFlow.test.tsx` 상태 선택 | 빠른 흐름 실제 브라우저 완주 |
+| ZC-003 | `state.ts#switchDepth`, `CheckFlow` | 모드 전환 답 보존 테스트 | 꼼꼼→빠른 전환 실제 브라우저 확인 |
+| ZC-004 | `CheckFlow` 설명 영역 | 설명 접힘·`aria-expanded` 테스트 | 키보드·포커스와 실제 펼침 확인 |
+| ZC-005 | `state.ts#answerItem/#containsSensitiveMemo`, `CheckFlow` | 상태·출처·민감 메모 차단 테스트 | 상태 변경 및 경고 자동검사 통과 |
+| ZC-006 | `state.ts#buildSummary`, `CheckSummary` | 주의 비상쇄·미확인 다음 행동 테스트 | 요약 실제 브라우저 확인 |
+| ZC-007 | `state.ts#compareCandidates`, `CheckCompare` | 다른 깊이·공통 핵심 비교 테스트 | A/B 후보 9개 축 실제 비교 확인 |
+| ZC-008 | `storage.ts`, `ZipsinCheckApp`, `CheckSummary` CTA | 복원·저장 실패·가입 안내 테스트 | 새로고침 후 A/B 후보 복원 확인 |
+
+검증일 2026-10-13 기준 `npm run typecheck`, 34개 테스트, 정적 빌드가 통과했다. 전체 계측 결과는 statements 88.88%, branches 85.57%, functions 87.70%, lines 92.38%다. `/check` 실제 브라우저에서 320px·390px·데스크톱 가로 넘침 없음, 최소 버튼 높이 44px, 화면 제목 포커스, 빠른 흐름·깊이 전환·비교·새로고침 복구를 확인했다.
 
 ## 12. MVP·후속·제외
 
