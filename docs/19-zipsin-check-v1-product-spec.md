@@ -1,5 +1,7 @@
 # 집신체크 V1 제품 명세
 
+> 2026-10-13 후속 V2 제안: 사용자가 승인한 네이버 카드검색식 비교 방향은 `docs/superpowers/specs/2026-10-13-zipsin-check-comparison-design.md`의 ZCC-001~008로 분리했다. V1 기존 기록은 보존하며, V2는 여러 집 보관·2~3채 선택·동일 행 비교표·간단/상세 등록·현장 필수 5개를 적용한다. 현재는 서면 명세 사용자 검토 단계이며 제품 코드는 아직 변경하지 않았다.
+
 - 작성일: 2026-10-13
 - 상태: G1/G2 사용자 승인 · 공개형 V1 구현 및 자동·브라우저 검수 완료 · 사용자 최종 승인 대기
 - 선행 문서: `18-zipsin-check-kickoff.md`, `DEC-014-zipsin-check-subservice-direction.md`

@@ -24,6 +24,7 @@
 - [사용자 제공 AI 통합 운영 프롬프트 원문](20-zipsin-ai-integrated-operating-prompt.md)
 - [집신체크 V1 기술 설계](21-zipsin-check-v1-technical-spec.md)
 - [집신체크 V1 구현계획](superpowers/plans/2026-10-13-zipsin-check-v1.md)
+- [집신체크 비교 중심 V2 제품·UX 설계](superpowers/specs/2026-10-13-zipsin-check-comparison-design.md)
 - [에이전트 지침 설계](06-agent-instructions.md)
 - [에이전트 시스템과 스킬](07-agent-system-and-skills.md)
 - [에이전트 시스템 6역할 확장 결정안](decisions/DEC-015-six-role-agent-system-and-quality-gates.md)
