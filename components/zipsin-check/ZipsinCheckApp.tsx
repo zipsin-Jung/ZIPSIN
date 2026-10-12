@@ -6,9 +6,11 @@ import {loadCheckState} from '@/lib/zipsin-check/storage';
 import type {Candidate, CheckDepth} from '@/lib/zipsin-check/types';
 import CheckStart from './CheckStart';
 import CheckFlow from './CheckFlow';
+import CheckSummary from './CheckSummary';
+import CheckCompare from './CheckCompare';
 import styles from './ZipsinCheck.module.css';
 
-type Screen = 'start' | 'check' | 'summary';
+type Screen = 'start' | 'check' | 'summary' | 'compare';
 
 export default function ZipsinCheckApp() {
   const [screen, setScreen] = useState<Screen>('start');
@@ -47,5 +49,7 @@ export default function ZipsinCheckApp() {
 
   if (screen === 'check') return <div className={styles.app}><CheckFlow candidate={activeCandidate} onChange={changeCandidate} onFinish={() => setScreen('summary')} onBack={() => setScreen('start')}/></div>;
 
-  return <div className={styles.app}><main className={styles.shell}><button type="button" className={styles.back} onClick={() => setScreen('check')}>← 체크로</button><h1>{activeCandidate.alias} 요약</h1><p>확인한 내용을 정리하고 있어요.</p></main></div>;
+  if (screen === 'compare') return <div className={styles.app}><CheckCompare candidates={candidates} onBack={() => setScreen('summary')}/></div>;
+
+  return <div className={styles.app}><CheckSummary candidate={activeCandidate} canCompare={candidates.filter((candidate) => !candidate.archived).length >= 2} onBack={() => setScreen('check')} onAdd={() => setScreen('start')} onCompare={() => setScreen('compare')}/></div>;
 }
