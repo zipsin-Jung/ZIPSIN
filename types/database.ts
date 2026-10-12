@@ -18,12 +18,12 @@ export type Database = {
       office_memberships: {
         Row: { id: string; office_id: string; user_id: string; office_role: 'principal_broker' | 'associate_broker' | 'assistant'; status: 'active' | 'ended'; invited_by: string | null; started_at: string; ended_at: string | null; created_at: string };
         Insert: { id?: string; office_id: string; user_id: string; office_role: 'principal_broker' | 'associate_broker' | 'assistant'; status?: 'active' | 'ended'; invited_by?: string | null; started_at?: string; ended_at?: string | null; created_at?: string };
-        Update: { office_role?: 'principal_broker' | 'associate_broker' | 'assistant'; status?: 'active' | 'ended'; ended_at?: string | null };
+        Update: { status?: 'active' | 'ended'; ended_at?: string | null };
         Relationships: [];
       };
       homes: {
-        Row: { id: string; address_line1: string; address_detail: string | null; address_fingerprint: string; created_by: string; status: 'active' | 'archived'; created_at: string; updated_at: string };
-        Insert: { id?: string; address_line1: string; address_detail?: string | null; address_fingerprint: string; created_by: string; status?: 'active' | 'archived'; created_at?: string; updated_at?: string };
+        Row: { id: string; office_id: string | null; address_line1: string; address_detail: string | null; address_fingerprint: string; created_by: string; status: 'active' | 'archived'; created_at: string; updated_at: string };
+        Insert: { id?: string; office_id: string; address_line1: string; address_detail?: string | null; address_fingerprint: string; created_by: string; status?: 'active' | 'archived'; created_at?: string; updated_at?: string };
         Update: { address_line1?: string; address_detail?: string | null; status?: 'active' | 'archived'; updated_at?: string };
         Relationships: [];
       };
@@ -42,7 +42,7 @@ export type Database = {
       home_memberships: {
         Row: { id: string; home_id: string; contract_id: string | null; user_id: string; relationship_role: 'landlord' | 'tenant' | 'repairer'; status: 'pending' | 'active' | 'ended' | 'revoked'; access_scope: 'current_contract' | 'shared_history' | 'repair_event'; starts_at: string; expires_at: string | null; ended_at: string | null; created_at: string };
         Insert: { id?: string; home_id: string; contract_id?: string | null; user_id: string; relationship_role: 'landlord' | 'tenant' | 'repairer'; status?: 'pending' | 'active' | 'ended' | 'revoked'; access_scope?: 'current_contract' | 'shared_history' | 'repair_event'; starts_at?: string; expires_at?: string | null; ended_at?: string | null; created_at?: string };
-        Update: { status?: 'pending' | 'active' | 'ended' | 'revoked'; access_scope?: 'current_contract' | 'shared_history' | 'repair_event'; expires_at?: string | null; ended_at?: string | null };
+        Update: { status?: 'pending' | 'active' | 'ended' | 'revoked'; ended_at?: string | null };
         Relationships: [];
       };
       invitations: {
@@ -181,6 +181,7 @@ export type Database = {
       has_active_office_home_access: { Args: { p_home_id: string }; Returns: boolean };
       can_access_contract: { Args: { p_contract_id: string }; Returns: boolean };
       can_access_record: { Args: { p_record_id: string }; Returns: boolean };
+      can_create_record: { Args: { p_home_id: string; p_office_id: string | null; p_contract_id: string | null; p_record_space: string; p_record_kind: string }; Returns: boolean };
       create_office: { Args: { p_name: string }; Returns: string };
       claim_username: {
         Args: { p_username: string };
