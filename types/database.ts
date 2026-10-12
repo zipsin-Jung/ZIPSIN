@@ -9,6 +9,66 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      offices: {
+        Row: { id: string; name: string; created_by: string; verification_status: 'pending' | 'verified' | 'rejected' | 'suspended'; created_at: string; updated_at: string };
+        Insert: { id?: string; name: string; created_by: string; verification_status?: 'pending' | 'verified' | 'rejected' | 'suspended'; created_at?: string; updated_at?: string };
+        Update: { name?: string; verification_status?: 'pending' | 'verified' | 'rejected' | 'suspended'; updated_at?: string };
+        Relationships: [];
+      };
+      office_memberships: {
+        Row: { id: string; office_id: string; user_id: string; office_role: 'principal_broker' | 'associate_broker' | 'assistant'; status: 'active' | 'ended'; invited_by: string | null; started_at: string; ended_at: string | null; created_at: string };
+        Insert: { id?: string; office_id: string; user_id: string; office_role: 'principal_broker' | 'associate_broker' | 'assistant'; status?: 'active' | 'ended'; invited_by?: string | null; started_at?: string; ended_at?: string | null; created_at?: string };
+        Update: { office_role?: 'principal_broker' | 'associate_broker' | 'assistant'; status?: 'active' | 'ended'; ended_at?: string | null };
+        Relationships: [];
+      };
+      homes: {
+        Row: { id: string; address_line1: string; address_detail: string | null; address_fingerprint: string; created_by: string; status: 'active' | 'archived'; created_at: string; updated_at: string };
+        Insert: { id?: string; address_line1: string; address_detail?: string | null; address_fingerprint: string; created_by: string; status?: 'active' | 'archived'; created_at?: string; updated_at?: string };
+        Update: { address_line1?: string; address_detail?: string | null; status?: 'active' | 'archived'; updated_at?: string };
+        Relationships: [];
+      };
+      office_home_assignments: {
+        Row: { id: string; office_id: string; home_id: string; assigned_user_id: string; assigned_by: string; status: 'active' | 'ended'; started_at: string; ended_at: string | null };
+        Insert: { id?: string; office_id: string; home_id: string; assigned_user_id: string; assigned_by: string; status?: 'active' | 'ended'; started_at?: string; ended_at?: string | null };
+        Update: { status?: 'active' | 'ended'; ended_at?: string | null };
+        Relationships: [];
+      };
+      contracts: {
+        Row: { id: string; home_id: string; contract_kind: 'owner_occupied' | 'jeonse' | 'monthly_rent' | 'other'; status: 'draft' | 'active' | 'ended' | 'cancelled'; starts_on: string | null; ends_on: string | null; created_by: string; created_at: string; updated_at: string };
+        Insert: { id?: string; home_id: string; contract_kind: 'owner_occupied' | 'jeonse' | 'monthly_rent' | 'other'; status?: 'draft' | 'active' | 'ended' | 'cancelled'; starts_on?: string | null; ends_on?: string | null; created_by: string; created_at?: string; updated_at?: string };
+        Update: { status?: 'draft' | 'active' | 'ended' | 'cancelled'; starts_on?: string | null; ends_on?: string | null; updated_at?: string };
+        Relationships: [];
+      };
+      home_memberships: {
+        Row: { id: string; home_id: string; contract_id: string | null; user_id: string; relationship_role: 'landlord' | 'tenant' | 'repairer'; status: 'pending' | 'active' | 'ended' | 'revoked'; access_scope: 'current_contract' | 'shared_history' | 'repair_event'; starts_at: string; expires_at: string | null; ended_at: string | null; created_at: string };
+        Insert: { id?: string; home_id: string; contract_id?: string | null; user_id: string; relationship_role: 'landlord' | 'tenant' | 'repairer'; status?: 'pending' | 'active' | 'ended' | 'revoked'; access_scope?: 'current_contract' | 'shared_history' | 'repair_event'; starts_at?: string; expires_at?: string | null; ended_at?: string | null; created_at?: string };
+        Update: { status?: 'pending' | 'active' | 'ended' | 'revoked'; access_scope?: 'current_contract' | 'shared_history' | 'repair_event'; expires_at?: string | null; ended_at?: string | null };
+        Relationships: [];
+      };
+      invitations: {
+        Row: { id: string; token_hash: string; invitation_kind: 'office_member' | 'home_member' | 'repair_event'; office_id: string | null; home_id: string | null; contract_id: string | null; intended_role: string; invited_identifier_hash: string; created_by: string; expires_at: string; revoked_at: string | null; accepted_at: string | null; accepted_by: string | null; created_at: string };
+        Insert: { id?: string; token_hash: string; invitation_kind: 'office_member' | 'home_member' | 'repair_event'; office_id?: string | null; home_id?: string | null; contract_id?: string | null; intended_role: string; invited_identifier_hash: string; created_by: string; expires_at: string; revoked_at?: string | null; accepted_at?: string | null; accepted_by?: string | null; created_at?: string };
+        Update: { revoked_at?: string | null; accepted_at?: string | null; accepted_by?: string | null };
+        Relationships: [];
+      };
+      records: {
+        Row: { id: string; home_id: string; office_id: string | null; contract_id: string | null; record_space: 'office_internal' | 'current_contract' | 'shared_history'; record_kind: 'note' | 'photo' | 'document' | 'repair' | 'schedule' | 'task'; title: string; body: string | null; created_by: string; idempotency_key: string; occurred_at: string; created_at: string; updated_at: string };
+        Insert: { id?: string; home_id: string; office_id?: string | null; contract_id?: string | null; record_space: 'office_internal' | 'current_contract' | 'shared_history'; record_kind: 'note' | 'photo' | 'document' | 'repair' | 'schedule' | 'task'; title: string; body?: string | null; created_by: string; idempotency_key: string; occurred_at?: string; created_at?: string; updated_at?: string };
+        Update: { title?: string; body?: string | null; occurred_at?: string; updated_at?: string };
+        Relationships: [];
+      };
+      attachments: {
+        Row: { id: string; record_id: string; storage_path: string; original_name: string; media_type: string; byte_size: number; checksum_sha256: string | null; status: 'pending' | 'ready' | 'failed' | 'quarantined'; created_by: string; created_at: string };
+        Insert: { id?: string; record_id: string; storage_path: string; original_name: string; media_type: string; byte_size: number; checksum_sha256?: string | null; status?: 'pending' | 'ready' | 'failed' | 'quarantined'; created_by: string; created_at?: string };
+        Update: { status?: 'pending' | 'ready' | 'failed' | 'quarantined'; checksum_sha256?: string | null };
+        Relationships: [];
+      };
+      access_audit_events: {
+        Row: { id: number; actor_user_id: string | null; action: string; resource_type: string; resource_id: string | null; office_id: string | null; home_id: string | null; outcome: 'allowed' | 'denied'; reason_code: string; created_at: string };
+        Insert: { actor_user_id?: string | null; action: string; resource_type: string; resource_id?: string | null; office_id?: string | null; home_id?: string | null; outcome: 'allowed' | 'denied'; reason_code: string; created_at?: string };
+        Update: never;
+        Relationships: [];
+      };
       account_usernames: {
         Row: {
           user_id: string;
@@ -114,6 +174,13 @@ export type Database = {
     };
     Views: Record<string, never>;
     Functions: {
+      is_active_office_member: { Args: { p_office_id: string }; Returns: boolean };
+      is_principal_office_member: { Args: { p_office_id: string }; Returns: boolean };
+      can_perform_office_action: { Args: { p_office_id: string; p_action: string }; Returns: boolean };
+      has_active_home_access: { Args: { p_home_id: string }; Returns: boolean };
+      has_active_office_home_access: { Args: { p_home_id: string }; Returns: boolean };
+      can_access_contract: { Args: { p_contract_id: string }; Returns: boolean };
+      can_access_record: { Args: { p_record_id: string }; Returns: boolean };
       claim_username: {
         Args: { p_username: string };
         Returns: boolean;
