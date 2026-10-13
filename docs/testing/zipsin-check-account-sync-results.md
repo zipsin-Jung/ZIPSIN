@@ -14,6 +14,7 @@
 - `/ck → 공용 로그인 → 공용 회원가입 → 원래 체크 경로 유지`: 실제 Chromium 통과
 - 비밀값 검사와 로컬·Production 환경값 규칙 검사: 통과
 - 잘못된 Production 기준 주소 `https://ck.zipsin.net` 거부: 통과
+- Vercel 브랜치 주소 HTTP 200 응답: 확인. 단, Vercel 로그인 보호 화면이므로 제품 화면 검수로 계산하지 않음
 
 ## 미실행·차단
 

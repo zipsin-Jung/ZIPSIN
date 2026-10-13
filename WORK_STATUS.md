@@ -9,6 +9,7 @@
 - 520개 자동 테스트, 커버리지 네 지표 80% 이상, 타입검사, Production build, 비밀값·환경값 검사를 통과했습니다.
 - 실제 Chromium은 38개 통과·외부 Preview 계정 전용 9개 skip이며 `/ck → 로그인 → 회원가입 → /ck 복귀`를 확인했습니다.
 - 실제 Google·Kakao 로그인과 두 운영 도메인의 공유 세션은 Supabase·Vercel·공급자 관리자 설정 후 Preview에서 검수해야 합니다. Production은 변경하지 않았습니다.
+- 브랜치 Vercel 주소는 생성됐으나 현재 Vercel 로그인 보호 화면을 반환해 공개 Preview 제품 화면 검수는 대기 상태입니다.
 
 ## 2026-10-13 유료 출시 완성 통합 프롬프트
 

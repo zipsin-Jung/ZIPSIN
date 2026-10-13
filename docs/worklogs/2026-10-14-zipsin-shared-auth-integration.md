@@ -23,6 +23,8 @@
 - Next.js 16.4.0 Production build: 통과
 - Chromium: 38 통과, 외부 Preview 계정 전용 9 skip
 - 비밀값·환경값 검사: 통과
+- GitHub 안전 브랜치 푸시: 완료
+- Vercel 브랜치 주소 생성: 확인, 접근 보호로 제품 화면 검수는 대기
 
 ## 남은 일
 
