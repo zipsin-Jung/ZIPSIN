@@ -5,22 +5,31 @@
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0",
     "build": "next build --webpack",
-    "start": "node scripts/preview.mjs",
+    "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "check:secrets": "node scripts/check-secrets.mjs",
+    "check:account-env": "node scripts/check-account-sync-env.mjs"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.117.3",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "lucide-react": "^1.31.0",
-    "next": "16.3.6",
+    "next": "16.4.0",
     "radix-ui": "^1.6.7",
     "react": "19.2.6",
     "react-dom": "19.2.6",
-    "tailwind-merge": "3.6.0"
+    "server-only": "^0.0.1",
+    "tailwind-merge": "3.6.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.64.0",
     "@tailwindcss/postcss": "4.2.1",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",

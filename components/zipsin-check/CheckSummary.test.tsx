@@ -17,5 +17,6 @@ describe('방문 요약', () => {
     const unverified = screen.getByRole('region', {name: /확인 못함 4개/});
     expect(within(unverified).getAllByText(/다음:/).length).toBe(4);
     expect(screen.getByText(/법률·안전·하자 판정이 아니에요/)).toBeInTheDocument();
+    expect(screen.getByRole('link', {name: /집신에 저장하기/})).toHaveAttribute('href', '/ck/transfer?candidate=a');
   });
 });

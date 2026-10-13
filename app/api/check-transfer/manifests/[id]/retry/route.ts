@@ -1,0 +1,5 @@
+import {NextResponse} from 'next/server';
+import {requireUser} from '@/features/auth/server/session';
+import {createSupabaseServerClient} from '@/lib/supabase/server';
+import {createSupabaseTransferRepository} from '@/features/check-transfer/server/repository';
+export async function POST(request:Request,{params}:{params:Promise<{id:string}>}){try{const user=await requireUser();const{id}=await params;const repository=createSupabaseTransferRepository(await createSupabaseServerClient());const manifest=await repository.getManifest(id);if(!manifest||manifest.ownerUserId!==user.id)return NextResponse.json({code:'TRANSFER_NOT_FOUND'},{status:404});const body=await request.json() as {itemKeys?:string[]};const retryItemKeys=[...new Set((body.itemKeys??[]).filter(key=>typeof key==='string'&&key.length<=128))];return NextResponse.json({manifestId:id,retryItemKeys,status:'prepared'})}catch(error){const code=error instanceof Error?error.message:'TRANSFER_FAILED';return NextResponse.json({code:code==='AUTH_REQUIRED'?code:'RETRY_PREPARE_FAILED'},{status:code==='AUTH_REQUIRED'?401:400})}}

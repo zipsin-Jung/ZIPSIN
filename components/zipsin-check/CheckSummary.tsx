@@ -44,7 +44,7 @@ export default function CheckSummary({candidate, canCompare, onBack, onAdd, onCo
         <button type="button" onClick={onAdd}>다른 집 추가하기</button>
         {canCompare && <button type="button" className={styles.primary} onClick={onCompare}>후보 집 비교하기</button>}
       </div>
-      <a className={styles.signupCta} href="/#signup"><strong>집신 가입 안내 보기</strong><span>계정에는 아직 저장되지 않아요. 지금 결과는 이 기기에만 있어요 →</span></a>
+      <a className={styles.signupCta} href={`/ck/transfer?candidate=${encodeURIComponent(candidate.id)}`}><strong>집신에 저장하기</strong><span>무엇을 옮길지 먼저 확인하고, 원할 때만 로그인해요 →</span></a>
     </main>
   );
 }

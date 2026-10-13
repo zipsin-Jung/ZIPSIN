@@ -51,6 +51,6 @@ export default function CheckCompare({candidates, selectedIds, onToggle, onBack,
         <tr><th scope="row">관리</th>{selected.map((candidate) => <td key={candidate.id}><button type="button" className={compareStyles.delete} onClick={() => onDelete(candidate.id)}>{candidate.alias} 영구 삭제</button></td>)}</tr>
       </tbody>
     </table></div>}
-    <a className={styles.signupCta} href="/#signup"><strong>집신에 저장하기</strong><span>현재는 가입 화면으로만 이동하며 로컬 기록은 유지돼요.</span></a>
+    <a className={styles.signupCta} href={`/ck/transfer?candidates=${encodeURIComponent(selectedIds.join(','))}`}><strong>집신에 저장하기</strong><span>선택한 집과 사진을 확인한 뒤 내 계정에 옮길 수 있어요.</span></a>
   </main>;
 }
