@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import PublicHome from '@/components/PublicHome';
@@ -12,16 +12,16 @@ describe('PublicHome', () => {
     expect(screen.queryByText(/사전.?가입|데모|출시 알림/)).not.toBeInTheDocument();
   });
 
-  it('TEST-RC-PUB-002 실제 생활의 여섯 순간을 선택할 수 있다', () => {
+  it('TEST-RC-PUB-IMG-001 실제 생활의 네 장면을 이미지와 함께 선택할 수 있다', () => {
     render(<PublicHome />);
 
-    expect(screen.getAllByRole('tab')).toHaveLength(6);
+    expect(screen.getAllByRole('tab')).toHaveLength(4);
+    expect(screen.getByRole('tab', { name: /집 사진이 흩어졌을 때/ })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /에어컨이 고장 났을 때/ })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: /장기수선충당금/ })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /도배·장판 상태/ })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /급하게 계약서/ })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: /직원이 바뀌어도/ })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: /퇴거할 때/ })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: /컴퓨터와 휴대전화에 흩어진 집 사진/ })).toBeInTheDocument();
+    expect(screen.getAllByText('생활 장면 예시')).toHaveLength(2);
   });
 
   it('TEST-RC-PUB-003 실제 서비스 경로로만 연결한다', () => {
@@ -43,27 +43,28 @@ describe('PublicHome', () => {
     expect(channel).toHaveAttribute('rel', expect.stringContaining('noreferrer'));
   });
 
-  it('TEST-RC-PUB-004 사례를 키보드로 바꾸면 해당 집신 화면이 나타난다', async () => {
+  it('TEST-RC-PUB-IMG-002 사례를 바꾸면 생활 이미지와 해당 집신 화면이 함께 바뀐다', async () => {
     const user = userEvent.setup();
     render(<PublicHome />);
 
-    const airConditioner = screen.getByRole('tab', { name: /에어컨이 고장 났을 때/ });
+    const scattered = screen.getByRole('tab', { name: /집 사진이 흩어졌을 때/ });
     const contract = screen.getByRole('tab', { name: /급하게 계약서/ });
 
-    expect(airConditioner).toHaveAttribute('aria-selected', 'true');
-    expect(screen.getByRole('tabpanel')).toHaveTextContent('에어컨 설치·수리 기록');
+    expect(scattered).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tabpanel')).toHaveTextContent('집 사진 기록');
 
     await user.click(contract);
 
     expect(contract).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('img', { name: /외부에서 계약서를 찾는 순간/ })).toBeInTheDocument();
     expect(screen.getByRole('tabpanel')).toHaveTextContent('계약 만기일');
   });
 
-  it('TEST-RC-PUB-005 모든 사례를 좌우 키로 순환하며 해당 증거 화면을 보여준다', async () => {
+  it('TEST-RC-PUB-005 네 사례를 좌우 키로 순환하며 해당 증거 화면을 보여준다', async () => {
     const user = userEvent.setup();
     render(<PublicHome />);
-    const expected = ['장기수선충당금 관련 자료', '거실 바닥 상태 비교', '임대차계약', '이 집의 다음 일', '입주부터 퇴거까지'];
-    let selected = screen.getByRole('tab', { name: /에어컨이 고장 났을 때/ });
+    const expected = ['계약 만기일', '에어컨 설치·수리 기록', '거실 바닥 상태 비교'];
+    let selected = screen.getByRole('tab', { name: /집 사진이 흩어졌을 때/ });
     selected.focus();
     for (const text of expected) {
       await user.keyboard('{ArrowRight}');
@@ -72,8 +73,37 @@ describe('PublicHome', () => {
       expect(screen.getByRole('tabpanel')).toHaveTextContent(text);
     }
     await user.keyboard('{ArrowRight}');
-    expect(screen.getByRole('tabpanel')).toHaveTextContent('에어컨 설치·수리 기록');
+    expect(screen.getByRole('tabpanel')).toHaveTextContent('집 사진 기록');
     await user.keyboard('{ArrowLeft}');
-    expect(screen.getByRole('tabpanel')).toHaveTextContent('입주부터 퇴거까지');
+    expect(screen.getByRole('tabpanel')).toHaveTextContent('거실 바닥 상태 비교');
+  });
+
+  it('TEST-RC-PUB-IMG-003 이미지가 실패해도 설명과 제품 화면을 유지한다', () => {
+    render(<PublicHome />);
+
+    fireEvent.error(screen.getByRole('img', { name: /컴퓨터와 휴대전화에 흩어진 집 사진/ }));
+
+    expect(screen.getByText('이미지를 불러오지 못했습니다.')).toBeInTheDocument();
+    expect(screen.getByRole('tabpanel')).toHaveTextContent('집 사진 기록');
+    expect(screen.getAllByRole('link', { name: '웹에서 시작하기' })[0]).toBeInTheDocument();
+  });
+
+  it('TEST-RC-PUB-EV-001 예시 데이터와 실제 기능 화면을 구분한다', () => {
+    render(<PublicHome />);
+
+    expect(screen.getAllByText('제품 화면 예시')).toHaveLength(2);
+    expect(screen.getByText(/직원이 바뀌어도 기록이 이어집니다/)).toBeInTheDocument();
+    expect(screen.getByText(/입주부터 퇴거까지 같은 집에서 확인합니다/)).toBeInTheDocument();
+  });
+
+  it('TEST-RC-PUB-EV-002 공개 예시 화면은 동작하지 않는 가짜 버튼을 만들지 않는다', async () => {
+    const user = userEvent.setup();
+    render(<PublicHome />);
+
+    await user.click(screen.getByRole('tab', { name: /급하게 계약서/ }));
+
+    expect(screen.queryByRole('button', { name: '계약 문서 확인' })).not.toBeInTheDocument();
+    expect(screen.getByText('계약 문서 확인')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '이 집 기록 시작하기' })).toHaveAttribute('href', '/signup');
   });
 });

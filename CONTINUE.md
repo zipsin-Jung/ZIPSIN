@@ -18,3 +18,5 @@
 - `docs/superpowers/plans/2026-10-13-contract-home-phase-1.md`
 
 실제 파일과 Git 상태를 인수인계 문서보다 우선합니다. 1단계 로컬 구현과 독립 검수 보완은 `f612c47`까지 반영됐습니다. 다음 작업은 Preview에 `202610130011_contract_lifecycle_home.sql`을 안전하게 적용하고 폐기 가능한 대표·소속공인중개사·보조원·임대인·임차인 계정으로 계약 날짜·D-day·본인 계획 저장·새로고침 유지·관계 종료·타인 계약 ID 거부를 확인하는 것입니다. 이 실제 Postgres/RLS 증거 전에는 품질 게이트를 통과로 표시하지 마세요. 사용자 승인 전에는 Production migration·배포를 하지 마세요.
+
+2026-10-14에는 공개 홈 네 생활 장면 이미지와 제품 UI 전환, 로그인 홈의 D-day·다음 행동·사진 없음·문서·대화 구조를 구현했습니다. 요구사항·자산·검증 기록은 `docs/superpowers/specs/2026-10-14-image-led-public-and-app-home-design.md`, `docs/design/2026-10-14-public-home-image-assets.md`, `docs/worklogs/2026-10-14-image-led-public-and-app-home.md`를 확인하세요. 이 시각 개선은 데이터베이스나 권한 모델을 바꾸지 않았습니다. Preview의 실제 Postgres/RLS 검증 차단 항목은 그대로 유지합니다.

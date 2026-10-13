@@ -26,7 +26,8 @@ test('서비스 주소에서 제품을 이해하고 실제 가입으로 이동�
   await page.goto('/');
 
   await expect(page.getByRole('heading', { name: /집에 관한 일/ })).toBeVisible();
-  await expect(page.getByRole('tab')).toHaveCount(6);
+  await expect(page.getByRole('tab')).toHaveCount(4);
+  await expect(page.getByRole('img', { name: /컴퓨터와 휴대전화에 흩어진 집 사진/ })).toBeVisible();
   await page.getByRole('tab', { name: /급하게 계약서/ }).click();
   await expect(page.getByRole('tabpanel')).toContainText('계약 만기일');
   await page.getByRole('link', { name: '웹에서 시작하기' }).first().click();

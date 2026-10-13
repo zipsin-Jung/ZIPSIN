@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { FileText, Image as ImageIcon, MessageCircle } from 'lucide-react';
 
 type PrimaryRole = 'principal_broker' | 'associate_broker' | 'assistant' | 'landlord' | 'tenant';
 type OfficeSummary = { id: string; name: string; canRegisterHome?: boolean };
@@ -10,25 +11,32 @@ type NextTask = { id: string; homeId: string; title: string; dueAt: string | nul
 function SingleHome({ home, unreadChatCount }: { home: RecentHome; unreadChatCount: number }) {
   return (
     <main className="mx-auto max-w-6xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8">
-      <section className="overflow-hidden rounded-[28px] border border-[#d8e3e0] bg-white shadow-[0_24px_70px_rgba(20,54,57,.08)]">
-        <div className="grid gap-8 p-6 sm:p-9 lg:grid-cols-[1fr_auto] lg:items-end">
-          <div>
+      <section className="overflow-hidden rounded-[30px] border border-[#d8e3e0] bg-white shadow-[0_24px_70px_rgba(20,54,57,.08)]">
+        <div className="grid lg:grid-cols-[1.1fr_.9fr]">
+          <div className="p-6 sm:p-9 lg:p-11">
             <p className="text-sm font-extrabold text-[#0b695c]">내 집에서 이어지는 기록</p>
             <h1 className="mt-2 text-4xl font-black tracking-[-0.05em] text-[#102a43] sm:text-5xl">{home.label}</h1>
             <p className="mt-3 text-sm leading-6 text-[#607785]">{home.address}</p>
+            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl bg-[#edf7f4] px-5 py-5"><p className="text-sm font-bold text-[#476772]">계약 만기</p><p className="mt-1 text-3xl font-black tracking-[-0.04em] text-[#0b695c]">{home.contractDay?.label ?? '날짜 확인'}</p></div>
+              <div className="rounded-2xl border border-[#dfe8e6] px-5 py-5"><p className="text-sm font-bold text-[#476772]">지금 할 일</p><p className="mt-1 font-black leading-6 text-[#102a43]">{home.openTask?.title ?? '집의 다음 기록을 확인해 보세요'}</p></div>
+            </div>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link aria-label={`${home.label} 열기`} className="app-primary inline-flex min-h-12 items-center rounded-xl px-5 text-sm font-extrabold text-white" href={`/homes/${home.id}`}>집 기록 열기</Link>
+              <Link aria-label={unreadChatCount ? `읽지 않은 메시지 ${unreadChatCount}개 확인` : '집 대화 보기'} className="app-panel inline-flex min-h-12 items-center rounded-xl px-5 text-sm font-extrabold text-[#244657]" href="/chats">{unreadChatCount ? `새 집 대화 ${unreadChatCount}개` : '집 대화 보기'}</Link>
+            </div>
           </div>
-          <div className="rounded-2xl bg-[#edf7f4] px-6 py-5 lg:min-w-48">
-            <p className="text-sm font-bold text-[#476772]">계약 만기</p>
-            <p className="mt-1 text-4xl font-black tracking-[-0.04em] text-[#0b695c]">{home.contractDay?.label ?? '날짜 확인'}</p>
+          <div className="min-h-72 bg-[linear-gradient(145deg,#e9f2ef,#d9e7e2)] p-6 sm:p-8">
+            <div className="flex h-full min-h-60 flex-col justify-between rounded-[24px] border border-white/70 bg-white/75 p-6 backdrop-blur">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-[#0b695c] shadow-sm"><ImageIcon aria-hidden="true" size={25} /></div>
+              <div><p className="text-sm font-extrabold text-[#0b695c]">최근 사진과 문서</p><p className="mt-2 text-xl font-black text-[#102a43]">아직 등록된 사진이 없습니다</p><p className="mt-2 text-sm leading-6 text-[#607785]">실제 집 사진을 등록하면 이 집의 기록에서 안전하게 확인할 수 있습니다.</p></div>
+            </div>
           </div>
         </div>
-        <div className="border-t border-[#e3ebe8] bg-[#fbfcfc] p-6 sm:p-9">
-          <p className="text-sm font-extrabold text-[#0b695c]">지금 할 일</p>
-          <p className="mt-2 text-xl font-black text-[#102a43]">{home.openTask?.title ?? '집의 다음 기록을 확인해 보세요'}</p>
-          <div className="mt-5 flex flex-wrap gap-3">
-            <Link aria-label={`${home.label} 열기`} className="app-primary inline-flex min-h-12 items-center rounded-xl px-5 text-sm font-extrabold text-white" href={`/homes/${home.id}`}>집 기록 열기</Link>
-            <Link aria-label={unreadChatCount ? `읽지 않은 메시지 ${unreadChatCount}개 확인` : '집 대화 보기'} className="app-panel inline-flex min-h-12 items-center rounded-xl px-5 text-sm font-extrabold text-[#244657]" href="/chats">{unreadChatCount ? `새 집 대화 ${unreadChatCount}개` : '집 대화 보기'}</Link>
-          </div>
+        <div className="grid border-t border-[#e3ebe8] bg-[#fbfcfc] sm:grid-cols-3">
+          <Link href={`/homes/${home.id}`} className="flex min-h-24 items-center gap-4 border-b border-[#e3ebe8] px-6 sm:border-b-0 sm:border-r"><ImageIcon size={20} className="text-[#0b695c]" /><span><strong className="block text-sm text-[#102a43]">사진 기록</strong><small className="mt-1 block text-[#607785]">집에서 확인</small></span></Link>
+          <Link href={`/homes/${home.id}`} className="flex min-h-24 items-center gap-4 border-b border-[#e3ebe8] px-6 sm:border-b-0 sm:border-r"><FileText size={20} className="text-[#0b695c]" /><span><strong className="block text-sm text-[#102a43]">계약·문서</strong><small className="mt-1 block text-[#607785]">최근 자료 확인</small></span></Link>
+          <Link href="/chats" className="flex min-h-24 items-center gap-4 px-6"><MessageCircle size={20} className="text-[#0b695c]" /><span><strong className="block text-sm text-[#102a43]">집 대화</strong><small className="mt-1 block text-[#607785]">{unreadChatCount ? `새 대화 ${unreadChatCount}개` : '새 메시지 없음'}</small></span></Link>
         </div>
       </section>
     </main>
@@ -53,17 +61,16 @@ function MultiHome({ homes, office, unreadChatCount }: { homes: RecentHome[]; of
 
       <section aria-label="우선 확인할 집" className="mt-8 grid gap-4 lg:grid-cols-2">
         {homes.map((home) => (
-          <Link className="app-panel group rounded-[24px] p-6 transition hover:-translate-y-0.5 hover:border-[#9bc7c0]" href={`/homes/${home.id}`} key={home.id}>
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-sm font-bold text-[#607785]">{home.address}</p>
-                <h2 className="mt-2 text-2xl font-black tracking-[-0.035em] text-[#102a43]">{home.label}</h2>
+          <Link className="app-panel group overflow-hidden rounded-[24px] transition hover:-translate-y-0.5 hover:border-[#9bc7c0]" href={`/homes/${home.id}`} key={home.id}>
+            <div className="grid grid-cols-[88px_1fr] gap-4 p-5 sm:grid-cols-[104px_1fr]">
+              <div className="flex min-h-24 flex-col items-center justify-center rounded-2xl bg-[linear-gradient(145deg,#e9f2ef,#d8e5e1)] text-[#50716c]"><ImageIcon aria-hidden="true" size={22} /><span className="mt-2 text-xs font-bold">사진 없음</span></div>
+              <div className="min-w-0">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0"><p className="text-sm font-bold text-[#607785]">{home.address}</p><h2 className="mt-2 text-2xl font-black tracking-[-0.035em] text-[#102a43]">{home.label}</h2></div>
+                  {home.contractDay && <span className="shrink-0 rounded-full bg-[#edf7f4] px-3 py-2 text-sm font-black text-[#0b695c]">{home.contractDay.label}</span>}
+                </div>
+                <div className="mt-4 border-t border-[#e3ebe8] pt-3"><p className="text-xs font-extrabold text-[#0b695c]">다음 확인</p><p className="mt-1 font-bold text-[#244657]">{home.openTask?.title ?? (home.contractDay ? '만기 계획과 기록 확인' : '최근 기록 확인')}</p></div>
               </div>
-              {home.contractDay && <span className="shrink-0 rounded-full bg-[#edf7f4] px-3 py-2 text-sm font-black text-[#0b695c]">{home.contractDay.label}</span>}
-            </div>
-            <div className="mt-5 border-t border-[#e3ebe8] pt-4">
-              <p className="text-xs font-extrabold text-[#0b695c]">다음 확인</p>
-              <p className="mt-1 font-bold text-[#244657]">{home.openTask?.title ?? (home.contractDay ? '만기 계획과 기록 확인' : '최근 기록 확인')}</p>
             </div>
           </Link>
         ))}

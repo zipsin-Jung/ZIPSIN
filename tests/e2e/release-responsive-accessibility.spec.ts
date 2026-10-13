@@ -18,7 +18,7 @@ for (const width of viewports) {
     expect(overflow).toBeLessThanOrEqual(1);
 
     const tabs = page.getByRole('tab');
-    await expect(tabs).toHaveCount(6);
+    await expect(tabs).toHaveCount(4);
     await tabs.first().focus();
     await page.keyboard.press('ArrowRight');
     await expect(tabs.nth(1)).toBeFocused();

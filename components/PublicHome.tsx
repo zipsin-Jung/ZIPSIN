@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight, FileText, House, MessageCircle, ShieldCheck } from 'lucide-react';
 import Brand from '@/components/Brand';
 import { ScenarioExplorer } from '@/features/public-home/components/ScenarioExplorer';
@@ -23,11 +24,14 @@ export default function PublicHome() {
           <span className={styles.safety}><ShieldCheck size={17} /> 주소만 알아서는 어떤 기록도 볼 수 없습니다.</span>
         </div>
 
-        <div className={styles.heroProduct} aria-label="집신 실제 제품 화면 예시">
-          <div className={styles.appTopbar}><span>우리 집</span><strong>서울 노원구 · 1203호</strong></div>
-          <div className={styles.nextAction}><span>다음 일정</span><strong>계약 만기 전 갱신 여부 확인</strong><time>2027년 2월 28일</time></div>
-          <div className={styles.quickRecords}><span><FileText size={18} /> 계약 문서</span><span><MessageCircle size={18} /> 집 대화</span><span><House size={18} /> 전체 기록</span></div>
-          <div className={styles.latestRecord}><small>최근 기록</small><strong>입주 전 거실 상태 사진</strong><span>사진 8장 · 2025. 02. 18</span></div>
+        <div className={styles.heroVisual}>
+          <span className={styles.heroSceneLabel}>생활 장면 예시</span>
+          <div className={styles.heroPhoto}><Image src="/images/public-home/scattered-records.png" alt="여러 기기에 흩어진 집 기록을 찾는 장면" fill sizes="(max-width: 980px) 100vw, 48vw" priority /></div>
+          <div className={styles.heroProduct} aria-label="집신 제품 화면 예시">
+            <div className={styles.appTopbar}><span>제품 화면 예시</span><strong>우리 집</strong></div>
+            <div className={styles.nextAction}><span>다음 일정</span><strong>계약 만기 전 연장·퇴거 계획 확인</strong><time>만기 D-112</time></div>
+            <div className={styles.quickRecords}><span><FileText size={18} /> 계약 문서</span><span><MessageCircle size={18} /> 집 대화</span><span><House size={18} /> 전체 기록</span></div>
+          </div>
         </div>
       </section>
 
@@ -39,6 +43,11 @@ export default function PublicHome() {
       <section id="features" className={styles.principle}>
         <div><span className={styles.kicker}>사람이 아니라 집에 남는 기록</span><h2>기록은 이어지고,<br />개인정보는 따라가지 않습니다.</h2></div>
         <ul><li><strong>집 한 채에 연결</strong><span>사진·문서·대화·일정을 같은 흐름에서 확인합니다.</span></li><li><strong>관계가 있는 사람만</strong><span>역할·관계·기간이 확인된 사람에게 필요한 범위만 엽니다.</span></li><li><strong>관계가 끝나면 접근 종료</strong><span>기록은 안전하게 남고 이전 계약자의 개인자료는 다음 계약에 넘어가지 않습니다.</span></li></ul>
+      </section>
+
+      <section className={styles.continuity} aria-labelledby="continuity-title">
+        <div><span className={styles.kicker}>시간이 지나도 이어지는 이유</span><h2 id="continuity-title">계약이 끝나고 사람이 바뀌어도,<br />집에서 있었던 일은 끊기지 않게.</h2></div>
+        <div className={styles.continuityCards}><article><strong>직원이 바뀌어도 기록이 이어집니다.</strong><p>개인 휴대전화가 아니라 집과 사무소에 최근 기록과 다음 행동이 남습니다.</p></article><article><strong>입주부터 퇴거까지 같은 집에서 확인합니다.</strong><p>사진·문서·대화·변경사항을 필요한 순간 하나의 흐름으로 꺼냅니다.</p></article></div>
       </section>
 
       <section id="how" className={styles.how}>

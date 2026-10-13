@@ -37,6 +37,8 @@ describe('HomeStart', () => {
     expect(screen.getByRole('heading', { name: '성수동 집' })).toBeInTheDocument();
     expect(screen.getByText('D-112')).toBeInTheDocument();
     expect(screen.getByText('입주 사진 확인')).toBeInTheDocument();
+    expect(screen.getByText('아직 등록된 사진이 없습니다')).toBeInTheDocument();
+    expect(screen.getByText('최근 사진과 문서')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '성수동 집 열기' })).toHaveAttribute('href', '/homes/home-1');
     expect(screen.queryByText('첫 집부터 기록을 시작하세요')).not.toBeInTheDocument();
   });
@@ -58,6 +60,7 @@ describe('HomeStart', () => {
     expect(screen.getByRole('link', { name: /성수동 집/ })).toHaveAttribute('href', '/homes/home-2');
     expect(screen.getByText('D-21')).toBeInTheDocument();
     expect(screen.getByText('계약서 확인')).toBeInTheDocument();
+    expect(screen.getAllByText('사진 없음')).toHaveLength(2);
     expect(screen.getByRole('link', { name: /읽지 않은 메시지 3개/ })).toHaveAttribute('href', '/chats');
     expect(screen.getByRole('link', { name: '집 등록하기' })).toHaveAttribute('href', '/homes/new?office=office-1');
     expect(screen.queryByText(/체험|데모|가상|담당/)).not.toBeInTheDocument();
@@ -79,5 +82,30 @@ describe('HomeStart', () => {
     expect(screen.getByText('아직 연결된 집이 없습니다')).toBeInTheDocument();
     expect(screen.getByText('새 메시지가 없습니다')).toBeInTheDocument();
     expect(screen.queryByText(/0건|0개/)).not.toBeInTheDocument();
+  });
+
+  it('TEST-ZH-HOME-MEDIA-001 실제 집 카드에 공개 교육 이미지를 사용하지 않는다', () => {
+    const { container } = render(<HomeStart
+      primaryRole="tenant"
+      offices={[]}
+      recentHomes={[{ id: 'home-1', label: '성수동 집', address: '상세 주소 보호됨', contractDay: null, openTask: null }]}
+    />);
+
+    expect(container.querySelector('img[src*="public-home"]')).not.toBeInTheDocument();
+    expect(screen.getByText('아직 등록된 사진이 없습니다')).toBeInTheDocument();
+  });
+
+  it('TEST-ZH-HOME-MEDIA-002 여러 집 카드도 실제 사진 연결 전에는 중립 상태만 표시한다', () => {
+    const { container } = render(<HomeStart
+      primaryRole="principal_broker"
+      offices={[{ id: 'office-1', name: '집신 공인중개사무소' }]}
+      recentHomes={[
+        { id: 'home-1', label: '첫 번째 집', address: '상세 주소 보호됨', contractDay: null, openTask: null },
+        { id: 'home-2', label: '두 번째 집', address: '상세 주소 보호됨', contractDay: null, openTask: null },
+      ]}
+    />);
+
+    expect(container.querySelector('img')).not.toBeInTheDocument();
+    expect(screen.getAllByText('사진 없음')).toHaveLength(2);
   });
 });
