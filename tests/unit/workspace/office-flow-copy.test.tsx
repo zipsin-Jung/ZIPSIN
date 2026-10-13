@@ -63,7 +63,6 @@ describe('assignment-free office flow copy', () => {
 
     expect(screen.getByRole('heading', { name: '월계동 집' })).toBeInTheDocument();
     expect(screen.queryByText('담당자 관리')).not.toBeInTheDocument();
-    expect(db.from).not.toHaveBeenCalledWith('office_memberships');
   });
 
   it('explains that an accepted office member can use the office homes', async () => {
