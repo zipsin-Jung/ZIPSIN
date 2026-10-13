@@ -24,16 +24,29 @@
 
 ## 검증 결과
 
-- `npm run test:coverage`: 86개 파일 통과, 2개 외부환경 테스트 파일 skip; 387개 통과, 2개 skip
-- Coverage: Statements 91.36%, Branches 85.09%, Functions 95.03%, Lines 93.89%
+- `npm test -- --run`: 86개 파일 통과, 2개 외부환경 테스트 파일 skip; 392개 통과, 2개 skip
+- `npm run test:coverage`: 392개 통과, 2개 skip
+- Coverage: Statements 88.12%, Branches 83.00%, Functions 92.21%, Lines 90.93%
 - `npm run typecheck`: 통과
 - `npm run build`: Next.js 16.4.0 webpack build 통과
 - `npm run test:e2e`: 로컬 Chromium 22개 통과, 실제 Preview 계정·채팅 환경이 필요한 11개 skip
 - 320·390·768·1440px 공개 홈 접근성·가로 넘침·콘솔 오류 검사는 통과했다.
+- `npm audit --omit=dev --audit-level=high`: 취약점 0건
+
+## 2026-10-14 독립 검수 보완
+
+- 계약 수정 가능 여부를 현재 사용자 ID까지 묶어 보조원·타 사무소 사용자의 화면 노출 가능성을 막았다.
+- 상대 계약 당사자 계획은 `get_contract_party_plan_statuses` 보안 함수로만 읽고 사용자 UUID는 반환하지 않는다. 원본 상태·감사 표의 인증 사용자 직접 조회 권한도 회수했다.
+- 집 목록의 상세 주소를 숨기고, 기록·채팅방·첨부 조회 오류는 빈 상태가 아닌 안전한 오류 화면으로 처리한다.
+- 동일 상태 동시 저장은 계약·사용자 단위 트랜잭션 잠금으로 감사 이벤트 중복을 막는다.
+- 기존 계약의 종류는 화면에서 잠그고 날짜만 수정할 수 있게 서버 규칙과 맞췄다.
+- 코드 보완 커밋: `2952462`, `f612c47`
+- 독립 재검수 결과: P0 0건, P1 1건, P2 0건. 남은 P1은 실제 Preview Postgres/RLS 다계정 검증이다.
+- 바탕화면 문서 동기화에서 새 작업기록·품질보고서는 같은 구조로 복사했다. 기존 `WORK_STATUS.md`, `CONTINUE.md`, `docs/traceability/release-candidate-v1.md`는 바탕화면 사본이 Git 기준본과 달라 덮어쓰지 않고 충돌로 남겼다.
 
 ## 남은 일
 
 - Preview DB에 신규 migration을 백업·롤백 절차와 함께 적용한다.
-- 폐기 가능한 Preview 계정으로 목적 선택→집→계약 날짜→D-day→본인 계획→새로고침 유지와 무권한 거부를 확인한다.
+- 폐기 가능한 Preview 계정으로 목적 선택→집→계약 날짜→D-day→본인 계획→새로고침 유지와 대표·소속·보조원·종료 관계·타인 계약 ID 거부를 실제 Postgres에서 확인한다.
 - Preview 주소를 사용자에게 제출해 화면 승인을 받는다.
 - 실제 문자 인증, 결제, OCR, PDF 내보내기와 자동 분류는 이번 단계 범위가 아니다.
