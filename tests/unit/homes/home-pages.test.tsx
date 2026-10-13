@@ -49,8 +49,8 @@ describe('home route server boundaries', () => {
     });
     guard.mockResolvedValue({ supabase: db, user: { id: 'user-1' } });
     render(await HomesPage({ searchParams: Promise.resolve({ office: officeId }) }));
-    expect(screen.getByRole('link', { name: /관리 집 A/ })).toHaveAttribute('href', '/homes/home-1');
-    expect(screen.getByRole('link', { name: /관리 집 B/ })).toHaveAttribute('href', '/homes/home-2');
+    expect(screen.getByRole('link', { name: '관리 집 A 기록 열기' })).toHaveAttribute('href', '/homes/home-1');
+    expect(screen.getByRole('link', { name: '관리 집 B 기록 열기' })).toHaveAttribute('href', '/homes/home-2');
     expect(db.chains.homes.eq).toHaveBeenCalledWith('office_id', officeId);
     expect(db.chains.homes.eq).toHaveBeenCalledWith('status', 'active');
   });

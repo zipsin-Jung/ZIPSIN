@@ -104,7 +104,7 @@ describe('assignment-free office flow copy', () => {
     });
     onboardingGuard.mockResolvedValue({ supabase: db, user: { id: 'user-1' } });
 
-    render(await MyPage());
+    render(await MyPage({ searchParams: Promise.resolve({}) }));
 
     expect(screen.getByRole('heading', { name: '김집신님의 집신' })).toBeInTheDocument();
     expect(screen.getByText('임차인')).toBeInTheDocument();

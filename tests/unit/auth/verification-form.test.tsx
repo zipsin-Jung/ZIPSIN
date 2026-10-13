@@ -41,4 +41,30 @@ describe('VerificationForm', () => {
     expect(replace).toHaveBeenCalledWith('/onboarding/role');
     expect(refresh).toHaveBeenCalled();
   });
+
+  it('TEST-ZSD-AUTH-002 explains when the SMS provider is unavailable', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: false,
+      status: 503,
+      json: async () => ({ error: 'provider_unavailable' }),
+    }));
+    const user = userEvent.setup();
+    render(<VerificationForm displayName="홍길동" email="test@example.com" />);
+    await user.type(screen.getByRole('textbox', { name: '전화번호' }), '01012345678');
+    await user.click(screen.getByRole('button', { name: '인증번호 받기' }));
+    expect(await screen.findByText(/문자 인증 연결을 준비하고 있습니다/)).toBeInTheDocument();
+  });
+
+  it('TEST-ZSD-AUTH-003 explains an expired verification code and lets the user request another', async () => {
+    vi.stubGlobal('fetch', vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ challengeId: 'challenge-1', maskedPhone: '010-****-5678' }) })
+      .mockResolvedValueOnce({ ok: false, json: async () => ({ error: 'expired' }) }));
+    const user = userEvent.setup();
+    render(<VerificationForm />);
+    await user.type(screen.getByRole('textbox', { name: '전화번호' }), '01012345678');
+    await user.click(screen.getByRole('button', { name: '인증번호 받기' }));
+    await user.type(await screen.findByRole('textbox', { name: '인증번호' }), '123456');
+    await user.click(screen.getByRole('button', { name: '인증하기' }));
+    expect(await screen.findByText(/인증번호가 만료됐습니다/)).toBeInTheDocument();
+  });
 });

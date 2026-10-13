@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { requireOnboardingComplete } from '@/features/auth/guards/require-onboarding';
+import { logoutAction } from '@/features/auth/actions/logout';
 
 const roleLabels: Record<string, string> = {
   principal_broker: '대표 개업공인중개사',
@@ -9,7 +10,10 @@ const roleLabels: Record<string, string> = {
   tenant: '임차인',
 };
 
-export default async function MyPage() {
+type Props = { searchParams: Promise<{ error?: string }> };
+
+export default async function MyPage({ searchParams }: Props) {
+  const params = await searchParams;
   const { supabase, user } = await requireOnboardingComplete();
   const [{ data: profile }, { data: role }] = await Promise.all([
     supabase.from('profiles').select('display_name').eq('user_id', user.id).maybeSingle(),
@@ -24,6 +28,7 @@ export default async function MyPage() {
       <h1 className="mt-3 text-4xl font-extrabold tracking-[-0.05em] text-[#102a43]">
         {displayName}님의 집신
       </h1>
+      {params.error === 'logout_failed' && <p className="mt-6 rounded-2xl bg-red-50 p-4 font-semibold text-red-800" role="alert">로그아웃하지 못했습니다. 잠시 후 다시 시도해 주세요.</p>}
       <section className="app-panel mt-8 rounded-[28px] p-7">
         <p className="text-sm text-[#607785]">현재 역할</p>
         <p className="mt-2 text-xl font-extrabold text-[#102a43]">{roleLabel}</p>
@@ -35,6 +40,10 @@ export default async function MyPage() {
             홈으로
           </Link>
         </div>
+        <form action={logoutAction} className="mt-8 border-t border-[#dce7e4] pt-6">
+          <button className="min-h-12 rounded-2xl border border-red-200 px-5 py-3 text-sm font-bold text-red-700" type="submit">로그아웃</button>
+          <p className="mt-2 text-xs leading-5 text-[#607785]">공용 PC에서는 작업을 마친 뒤 반드시 로그아웃해 주세요.</p>
+        </form>
       </section>
     </main>
   );
