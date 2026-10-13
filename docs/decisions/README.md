@@ -1,5 +1,7 @@
 # 결정 기록
 
+- [DEC-023 공개 메인 4장 스토리 캐러셀](DEC-023-public-home-four-story-carousel.md)
+
 - [2026-10-13: 유료 출시 범위와 완료 판정 기준](2026-10-13-paid-launch-scope-and-completion-gate.md)
 - [DEC-012: 아이디 로그인과 소셜 로그인 병행](DEC-012-username-and-social-auth.md)
 - [DEC-011: Supabase 인증과 네이버 Custom OAuth](DEC-011-supabase-auth-with-naver-custom-oauth.md)

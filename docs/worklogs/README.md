@@ -1,5 +1,7 @@
 # 작업 보고서
 
+- [2026-10-14 공개 메인 4장 스토리 캐러셀 기획](2026-10-14-public-home-story-carousel-planning.md)
+
 - [2026-10-13 유료 출시 완성 프롬프트](2026-10-13-paid-launch-completion-master-prompt.md)
 - [2026-10-13 다른 Codex 종합 인수인계](2026-10-13-codex-master-handoff.md)
 - [2026-10-08 집 키·홈 화면 방향 정리](2026-10-08-home-key-and-dashboard-summary.md)
