@@ -30,6 +30,11 @@
 
 ## 남은 일
 
-- Git 커밋·GitHub 푸시
-- Vercel Preview 반영 및 실제 Preview 확인
 - 사용자 최종 승인 전 Production 배포는 하지 않는다.
+
+## 외부 반영
+
+- Git 커밋: `a9d2697 feat(check): clarify first-renter field checklist`
+- GitHub 브랜치: `codex/zipsin-shared-auth-integration`
+- Vercel 배포 상태: 성공
+- 실제 Vercel Preview에서 홈과 `바로 체크 → 집 별명 정하기` 오른쪽 패널 진입을 확인했다.
