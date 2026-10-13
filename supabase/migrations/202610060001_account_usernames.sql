@@ -13,6 +13,7 @@ create table public.account_usernames (
 alter table public.account_usernames enable row level security;
 
 revoke all on public.account_usernames from anon, authenticated;
+grant select, insert, update on public.account_usernames to service_role;
 
 create or replace function public.claim_username(p_username text) returns boolean
 language plpgsql
@@ -71,7 +72,7 @@ begin
     raise exception 'invalid_rate_limit';
   end if;
 
-  hashed_key := encode(digest(p_key, 'sha256'), 'hex');
+  hashed_key := encode(extensions.digest(p_key, 'sha256'), 'hex');
   current_window := to_timestamp(
     floor(extract(epoch from now()) / p_window_seconds) * p_window_seconds
   );

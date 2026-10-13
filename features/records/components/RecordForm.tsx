@@ -1,5 +1,6 @@
 'use client';
 import { useState, type FormEvent } from 'react';
+import { unstable_rethrow } from 'next/navigation';
 import { createRecordAction, type RecordFormState } from '@/features/records/actions/create-record';
 
 export function RecordForm({ homeId, officeId, idempotencyKey }: { homeId: string; officeId: string; idempotencyKey: string }) {
@@ -9,7 +10,8 @@ export function RecordForm({ homeId, officeId, idempotencyKey }: { homeId: strin
     setPending(true);
     try {
       setState(await createRecordAction(new FormData(event.currentTarget)));
-    } catch {
+    } catch (error) {
+      unstable_rethrow(error);
       setState({ error: '작성한 내용은 그대로 있어요. 잠시 후 다시 저장해 주세요.' });
     } finally {
       setPending(false);

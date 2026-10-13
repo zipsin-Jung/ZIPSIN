@@ -212,7 +212,7 @@ begin
     address_fingerprint, created_by, idempotency_key
   ) values (
     p_office_id, v_address, v_detail, v_label,
-    encode(digest(lower(v_address) || ':' || coalesce(v_detail, ''), 'sha256'), 'hex'),
+    encode(extensions.digest(lower(v_address) || ':' || coalesce(v_detail, ''), 'sha256'), 'hex'),
     v_user_id, p_idempotency_key
   ) returning id into v_home_id;
 

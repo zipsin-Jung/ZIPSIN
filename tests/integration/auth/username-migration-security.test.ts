@@ -16,6 +16,7 @@ describe('account username migration security', () => {
   it('blocks direct table access for anonymous and authenticated clients', () => {
     expect(sql).toMatch(/enable row level security/i);
     expect(sql).toMatch(/revoke all on public\.account_usernames from anon, authenticated/i);
+    expect(sql).toMatch(/grant select, insert, update on public\.account_usernames to service_role/i);
     expect(sql).not.toMatch(/create policy/i);
   });
 
@@ -29,7 +30,7 @@ describe('account username migration security', () => {
   it('stores only hashed rate-limit keys and exposes consumption to service role only', () => {
     expect(sql).toMatch(/create table public\.auth_rate_limits/i);
     expect(sql).toMatch(/key_hash text not null/i);
-    expect(sql).toMatch(/digest\(p_key, 'sha256'\)/i);
+    expect(sql).toMatch(/extensions\.digest\(p_key, 'sha256'\)/i);
     expect(sql).toMatch(/function public\.consume_auth_rate_limit\(/i);
     expect(sql).toMatch(/grant execute on function public\.consume_auth_rate_limit\([\s\S]*?\) to service_role/i);
     expect(sql).toMatch(/revoke all on public\.auth_rate_limits from anon, authenticated/i);

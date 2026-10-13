@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState, type FormEvent } from 'react';
+import { unstable_rethrow } from 'next/navigation';
 import { homeSchema, homeFieldErrors, type HomeFormState } from '@/features/homes/schemas/home';
 import { workspaceErrorMessage } from '@/features/workspace/domain/errors';
 export type { HomeFormState } from '@/features/homes/schemas/home';
@@ -27,7 +28,7 @@ export function HomeForm({ officeId, idempotencyKey, action }: {
     if (!parsed.success) { showErrors({ fieldErrors: homeFieldErrors(parsed.error) }); return; }
     saving.current = true; setPending(true); setState({});
     try { showErrors(await action(data)); }
-    catch { showErrors({ error: workspaceErrorMessage('server_error') }); }
+    catch (error) { unstable_rethrow(error); showErrors({ error: workspaceErrorMessage('server_error') }); }
     finally { saving.current = false; setPending(false); }
   }
   const fields = [

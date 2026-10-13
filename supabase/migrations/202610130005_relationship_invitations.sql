@@ -68,9 +68,9 @@ begin
     intended_role, access_scope, relationship_expires_at,
     invited_identifier_hash, created_by, expires_at
   ) values (
-    encode(digest(p_token, 'sha256'), 'hex'), v_kind, v_office_id, p_home_id, p_contract_id,
+    encode(extensions.digest(p_token, 'sha256'), 'hex'), v_kind, v_office_id, p_home_id, p_contract_id,
     p_role, p_scope, p_relationship_expires_at,
-    encode(digest('relationship:' || p_token, 'sha256'), 'hex'), v_user_id, p_expires_at
+    encode(extensions.digest('relationship:' || p_token, 'sha256'), 'hex'), v_user_id, p_expires_at
   ) returning id into v_invitation_id;
 
   insert into public.access_audit_events (
@@ -95,7 +95,7 @@ begin
   if char_length(p_token) < 32 then raise exception 'invalid_input'; end if;
 
   select * into v_invitation from public.invitations
-  where token_hash = encode(digest(p_token, 'sha256'), 'hex')
+  where token_hash = encode(extensions.digest(p_token, 'sha256'), 'hex')
     and invitation_kind in ('home_member', 'repair_event')
   for update;
   if not found then raise exception 'invalid_input'; end if;
@@ -144,7 +144,7 @@ begin
   if auth.uid() is null then raise exception 'authentication_required'; end if;
   if char_length(p_token) < 32 then raise exception 'invalid_input'; end if;
   select * into v_invitation from public.invitations
-  where token_hash = encode(digest(p_token, 'sha256'), 'hex')
+  where token_hash = encode(extensions.digest(p_token, 'sha256'), 'hex')
     and invitation_kind in ('home_member', 'repair_event');
   if not found then raise exception 'invalid_input'; end if;
   if v_invitation.revoked_at is not null then v_state := 'invitation_revoked';

@@ -454,7 +454,7 @@ begin
   -- Fingerprint is a candidate hint only; never search or merge on address.
   insert into public.homes (office_id, address_line1, address_detail, home_label, address_fingerprint, created_by, idempotency_key)
   values (p_office_id, v_address, v_detail, v_label,
-    encode(digest(lower(v_address) || ':' || coalesce(v_detail, ''), 'sha256'), 'hex'), v_user_id, p_idempotency_key)
+    encode(extensions.digest(lower(v_address) || ':' || coalesce(v_detail, ''), 'sha256'), 'hex'), v_user_id, p_idempotency_key)
   returning id into v_home_id;
   insert into public.office_home_assignments (office_id, home_id, assigned_user_id, assigned_by)
   values (p_office_id, v_home_id, v_user_id, v_user_id);
@@ -487,8 +487,8 @@ begin
     token_hash, invitation_kind, office_id, intended_role,
     invited_identifier_hash, created_by, expires_at
   ) values (
-    encode(digest(p_token, 'sha256'), 'hex'), 'office_member', p_office_id, p_role,
-    encode(digest('link:' || p_token, 'sha256'), 'hex'), v_user_id, p_expires_at
+    encode(extensions.digest(p_token, 'sha256'), 'hex'), 'office_member', p_office_id, p_role,
+    encode(extensions.digest('link:' || p_token, 'sha256'), 'hex'), v_user_id, p_expires_at
   ) returning id into v_invitation_id;
   insert into public.access_audit_events (actor_user_id, action, resource_type, resource_id, office_id, outcome, reason_code)
   values (v_user_id, 'invite', 'office_membership', v_invitation_id, p_office_id, 'allowed', 'office_invitation_created');
@@ -504,7 +504,7 @@ begin
   if v_user_id is null then raise exception 'authentication_required'; end if;
   if char_length(p_token) < 32 then raise exception 'invalid_input'; end if;
   select * into v_invitation from public.invitations
-  where token_hash = encode(digest(p_token, 'sha256'), 'hex')
+  where token_hash = encode(extensions.digest(p_token, 'sha256'), 'hex')
     and invitation_kind = 'office_member' for update;
   if not found then raise exception 'invalid_input'; end if;
   if v_invitation.revoked_at is not null then raise exception 'invitation_revoked'; end if;
@@ -529,7 +529,7 @@ begin
   if auth.uid() is null then raise exception 'authentication_required'; end if;
   if char_length(p_token) < 32 then raise exception 'invalid_input'; end if;
   select * into v_invitation from public.invitations
-  where token_hash = encode(digest(p_token, 'sha256'), 'hex') and invitation_kind = 'office_member';
+  where token_hash = encode(extensions.digest(p_token, 'sha256'), 'hex') and invitation_kind = 'office_member';
   if not found then raise exception 'invalid_input'; end if;
   if v_invitation.revoked_at is not null then v_state := 'invitation_revoked';
   elsif v_invitation.accepted_at is not null then v_state := 'invitation_used';
