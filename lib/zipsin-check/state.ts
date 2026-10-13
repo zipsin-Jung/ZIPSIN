@@ -1,5 +1,6 @@
 import {CHECK_ITEMS, CORE_ITEM_IDS, getItemsForDepth} from './catalog';
-import type {Candidate, CandidateV2, CheckAnswer, CheckDepth, CheckSummary, ComparisonRow, StoredCheckStateV2} from './types';
+import type {Candidate, CandidateV2, CheckAnswer, CheckDepth, CheckStatus, CheckSummary, ComparisonRow, StoredCheckStateV2} from './types';
+import {formatRentalPrice,formatWon,monthlyHousingCost} from './format';
 
 type NewCandidate = {id: string; alias: string; depth: CheckDepth; now: string; locationLabel?: string; discoverySource?: string; housingType?: string; transactionType?: string};
 
@@ -122,3 +123,9 @@ export function removeCandidate(state: StoredCheckStateV2, candidateId: string):
     activeCandidateId: state.activeCandidateId === candidateId ? undefined : state.activeCandidateId,
   };
 }
+
+export type HomeComparisonRow={key:string;label:string;values:Record<string,string>;statuses?:Record<string,CheckStatus>};
+export function buildHomeComparison(candidates:CandidateV2[],ids:string[]):HomeComparisonRow[]{const selected=[...new Set(ids)].map(id=>candidates.find(c=>c.id===id&&!c.archived)).filter((c):c is CandidateV2=>!!c).slice(0,3);const values=(read:(c:CandidateV2)=>string)=>Object.fromEntries(selected.map(c=>[c.id,read(c)]));const rows:HomeComparisonRow[]=[
+{key:'location',label:'위치',values:values(c=>c.listing.location||'미입력')},{key:'price',label:'보증금·월세',values:values(c=>formatRentalPrice(c.terms.depositWon,c.terms.monthlyRentWon))},{key:'maintenance',label:'관리비',values:values(c=>formatWon(c.terms.maintenanceFeeWon))},{key:'monthly-total',label:'월 고정 주거비',values:values(c=>formatWon(monthlyHousingCost(c.terms.monthlyRentWon,c.terms.maintenanceFeeWon)))},{key:'commute',label:'출퇴근',values:values(c=>c.commute.minutes===undefined?'미입력':`${c.commute.minutes}분`)},{key:'move-in',label:'입주일',values:values(c=>c.terms.moveInDate||'미입력')},{key:'discovery',label:'발견 경로',values:values(c=>c.listing.discoverySource||'미입력')},
+...CHECK_ITEMS.map(item=>({key:item.id,label:item.title,values:values(c=>{const s=c.answers[item.id]?.status;return s==='confirmed'?'괜찮음':s==='caution'?'다시 확인':'미확인'}),statuses:Object.fromEntries(selected.map(c=>[c.id,c.answers[item.id]?.status??'unverified']))})),
+{key:'follow-up-count',label:'다시 확인',values:values(c=>`${CHECK_ITEMS.filter(i=>c.answers[i.id]?.status==='caution').length}개`)},{key:'contact',label:'담당자',values:values(c=>c.contact.name||'미입력')},{key:'listing',label:'매물 링크',values:values(c=>c.listing.listingUrl?'매물 보기':'미입력')}];return rows}
