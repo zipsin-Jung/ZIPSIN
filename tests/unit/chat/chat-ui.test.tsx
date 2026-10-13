@@ -24,8 +24,8 @@ describe('chat UI states', () => {
 
   it('shows messages and identifies the current user', () => {
     render(<ChatRoom roomId={roomId} currentUserId="user-1" active initialMessages={[
-      { id: 2, room_id: roomId, sender_user_id: 'user-1', body: '확인했습니다.', created_at: '2026-10-13T00:00:00Z' },
-      { id: 1, room_id: roomId, sender_user_id: 'user-2', body: '사진을 올렸습니다.', created_at: '2026-10-12T23:59:00Z' },
+      { id: 2, room_id: roomId, sender_user_id: 'user-1', body: '확인했습니다.', created_at: '2026-10-13T00:00:00Z', sender_kind: 'user', support_identity_id: null },
+      { id: 1, room_id: roomId, sender_user_id: 'user-2', body: '사진을 올렸습니다.', created_at: '2026-10-12T23:59:00Z', sender_kind: 'user', support_identity_id: null },
     ]} attachments={[]} />);
     expect(screen.getByText('확인했습니다.')).toBeInTheDocument();
     expect(screen.getByText('나')).toBeInTheDocument();

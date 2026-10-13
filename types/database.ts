@@ -64,20 +64,20 @@ export type Database = {
         Relationships: [];
       };
       chat_rooms: {
-        Row: { id: string; room_type: 'direct' | 'group' | 'home_shared' | 'office_internal' | 'repair_event' | 'support'; title: string | null; office_id: string | null; home_id: string | null; contract_id: string | null; relationship_id: string | null; direct_key: string | null; relation_key: string | null; created_by: string; status: 'active' | 'closed'; created_at: string; closed_at: string | null };
-        Insert: { id?: string; room_type: 'direct' | 'group' | 'home_shared' | 'office_internal' | 'repair_event' | 'support'; title?: string | null; office_id?: string | null; home_id?: string | null; contract_id?: string | null; relationship_id?: string | null; direct_key?: string | null; relation_key?: string | null; created_by: string; status?: 'active' | 'closed'; created_at?: string; closed_at?: string | null };
-        Update: { title?: string | null; status?: 'active' | 'closed'; closed_at?: string | null };
+        Row: { id: string; room_type: 'direct' | 'group' | 'home_shared' | 'office_internal' | 'repair_event' | 'support'; title: string | null; office_id: string | null; home_id: string | null; contract_id: string | null; relationship_id: string | null; direct_key: string | null; relation_key: string | null; created_by: string; status: 'active' | 'closed'; support_status: 'waiting' | 'answered' | 'resolved' | null; created_at: string; closed_at: string | null };
+        Insert: { id?: string; room_type: 'direct' | 'group' | 'home_shared' | 'office_internal' | 'repair_event' | 'support'; title?: string | null; office_id?: string | null; home_id?: string | null; contract_id?: string | null; relationship_id?: string | null; direct_key?: string | null; relation_key?: string | null; created_by: string; status?: 'active' | 'closed'; support_status?: 'waiting' | 'answered' | 'resolved' | null; created_at?: string; closed_at?: string | null };
+        Update: { title?: string | null; status?: 'active' | 'closed'; support_status?: 'waiting' | 'answered' | 'resolved' | null; closed_at?: string | null };
         Relationships: [];
       };
       chat_room_memberships: {
-        Row: { id: string; room_id: string; user_id: string; membership_role: 'owner' | 'member'; status: 'active' | 'ended'; joined_at: string; ended_at: string | null };
-        Insert: { id?: string; room_id: string; user_id: string; membership_role?: 'owner' | 'member'; status?: 'active' | 'ended'; joined_at?: string; ended_at?: string | null };
-        Update: { status?: 'active' | 'ended'; ended_at?: string | null };
+        Row: { id: string; room_id: string; user_id: string; membership_role: 'owner' | 'member'; status: 'active' | 'ended'; notifications_muted: boolean; joined_at: string; ended_at: string | null };
+        Insert: { id?: string; room_id: string; user_id: string; membership_role?: 'owner' | 'member'; status?: 'active' | 'ended'; notifications_muted?: boolean; joined_at?: string; ended_at?: string | null };
+        Update: { status?: 'active' | 'ended'; notifications_muted?: boolean; ended_at?: string | null };
         Relationships: [];
       };
       chat_messages: {
-        Row: { id: number; room_id: string; sender_user_id: string; body: string; idempotency_key: string; created_at: string };
-        Insert: { id?: never; room_id: string; sender_user_id: string; body: string; idempotency_key: string; created_at?: string };
+        Row: { id: number; room_id: string; sender_user_id: string; body: string; idempotency_key: string; sender_kind: 'user' | 'support'; support_identity_id: string | null; created_at: string };
+        Insert: { id?: never; room_id: string; sender_user_id: string; body: string; idempotency_key: string; sender_kind?: 'user' | 'support'; support_identity_id?: string | null; created_at?: string };
         Update: never;
         Relationships: [];
       };
@@ -97,6 +97,30 @@ export type Database = {
         Row: { id: number; user_id: string; notification_kind: 'chat_message'; room_id: string; message_id: number; created_at: string; read_at: string | null };
         Insert: { id?: never; user_id: string; notification_kind: 'chat_message'; room_id: string; message_id: number; created_at?: string; read_at?: string | null };
         Update: { read_at?: string | null };
+        Relationships: [];
+      };
+      chat_blocks: {
+        Row: { id: string; blocker_user_id: string; blocked_user_id: string; created_at: string; ended_at: string | null };
+        Insert: { id?: string; blocker_user_id: string; blocked_user_id: string; created_at?: string; ended_at?: string | null };
+        Update: { ended_at?: string | null };
+        Relationships: [];
+      };
+      chat_reports: {
+        Row: { id: string; reporter_user_id: string; room_id: string; message_id: number; reason_code: 'spam' | 'harassment' | 'privacy' | 'fraud' | 'other'; detail: string | null; status: 'received' | 'reviewing' | 'resolved'; created_at: string };
+        Insert: { id?: string; reporter_user_id: string; room_id: string; message_id: number; reason_code: 'spam' | 'harassment' | 'privacy' | 'fraud' | 'other'; detail?: string | null; status?: 'received' | 'reviewing' | 'resolved'; created_at?: string };
+        Update: { status?: 'received' | 'reviewing' | 'resolved' };
+        Relationships: [];
+      };
+      support_identities: {
+        Row: { id: string; identity_code: string; display_name: string; is_official: boolean; created_at: string };
+        Insert: { id: string; identity_code: string; display_name: string; is_official?: boolean; created_at?: string };
+        Update: never;
+        Relationships: [];
+      };
+      support_authorizations: {
+        Row: { id: string; support_identity_id: string; user_id: string; authorization_role: 'representative'; created_at: string; revoked_at: string | null };
+        Insert: { id?: string; support_identity_id: string; user_id: string; authorization_role: 'representative'; created_at?: string; revoked_at?: string | null };
+        Update: { revoked_at?: string | null };
         Relationships: [];
       };
       access_audit_events: {
@@ -243,6 +267,12 @@ export type Database = {
       prepare_chat_attachment_upload: { Args: { p_room_id: string; p_message_id: number; p_original_name: string; p_media_type: string; p_byte_size: number }; Returns: Json };
       complete_chat_attachment_upload: { Args: { p_attachment_id: string }; Returns: undefined };
       fail_chat_attachment_upload: { Args: { p_attachment_id: string }; Returns: undefined };
+      block_direct_user: { Args: { p_other_user_id: string }; Returns: string };
+      report_chat_message: { Args: { p_message_id: number; p_reason_code: string; p_detail: string }; Returns: string };
+      open_support_conversation: { Args: Record<string, never>; Returns: string };
+      reply_as_zipsin_support: { Args: { p_room_id: string; p_body: string; p_idempotency_key: string }; Returns: number };
+      set_support_status: { Args: { p_room_id: string; p_status: string }; Returns: undefined };
+      set_chat_notifications_muted: { Args: { p_room_id: string; p_muted: boolean }; Returns: undefined };
       assign_office_member_to_home: { Args: { p_office_id: string; p_home_id: string; p_user_id: string }; Returns: string };
       end_office_home_assignment: { Args: { p_assignment_id: string }; Returns: undefined };
       create_home_record: { Args: { p_home_id: string; p_office_id: string | null; p_contract_id: string | null; p_space: string; p_kind: string; p_title: string; p_body: string; p_idempotency_key: string; p_task_due_at: string | null; p_task_assigned_to: string | null }; Returns: string };

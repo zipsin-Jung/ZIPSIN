@@ -16,6 +16,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <Link className="rounded-xl px-4 py-2 text-sm font-bold text-[#496273] transition hover:bg-[#edf7f4] hover:text-[#123e4a]" href="/homes">집</Link>
             <Link className="rounded-xl px-4 py-2 text-sm font-bold text-[#496273] transition hover:bg-[#edf7f4] hover:text-[#123e4a]" href="/tasks">기록</Link>
             <Link className="rounded-xl px-4 py-2 text-sm font-bold text-[#496273] transition hover:bg-[#edf7f4] hover:text-[#123e4a]" href="/chats">채팅</Link>
+            <Link className="hidden rounded-xl px-4 py-2 text-sm font-bold text-[#496273] transition hover:bg-[#edf7f4] hover:text-[#123e4a] sm:block" href="/support">고객지원</Link>
             <Link className="rounded-xl px-4 py-2 text-sm font-bold text-[#496273] transition hover:bg-[#edf7f4] hover:text-[#123e4a]" href="/my">마이</Link>
           </nav>
         </div>

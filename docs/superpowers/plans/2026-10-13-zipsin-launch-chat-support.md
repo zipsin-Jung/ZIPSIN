@@ -189,11 +189,11 @@
 - Produces tables: `chat_blocks`, `chat_reports`, `support_identities`, `support_authorizations`
 - Produces RPCs: `block_direct_user`, `report_chat_message`, `open_support_conversation`, `reply_as_zipsin_support`
 
-- [ ] 차단 우회·신고 권한·공식계정 사칭·비공식 지원 답변·대표의 일반방 접근 거부 테스트를 먼저 작성한다.
-- [ ] 사용자별 지원방 한 개와 위조 불가능한 `집신 고객지원` 발신 주체를 구현한다.
-- [ ] 초기 지원 권한은 집신 대표 한 명에게만 부여하고 별도 배정 흐름은 만들지 않는다.
-- [ ] 민감정보 경고, 답변 대기, 해결 상태, 알림 끄기 UI를 구현한다.
-- [ ] 전체 테스트 후 `feat: add chat safety and official support`로 커밋한다.
+- [x] 차단 우회·신고 권한·공식계정 사칭·비공식 지원 답변·대표의 일반방 접근 거부 테스트를 먼저 작성한다.
+- [x] 사용자별 지원방 한 개와 위조 불가능한 `집신 고객지원` 발신 주체를 구현한다.
+- [x] 초기 지원 권한은 집신 대표 한 명에게만 부여하고 별도 배정 흐름은 만들지 않는다.
+- [x] 민감정보 경고, 답변 대기, 해결 상태, 알림 끄기 UI를 구현한다.
+- [x] 전체 테스트 후 `feat: add chat safety and official support`로 커밋한다.
 
 ### Task 8: 정식 서비스 홈·내비게이션 완결
 

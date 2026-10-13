@@ -25,7 +25,7 @@ describe('chat message input', () => {
 
   it('loads the next message page before the supplied cursor', async () => {
     const calls: Array<[string, unknown]> = [];
-    const page = [{ id: 9, room_id: roomId, sender_user_id: roomId, body: '이전 메시지', created_at: '2026-10-13T00:00:00Z' }];
+    const page = [{ id: 9, room_id: roomId, sender_user_id: roomId, body: '이전 메시지', created_at: '2026-10-13T00:00:00Z', sender_kind: 'user' as const, support_identity_id: null }];
     const query = {
       select() { return this; },
       eq(column: string, value: unknown) { calls.push([column, value]); return this; },

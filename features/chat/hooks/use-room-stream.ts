@@ -13,7 +13,7 @@ export function useRoomStream(roomId: string, initialMessages: ChatMessagePageIt
   const latestId = useRef(Math.max(0, ...initialMessages.map((message) => message.id)));
   const refresh = useCallback(async () => {
     const supabase = createBrowserSupabaseClient();
-    const { data } = await supabase.from('chat_messages').select('id, room_id, sender_user_id, body, created_at').eq('room_id', roomId).gt('id', latestId.current).order('id', { ascending: false }).limit(100);
+    const { data } = await supabase.from('chat_messages').select('id, room_id, sender_user_id, body, created_at, sender_kind, support_identity_id').eq('room_id', roomId).gt('id', latestId.current).order('id', { ascending: false }).limit(100);
     if (data?.length) {
       latestId.current = Math.max(latestId.current, ...data.map((message) => message.id));
       setMessages((current) => mergeMessagePages(data, current));

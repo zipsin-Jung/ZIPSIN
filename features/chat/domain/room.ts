@@ -7,4 +7,6 @@ export type ChatMessagePageItem = {
   sender_user_id: string;
   body: string;
   created_at: string;
+  sender_kind: 'user' | 'support';
+  support_identity_id: string | null;
 };

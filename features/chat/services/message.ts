@@ -14,7 +14,7 @@ export async function getRecentMessages(
 ): Promise<ChatMessagePageItem[]> {
   let query = supabase
     .from('chat_messages')
-    .select('id, room_id, sender_user_id, body, created_at')
+    .select('id, room_id, sender_user_id, body, created_at, sender_kind, support_identity_id')
     .eq('room_id', roomId)
     .order('id', { ascending: false })
     .limit(CHAT_PAGE_SIZE);
