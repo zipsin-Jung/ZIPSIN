@@ -66,4 +66,15 @@ describe('startOAuth', () => {
       'REDIRECT:/login?error=oauth_start_failed',
     );
   });
+
+  it('운영 환경에서 localhost callback으로 OAuth를 시작하지 않는다', async () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'http://127.0.0.1:3000');
+    vi.stubEnv('NEXT_PUBLIC_AUTH_GOOGLE_ENABLED', 'true');
+
+    await expect(startOAuth('google', '/ck')).rejects.toThrow(
+      'AUTH_SITE_URL_INVALID',
+    );
+    expect(signInWithOAuth).not.toHaveBeenCalled();
+  });
 });

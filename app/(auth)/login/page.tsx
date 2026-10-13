@@ -4,6 +4,7 @@ import Brand, { Mascot } from '@/components/Brand';
 import { UsernameLoginForm } from '@/features/auth/components/UsernameLoginForm';
 import { SocialLoginButtons } from '@/features/auth/components/SocialLoginButtons';
 import { SUPPORTED_PROVIDERS } from '@/features/auth/domain/providers';
+import { sanitizeNextPath } from '@/features/auth/domain/redirect';
 
 type Props = {
   searchParams: Promise<{ error?: string; next?: string }>;
@@ -11,6 +12,8 @@ type Props = {
 
 export default async function LoginPage({ searchParams }: Props) {
   const params = await searchParams;
+  const next = sanitizeNextPath(params.next);
+  const signupHref = params.next ? `/signup?next=${encodeURIComponent(next)}` : '/signup';
   const errorMessage = params.error
     ? '아이디 또는 비밀번호가 맞지 않습니다. 다시 확인해 주세요.'
       : null;
@@ -24,7 +27,7 @@ export default async function LoginPage({ searchParams }: Props) {
         <Link aria-label="집신 로그인" href="/login">
           <Brand />
         </Link>
-        <Link className="flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-bold text-[#31584a] transition hover:bg-white/70" href="/signup">
+        <Link className="flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-bold text-[#31584a] transition hover:bg-white/70" href={signupHref}>
           <UserPlus aria-hidden="true" className="size-4" />
           <span>회원가입</span>
         </Link>
@@ -59,7 +62,7 @@ export default async function LoginPage({ searchParams }: Props) {
             <h2 className="mt-3 text-4xl font-black tracking-[-0.045em] text-[#0d4938] sm:text-5xl">집신 시작하기</h2>
             <p className="mb-7 mt-4 text-base leading-7 text-[#60736c]">간편 로그인 또는 아이디로 시작하세요.</p>
 
-            <SocialLoginButtons enabledProviders={enabledProviders} next={params.next} />
+            <SocialLoginButtons enabledProviders={enabledProviders} next={next} />
 
             <div className="my-7 flex items-center gap-4 text-sm font-semibold text-[#6c7d76]">
               <span className="h-px flex-1 bg-[#dce4df]" />
@@ -73,13 +76,13 @@ export default async function LoginPage({ searchParams }: Props) {
               </p>
             )}
 
-            <UsernameLoginForm next={params.next} />
+            <UsernameLoginForm next={next} />
 
             <div className="mt-4 text-right">
               <Link className="min-h-11 py-3 text-sm font-bold text-[#0d5b45] underline underline-offset-4" href="/account-recovery">아이디·비밀번호를 잊으셨나요?</Link>
             </div>
 
-            <Link className="mt-3 flex min-h-14 items-center justify-center rounded-2xl border-2 border-[#0b543f] text-base font-extrabold text-[#0b543f]" href="/signup">회원가입</Link>
+            <Link className="mt-3 flex min-h-14 items-center justify-center rounded-2xl border-2 border-[#0b543f] text-base font-extrabold text-[#0b543f]" href={signupHref}>회원가입</Link>
 
             <div className="mt-8 flex items-start gap-3 border-t border-[#e3e9e5] pt-6 text-sm leading-6 text-[#64786f]">
               <ShieldCheck aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-[#3f8b63]" />
