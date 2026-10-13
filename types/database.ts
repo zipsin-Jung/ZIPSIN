@@ -162,6 +162,12 @@ export type Database = {
         Update: { reason?: string; resolved_at?: string | null };
         Relationships: [];
       };
+      signup_attributions: {
+        Row: { id: string; user_id: string; source: 'zipsin_check'; created_at: string };
+        Insert: { id?: string; user_id: string; source: 'zipsin_check'; created_at?: string };
+        Update: never;
+        Relationships: [];
+      };
       profiles: {
         Row: {
           user_id: string;

@@ -41,4 +41,14 @@ for (const viewport of [
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     expect(overflow).toBe(false);
   });
+
+  test(`집신체크 회원가입은 ${viewport.width}px에서 문자 인증 없이 복귀함을 알린다`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await page.goto('/signup?next=%2Fck');
+    await expect(page.getByText(/집신체크로 바로 돌아가요/)).toBeVisible();
+    await expect(page.getByText('3 휴대전화 인증')).toHaveCount(0);
+    await expect(page.getByText(/문자 인증 없이 가입/)).toBeVisible();
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+    expect(overflow).toBe(false);
+  });
 }

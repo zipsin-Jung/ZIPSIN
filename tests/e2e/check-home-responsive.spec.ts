@@ -106,18 +106,17 @@ test('모바일 별명 등록창은 아래 바텀시트로 열린다',async({pag
 for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}]) {
   test(`전체 10채와 긴 별명이 ${viewport.width}px 고정 요소에 가리지 않는다`, async ({page}) => {
     await page.setViewportSize(viewport);
-    await page.goto('/ck');
-    await page.evaluate(() => {
-      const candidates=Array.from({length:10},(_,index)=>({
+    const candidates=Array.from({length:10},(_,index)=>({
         id:`house-${index+1}`,alias:`아주 긴 사회초년생 첫 자취방 별명 ${index+1}`,
         intakeMode:'simple',depth:'quick',listing:{location:`서울시 아주 긴 동네 이름 ${index+1}`},
         terms:{},contact:{},commute:{},answers:{},archived:false,
         createdAt:new Date(Date.UTC(2026,9,13,0,index)).toISOString(),
         updatedAt:new Date(Date.UTC(2026,9,13,0,index)).toISOString(),
       }));
-      localStorage.setItem('zipsin-check:v2',JSON.stringify({schemaVersion:2,candidates,compareCandidateIds:[]}));
-    });
-    await page.reload();
+    await page.addInitScript((items) => {
+      localStorage.setItem('zipsin-check:v2',JSON.stringify({schemaVersion:2,candidates:items,compareCandidateIds:[]}));
+    }, candidates);
+    await page.goto('/ck');
     await page.getByRole('button',{name:'내가 본 집'}).click();
     await expect(page.getByRole('heading',{name:'내가 본 집 10채'})).toBeVisible();
     const last=page.getByRole('button',{name:'아주 긴 사회초년생 첫 자취방 별명 1 서울시 아주 긴 동네 이름 1',exact:true});

@@ -31,6 +31,14 @@ describe('PasswordSignupForm', () => {
     expect(password).toHaveAttribute('type', 'text');
   });
 
+  it('마우스만 올려도 비밀번호를 노출하지 않는다', async () => {
+    const user = userEvent.setup();
+    render(<PasswordSignupForm />);
+    const password = screen.getByLabelText('비밀번호', { selector: 'input' });
+    await user.hover(screen.getByRole('button', { name: '비밀번호 보기' }));
+    expect(password).toHaveAttribute('type', 'password');
+  });
+
   it('필수 동의를 한 번에 선택하고 연령 체크를 표시하지 않는다', async () => {
     const user = userEvent.setup();
     render(<PasswordSignupForm />);

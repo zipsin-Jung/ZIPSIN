@@ -13,7 +13,9 @@ export async function registerPasswordAccountAction(formData: FormData) {
   const rawNext = formData.get('next');
   const hasNext = typeof rawNext === 'string' && rawNext.length > 0;
   const next = sanitizeNextPath(hasNext ? rawNext : undefined);
+  const isCheckSignup = next === '/ck' || next.startsWith('/ck/');
   const verifyPath = hasNext ? `/signup/verify?next=${encodeURIComponent(next)}` : '/signup/verify';
+  const completionPath = isCheckSignup ? next : verifyPath;
   const parsed = passwordSignupSchema.safeParse({
     username: formData.get('username'),
     password: formData.get('password'),
@@ -41,6 +43,16 @@ export async function registerPasswordAccountAction(formData: FormData) {
   let sessionCreated = false;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
+  async function deleteCreatedUser(userId: string) {
+    const { error } = await admin.auth.admin.deleteUser(userId);
+    if (!error) return true;
+    const { error: queueError } = await admin.from('auth_cleanup_queue').insert({ user_id: userId });
+    if (queueError) {
+      console.error('auth_cleanup_queue_insert_failed', { userId });
+    }
+    return false;
+  }
+
   const limits = [
     { scope: 'password_signup_origin', key: origin, limit: 10 },
     { scope: 'password_signup_email', key: parsed.data.email, limit: 3 },
@@ -62,7 +74,7 @@ export async function registerPasswordAccountAction(formData: FormData) {
         email,
         password,
         options: {
-          emailRedirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(verifyPath)}`,
+          emailRedirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(completionPath)}`,
           data: { username },
         },
       });
@@ -84,16 +96,24 @@ export async function registerPasswordAccountAction(formData: FormData) {
       return !error;
     },
     async deleteAuthUser(userId) {
-      const { error } = await admin.auth.admin.deleteUser(userId);
-      if (!error) return true;
-      const { error: queueError } = await admin.from('auth_cleanup_queue').insert({ user_id: userId });
-      if (queueError) {
-        console.error('auth_cleanup_queue_insert_failed', { userId });
-      }
-      return false;
+      return deleteCreatedUser(userId);
     },
   }, parsed.data);
 
   if (!result.ok) redirect(`/signup?error=${result.error}`);
-  redirect(sessionCreated ? verifyPath : `/signup?notice=check_email${hasNext ? `&next=${encodeURIComponent(next)}` : ''}`);
+  if (isCheckSignup) {
+    const { error: consentError } = await admin.from('consent_acceptances').insert([
+      { user_id: result.userId, document_type: 'terms', document_version: '2026-10-02', accepted: true },
+      { user_id: result.userId, document_type: 'privacy', document_version: '2026-10-02', accepted: true },
+    ]);
+    const { error: attributionError } = await admin.from('signup_attributions').insert({
+      user_id: result.userId,
+      source: 'zipsin_check',
+    });
+    if (consentError || attributionError) {
+      await deleteCreatedUser(result.userId);
+      redirect(`/signup?error=service_unavailable&next=${encodeURIComponent(next)}`);
+    }
+  }
+  redirect(sessionCreated ? completionPath : `/signup?notice=check_email${hasNext ? `&next=${encodeURIComponent(next)}` : ''}`);
 }

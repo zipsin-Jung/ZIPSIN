@@ -3,9 +3,10 @@
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { accountPasswordSchema } from '@/features/auth/schemas/password-signup';
 
 const schema = z.object({
-  password: z.string().min(8).max(128),
+  password: accountPasswordSchema,
   passwordConfirm: z.string().min(8).max(128),
 }).refine((value) => value.password === value.passwordConfirm);
 

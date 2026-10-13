@@ -14,4 +14,10 @@ describe('signup progress', () => {
     render(await SignupPage({ searchParams: Promise.resolve({ notice: 'check_email' }) }));
     expect(screen.getByText('2 이메일 확인')).toHaveAttribute('aria-current', 'step');
   });
+
+  it('집신체크 가입은 문자 인증 없이 같은 계정으로 바로 저장함을 안내한다', async () => {
+    render(await SignupPage({ searchParams: Promise.resolve({ next: '/ck' }) }));
+    expect(screen.getByText(/집신체크로 바로 돌아가요/)).toBeInTheDocument();
+    expect(screen.queryByText('3 휴대전화 인증')).not.toBeInTheDocument();
+  });
 });

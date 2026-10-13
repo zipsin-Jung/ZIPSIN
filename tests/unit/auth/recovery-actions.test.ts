@@ -49,6 +49,11 @@ describe('account recovery actions', () => {
     expect(signOut).toHaveBeenCalled();
   });
 
+  it('회원가입과 같은 소문자·숫자·특수문자 규칙을 적용한다', async () => {
+    await expect(updatePasswordAction(passwordForm('onlyletters', 'onlyletters'))).rejects.toThrow('REDIRECT:/reset-password?error=invalid_password');
+    expect(updateUser).not.toHaveBeenCalled();
+  });
+
   it('rejects mismatch and expired sessions', async () => {
     await expect(updatePasswordAction(passwordForm('new-password-2026', 'different-password'))).rejects.toThrow('REDIRECT:/reset-password?error=invalid_password');
     getUser.mockResolvedValue({ data: { user: null } });

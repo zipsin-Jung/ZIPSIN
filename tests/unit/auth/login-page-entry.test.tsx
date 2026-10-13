@@ -18,4 +18,13 @@ describe('production login entry', () => {
       (link) => link.getAttribute('href') === '/signup?next=%2Fck',
     )).toBe(true);
   });
+
+  it.each([
+    ['rate_limited', '로그인 시도가 많아'],
+    ['service_unavailable', '로그인 서비스 연결을 확인'],
+    ['recovery_expired', '비밀번호 재설정 링크가 만료'],
+  ])('%s 오류를 비밀번호 오류로 잘못 안내하지 않는다', async (error, message) => {
+    render(await LoginPage({ searchParams: Promise.resolve({ error }) }));
+    expect(screen.getByRole('alert')).toHaveTextContent(message);
+  });
 });

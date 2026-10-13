@@ -8,11 +8,10 @@ const inputClass = 'mt-2 min-h-12 w-full rounded-xl border border-slate-300 bg-w
 
 export function PasswordSignupForm({ next }: { next?: string }) {
   const [passwordPinned, setPasswordPinned] = useState(false);
-  const [passwordHovered, setPasswordHovered] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const allRequired = termsAccepted && privacyAccepted;
-  const showPassword = passwordPinned || passwordHovered;
+  const showPassword = passwordPinned;
 
   return (
     <form action={registerPasswordAccountAction} className="grid gap-5">
@@ -25,7 +24,7 @@ export function PasswordSignupForm({ next }: { next?: string }) {
         <label htmlFor="signup-password">비밀번호</label>
         <span className="relative block">
           <input aria-describedby="password-rule" className={`${inputClass} pr-14`} id="signup-password" name="password" required type={showPassword ? 'text' : 'password'} autoComplete="new-password" minLength={8} maxLength={128} pattern="(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}" />
-          <button aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'} className="absolute bottom-1 right-1 flex min-h-10 min-w-10 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-emerald-700" onClick={() => setPasswordPinned((value) => !value)} onMouseEnter={() => setPasswordHovered(true)} onMouseLeave={() => setPasswordHovered(false)} type="button">
+          <button aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'} className="absolute bottom-1 right-1 flex min-h-10 min-w-10 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-emerald-700" onClick={() => setPasswordPinned((value) => !value)} type="button">
             {showPassword ? <EyeOff aria-hidden="true" className="size-5" /> : <Eye aria-hidden="true" className="size-5" />}
           </button>
         </span>

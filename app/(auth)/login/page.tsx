@@ -14,9 +14,16 @@ export default async function LoginPage({ searchParams }: Props) {
   const params = await searchParams;
   const next = sanitizeNextPath(params.next);
   const signupHref = params.next ? `/signup?next=${encodeURIComponent(next)}` : '/signup';
-  const errorMessage = params.error
-    ? '아이디 또는 비밀번호가 맞지 않습니다. 다시 확인해 주세요.'
-      : null;
+  const errorMessages: Record<string, string> = {
+    invalid_credentials: '아이디 또는 비밀번호가 맞지 않습니다. 다시 확인해 주세요.',
+    account_unavailable: '이메일 확인을 완료한 뒤 다시 로그인해 주세요.',
+    rate_limited: '로그인 시도가 많아 잠시 제한됐습니다. 1분 후 다시 시도해 주세요.',
+    service_unavailable: '로그인 서비스 연결을 확인하고 있습니다. 잠시 후 다시 시도해 주세요.',
+    recovery_expired: '비밀번호 재설정 링크가 만료됐습니다. 새 링크를 요청해 주세요.',
+    oauth_missing_code: '간편 로그인이 취소되었거나 완료되지 않았습니다.',
+    oauth_exchange_failed: '간편 로그인 연결을 완료하지 못했습니다. 다시 시도해 주세요.',
+  };
+  const errorMessage = params.error ? (errorMessages[params.error] ?? errorMessages.invalid_credentials) : null;
   const enabledProviders = SUPPORTED_PROVIDERS
     .filter((provider) => process.env[`NEXT_PUBLIC_AUTH_${provider.id.toUpperCase()}_ENABLED`] === 'true')
     .map((provider) => provider.id);
