@@ -82,6 +82,27 @@ test('전체 목록의 빈 상태와 모션 감소 설정을 지원한다', asyn
   expect(await first.evaluate(element => getComputedStyle(element).transform)).toBe('none');
 });
 
+test('데스크톱 별명 등록창은 오른쪽 패널로 열린다',async({page})=>{
+  await page.setViewportSize({width:1440,height:900});
+  await page.goto('/ck');
+  await page.getByRole('button',{name:'바로 체크'}).click();
+  const dialog=page.getByRole('dialog',{name:'이 집 별명 정하기'}),box=await dialog.boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.x+box!.width).toBeGreaterThanOrEqual(1439);
+  expect(box!.height).toBeGreaterThanOrEqual(899);
+});
+
+test('모바일 별명 등록창은 아래 바텀시트로 열린다',async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('/ck');
+  await page.getByRole('button',{name:'바로 체크'}).click();
+  const dialog=page.getByRole('dialog',{name:'이 집 별명 정하기'}),box=await dialog.boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.x).toBeLessThanOrEqual(1);
+  expect(box!.y).toBeGreaterThan(300);
+  expect(box!.y+box!.height).toBeGreaterThanOrEqual(843);
+});
+
 for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}]) {
   test(`전체 10채와 긴 별명이 ${viewport.width}px 고정 요소에 가리지 않는다`, async ({page}) => {
     await page.setViewportSize(viewport);
