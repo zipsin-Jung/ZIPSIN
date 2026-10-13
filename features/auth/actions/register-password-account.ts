@@ -21,18 +21,23 @@ export async function registerPasswordAccountAction(formData: FormData) {
     email: formData.get('email'),
     termsAccepted: formData.get('termsAccepted') === 'on',
     privacyAccepted: formData.get('privacyAccepted') === 'on',
-    ageOver14: formData.get('ageOver14') === 'on',
   });
 
   if (!parsed.success) redirect('/signup?error=invalid_input');
 
   const supabase = await createServerSupabaseClient();
-  const admin = createAdminSupabaseClient();
+  let admin: ReturnType<typeof createAdminSupabaseClient>;
+  let rateLimitSecret: string;
+  try {
+    admin = createAdminSupabaseClient();
+    rateLimitSecret = getRateLimitSecret();
+  } catch {
+    redirect(`/signup?error=service_unavailable${hasNext ? `&next=${encodeURIComponent(next)}` : ''}`);
+  }
   const requestHeaders = await headers();
   const origin = requestHeaders.get('x-vercel-forwarded-for')
     ?? requestHeaders.get('x-forwarded-for')?.split(',')[0]?.trim()
     ?? 'unknown-origin';
-  const rateLimitSecret = getRateLimitSecret();
   let sessionCreated = false;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 

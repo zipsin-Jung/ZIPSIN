@@ -18,7 +18,7 @@ vi.mock('@/lib/supabase/admin', () => ({
 import { registerPasswordAccountAction } from '@/features/auth/actions/register-password-account';
 
 function form(overrides: Record<string, string> = {}) {
-  const values = { username: 'home_owner', password: 'password-2026', passwordConfirm: 'password-2026', email: 'owner@example.com', termsAccepted: 'on', privacyAccepted: 'on', ageOver14: 'on', ...overrides };
+  const values = { username: 'home_owner', password: 'password-2026', passwordConfirm: 'password-2026', email: 'owner@example.com', termsAccepted: 'on', privacyAccepted: 'on', ...overrides };
   const data = new FormData(); Object.entries(values).forEach(([key, value]) => data.set(key, value)); return data;
 }
 
@@ -84,6 +84,13 @@ describe('registerPasswordAccountAction', () => {
     rpc.mockResolvedValueOnce({ data: false, error: null });
     await expect(registerPasswordAccountAction(form())).rejects.toThrow('REDIRECT:/signup?error=service_unavailable');
     expect(signUp).not.toHaveBeenCalled();
+  });
+
+  it('서버 인증 설정이 빠져도 검은 오류 화면 대신 가입 오류로 돌아간다', async () => {
+    const original = process.env.AUTH_RATE_LIMIT_HMAC_SECRET;
+    delete process.env.AUTH_RATE_LIMIT_HMAC_SECRET;
+    await expect(registerPasswordAccountAction(form())).rejects.toThrow('REDIRECT:/signup?error=service_unavailable');
+    process.env.AUTH_RATE_LIMIT_HMAC_SECRET = original;
   });
 
   it('emits a structured server alert when compensation and durable queueing both fail', async () => {

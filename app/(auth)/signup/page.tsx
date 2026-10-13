@@ -13,7 +13,9 @@ export default async function SignupPage({ searchParams }: Props) {
   const error = params.error
     ? params.error === 'invalid_input'
       ? '입력한 내용을 다시 확인해 주세요.'
-      : '이미 사용 중인 계정 정보이거나 지금 가입할 수 없습니다.'
+      : params.error === 'service_unavailable'
+        ? '가입 설정을 확인하고 있습니다. 잠시 후 다시 시도해 주세요.'
+        : '이미 사용 중인 계정 정보이거나 지금 가입할 수 없습니다.'
     : null;
 
   return (

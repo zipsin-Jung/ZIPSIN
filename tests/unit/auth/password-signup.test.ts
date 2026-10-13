@@ -8,7 +8,6 @@ const valid = {
   email: 'owner@example.com',
   termsAccepted: true,
   privacyAccepted: true,
-  ageOver14: true,
 };
 
 describe('password signup schema', () => {
@@ -30,11 +29,15 @@ describe('password signup schema', () => {
     expect(passwordSignupSchema.safeParse({ ...valid, password: long, passwordConfirm: long }).success).toBe(false);
   });
 
+  it.each(['PASSWORD!1', 'password!x', 'password12'])('소문자·숫자·특수문자 중 하나라도 빠진 비밀번호 %s를 거부한다', (password) => {
+    expect(passwordSignupSchema.safeParse({ ...valid, password, passwordConfirm: password }).success).toBe(false);
+  });
+
   it('rejects a mismatched password confirmation', () => {
     expect(passwordSignupSchema.safeParse({ ...valid, passwordConfirm: 'different-password' }).success).toBe(false);
   });
 
-  it.each(['termsAccepted', 'privacyAccepted', 'ageOver14'] as const)('requires %s', (field) => {
+  it.each(['termsAccepted', 'privacyAccepted'] as const)('requires %s', (field) => {
     expect(passwordSignupSchema.safeParse({ ...valid, [field]: false }).success).toBe(false);
   });
 });

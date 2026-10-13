@@ -34,6 +34,10 @@ for (const viewport of [
     await expect(page.getByRole('heading', { name: '회원가입' })).toBeVisible();
     await expect(page.getByRole('list', { name: '회원가입 진행 단계' })).toContainText('휴대전화 인증');
     await expect(page.getByText(/노트북·PC에서도 같은 계정/)).toBeVisible();
+    await expect(page.getByText('영문 소문자·숫자·특수문자를 포함해 8자 이상')).toBeVisible();
+    await expect(page.getByRole('button', { name: '비밀번호 보기' })).toBeVisible();
+    await expect(page.getByRole('checkbox', { name: '필수 항목 전체 동의' })).toBeVisible();
+    await expect(page.getByRole('checkbox', { name: /만 14세/ })).toHaveCount(0);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     expect(overflow).toBe(false);
   });
