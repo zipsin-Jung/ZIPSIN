@@ -20,6 +20,8 @@
 - 집중 단위 테스트 18/18 통과
 - 공개 홈 Chromium 검사 6/6 통과
 - 390px에서 Hero 예시 표지와 질문 → 이미지 → CTA → 제품 UI 순서 확인
+- immutable Preview `https://zipsin-graok66e5-zipsin-jung.vercel.app/` Ready 확인
+- Preview 1440px·390px에서 이미지 로드, 가로 넘침 0, 콘솔 오류·경고 0 확인
 - 전체 단위·통합 397건 통과, 2건 조건부 skip
 - 전체 E2E 22건 통과, 외부 인증·Preview 데이터 조건 11건 skip, 실패 0건
 - 커버리지 네 지표 80% 이상
