@@ -1,6 +1,6 @@
 ---
 name: zipsin-project-kickoff
-description: Start a new ZIPSIN project or substantial cross-cutting feature with a four-role kickoff, scoped plan, risks, owners, artifacts, and approval gates. Do not use for small copy fixes or isolated obvious bugs.
+description: Use when starting a ZIPSIN project, subproject, feature, or first-time structural change that needs a cross-role kickoff before planning or implementation.
 ---
 
 # ZIPSIN Project Kickoff
@@ -11,9 +11,9 @@ Use this skill only when work begins a new project or materially affects multipl
 
 1. Report the intended kickoff sequence to the user.
 2. Read `AGENTS.md`, `docs/README.md`, product documents, relevant decisions, current worklogs, and affected code.
-3. Convene the four roles: chief of staff, product-design, architecture-development, and quality-critic. Each role returns scope concerns, dependencies, risks, and required evidence. The chief integrates one conclusion.
+3. Convene six roles: chief of staff, product planning, UX/UI design, architecture-development, quality-critic, and timeline analyst. Each returns scope concerns, dependencies, risks, and required evidence; timeline analysis may return `not applicable` when no consequential option exists. The chief integrates one conclusion.
 4. Separate confirmed facts, assumptions, recommendations, open decisions, and work explicitly excluded.
-5. Define objective, in-scope and out-of-scope work, role owners, ordered phases, artifacts, acceptance criteria, risks, and user approval gates.
+5. Define objective, in-scope and out-of-scope work, role owners, ordered phases, artifacts, acceptance criteria, risks, and separate G1 product, G2 UX, G3 architecture, G4 test-design, G5 verification, and G6 user approval gates.
 6. Record the kickoff outcome in the appropriate planning document and worklog.
 7. Do not begin implementation when a missing user decision would materially change purpose, access, privacy, cost, or irreversible data behavior.
 

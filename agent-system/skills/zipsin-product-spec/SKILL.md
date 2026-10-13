@@ -19,7 +19,7 @@ Own product requirements and UX. Propose but do not unilaterally finalize pricin
 6. Test each major flow with at least one realistic or clearly labeled hypothetical case.
 7. Produce a traceability table: requirement → user value → flow → screen/state → acceptance criterion.
 8. List unresolved policy or technical questions for the chief of staff; do not hide them inside UI details.
-9. Update affected product documents and hand off the approved spec to architecture-development.
+9. Update affected product documents. Hand approved REQ/AC to UX/UI design for FLOW/SCREEN/STATE definition, then hand the approved trace to architecture-development.
 
 ## UX Invariants
 

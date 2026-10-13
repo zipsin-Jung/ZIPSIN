@@ -1,0 +1,12 @@
+import {describe,expect,it,vi} from 'vitest';
+import {createPhotoTransferService,type PhotoRepository} from './photo-service';
+
+function repository(overrides:Partial<PhotoRepository>={}):PhotoRepository{return {ownsCandidate:async()=>true,photoExists:async()=>false,uploadObject:async()=>{},linkPhoto:async()=>{},enqueueCleanup:async()=>{},...overrides}}
+const file=(type='image/jpeg',size=4)=>new File([new Uint8Array(size)],'room.jpg',{type});
+
+describe('private photo transfer',()=>{
+  it('writes only to the authenticated owner path',async()=>{const upload=vi.fn(async()=>{}),link=vi.fn(async()=>{}),service=createPhotoTransferService(repository({uploadObject:upload,linkPhoto:link}),()=> 'photo-1');await service.upload({userId:'user-1',candidateId:'candidate-1',manifestId:'manifest-1',itemId:'water-drain',file:file(),localPhotoId:'local-1'});expect(upload).toHaveBeenCalledWith('user-1/candidate-1/photo-1',expect.any(File));expect(link).toHaveBeenCalledWith(expect.objectContaining({storagePath:'user-1/candidate-1/photo-1',localPhotoId:'local-1'}))});
+  it('rejects unsupported mime and oversize files',async()=>{const service=createPhotoTransferService(repository(),()=> 'photo-1');await expect(service.upload({userId:'u',candidateId:'c',manifestId:'m',itemId:'i',file:file('image/gif'),localPhotoId:'l'})).rejects.toThrow('PHOTO_TYPE_INVALID');await expect(service.upload({userId:'u',candidateId:'c',manifestId:'m',itemId:'i',file:file('image/jpeg',10*1024*1024+1),localPhotoId:'l'})).rejects.toThrow('PHOTO_TOO_LARGE')});
+  it('enqueues cleanup when database linking fails',async()=>{const cleanup=vi.fn(async()=>{}),service=createPhotoTransferService(repository({linkPhoto:async()=>{throw new Error('db')},enqueueCleanup:cleanup}),()=> 'photo-1');await expect(service.upload({userId:'u',candidateId:'c',manifestId:'m',itemId:'i',file:file(),localPhotoId:'l'})).rejects.toThrow('PHOTO_LINK_FAILED');expect(cleanup).toHaveBeenCalledWith(expect.objectContaining({storagePath:'u/c/photo-1'}))});
+  it('does not upload a duplicate photo',async()=>{const upload=vi.fn(async()=>{}),service=createPhotoTransferService(repository({photoExists:async()=>true,uploadObject:upload}),()=> 'photo-1');expect(await service.upload({userId:'u',candidateId:'c',manifestId:'m',itemId:'i',file:file(),localPhotoId:'same'})).toEqual({status:'already-complete',photoId:'same'});expect(upload).not.toHaveBeenCalled()});
+});

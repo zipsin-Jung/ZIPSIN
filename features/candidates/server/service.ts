@@ -1,0 +1,9 @@
+export type CandidatePhoto={id:string;itemId:string;storagePath:string};
+export type CandidateDraftDetail={id:string;ownerUserId:string;localCandidateId:string;alias:string;listing:Record<string,unknown>;terms:Record<string,unknown>;contact:Record<string,unknown>;commute:Record<string,unknown>;answers:Array<Record<string,unknown>>;photos:CandidatePhoto[];createdAt:string};
+export type CandidateDraftSummary=Pick<CandidateDraftDetail,'id'|'alias'|'listing'|'terms'|'createdAt'> & {photoCount:number};
+export type CandidateRepository={list(userId:string):Promise<CandidateDraftDetail[]>;get(userId:string,id:string):Promise<CandidateDraftDetail|undefined>;signPhotos(paths:string[]):Promise<Array<{path:string;url:string}>>;removeStorage(paths:string[]):Promise<{failed:string[]}>;removeDatabase(userId:string,id:string):Promise<boolean>};
+export function createCandidateService(repository:CandidateRepository){return {
+  async listCandidateDrafts(userId:string):Promise<CandidateDraftSummary[]>{return (await repository.list(userId)).map(row=>({id:row.id,alias:row.alias,listing:row.listing,terms:row.terms,createdAt:row.createdAt,photoCount:row.photos.length}))},
+  async getCandidateDraft(userId:string,id:string){const row=await repository.get(userId,id);if(!row)return null;const signedPhotos=await repository.signPhotos(row.photos.map(photo=>photo.storagePath));return {...row,signedPhotos}},
+  async deleteCandidateDraft(userId:string,id:string){const row=await repository.get(userId,id);if(!row)return {status:'not-found' as const};const storage=await repository.removeStorage(row.photos.map(photo=>photo.storagePath));if(storage.failed.length)return {status:'partial' as const,remainingStorage:storage.failed,databaseDeleted:false};const databaseDeleted=await repository.removeDatabase(userId,id);return databaseDeleted?{status:'deleted' as const,remainingStorage:[],databaseDeleted:true}:{status:'partial' as const,remainingStorage:[],databaseDeleted:false}},
+}}

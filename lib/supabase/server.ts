@@ -21,3 +21,7 @@ export async function createServerSupabaseClient() {
     },
   });
 }
+
+// Compatibility name used by the ZIPSIN Check server modules while both
+// products converge on the single primary Supabase client factory.
+export const createSupabaseServerClient = createServerSupabaseClient;
