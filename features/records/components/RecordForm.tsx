@@ -1,17 +1,19 @@
 'use client';
 import { useState, type FormEvent } from 'react';
-import { unstable_rethrow } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { createRecordAction, type RecordFormState } from '@/features/records/actions/create-record';
 
 export function RecordForm({ homeId, officeId, idempotencyKey }: { homeId: string; officeId: string; idempotencyKey: string }) {
   const [state, setState] = useState<RecordFormState>({}); const [pending, setPending] = useState(false);
+  const router = useRouter();
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setPending(true);
     try {
-      setState(await createRecordAction(new FormData(event.currentTarget)));
-    } catch (error) {
-      unstable_rethrow(error);
+      const next = await createRecordAction(new FormData(event.currentTarget));
+      if (next.redirectTo) { router.push(next.redirectTo); return; }
+      setState(next);
+    } catch {
       setState({ error: '작성한 내용은 그대로 있어요. 잠시 후 다시 저장해 주세요.' });
     } finally {
       setPending(false);

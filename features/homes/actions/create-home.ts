@@ -1,5 +1,4 @@
 'use server';
-import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { requireOnboardingComplete } from '@/features/auth/guards/require-onboarding';
 import { homeSchema, homeFieldErrors, type HomeFormState } from '@/features/homes/schemas/home';
@@ -18,5 +17,5 @@ export async function createHomeAction(formData: FormData): Promise<HomeFormStat
   }, parsed.data);
   if (!result.ok) return { error: workspaceErrorMessage(result.error) };
   revalidatePath('/home'); revalidatePath('/homes');
-  redirect(`/homes/${result.homeId}`);
+  return { redirectTo: `/homes/${result.homeId}` };
 }

@@ -8,7 +8,7 @@ export const homeSchema = z.object({
   idempotencyKey: z.uuid('등록 화면을 다시 열어 주세요.'),
 });
 export type HomeInput = z.infer<typeof homeSchema>;
-export type HomeFormState = { error?: string; fieldErrors?: Partial<Record<keyof HomeInput, string>> };
+export type HomeFormState = { error?: string; fieldErrors?: Partial<Record<keyof HomeInput, string>>; redirectTo?: string };
 export function homeFieldErrors(error: z.ZodError): HomeFormState['fieldErrors'] {
   return Object.fromEntries(error.issues.map((issue) => [issue.path[0], issue.message]));
 }

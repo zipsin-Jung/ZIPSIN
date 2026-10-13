@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState, type FormEvent } from 'react';
-import { unstable_rethrow } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { homeSchema, homeFieldErrors, type HomeFormState } from '@/features/homes/schemas/home';
 import { workspaceErrorMessage } from '@/features/workspace/domain/errors';
 export type { HomeFormState } from '@/features/homes/schemas/home';
@@ -13,6 +13,7 @@ export function HomeForm({ officeId, idempotencyKey, action }: {
   const [values, setValues] = useState({ addressLine1: '', addressDetail: '', homeLabel: '' });
   const [state, setState] = useState<HomeFormState>({});
   const [pending, setPending] = useState(false);
+  const router = useRouter();
   const saving = useRef(false);
   const formRef = useRef<HTMLFormElement>(null);
   function showErrors(next: HomeFormState) {
@@ -27,8 +28,12 @@ export function HomeForm({ officeId, idempotencyKey, action }: {
     const parsed = homeSchema.safeParse(Object.fromEntries(data));
     if (!parsed.success) { showErrors({ fieldErrors: homeFieldErrors(parsed.error) }); return; }
     saving.current = true; setPending(true); setState({});
-    try { showErrors(await action(data)); }
-    catch (error) { unstable_rethrow(error); showErrors({ error: workspaceErrorMessage('server_error') }); }
+    try {
+      const next = await action(data);
+      if (next.redirectTo) { router.push(next.redirectTo); return; }
+      showErrors(next);
+    }
+    catch { showErrors({ error: workspaceErrorMessage('server_error') }); }
     finally { saving.current = false; setPending(false); }
   }
   const fields = [

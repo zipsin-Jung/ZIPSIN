@@ -1,6 +1,8 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+const { push } = vi.hoisted(() => ({ push: vi.fn() }));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ push }) }));
 import { HomeForm, type HomeFormState } from '@/features/homes/components/HomeForm';
 
 const props = { officeId: '00000000-0000-4000-8000-000000000001', idempotencyKey: '00000000-0000-4000-8000-000000000002' };
@@ -10,6 +12,15 @@ async function fill() {
   await userEvent.type(screen.getByLabelText('내부 구분명 (선택)'), '첫 관리 집');
 }
 describe('HomeForm', () => {
+  it('moves to the created home after a successful save', async () => {
+    const action = vi.fn().mockResolvedValue({ redirectTo: '/homes/new-home' });
+    render(<HomeForm {...props} action={action} />);
+    await fill();
+    await userEvent.click(screen.getByRole('button', { name: '집 등록하기' }));
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/homes/new-home'));
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   it('TEST-HOME-009 shows inline validation and focuses the address without submitting', async () => {
     const action = vi.fn();
     render(<HomeForm {...props} action={action} />);

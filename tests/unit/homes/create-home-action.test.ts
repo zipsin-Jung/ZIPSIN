@@ -16,7 +16,7 @@ describe('createHomeAction', () => {
     rpc.mockResolvedValue({ data: '00000000-0000-4000-8000-000000000003', error: null });
   });
   it('TEST-HOME-013 checks session, calls only the office-bound RPC, then opens the new timeline', async () => {
-    await expect(createHomeAction(form())).rejects.toThrow('REDIRECT:/homes/00000000-0000-4000-8000-000000000003');
+    await expect(createHomeAction(form())).resolves.toEqual({ redirectTo: '/homes/00000000-0000-4000-8000-000000000003' });
     expect(guard).toHaveBeenCalledTimes(1);
     expect(rpc).toHaveBeenCalledExactlyOnceWith('create_home_for_office', { p_office_id: '00000000-0000-4000-8000-000000000001', p_address_line1: '서울시 예시로 10', p_address_detail: '101호', p_home_label: '첫 집', p_idempotency_key: '00000000-0000-4000-8000-000000000002' });
     expect(revalidate).toHaveBeenCalledWith('/home');

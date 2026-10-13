@@ -1,11 +1,10 @@
 'use server';
-import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { requireOnboardingComplete } from '@/features/auth/guards/require-onboarding';
 import { recordSchema } from '@/features/records/schemas/record';
 import { toWorkspaceErrorCode, workspaceErrorMessage } from '@/features/workspace/domain/errors';
 
-export type RecordFormState = { error?: string; fieldErrors?: Record<string, string> };
+export type RecordFormState = { error?: string; fieldErrors?: Record<string, string>; redirectTo?: string };
 export async function createRecordAction(formData: FormData): Promise<RecordFormState> {
   const { supabase } = await requireOnboardingComplete();
   const parsed = recordSchema.safeParse(Object.fromEntries(formData));
@@ -19,5 +18,5 @@ export async function createRecordAction(formData: FormData): Promise<RecordForm
   });
   if (error) return { error: workspaceErrorMessage(toWorkspaceErrorCode(error)) };
   revalidatePath(`/homes/${value.homeId}`); revalidatePath('/tasks');
-  redirect(`/homes/${value.homeId}`);
+  return { redirectTo: `/homes/${value.homeId}` };
 }

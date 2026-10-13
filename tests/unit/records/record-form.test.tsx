@@ -1,9 +1,10 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { createRecord } = vi.hoisted(() => ({ createRecord: vi.fn() }));
+const { createRecord, push } = vi.hoisted(() => ({ createRecord: vi.fn(), push: vi.fn() }));
 vi.mock('@/features/records/actions/create-record', () => ({ createRecordAction: createRecord }));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ push }) }));
 
 import { RecordForm } from '@/features/records/components/RecordForm';
 
@@ -15,6 +16,16 @@ const props = {
 
 describe('RecordForm', () => {
   beforeEach(() => vi.clearAllMocks());
+
+  it('moves to the home timeline after a successful save', async () => {
+    createRecord.mockResolvedValueOnce({ redirectTo: `/homes/${props.homeId}` });
+    const user = userEvent.setup();
+    render(<RecordForm {...props} />);
+    await user.type(screen.getByLabelText('제목'), '첫 기록');
+    await user.click(screen.getByRole('button', { name: '집 기록에 남기기' }));
+    await waitFor(() => expect(push).toHaveBeenCalledWith(`/homes/${props.homeId}`));
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
 
   it('TEST-RC-REC-002 keeps the written record and explains a temporary failure', async () => {
     createRecord.mockRejectedValueOnce(new Error('private database details'));
