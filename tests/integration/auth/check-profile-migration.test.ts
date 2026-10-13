@@ -14,4 +14,11 @@ describe('ZIPSIN Check profile migration compatibility', () => {
     expect(sql).toMatch(/alter table public\.profiles[\s\S]*add column if not exists user_type/i);
     expect(sql).not.toMatch(/\bid\s*=\s*auth\.uid\(\)/i);
   });
+
+  it('인증 사용자만 실행하는 원자적 온보딩 RPC로 프로필과 유입을 저장한다', () => {
+    expect(sql).toMatch(/security definer/i);
+    expect(sql).toMatch(/complete_check_onboarding\(p_user_type text\)/i);
+    expect(sql).toMatch(/values \(auth\.uid\(\), p_user_type, 'complete'\)/i);
+    expect(sql).toMatch(/grant execute on function public\.complete_check_onboarding\(text\) to authenticated/i);
+  });
 });

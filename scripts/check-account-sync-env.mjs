@@ -1,1 +1,10 @@
-const required=['NEXT_PUBLIC_SUPABASE_URL','NEXT_PUBLIC_SUPABASE_ANON_KEY'];const missing=required.filter(name=>!process.env[name]);if(process.env.NODE_ENV==='production'&&process.env.AUTH_TEST_MODE==='true'){console.error('Production AUTH_TEST_MODE 금지');process.exit(1)}if(missing.length){console.error(`누락 환경값: ${missing.join(', ')}`);process.exit(1)}console.log('계정 이전 환경값 이름 검사 통과');
+import { validateAccountSyncEnv } from './check-account-sync-env-logic.mjs';
+
+const errors = validateAccountSyncEnv(process.env);
+
+if (errors.length) {
+  console.error(errors.join('\n'));
+  process.exit(1);
+}
+
+console.log('계정 이전 환경값 이름 검사 통과');

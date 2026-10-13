@@ -13,7 +13,12 @@ export type Database = {
       transfer_items: {Row: {id: string; manifest_id: string; local_candidate_id: string; item_type: string; item_key: string; status: string; error_code: string | null; updated_at: string}};
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      complete_check_onboarding: {
+        Args: { p_user_type: string };
+        Returns: undefined;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

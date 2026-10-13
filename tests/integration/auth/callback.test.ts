@@ -22,7 +22,7 @@ describe('OAuth callback', () => {
     );
 
     expect(response.headers.get('location')).toBe(
-      'https://zipsin.net/login?error=oauth_missing_code',
+      'https://zipsin.net/login?error=oauth_missing_code&next=%2Fhome',
     );
     expect(exchangeCodeForSession).not.toHaveBeenCalled();
   });
@@ -34,8 +34,14 @@ describe('OAuth callback', () => {
     );
 
     expect(response.headers.get('location')).toBe(
-      'https://zipsin.net/login?error=oauth_exchange_failed',
+      'https://zipsin.net/login?error=oauth_exchange_failed&next=%2Fhome',
     );
+  });
+
+  it('OAuth 실패 뒤에도 집신체크 복귀 경로를 보존한다', async () => {
+    exchangeCodeForSession.mockResolvedValue({ error: new Error('denied') });
+    const response = await GET(new NextRequest('https://zipsin.net/auth/callback?code=bad&next=/ck/transfer?candidate=c1'));
+    expect(response.headers.get('location')).toBe('https://zipsin.net/login?error=oauth_exchange_failed&next=%2Fck%2Ftransfer%3Fcandidate%3Dc1');
   });
 
   it('성공하면 안전한 내부 경로로만 이동한다', async () => {

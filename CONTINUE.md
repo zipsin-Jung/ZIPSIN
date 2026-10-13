@@ -1,12 +1,14 @@
 # 다음 Codex에서 이어서 작업하기
 
-최신 종합 인수인계 프롬프트는 다음 문서입니다.
+최신 통합 인증 작업은 다음 브랜치와 문서를 기준으로 이어갑니다.
 
-- `docs/13-codex-handoff-master-prompt.md`
+- 브랜치: `codex/zipsin-shared-auth-integration`
+- 계획: `docs/superpowers/plans/2026-10-14-zipsin-shared-auth-integration.md`
+- 배포 절차: `docs/deployment/zipsin-check-preview-runbook.md`
+- 검사 결과: `docs/testing/zipsin-check-account-sync-results.md`
 
-새 Codex는 원본 폴더의 과거 상태가 아니라 아래 최신 worktree를 사용해야 합니다.
+집신과 집신체크는 같은 Next.js 앱·Supabase·사용자 ID를 사용합니다. 별도 체크 로그인 화면을 다시 만들지 마세요. 남은 일은 Preview 관리자 설정과 실제 Google·Kakao 왕복, `zipsin.net`·`ck.zipsin.net` 공유 세션 확인입니다. 사용자 승인 전 Production·DNS는 변경하지 않습니다.
 
-- `/Users/zipsin/.codex/worktrees/public-v1-auth/배포`
-- 브랜치: `codex/public-v1-auth`
+현재 worktree:
 
-새 대화에는 `docs/13-codex-handoff-master-prompt.md`의 전체 내용을 붙여 넣으세요. 실제 파일과 Git 상태를 인수인계 문서보다 우선하고, 사용자 승인 전에는 푸시·migration·배포하지 마세요.
+- `/Users/zipsin/.codex/worktrees/shared-auth-integration/배포`

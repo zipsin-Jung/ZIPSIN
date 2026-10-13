@@ -14,6 +14,35 @@ create table public.signup_attributions (
   unique (user_id, source)
 );
 
+create or replace function public.complete_check_onboarding(p_user_type text) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if auth.uid() is null then
+    raise exception 'not_authenticated';
+  end if;
+  if p_user_type not in ('house_hunter', 'tenant') then
+    raise exception 'invalid_user_type';
+  end if;
+
+  insert into public.profiles (user_id, user_type, onboarding_state)
+  values (auth.uid(), p_user_type, 'complete')
+  on conflict (user_id) do update set
+    user_type = excluded.user_type,
+    onboarding_state = excluded.onboarding_state,
+    updated_at = now();
+
+  insert into public.signup_attributions (user_id, source)
+  values (auth.uid(), 'zipsin_check')
+  on conflict (user_id, source) do nothing;
+end;
+$$;
+
+revoke all on function public.complete_check_onboarding(text) from public;
+grant execute on function public.complete_check_onboarding(text) to authenticated;
+
 create table public.transfer_manifests (
   id uuid primary key default gen_random_uuid(),
   owner_user_id uuid not null references auth.users(id) on delete cascade,

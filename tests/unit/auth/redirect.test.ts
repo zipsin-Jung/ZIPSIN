@@ -24,4 +24,8 @@ describe('sanitizeNextPath', () => {
   it('값이 없으면 홈을 사용한다', () => {
     expect(sanitizeNextPath(null)).toBe('/home');
   });
+
+  it.each(['/api/candidates', '/auth/callback', '/login', '/unknown'])('인증 루프·API·미허용 내부 경로 %s를 막는다', (value) => {
+    expect(sanitizeNextPath(value)).toBe('/home');
+  });
 });

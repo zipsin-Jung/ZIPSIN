@@ -1,0 +1,31 @@
+# 2026-10-14 집신·집신체크 공용 계정 통합 작업 기록
+
+## 수행 순서
+
+기존 상태 확인 → 인증 구조 병합 → 안전한 복귀·공유 쿠키 구현 → 기존 프로필 호환 수정 → 실패 테스트·구현 → 전체 자동검사 → 실제 Chromium 검사 → 문서·Git 정리 순으로 진행했다.
+
+## 변경
+
+- 집신 본체와 집신체크를 한 Next.js 앱으로 합치고 로그인·회원가입·callback 소유자를 하나로 통일했다.
+- `/ck` 기록을 로그인 전 로컬에 보존하고 공용 로그인·회원가입 후 원래 `/ck` 또는 후보 이전 화면으로 돌아오게 했다.
+- 운영에서 `.zipsin.net` 공유 세션 쿠키를 사용하고 Preview·localhost에는 도메인을 강제하지 않는다.
+- 외부·인코딩 우회·역슬래시·상위 경로를 `next`로 사용할 수 없게 했다.
+- 체크 migration이 기존 집신 `profiles.user_id`와 역할을 덮지 않도록 호환 구조로 수정했다.
+- 직접 프로필 쓰기 대신 인증 사용자 전용 `complete_check_onboarding` 보안 RPC로 프로필과 유입 출처를 원자 저장한다.
+- 배포 환경 검사를 추가하고 운영 localhost·HTTP·잘못된 쿠키 도메인을 차단했다.
+- 운영 인증 기준 주소를 정확히 `https://zipsin.net`으로 제한하고 OAuth 실패 뒤에도 안전한 복귀 경로를 유지한다.
+
+## 검증
+
+- Vitest: 520 통과, 1 skip
+- 커버리지: statements 92.21%, branches 84.69%, functions 92.68%, lines 96.31%
+- TypeScript: 통과
+- Next.js 16.4.0 Production build: 통과
+- Chromium: 38 통과, 외부 Preview 계정 전용 9 skip
+- 비밀값·환경값 검사: 통과
+
+## 남은 일
+
+- Supabase·Google·Kakao·Vercel 관리자 설정
+- Preview에서 실제 소셜 로그인, 두 호스트 공유 세션, 다른 기기 복원, RLS·Storage 왕복 검수
+- 사용자 승인 뒤에만 Production·DNS 반영
