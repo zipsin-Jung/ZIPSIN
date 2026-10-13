@@ -60,3 +60,12 @@
 - Supabase Site URL은 `http://localhost:3000`이고 Redirect URL 허용 목록은 비어 있다.
 - 따라서 현재 화면에 표시된 `이메일 확인 → 휴대전화 인증 → 역할` 흐름과 실제 서버 설정이 일치하지 않는다.
 - 외부 문자 공급자와 Google·Kakao 개발자 키가 없는 상태에서는 이 세 인증 방식을 운영에서 완료할 수 없다. 운영 범위 결정과 비밀값 전송 승인을 받기 전에는 Supabase·Vercel 설정을 변경하지 않았다.
+
+## 무료 이메일·아이디 가입 연결 진행
+
+- 사용자 승인 후 기존 비밀값을 새로 노출하거나 복사하지 않고 Vercel Preview 적용 범위만 `codex/zipsin-shared-auth-integration`으로 연결했다.
+- `SUPABASE_SERVICE_ROLE_KEY`, `AUTH_RATE_LIMIT_HMAC_SECRET`과 기존 공개 Supabase URL·anon key를 Preview에서 사용할 수 있게 했다.
+- `NEXT_PUBLIC_SITE_URL`, 공유 쿠키 도메인, 비밀번호 로그인 활성화, Google·Kakao·Naver 비활성, 휴대전화 공급자 비활성 설정을 추가했다.
+- Supabase SQL 편집기에서 가입에 필요한 `profiles` 보완, `signup_attributions`, `complete_check_onboarding(text)`, RLS 정책과 권한을 적용했고 성공 메시지를 확인했다.
+- Supabase 대시보드에는 여러 기술 문제 조사 중이라는 장애 공지가 계속 표시됐다. Site URL을 `https://zipsin.net`으로 저장하려 했으나 재접속하면 localhost로 돌아와 미반영으로 판정했다.
+- 운영 배포는 하지 않았다. 문서 커밋이 만든 새 Vercel Preview에서 이메일·아이디 가입과 로그인, Auth Users·유입 기록을 실제 확인하는 단계가 남아 있다.

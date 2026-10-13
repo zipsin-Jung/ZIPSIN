@@ -2,6 +2,11 @@
 
 ## 2026-10-14 통합 회원가입 실제 운영 연결 검수
 
+- 사용자가 무료 이메일·아이디 회원가입 우선 연결과 Vercel 비밀값 전송을 승인했다.
+- Vercel의 기존 Supabase 서버 비밀키와 가입 제한 HMAC 키를 `codex/zipsin-shared-auth-integration` Preview 브랜치에 연결했고, 공개 URL·쿠키 도메인·비밀번호 로그인·외부 공급자 비활성 설정을 추가했다.
+- Supabase에 가입 유입 테이블과 `complete_check_onboarding(text)` RPC를 적용했으며 SQL 실행 결과 `성공. 반환된 행이 없습니다.`를 확인했다.
+- Supabase 장애 공지 상태에서 Site URL 저장은 화면상 반영되지 않아 localhost로 남아 있다. 이메일·아이디 가입 자체와 별개지만 이메일 링크·OAuth 전환 전 반드시 재설정해야 한다.
+- 새 환경값은 새 Preview 배포 이후 적용된다. 실제 가입·로그인 왕복과 Auth Users 확인은 새 Preview 배포 후 진행한다.
 - 회원가입 통합 최신 커밋 `a3f51ae`는 GitHub와 Vercel Preview에 존재한다.
 - Preview는 Vercel 로그인 보호로 일반 사용자 접근이 막혀 있다.
 - 운영 `https://zipsin.net/signup`과 `https://zipsin.vercel.app/signup`은 HTTP 404이므로 현재 운영 회원가입은 불가능하다.
