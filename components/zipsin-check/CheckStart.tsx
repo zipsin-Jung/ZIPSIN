@@ -1,10 +1,11 @@
 'use client';
 import {BookOpenCheck,Camera,Columns3,Lightbulb,MapPin,MousePointerClick,Plus,Star,Trash2} from 'lucide-react';
+import {getItemsForDepth} from '@/lib/zipsin-check/catalog';
 import type {CandidateV2} from '@/lib/zipsin-check/types';
 import styles from './ZipsinCheck.module.css';
 
 const HOW_TO=[['01',BookOpenCheck,'미리 읽기','집 보러 가기 전에 읽어 보고 가면 좋아요'],['02',MousePointerClick,'네모만 체크','전부 다 체크하진 않아도 돼요'],['03',Camera,'사진·메모','급하면 기억할 것만 바로 남겨요.'],['04',Columns3,'카드처럼 비교','나온 뒤 2~3채를 같은 기준으로 보세요.']] as const;
-const PREVIEW=['물·배수','곰팡이·누수','채광·소음','창문·문','옵션·파손'];
+const PREVIEW=getItemsForDepth('quick').map(item=>item.title);
 
 export default function CheckStart({candidates,onNew,onInstant,onResume,onViewAll,onCompare,onDelete}:{candidates:CandidateV2[];onNew:()=>void;onInstant:()=>void;onResume:(id:string)=>void;onViewAll:()=>void;onCompare:()=>void;onDelete:(id:string)=>void}){
   const recent=[...candidates].sort((a,b)=>Date.parse(b.createdAt)-Date.parse(a.createdAt)).slice(0,3);

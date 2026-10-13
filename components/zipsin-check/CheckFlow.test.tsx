@@ -1,2 +1,62 @@
-import '@testing-library/jest-dom/vitest';import {cleanup,fireEvent,render,screen} from '@testing-library/react';import {afterEach,describe,expect,it,vi} from 'vitest';import {createCandidate} from '@/lib/zipsin-check/state';import type {PhotoStore} from '@/lib/zipsin-check/photo-store';import CheckFlow from './CheckFlow';afterEach(cleanup);const now='2026-10-13T00:00:00.000Z';const store:PhotoStore={get:vi.fn(async()=>undefined),put:vi.fn(async()=>undefined),count:vi.fn(async()=>0),remove:vi.fn(async()=>undefined),removeCandidate:vi.fn(async()=>undefined)};
-describe('현장 5개 체크',()=>{it('5개 행을 한 화면에 보이고 빨간 별 필수 표시를 놓는다',()=>{render(<CheckFlow candidate={createCandidate({id:'a',alias:'A집',depth:'quick',now})} onChange={vi.fn()} onFinish={vi.fn()} onBack={vi.fn()} photoStore={store}/>);expect(screen.getAllByRole('heading',{level:2})).toHaveLength(5);expect(screen.getAllByText('★ 꼭 확인해 주세요')).toHaveLength(5);expect(screen.getByText('필요하면 메모·사진과 상세 체크도 눌러보세요')).toBeInTheDocument();expect(screen.queryByText('눌러보세요')).not.toBeInTheDocument();expect(screen.getByRole('button',{name:'물·배수 메모·사진'})).toBeInTheDocument();expect(screen.getByRole('button',{name:'곰팡이·누수 메모·사진'})).toBeInTheDocument()});it('체크 중 기록을 유지한 채 로그인 페이지로 갈 수 있다',()=>{render(<CheckFlow candidate={createCandidate({id:'a',alias:'A집',depth:'quick',now})} onChange={vi.fn()} onFinish={vi.fn()} onBack={vi.fn()} photoStore={store}/>);expect(screen.getByText('이 기기의 집신체크에 먼저 저장돼요')).toBeInTheDocument();expect(screen.getByRole('link',{name:'집신에 저장'})).toHaveAttribute('href','/login?next=%2Fck%2Ftransfer%3Fcandidate%3Da')});it('기기 저장이 실패하면 로그인 이동을 막아 현재 기록을 보호한다',()=>{render(<CheckFlow candidate={createCandidate({id:'a',alias:'A집',depth:'quick',now})} onChange={vi.fn()} onFinish={vi.fn()} onBack={vi.fn()} photoStore={store} canSaveToAccount={false}/>);expect(screen.queryByRole('link',{name:'집신에 저장'})).not.toBeInTheDocument();expect(screen.getByRole('button',{name:'집신에 저장'})).toBeDisabled();expect(screen.getByText('이 화면을 벗어나면 기록이 사라질 수 있어요')).toBeInTheDocument()});it('각 필수 카드의 상세보기 안에 관련 체크와 전구형 이유를 보여준다',()=>{render(<CheckFlow candidate={createCandidate({id:'a',alias:'A집',depth:'quick',now})} onChange={vi.fn()} onFinish={vi.fn()} onBack={vi.fn()} photoStore={store}/>);expect(screen.queryByText('변기·세면대')).not.toBeInTheDocument();fireEvent.click(screen.getByRole('button',{name:'물·배수 상세 체크 펼치기'}));expect(screen.getByText('변기·세면대')).toBeInTheDocument();expect(screen.getByText('💡 왜 확인하나요?')).toBeInTheDocument();expect(screen.getAllByRole('heading',{level:2})).toHaveLength(5)});it('상세 행동 체크가 부모 결과를 임의로 바꾸지 않는다',()=>{const onChange=vi.fn();render(<CheckFlow candidate={createCandidate({id:'a',alias:'A집',depth:'quick',now})} onChange={onChange} onFinish={vi.fn()} onBack={vi.fn()} photoStore={store}/>);fireEvent.click(screen.getByRole('button',{name:'물·배수 상세 체크 펼치기'}));fireEvent.click(screen.getByRole('checkbox',{name:/화장실과 부엌/}));expect(onChange.mock.calls[0][0].answers['water-drain'].status).toBe('unverified')});it('메모를 열기 전에는 사진 입력이 없다',async()=>{render(<CheckFlow candidate={createCandidate({id:'a',alias:'A집',depth:'quick',now})} onChange={vi.fn()} onFinish={vi.fn()} onBack={vi.fn()} photoStore={store}/>);expect(screen.queryByLabelText('물·배수 사진 추가')).not.toBeInTheDocument();fireEvent.click(screen.getByRole('button',{name:'물·배수 메모·사진'}));expect(screen.getByRole('dialog',{name:'물·배수 메모'})).toBeInTheDocument();expect(await screen.findByLabelText('물·배수 사진 추가')).toBeInTheDocument()})});
+import '@testing-library/jest-dom/vitest';
+import {cleanup,fireEvent,render,screen,within} from '@testing-library/react';
+import {afterEach,describe,expect,it,vi} from 'vitest';
+import {createCandidate} from '@/lib/zipsin-check/state';
+import type {PhotoStore} from '@/lib/zipsin-check/photo-store';
+import CheckFlow from './CheckFlow';
+
+afterEach(cleanup);
+const now='2026-10-13T00:00:00.000Z';
+const store:PhotoStore={get:vi.fn(async()=>undefined),put:vi.fn(async()=>undefined),count:vi.fn(async()=>0),remove:vi.fn(async()=>undefined),removeCandidate:vi.fn(async()=>undefined)};
+const renderFlow=(props:Partial<React.ComponentProps<typeof CheckFlow>>={})=>render(<CheckFlow candidate={createCandidate({id:'a',alias:'A집',depth:'quick',now})} onChange={vi.fn()} onFinish={vi.fn()} onBack={vi.fn()} photoStore={store} {...props}/>);
+
+describe('초보 임차인 현장 체크',()=>{
+  it('중요 3개를 상단에 두고 나머지 현장 체크도 모두 제공한다',()=>{
+    renderFlow();
+    const priority=screen.getByRole('region',{name:'먼저 볼 3개'});
+    expect(within(priority).getByRole('heading',{name:'물·배수'})).toBeInTheDocument();
+    expect(within(priority).getByRole('heading',{name:'곰팡이·누수'})).toBeInTheDocument();
+    expect(within(priority).getByRole('heading',{name:'온수·난방'})).toBeInTheDocument();
+    expect(screen.getByRole('heading',{name:'화장실 배수·냄새'})).toBeInTheDocument();
+    expect(screen.getByRole('heading',{name:'옵션 상태'})).toBeInTheDocument();
+  });
+
+  it('상태 이름을 문제없음·문제 있음·못 봤음으로 명확하게 표시한다',()=>{
+    renderFlow();
+    expect(screen.getByRole('button',{name:'물·배수 문제없음'})).toBeInTheDocument();
+    expect(screen.getByRole('button',{name:'물·배수 문제 있음'})).toBeInTheDocument();
+    expect(screen.getByRole('button',{name:'물·배수 못 봤음'})).toBeInTheDocument();
+    expect(screen.queryByRole('button',{name:/괜찮음/})).not.toBeInTheDocument();
+  });
+
+  it('상세 체크에서 정확한 위치·행동·이상 신호를 알려준다',()=>{
+    renderFlow();
+    fireEvent.click(screen.getByRole('button',{name:'곰팡이·누수 상세 체크 펼치기'}));
+    expect(screen.getByRole('checkbox',{name:/천장과 벽이 만나는 위쪽 모서리/})).toBeInTheDocument();
+    expect(screen.getByRole('checkbox',{name:/창문 끝·창틀·창문 아래 벽/})).toBeInTheDocument();
+    expect(screen.getByText(/검은 점·갈색 물자국/)).toBeInTheDocument();
+  });
+
+  it('물어볼 것을 우선순위대로 열고 답변을 메모할 수 있다',()=>{
+    renderFlow();
+    fireEvent.click(screen.getByRole('button',{name:'물어볼 것 8개'}));
+    const questions=screen.getByRole('region',{name:'중개사에게 물어볼 것'});
+    expect(within(questions).getAllByRole('heading',{level:2}).map(heading=>heading.textContent)).toEqual([
+      '1. 관리비','2. 입주 전 수리','3. 수리 책임','4. 공과금','5. 입주 날짜','6. 주차·자전거','7. 쓰레기','8. 생활 제한',
+    ]);
+    expect(within(questions).getByRole('button',{name:'관리비 답변 기록'})).toBeInTheDocument();
+  });
+
+  it('체크 중 기록을 유지한 채 로그인 페이지로 갈 수 있다',()=>{
+    renderFlow();
+    expect(screen.getByText('이 기기의 집신체크에 먼저 저장돼요')).toBeInTheDocument();
+    expect(screen.getByRole('link',{name:'집신에 저장'})).toHaveAttribute('href','/login?next=%2Fck%2Ftransfer%3Fcandidate%3Da');
+  });
+
+  it('상세 행동 체크가 부모 결과를 임의로 바꾸지 않는다',()=>{
+    const onChange=vi.fn();renderFlow({onChange});
+    fireEvent.click(screen.getByRole('button',{name:'물·배수 상세 체크 펼치기'}));
+    fireEvent.click(screen.getByRole('checkbox',{name:/부엌 싱크대와 화장실/}));
+    expect(onChange.mock.calls[0][0].answers['water-drain'].status).toBe('unverified');
+  });
+});

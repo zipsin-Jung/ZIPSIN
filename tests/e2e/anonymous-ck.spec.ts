@@ -11,7 +11,7 @@ test('로그인 없이 첫 후보를 만들고 새로고침 뒤 이어서 본다
   await page.getByRole('textbox', {name: '집 별명', exact: true}).fill('성수역 햇살집');
   await page.getByRole('button', {name: '별명 저장하고 체크 시작'}).click();
   await expect(page.getByRole('heading', {name: '성수역 햇살집 체크'})).toBeVisible();
-  await page.getByRole('button', {name: '물·배수 괜찮음'}).click();
+  await page.getByRole('button', {name: '물·배수 문제없음'}).click();
 
   await page.reload();
   await expect(page.getByRole('button', {name: '최근 집 열기: 성수역 햇살집'})).toBeVisible();
@@ -19,7 +19,7 @@ test('로그인 없이 첫 후보를 만들고 새로고침 뒤 이어서 본다
   await expect(page.getByRole('heading', {name: '내가 본 집 1채'})).toBeVisible();
   await page.getByRole('button', {name: '성수역 햇살집 위치 미입력'}).click();
   await expect(page.getByRole('heading', {name: '성수역 햇살집 체크'})).toBeVisible();
-  await expect(page.getByRole('button', {name: '물·배수 괜찮음'})).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('button', {name: '물·배수 문제없음'})).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('집신체크에서 하나의 집신 계정 로그인과 회원가입으로 이어진다', async ({ page }) => {

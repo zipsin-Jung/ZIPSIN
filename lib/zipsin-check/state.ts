@@ -1,4 +1,4 @@
-import {CHECK_ITEMS, CORE_ITEM_IDS, getItemsForDepth} from './catalog';
+import {ALL_CHECK_ITEMS, CHECK_ITEMS, CORE_ITEM_IDS} from './catalog';
 import type {Candidate, CandidateV2, CheckAnswer, CheckDepth, CheckStatus, CheckSummary, ComparisonRow, StoredCheckStateV2} from './types';
 import {formatRentalPrice,formatWon,monthlyHousingCost} from './format';
 
@@ -21,7 +21,7 @@ export function createCandidate({id, alias, depth, now, locationLabel, discovery
 }
 
 export function answerItem(candidate: Candidate, itemId: string, answer: CheckAnswer, now: string): Candidate {
-  if (!CHECK_ITEMS.some((item) => item.id === itemId)) throw new Error('존재하지 않는 체크 항목입니다.');
+  if (!ALL_CHECK_ITEMS.some((item) => item.id === itemId)) throw new Error('존재하지 않는 체크 항목입니다.');
   return {...candidate, answers: {...candidate.answers, [itemId]: answer}, updatedAt: now};
 }
 
@@ -32,7 +32,7 @@ export function switchDepth(candidate: Candidate, depth: CheckDepth, now: string
 export function buildSummary(candidate: Candidate): CheckSummary {
   const summary: CheckSummary = {confirmed: [], caution: [], unverified: [], expert: []};
 
-  for (const item of getItemsForDepth(candidate.depth)) {
+  for (const item of CHECK_ITEMS) {
     const answer = candidate.answers[item.id] ?? {status: 'unverified' as const, source: 'observed' as const};
     summary[answer.status].push({...item, answer});
   }
@@ -127,5 +127,5 @@ export function removeCandidate(state: StoredCheckStateV2, candidateId: string):
 export type HomeComparisonRow={key:string;label:string;values:Record<string,string>;statuses?:Record<string,CheckStatus>};
 export function buildHomeComparison(candidates:CandidateV2[],ids:string[]):HomeComparisonRow[]{const selected=[...new Set(ids)].map(id=>candidates.find(c=>c.id===id&&!c.archived)).filter((c):c is CandidateV2=>!!c).slice(0,3);const values=(read:(c:CandidateV2)=>string)=>Object.fromEntries(selected.map(c=>[c.id,read(c)]));const rows:HomeComparisonRow[]=[
 {key:'location',label:'위치',values:values(c=>c.listing.location||'미입력')},{key:'price',label:'보증금·월세',values:values(c=>formatRentalPrice(c.terms.depositWon,c.terms.monthlyRentWon))},{key:'maintenance',label:'관리비',values:values(c=>formatWon(c.terms.maintenanceFeeWon))},{key:'monthly-total',label:'월 고정 주거비',values:values(c=>formatWon(monthlyHousingCost(c.terms.monthlyRentWon,c.terms.maintenanceFeeWon)))},{key:'commute',label:'출퇴근',values:values(c=>c.commute.minutes===undefined?'미입력':`${c.commute.minutes}분`)},{key:'move-in',label:'입주일',values:values(c=>c.terms.moveInDate||'미입력')},{key:'discovery',label:'발견 경로',values:values(c=>c.listing.discoverySource||'미입력')},
-...CHECK_ITEMS.map(item=>({key:item.id,label:item.title,values:values(c=>{const s=c.answers[item.id]?.status;return s==='confirmed'?'괜찮음':s==='caution'?'다시 확인':s==='expert'?'전문가 확인':'미확인'}),statuses:Object.fromEntries(selected.map(c=>[c.id,c.answers[item.id]?.status??'unverified']))})),
+...CHECK_ITEMS.map(item=>({key:item.id,label:item.title,values:values(c=>{const s=c.answers[item.id]?.status;return s==='confirmed'?'문제없음':s==='caution'?'문제 있음':s==='expert'?'전문가 확인':'못 봤음'}),statuses:Object.fromEntries(selected.map(c=>[c.id,c.answers[item.id]?.status??'unverified']))})),
 {key:'follow-up-count',label:'다시 확인',values:values(c=>`${CHECK_ITEMS.filter(i=>c.answers[i.id]?.status==='caution'||c.answers[i.id]?.status==='expert').length}개`)},{key:'contact',label:'담당자',values:values(c=>c.contact.name||'미입력')},{key:'listing',label:'매물 링크',values:values(c=>c.listing.listingUrl?'매물 보기':'미입력')}];return rows}

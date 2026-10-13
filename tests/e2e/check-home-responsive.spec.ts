@@ -57,8 +57,8 @@ for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}]) {
       expect(box!.x+box!.width).toBeLessThanOrEqual(viewport.width);
     }
     const previewButtons=preview.getByRole('button',{name:/체크 시작$/});
-    await expect(previewButtons).toHaveCount(5);
-    for(let index=0;index<5;index++){
+    await expect(previewButtons).toHaveCount(3);
+    for(let index=0;index<3;index++){
       const box=await previewButtons.nth(index).boundingBox();
       expect(box).not.toBeNull();
       expect(box!.width).toBeGreaterThan(200);

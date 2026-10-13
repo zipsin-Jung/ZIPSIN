@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {CORE_ITEM_IDS} from './catalog';
+import {CHECK_ITEMS, CORE_ITEM_IDS} from './catalog';
 import {
   answerItem,
   archiveCandidate,
@@ -40,7 +40,7 @@ describe('집신체크 상태 규칙', () => {
 
     expect(summary.caution.map((entry) => entry.id)).toEqual(['moisture-leak']);
     expect(summary.confirmed.map((entry) => entry.id)).toEqual(['light-noise']);
-    expect(summary.unverified).toHaveLength(CORE_ITEM_IDS.length - 2);
+    expect(summary.unverified).toHaveLength(CHECK_ITEMS.length - 2);
   });
 
   it('서로 다른 깊이의 후보도 공통 핵심만 비교한다', () => {
@@ -55,7 +55,7 @@ describe('집신체크 상태 규칙', () => {
     const rows = compareCandidates([quick, thorough]);
 
     expect(rows).toHaveLength(CORE_ITEM_IDS.length);
-    expect(rows.some((row) => row.item.id === 'options-damage')).toBe(true);
+    expect(rows.some((row) => row.item.id === 'hot-water-heating')).toBe(true);
   });
 
   it('후보를 삭제하지 않고 제외·복원하며 활성 후보는 3개까지만 둔다', () => {

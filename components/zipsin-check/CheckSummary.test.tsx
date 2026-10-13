@@ -14,8 +14,8 @@ describe('방문 요약', () => {
 
     const caution = screen.getByRole('region', {name: /주의 1개/});
     expect(within(caution).getByText('곰팡이·누수')).toBeInTheDocument();
-    const unverified = screen.getByRole('region', {name: /확인 못함 4개/});
-    expect(within(unverified).getAllByText(/다음:/).length).toBe(4);
+    const unverified = screen.getByRole('region', {name: /확인 못함 8개/});
+    expect(within(unverified).getAllByText(/다음:/).length).toBe(8);
     expect(screen.getByText(/법률·안전·하자 판정이 아니에요/)).toBeInTheDocument();
     expect(screen.getByRole('link', {name: /집신에 저장하기/})).toHaveAttribute('href', '/ck/transfer?candidate=a');
   });
