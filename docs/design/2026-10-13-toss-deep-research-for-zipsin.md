@@ -174,3 +174,9 @@
 - [토스 가입 화면 설계 사례](https://toss.tech/article/toss-signup-process)
 - [사용자 관점에서 다시 보기](https://toss.tech/article/thinking-user-perspective)
 - [문토](https://www.munto.kr/ko)
+
+## 11. 경쟁사 연결 분석
+
+토스의 제품 설명 문법에 더해, 집신의 직접 경쟁사인 홈노크의 부동산 신뢰 구조를 별도로 분석했다. 홈노크의 자산·임대료·세금 중신과 집신의 집·사건·기록·협업 중신을 구분한다.
+
+- [홈노크 심층 경쟁 분석](./2026-10-13-homeknock-competitive-research.md)
