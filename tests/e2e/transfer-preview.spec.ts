@@ -10,10 +10,21 @@ test('로컬 후보를 미리보고 취소해도 원본이 남는다',async({pag
   await expect(page.getByRole('button',{name:'최근 집 열기: 첫 자취방'})).toBeVisible();
 });
 
-test('미설정 로그인 공급자는 준비 중으로 안전하게 보인다',async({page})=>{
+test('사회초년생이 Google·Kakao 간편 가입을 바로 시작한다',async({page})=>{
   await page.goto('/login?returnTo=%2Fck%2Ftransfer');
-  await expect(page.getByRole('heading',{name:'보고 온 집을 안전하게 이어보세요.'})).toBeVisible();
-  await expect(page.getByRole('button',{name:/Google.*준비 중/})).toBeDisabled();
-  await expect(page.getByRole('button',{name:/Kakao.*준비 중/})).toBeDisabled();
-  await expect(page.getByRole('button',{name:/Naver.*준비 중/})).toBeDisabled();
+  await expect(page.getByRole('heading',{name:'간편 가입하고 집신체크를 이어보세요.'})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Google로 계속'})).toBeEnabled();
+  await expect(page.getByRole('button',{name:'Kakao로 계속'})).toBeEnabled();
+  await expect(page.getByRole('button',{name:/Naver/})).toHaveCount(0);
+  await expect(page.getByText(/집신 본 서비스와 내 집 자동 등록은 준비 중/)).toBeVisible();
+});
+
+test('일반 가입과 특정 후보 이전의 동의 범위를 분리한다',async({page})=>{
+  await page.goto('/onboarding/tenant?returnTo=%2Fck');
+  await expect(page.getByRole('checkbox',{name:/선택한 후보 기록을/})).toHaveCount(0);
+  await expect(page.getByRole('button',{name:'가입 완료하고 집신체크로'})).toBeVisible();
+
+  await page.goto('/onboarding/tenant?returnTo=%2Fck%2Ftransfer%3Fcandidate%3Dcandidate-1');
+  await expect(page.getByRole('checkbox',{name:/선택한 후보 기록을/})).toBeVisible();
+  await expect(page.getByRole('button',{name:'확인하고 계속'})).toBeVisible();
 });

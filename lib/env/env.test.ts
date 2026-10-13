@@ -19,21 +19,17 @@ describe('environment configuration', () => {
     });
   });
 
-  it('allows server paths that do not need a service-role key', () => {
+  it('enables the ready Google and Kakao signup paths by default', () => {
     expect(readServerEnv(valid)).toEqual({
       supabaseUrl: valid.NEXT_PUBLIC_SUPABASE_URL,
       supabaseAnonKey: valid.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       authTestMode: false,
-      oauthProviders: {google: false, kakao: false, naver: false},
+      oauthProviders: {google: true, kakao: true, naver: false},
     });
   });
 
-  it('enables only explicitly configured OAuth providers', () => {
-    expect(readServerEnv({...valid, AUTH_GOOGLE_ENABLED: 'true', AUTH_KAKAO_ENABLED: 'true'}).oauthProviders).toEqual({
-      google: true,
-      kakao: true,
-      naver: false,
-    });
+  it('allows an operator to explicitly disable a provider', () => {
+    expect(readServerEnv({...valid, AUTH_GOOGLE_ENABLED: 'false'}).oauthProviders).toEqual({google:false,kakao:true,naver:false});
   });
 
   it('rejects test authentication in production', () => {

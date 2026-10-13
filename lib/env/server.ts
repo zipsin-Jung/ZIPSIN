@@ -21,8 +21,8 @@ export function readServerEnv(source: EnvSource = process.env): ServerEnv {
     ...(source.SUPABASE_SERVICE_ROLE_KEY ? {supabaseServiceRoleKey: source.SUPABASE_SERVICE_ROLE_KEY} : {}),
     authTestMode,
     oauthProviders: {
-      google: source.AUTH_GOOGLE_ENABLED === 'true',
-      kakao: source.AUTH_KAKAO_ENABLED === 'true',
+      google: source.AUTH_GOOGLE_ENABLED !== 'false',
+      kakao: source.AUTH_KAKAO_ENABLED !== 'false',
       naver: source.AUTH_NAVER_ENABLED === 'true',
     },
   };

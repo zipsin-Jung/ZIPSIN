@@ -1,5 +1,6 @@
 # 결정 기록
 
+- [DEC-022 집신체크 가입 확보 우선](DEC-022-zipsin-check-signup-acquisition-first.md)
 - [DEC-020 집신체크 단일계정·후보기록 이전 경계](DEC-020-zipsin-check-single-account-transfer-boundary.md)
 
 - [DEC-015: 여섯 역할 에이전트 체계와 품질 게이트](DEC-015-six-role-agent-system-and-quality-gates.md) — 제안·사용자 승인 대기

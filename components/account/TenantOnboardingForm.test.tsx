@@ -29,4 +29,12 @@ describe('임차인 유입 확인', () => {
     expect(onSubmit).not.toHaveBeenCalled();
     expect(screen.getByRole('alert')).toHaveTextContent('기록 이전 동의');
   });
+
+  it('기록 이전 없이 가입한 사용자는 이전 동의 없이 집신체크로 돌아간다',()=>{
+    const onSubmit=vi.fn();
+    render(<TenantOnboardingForm requiresTransferConsent={false} onSubmit={onSubmit}/>);
+    expect(screen.queryByRole('checkbox',{name:/선택한 후보 기록을/})).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button',{name:'가입 완료하고 집신체크로'}));
+    expect(onSubmit).toHaveBeenCalledWith({userType:'house_hunter',transferConsent:false,marketingConsent:false});
+  });
 });

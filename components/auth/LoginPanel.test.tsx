@@ -6,7 +6,7 @@ import LoginPanel from './LoginPanel';
 afterEach(cleanup);
 
 describe('집신 단일 로그인', () => {
-  it('설정된 공급자만 시작할 수 있다', () => {
+  it('준비된 공급자만 보여주고 바로 시작한다', () => {
     const onStart = vi.fn();
     render(<LoginPanel states={[
       {provider: 'google', available: true},
@@ -16,8 +16,8 @@ describe('집신 단일 로그인', () => {
 
     fireEvent.click(screen.getByRole('button', {name: 'Google로 계속'}));
     expect(onStart).toHaveBeenCalledWith('google');
-    expect(screen.getByRole('button', {name: /Kakao.*준비 중/})).toBeDisabled();
-    expect(screen.getByRole('button', {name: /Naver.*준비 중/})).toBeDisabled();
+    expect(screen.queryByRole('button', {name: /Kakao/})).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', {name: /Naver/})).not.toBeInTheDocument();
   });
 
   it('나중에를 숨기지 않는다', () => {
