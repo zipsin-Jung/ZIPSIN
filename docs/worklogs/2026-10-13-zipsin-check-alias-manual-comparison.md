@@ -23,8 +23,8 @@
 - TypeScript: 통과
 - Next.js 16.4.0 Production build: 통과
 - Playwright Chromium desktop·390px: 6개 통과
+- Vercel Preview 모바일 390px: `성수역 햇살집` 별명 등록 → 비교 화면 진입 → 기존 집과 새 집 직접 선택 → `2/3 선택` → 비교표 열기 통과
 
 ## 남은 일
 
-- Vercel Preview에서 별명 입력 → 체크 → 두 집 직접 선택 → 비교표 열기를 실제 모바일 크기로 검수합니다.
 - Production·DNS는 변경하지 않습니다.
