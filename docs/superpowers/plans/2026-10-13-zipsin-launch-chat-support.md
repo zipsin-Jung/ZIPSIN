@@ -138,10 +138,10 @@
 - Produces room types: `direct|group|home_shared|office_internal|repair_event|support`
 - Produces RPCs: `create_direct_room`, `create_group_room`, `create_relationship_room`, `invite_chat_member`, `leave_chat_room`
 
-- [ ] 모르는 사용자 검색 금지, 개인방 중복 생성, 단체 초대, 사무소 소속, 계약 분리, 수리 범위, 나가기 테스트를 먼저 작성한다.
-- [ ] 방 종류별 접근이 현재 관계를 매 요청마다 확인하도록 RLS와 RPC를 구현한다.
-- [ ] 동일 개인 조합·사무소·계약·수리 건의 중복 기본방 생성을 unique 제약으로 막는다.
-- [ ] 전체 테스트 후 `feat: add zipsin chat room types`로 커밋한다.
+- [x] 모르는 사용자 검색 금지, 개인방 중복 생성, 단체 초대, 사무소 소속, 계약 분리, 수리 범위, 나가기 테스트를 먼저 작성한다.
+- [x] 방 종류별 접근이 현재 관계를 매 요청마다 확인하도록 RLS와 RPC를 구현한다.
+- [x] 동일 개인 조합·사무소·계약·수리 건의 중복 기본방 생성을 unique 제약으로 막는다.
+- [x] 전체 테스트 후 `feat: add zipsin chat room types`로 커밋한다.
 
 ### Task 6: 채팅 UI와 직접 첨부·실시간 복구
 

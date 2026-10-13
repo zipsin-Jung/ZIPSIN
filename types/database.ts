@@ -64,8 +64,8 @@ export type Database = {
         Relationships: [];
       };
       chat_rooms: {
-        Row: { id: string; room_type: string; title: string | null; office_id: string | null; home_id: string | null; contract_id: string | null; created_by: string; status: 'active' | 'closed'; created_at: string; closed_at: string | null };
-        Insert: { id?: string; room_type: string; title?: string | null; office_id?: string | null; home_id?: string | null; contract_id?: string | null; created_by: string; status?: 'active' | 'closed'; created_at?: string; closed_at?: string | null };
+        Row: { id: string; room_type: 'direct' | 'group' | 'home_shared' | 'office_internal' | 'repair_event' | 'support'; title: string | null; office_id: string | null; home_id: string | null; contract_id: string | null; relationship_id: string | null; direct_key: string | null; relation_key: string | null; created_by: string; status: 'active' | 'closed'; created_at: string; closed_at: string | null };
+        Insert: { id?: string; room_type: 'direct' | 'group' | 'home_shared' | 'office_internal' | 'repair_event' | 'support'; title?: string | null; office_id?: string | null; home_id?: string | null; contract_id?: string | null; relationship_id?: string | null; direct_key?: string | null; relation_key?: string | null; created_by: string; status?: 'active' | 'closed'; created_at?: string; closed_at?: string | null };
         Update: { title?: string | null; status?: 'active' | 'closed'; closed_at?: string | null };
         Relationships: [];
       };
@@ -228,6 +228,12 @@ export type Database = {
       can_send_chat_message: { Args: { p_room_id: string }; Returns: boolean };
       send_chat_message: { Args: { p_room_id: string; p_body: string; p_idempotency_key: string }; Returns: number };
       mark_chat_read: { Args: { p_room_id: string; p_last_read_message_id: number }; Returns: undefined };
+      can_chat_with_user: { Args: { p_other_user_id: string }; Returns: boolean };
+      create_direct_room: { Args: { p_other_user_id: string }; Returns: string };
+      create_group_room: { Args: { p_title: string; p_member_ids: string[] }; Returns: string };
+      create_relationship_room: { Args: { p_room_type: string; p_office_id: string | null; p_home_id: string | null; p_contract_id: string | null; p_relationship_id: string | null }; Returns: string };
+      invite_chat_member: { Args: { p_room_id: string; p_user_id: string }; Returns: string };
+      leave_chat_room: { Args: { p_room_id: string }; Returns: undefined };
       assign_office_member_to_home: { Args: { p_office_id: string; p_home_id: string; p_user_id: string }; Returns: string };
       end_office_home_assignment: { Args: { p_assignment_id: string }; Returns: undefined };
       create_home_record: { Args: { p_home_id: string; p_office_id: string | null; p_contract_id: string | null; p_space: string; p_kind: string; p_title: string; p_body: string; p_idempotency_key: string; p_task_due_at: string | null; p_task_assigned_to: string | null }; Returns: string };
