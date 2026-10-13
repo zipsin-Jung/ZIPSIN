@@ -23,10 +23,11 @@ describe('contract lifecycle database boundary', () => {
     expect(body).toMatch(/insert into public\.contract_plan_events/i);
   });
 
-  it('TEST-ZH-LIFE-003-G exposes plan states only through existing contract authorization', () => {
-    expect(sql).toMatch(/create policy "contract_plan_states_select_authorized"[\s\S]*public\.can_access_contract\(contract_id\)/i);
+  it('TEST-ZH-LIFE-003-G keeps raw plan and audit identifiers server-only', () => {
     expect(sql).toMatch(/revoke all on public\.contract_plan_states from anon, authenticated/i);
-    expect(sql).not.toMatch(/grant (insert|update|delete) on public\.contract_plan_states to authenticated/i);
+    expect(sql).toMatch(/revoke all on public\.contract_plan_events from anon, authenticated/i);
+    expect(sql).not.toMatch(/grant (select|insert|update|delete) on public\.contract_plan_states to authenticated/i);
+    expect(sql).not.toMatch(/grant (select|insert|update|delete) on public\.contract_plan_events to authenticated/i);
   });
 
   it('TEST-ZH-LIFE-003-M returns party roles and statuses without exposing user identifiers', () => {

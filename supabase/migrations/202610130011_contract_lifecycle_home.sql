@@ -103,15 +103,10 @@ create table public.contract_plan_events (
 alter table public.contract_plan_states enable row level security;
 alter table public.contract_plan_events enable row level security;
 
-create policy "contract_plan_states_select_authorized" on public.contract_plan_states
-  for select to authenticated using (public.can_access_contract(contract_id));
-create policy "contract_plan_events_select_authorized" on public.contract_plan_events
-  for select to authenticated using (public.can_access_contract(contract_id));
-
+drop policy if exists "contract_plan_states_select_authorized" on public.contract_plan_states;
+drop policy if exists "contract_plan_events_select_authorized" on public.contract_plan_events;
 revoke all on public.contract_plan_states from anon, authenticated;
 revoke all on public.contract_plan_events from anon, authenticated;
-grant select on public.contract_plan_states to authenticated;
-grant select on public.contract_plan_events to authenticated;
 
 create or replace function public.get_contract_party_plan_statuses(
   p_contract_id uuid
