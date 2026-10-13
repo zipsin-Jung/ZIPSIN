@@ -37,6 +37,7 @@ describe('home route server boundaries', () => {
     guard.mockResolvedValue({ supabase: db, user: { id: 'user-1' } });
     render(await NewHomePage({ searchParams: Promise.resolve({ office: officeId }) }));
     expect(screen.queryByLabelText('도로명 주소')).not.toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('이 계정으로는 집을 등록할 수 없습니다. 사무소 대표에게 권한을 확인해 주세요.');
     expect(screen.getByRole('link', { name: '업무 홈으로' })).toHaveAttribute('href', '/home');
   });
   it('TEST-HOME-019 lists only office-filtered active RLS-visible homes and keeps equal addresses separate', async () => {

@@ -15,6 +15,7 @@ type Props = {
 
 export function SocialLoginButtons({ enabledProviders, next, onSelect }: Props) {
   const [isPending, startTransition] = useTransition();
+  const unavailable = SUPPORTED_PROVIDERS.filter((provider) => !enabledProviders.includes(provider.id));
 
   function choose(provider: SocialProviderId) {
     if (onSelect) {
@@ -28,8 +29,9 @@ export function SocialLoginButtons({ enabledProviders, next, onSelect }: Props) 
   }
 
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label="간편 로그인 제공자">
-      {SUPPORTED_PROVIDERS.map((provider) => {
+    <div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label="간편 로그인 제공자">
+        {SUPPORTED_PROVIDERS.map((provider) => {
         const enabled = enabledProviders.includes(provider.id);
         const accessibleName = `${provider.label}로 계속하기${enabled ? '' : ' 준비 중'}`;
 
@@ -46,7 +48,9 @@ export function SocialLoginButtons({ enabledProviders, next, onSelect }: Props) 
             <span className="sr-only">로 계속하기{!enabled ? ' 준비 중' : ''}</span>
           </button>
         );
-      })}
+        })}
+      </div>
+      {unavailable.map((provider) => <p key={provider.id} className="mt-2 text-xs text-slate-500">{provider.label} 로그인은 연결 설정 후 사용할 수 있습니다.</p>)}
       {isPending && <p role="status">로그인 화면으로 이동하고 있습니다.</p>}
     </div>
   );

@@ -94,13 +94,17 @@ export function HomeStart({
   }
 
   if (primaryRole !== 'principal_broker') {
+    const officeMember = primaryRole === 'assistant';
     return (
       <main className="mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
         <PlatformIntro />
         <section className="app-panel mt-6 rounded-[28px] p-7 sm:p-10">
           <p className="text-sm font-extrabold text-[#0b695c]">아직 연결된 집이 없습니다</p>
-          <h2 className="mt-3 text-3xl font-black tracking-[-0.04em] text-[#102a43]">연결된 공간을 확인해 주세요</h2>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-[#59717f]">받은 초대를 수락하면 허용된 집과 대화가 이 홈에 나타납니다. 주소만 알아서는 어떤 기록도 열 수 없습니다.</p>
+          <h2 className="mt-3 text-3xl font-black tracking-[-0.04em] text-[#102a43]">{officeMember ? '사무소 초대 링크를 확인해 주세요' : '집 초대 링크를 확인해 주세요'}</h2>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-[#59717f]">
+            역할을 선택한 것만으로 사무소나 집 기록이 열리지는 않습니다. 받은 초대 링크를 열어 수락하면 허용된 집과 대화가 이 홈에 나타납니다.
+          </p>
+          {!officeMember && <p className="mt-3 max-w-2xl text-sm leading-6 text-[#607785]">주소를 검색해 다른 사람의 기록에 연결할 수 없습니다.</p>}
           <Link href="/chats" className="mt-6 inline-flex text-sm font-extrabold text-[#0b695c]">새 메시지가 없습니다</Link>
         </section>
       </main>

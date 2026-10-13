@@ -38,6 +38,7 @@ describe('social providers', () => {
 
     const naver = screen.getByRole('button', { name: '네이버로 계속하기 준비 중' });
     expect(naver).toBeDisabled();
+    expect(screen.getByText('네이버 로그인은 연결 설정 후 사용할 수 있습니다.')).toBeInTheDocument();
     expect(onSelect).toHaveBeenCalledTimes(1);
   });
 });

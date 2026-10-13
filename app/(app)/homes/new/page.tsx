@@ -15,7 +15,7 @@ export default async function NewHomePage({ searchParams }: { searchParams: Prom
   if (office) query = query.eq('office_id', office);
   const { data: membership, error } = await query.order('created_at').limit(1).maybeSingle();
   if (error) return <Unavailable failed />;
-  if (!membership || membership.office_role !== 'principal_broker') return <Unavailable />;
+  if (!membership || membership.office_role !== 'principal_broker') return <Unavailable permission />;
   return (
     <main className="mx-auto max-w-3xl px-5 py-10 sm:py-16">
       <Link href="/home" className="text-sm font-bold text-[#0b695c]">← 홈으로</Link>
@@ -29,6 +29,9 @@ export default async function NewHomePage({ searchParams }: { searchParams: Prom
   );
 }
 
-function Unavailable({ failed = false }: { failed?: boolean }) {
-  return <main className="mx-auto max-w-2xl px-5 py-16"><p role="alert">{workspaceErrorMessage(failed ? 'server_error' : 'permission_denied')}</p><Link href="/home" className="mt-5 inline-block font-semibold text-emerald-900">업무 홈으로</Link></main>;
+function Unavailable({ failed = false, permission = false }: { failed?: boolean; permission?: boolean }) {
+  const message = permission
+    ? '이 계정으로는 집을 등록할 수 없습니다. 사무소 대표에게 권한을 확인해 주세요.'
+    : workspaceErrorMessage(failed ? 'server_error' : 'permission_denied');
+  return <main className="mx-auto max-w-2xl px-5 py-16"><p role="alert">{message}</p><Link href="/home" className="mt-5 inline-block font-semibold text-emerald-900">업무 홈으로</Link></main>;
 }
