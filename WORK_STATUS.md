@@ -7,6 +7,8 @@
 - Supabase에 가입 유입 테이블과 `complete_check_onboarding(text)` RPC를 적용했으며 SQL 실행 결과 `성공. 반환된 행이 없습니다.`를 확인했다.
 - Supabase 장애 공지 상태에서 Site URL 저장은 화면상 반영되지 않아 localhost로 남아 있다. 이메일·아이디 가입 자체와 별개지만 이메일 링크·OAuth 전환 전 반드시 재설정해야 한다.
 - 새 환경값은 새 Preview 배포 이후 적용된다. 실제 가입·로그인 왕복과 Auth Users 확인은 새 Preview 배포 후 진행한다.
+- 첫 Preview 실가입에서 계정 생성 뒤 `/signup/verify` 진입은 확인했지만, Preview에도 `.zipsin.net` 쿠키 도메인이 적용돼 재로그인 세션이 저장되지 않는 문제를 발견했다. `VERCEL_ENV=production`일 때만 부모 도메인 쿠키를 쓰도록 수정하고 회귀 테스트를 추가했다.
+- 무료 문자 공급자 비활성 상태에서도 휴대전화 인증·연령 확인 화면이 남아 있어 온보딩 완료는 아직 차단된다. 계정 생성·아이디 로그인 검수와 온보딩 정책 정리를 분리한다.
 - 회원가입 통합 최신 커밋 `a3f51ae`는 GitHub와 Vercel Preview에 존재한다.
 - Preview는 Vercel 로그인 보호로 일반 사용자 접근이 막혀 있다.
 - 운영 `https://zipsin.net/signup`과 `https://zipsin.vercel.app/signup`은 HTTP 404이므로 현재 운영 회원가입은 불가능하다.

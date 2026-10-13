@@ -13,6 +13,8 @@ export function getAuthCookieOptions({ production }: { production: boolean }): A
 
 export function getRuntimeAuthCookieOptions(): AuthCookieOptions {
   return getAuthCookieOptions({
-    production: process.env.NEXT_PUBLIC_AUTH_COOKIE_DOMAIN === '.zipsin.net',
+    production:
+      process.env.VERCEL_ENV === 'production'
+      && process.env.NEXT_PUBLIC_AUTH_COOKIE_DOMAIN === '.zipsin.net',
   });
 }

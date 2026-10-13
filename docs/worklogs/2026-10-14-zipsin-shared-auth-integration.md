@@ -69,3 +69,11 @@
 - Supabase SQL 편집기에서 가입에 필요한 `profiles` 보완, `signup_attributions`, `complete_check_onboarding(text)`, RLS 정책과 권한을 적용했고 성공 메시지를 확인했다.
 - Supabase 대시보드에는 여러 기술 문제 조사 중이라는 장애 공지가 계속 표시됐다. Site URL을 `https://zipsin.net`으로 저장하려 했으나 재접속하면 localhost로 돌아와 미반영으로 판정했다.
 - 운영 배포는 하지 않았다. 문서 커밋이 만든 새 Vercel Preview에서 이메일·아이디 가입과 로그인, Auth Users·유입 기록을 실제 확인하는 단계가 남아 있다.
+
+### 첫 실가입 검수에서 발견한 Preview 쿠키 문제
+
+- 가상 테스트 계정으로 회원가입을 제출했고 `/signup/verify`까지 이동해 Supabase 계정 생성 단계가 성공했음을 확인했다.
+- 이후 아이디·비밀번호 재로그인에서 Preview 호스트가 `.zipsin.net` 쿠키를 저장할 수 없어 세션이 유지되지 않았다.
+- `NEXT_PUBLIC_AUTH_COOKIE_DOMAIN` 값만 보지 않고 `VERCEL_ENV=production`까지 함께 만족할 때만 부모 도메인 쿠키를 쓰도록 수정했다.
+- 회귀 테스트를 먼저 실패시킨 뒤 구현했으며 인증 단위·통합 135개, 타입검사, 비밀값 검사를 통과했다.
+- 무료 문자 공급자가 비활성인데도 `/signup/verify`가 휴대전화 인증과 연령 확인을 요구하는 별도 제품 정책 문제는 남아 있다.
