@@ -11,7 +11,7 @@ export default async function HomeDetailPage({
 }) {
   const { homeId } = await params;
   if (!z.uuid().safeParse(homeId).success) return <Unavailable />;
-  const { supabase, user } = await requireOnboardingComplete();
+  const { supabase } = await requireOnboardingComplete();
   const { data: home, error } = await supabase
     .from("homes")
     .select("id, office_id, home_label, address_line1, address_detail")
@@ -19,18 +19,6 @@ export default async function HomeDetailPage({
     .eq("status", "active")
     .maybeSingle();
   if (error || !home) return <Unavailable />;
-  const { data: principal } = home.office_id
-    ? await supabase
-        .from("office_memberships")
-        .select("id")
-        .eq("office_id", home.office_id)
-        .eq("user_id", user.id)
-        .eq("office_role", "principal_broker")
-        .eq("status", "active")
-        .is("ended_at", null)
-        .lte("started_at", new Date().toISOString())
-        .maybeSingle()
-    : { data: null };
   const { data: records } = await supabase
     .from("records")
     .select("id, record_kind, title, occurred_at")
@@ -56,15 +44,7 @@ export default async function HomeDetailPage({
           {home.address_detail ? ` · ${home.address_detail}` : ""}
         </p>
         <div className="mt-7 flex flex-wrap gap-3">
-          {principal && (
-            <Link
-              href={`/homes/${homeId}/assignees`}
-              className="rounded-2xl bg-white px-5 py-3 text-sm font-bold text-[#0a4f55]"
-            >
-              담당자 관리
-            </Link>
-          )}
-          <Link href={`/homes/${homeId}/records/new`} className="rounded-2xl border border-white/40 bg-white/10 px-5 py-3 text-sm font-bold text-white">새 기록 남기기</Link>
+          <Link href={`/homes/${homeId}/records/new`} className="rounded-2xl bg-white px-5 py-3 text-sm font-bold text-[#0a4f55]">새 기록 남기기</Link>
         </div>
       </section>
       <section className="mt-8">

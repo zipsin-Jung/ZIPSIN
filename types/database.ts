@@ -179,6 +179,8 @@ export type Database = {
       can_perform_office_action: { Args: { p_office_id: string; p_action: string }; Returns: boolean };
       has_active_home_access: { Args: { p_home_id: string }; Returns: boolean };
       has_active_office_home_access: { Args: { p_home_id: string }; Returns: boolean };
+      can_access_office_home: { Args: { p_home_id: string }; Returns: boolean };
+      can_write_office_home: { Args: { p_home_id: string }; Returns: boolean };
       can_access_contract: { Args: { p_contract_id: string }; Returns: boolean };
       can_access_record: { Args: { p_record_id: string }; Returns: boolean };
       can_create_record: { Args: { p_home_id: string; p_office_id: string | null; p_contract_id: string | null; p_record_space: string; p_record_kind: string }; Returns: boolean };

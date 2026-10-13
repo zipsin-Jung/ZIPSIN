@@ -13,8 +13,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </Link>
           <nav aria-label="주요 메뉴" className="flex items-center gap-1 rounded-2xl border border-white/80 bg-white/75 p-1.5 shadow-[0_10px_34px_rgba(15,42,55,0.06)] backdrop-blur-xl">
             <Link className="rounded-xl px-4 py-2 text-sm font-bold text-[#123e4a] transition hover:bg-[#edf7f4]" href="/home">홈</Link>
-            <Link className="rounded-xl px-4 py-2 text-sm font-bold text-[#496273] transition hover:bg-[#edf7f4] hover:text-[#123e4a]" href="/homes">집 기록</Link>
-            <Link className="rounded-xl px-4 py-2 text-sm font-bold text-[#496273] transition hover:bg-[#edf7f4] hover:text-[#123e4a]" href="/tasks">할 일</Link>
+            <Link className="rounded-xl px-4 py-2 text-sm font-bold text-[#496273] transition hover:bg-[#edf7f4] hover:text-[#123e4a]" href="/homes">집</Link>
+            <Link className="rounded-xl px-4 py-2 text-sm font-bold text-[#496273] transition hover:bg-[#edf7f4] hover:text-[#123e4a]" href="/tasks">기록</Link>
+            <Link className="rounded-xl px-4 py-2 text-sm font-bold text-[#496273] transition hover:bg-[#edf7f4] hover:text-[#123e4a]" href="/my">마이</Link>
           </nav>
         </div>
       </header>

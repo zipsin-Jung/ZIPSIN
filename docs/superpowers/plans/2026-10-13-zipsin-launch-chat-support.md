@@ -50,11 +50,11 @@
 - Produces DB functions: `can_access_office_home(p_home_id uuid)`, `can_write_office_home(p_home_id uuid)`
 - Preserves: `office_home_assignments` as unused historical data; no new read/write path depends on it
 
-- [ ] 테스트에서 활성 사무소 구성원의 전체 사무소 집 접근, 다른 사무소 거부, 소속 종료 즉시 거부, 외부 관계자의 계약 범위만 허용을 고정한다.
-- [ ] 집중 테스트를 실행해 기존 담당 배정 의존 때문에 실패하는 것을 확인한다.
-- [ ] 후속 migration에서 집·기록·첨부 정책과 RPC의 사무소 접근 조건을 활성 `office_memberships` 기준으로 교체한다.
-- [ ] 화면에서 담당자 관리 진입과 담당 배정 문구를 제거하고 `홈/집/기록/마이`의 실제 동작 경로만 남긴다.
-- [ ] 집중·전체 테스트와 빌드 후 `fix: align home access without assignees`로 커밋한다.
+- [x] 테스트에서 활성 사무소 구성원의 전체 사무소 집 접근, 다른 사무소 거부, 소속 종료 즉시 거부, 외부 관계자의 계약 범위만 허용을 고정한다.
+- [x] 집중 테스트를 실행해 기존 담당 배정 의존 때문에 실패하는 것을 확인한다.
+- [x] 후속 migration에서 집·기록·첨부 정책과 RPC의 사무소 접근 조건을 활성 `office_memberships` 기준으로 교체한다.
+- [x] 화면에서 담당자 관리 진입과 담당 배정 문구를 제거하고 `홈/집/기록/마이`의 실제 동작 경로만 남긴다.
+- [x] 집중·전체 테스트와 빌드 후 `fix: align home access without assignees`로 커밋한다.
 
 ### Task 2: 실제 Preview 가입·로그인·업무 진입
 
