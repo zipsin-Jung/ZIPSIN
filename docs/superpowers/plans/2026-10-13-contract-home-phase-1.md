@@ -137,12 +137,12 @@
 
 **Produces:** `formatContractDay()`, `buildLifecycleProgress()`, `buildNextActions()`
 
-- [ ] **Step 1: 실패 테스트 작성** — 만기일 없음, D-112, D-day, D+1, 한국 시간 날짜 경계, 완료 데이터 기반 최대 3개, 상태별 만기 준비를 `TEST-ZH-LIFE-003-I~L`, `TEST-ZH-LIFE-004-A~D`로 작성한다.
-- [ ] **Step 2: 실패 확인** — 모듈 없음으로 FAIL하는지 확인한다.
-- [ ] **Step 3: 날짜 계산 구현** — 시간대 영향 없이 `YYYY-MM-DD` 달력 날짜 차이를 계산하고 잘못된 날짜는 D-day를 숨긴다.
-- [ ] **Step 4: 다음 행동 규칙 구현** — 계약 날짜, 계약 문서, 입주 사진, 열린 할 일, 계획 상태 등 실제 데이터만 보고 우선순위가 높은 3개 이하를 반환한다.
-- [ ] **Step 5: 커버리지 포함** — 신규 계약 domain/schema/service를 coverage 대상에 추가한다.
-- [ ] **Step 6: 검사·커밋** — 도메인 테스트와 경계값 검사; `feat: calculate contract lifecycle guidance`.
+- [x] **Step 1: 실패 테스트 작성** — 만기일 없음, D-112, D-day, D+1, 한국 시간 날짜 경계, 완료 데이터 기반 최대 3개, 상태별 만기 준비를 `TEST-ZH-LIFE-003-I~L`, `TEST-ZH-LIFE-004-A~D`로 작성한다.
+- [x] **Step 2: 실패 확인** — 모듈 없음으로 FAIL하는지 확인한다.
+- [x] **Step 3: 날짜 계산 구현** — 시간대 영향 없이 `YYYY-MM-DD` 달력 날짜 차이를 계산하고 잘못된 날짜는 D-day를 숨긴다.
+- [x] **Step 4: 다음 행동 규칙 구현** — 계약 날짜, 계약 문서, 입주 사진, 열린 할 일, 계획 상태 등 실제 데이터만 보고 우선순위가 높은 3개 이하를 반환한다.
+- [x] **Step 5: 커버리지 포함** — 신규 계약 domain/schema/service를 coverage 대상에 추가한다.
+- [x] **Step 6: 검사·커밋** — 도메인 테스트와 경계값 검사; `feat: calculate contract lifecycle guidance`.
 
 ### Task 4: 안전한 계약 요약 데이터 서비스
 
