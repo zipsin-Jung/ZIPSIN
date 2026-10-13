@@ -25,3 +25,10 @@
 실제 SMS 공급자 계정·발신번호·비밀키 연결과 실번호 Preview 왕복, 로그인된 시험 계정의 다중 집 PC E2E는 미검증입니다. Production은 사용자 승인 전 배포하지 않습니다.
 
 독립 재검수에서 새 코드 P0/P1 결함은 발견되지 않았습니다. 다만 실제 SMS와 인증 사용자 PC·로그아웃 E2E 증거가 없어 전체 출시 게이트는 `FAIL`로 유지합니다.
+
+## Git·Preview
+
+- `codex/public-v1-auth`에 커밋하고 GitHub에 푸시했습니다.
+- Vercel Preview 빌드 성공 뒤 `/signup`에서 네 단계 진행표, 휴대전화 인증 안내와 PC 동일 계정 안내를 확인했습니다.
+- Preview: `https://zipsin-git-codex-public-v1-auth-zipsin-jung.vercel.app/`
+- Production은 변경하지 않았습니다.
