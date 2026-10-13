@@ -22,5 +22,7 @@
 - TypeScript: 통과
 - Next.js 16.4.0 Production build: 통과
 - Chromium desktop·390px: 6개 통과
+- Vercel Preview(`3e1c00c`): 실제 브라우저에서 체크 → 홈 → 현재 집 체크 재진입을 검수했고, `물·배수` 선택과 `1/5` 진행 상태가 유지됨을 확인했습니다.
+- 실제 브라우저에서 홈·내가 본 집·체크·비교 메뉴의 상시 노출과 현재 화면 강조를 확인했습니다.
 
 Production·DNS는 변경하지 않았습니다.
