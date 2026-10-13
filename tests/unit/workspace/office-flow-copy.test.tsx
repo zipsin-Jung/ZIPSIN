@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { onboardingGuard, userGuard } = vi.hoisted(() => ({
@@ -90,10 +90,11 @@ describe('assignment-free office flow copy', () => {
 
     render(await AppLayout({ children: <div>본문</div> }));
 
-    expect(screen.getByRole('link', { name: /^홈$/ })).toHaveAttribute('href', '/home');
-    expect(screen.getByRole('link', { name: /^집$/ })).toHaveAttribute('href', '/homes');
-    expect(screen.getByRole('link', { name: /^기록$/ })).toHaveAttribute('href', '/tasks');
-    expect(screen.getByRole('link', { name: /^마이$/ })).toHaveAttribute('href', '/my');
+    const desktop = screen.getByRole('navigation', { name: '주요 메뉴' });
+    expect(within(desktop).getByRole('link', { name: /^홈$/ })).toHaveAttribute('href', '/home');
+    expect(within(desktop).getByRole('link', { name: /^집$/ })).toHaveAttribute('href', '/homes');
+    expect(within(desktop).getByRole('link', { name: /^할 일$/ })).toHaveAttribute('href', '/tasks');
+    expect(within(desktop).getByRole('link', { name: /^마이$/ })).toHaveAttribute('href', '/my');
   });
 
   it('provides a real my page instead of a placeholder navigation link', async () => {

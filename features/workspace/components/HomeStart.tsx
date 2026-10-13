@@ -2,6 +2,8 @@ import Link from 'next/link';
 
 type PrimaryRole = 'principal_broker' | 'assistant' | 'landlord' | 'tenant';
 type OfficeSummary = { id: string; name: string; canRegisterHome?: boolean };
+type RecentHome = { id: string; label: string; address: string };
+type NextTask = { id: string; homeId: string; title: string; dueAt: string | null };
 
 function PlatformIntro({ officeName }: { officeName?: string }) {
   return (
@@ -35,10 +37,16 @@ export function HomeStart({
   primaryRole,
   offices,
   createOfficeAction,
+  recentHomes = [],
+  unreadChatCount = 0,
+  nextTask = null,
 }: {
   primaryRole: PrimaryRole;
   offices: OfficeSummary[];
   createOfficeAction?: (formData: FormData) => void | Promise<void>;
+  recentHomes?: RecentHome[];
+  unreadChatCount?: number;
+  nextTask?: NextTask | null;
 }) {
   const office = offices[0];
 
@@ -47,7 +55,24 @@ export function HomeStart({
     return (
       <main className="mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
         <PlatformIntro officeName={office.name} />
-        <section className="mt-6 grid gap-4 lg:grid-cols-[1.25fr_.75fr]">
+        <section aria-label="지금 확인할 내용" className="mt-6 grid gap-4 md:grid-cols-3">
+          <Link href={recentHomes[0] ? `/homes/${recentHomes[0].id}` : '/homes'} className="app-panel rounded-[28px] p-6 transition hover:-translate-y-1">
+            <p className="text-sm font-extrabold text-[#087566]">최근 집</p>
+            <h2 className="mt-3 text-2xl font-black tracking-[-0.035em] text-[#102a43]">{recentHomes[0]?.label ?? '아직 연결된 집이 없습니다'}</h2>
+            <p className="mt-2 text-sm leading-6 text-[#607785]">{recentHomes[0]?.address ?? '집을 등록하거나 받은 초대를 수락해 주세요.'}</p>
+          </Link>
+          <Link href="/chats" aria-label={unreadChatCount ? `읽지 않은 메시지 ${unreadChatCount}개 확인` : '새 메시지 확인'} className="app-panel rounded-[28px] p-6 transition hover:-translate-y-1">
+            <p className="text-sm font-extrabold text-[#087566]">새 메시지</p>
+            <h2 className="mt-3 text-2xl font-black tracking-[-0.035em] text-[#102a43]">{unreadChatCount ? `${unreadChatCount}개를 확인해 주세요` : '새 메시지가 없습니다'}</h2>
+            <p className="mt-2 text-sm leading-6 text-[#607785]">개인 연락처 대신 집신 안에서 대화를 이어갑니다.</p>
+          </Link>
+          <Link href={nextTask ? `/homes/${nextTask.homeId}` : '/tasks'} className="app-panel rounded-[28px] p-6 transition hover:-translate-y-1">
+            <p className="text-sm font-extrabold text-[#087566]">다음 할 일</p>
+            <h2 className="mt-3 text-2xl font-black tracking-[-0.035em] text-[#102a43]">{nextTask?.title ?? '지금 확인할 일이 없습니다'}</h2>
+            <p className="mt-2 text-sm leading-6 text-[#607785]">{nextTask?.dueAt ? new Date(nextTask.dueAt).toLocaleDateString('ko-KR') : '새 기록과 일정을 집마다 이어서 관리하세요.'}</p>
+          </Link>
+        </section>
+        <section className="mt-4 grid gap-4 lg:grid-cols-[1.25fr_.75fr]">
           <article className="app-panel rounded-[28px] p-6 sm:p-8">
             <p className="text-sm font-extrabold text-[#087566]">지금 시작할 일</p>
             <h2 className="mt-3 text-3xl font-black tracking-[-0.045em] text-[#102a43]">첫 집부터 기록을 시작하세요</h2>
@@ -73,9 +98,10 @@ export function HomeStart({
       <main className="mx-auto max-w-7xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
         <PlatformIntro />
         <section className="app-panel mt-6 rounded-[28px] p-7 sm:p-10">
-          <p className="text-sm font-extrabold text-[#0b695c]">아직 연결된 공간이 없습니다</p>
+          <p className="text-sm font-extrabold text-[#0b695c]">아직 연결된 집이 없습니다</p>
           <h2 className="mt-3 text-3xl font-black tracking-[-0.04em] text-[#102a43]">연결된 공간을 확인해 주세요</h2>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[#59717f]">받은 초대를 수락하면 허용된 집과 대화가 이 홈에 나타납니다. 주소만 알아서는 어떤 기록도 열 수 없습니다.</p>
+          <Link href="/chats" className="mt-6 inline-flex text-sm font-extrabold text-[#0b695c]">새 메시지가 없습니다</Link>
         </section>
       </main>
     );

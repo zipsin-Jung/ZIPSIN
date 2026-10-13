@@ -25,6 +25,14 @@ export default async function HomeDetailPage({
     .eq("home_id", homeId)
     .order("occurred_at", { ascending: false })
     .limit(20);
+  const { data: sharedRoom } = await supabase
+    .from('chat_rooms')
+    .select('id')
+    .eq('home_id', homeId)
+    .eq('room_type', 'home_shared')
+    .eq('status', 'active')
+    .limit(1)
+    .maybeSingle();
   const recordIds = records?.map((record) => record.id) ?? [];
   const { data: attachments } = recordIds.length
     ? await supabase.from("attachments").select("id, record_id, original_name").in("record_id", recordIds).eq("status", "ready")
@@ -45,6 +53,7 @@ export default async function HomeDetailPage({
         </p>
         <div className="mt-7 flex flex-wrap gap-3">
           <Link href={`/homes/${homeId}/records/new`} className="rounded-2xl bg-white px-5 py-3 text-sm font-bold text-[#0a4f55]">새 기록 남기기</Link>
+          <Link href={sharedRoom ? `/chats/${sharedRoom.id}` : '/chats'} className="rounded-2xl border border-white/40 bg-white/10 px-5 py-3 text-sm font-bold text-white">집 대화 보기</Link>
           <Link href={`/homes/${homeId}/people`} className="rounded-2xl border border-white/40 bg-white/10 px-5 py-3 text-sm font-bold text-white">함께하는 사람</Link>
         </div>
       </section>
