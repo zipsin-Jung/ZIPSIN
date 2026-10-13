@@ -1,5 +1,7 @@
 import type {CheckDepth,CheckItem} from './types';
 export const FIELD_ITEM_IDS=['water-drain','moisture-leak','light-noise','windows-doors','options-damage'] as const;
+export const LEGACY_ITEM_IDS_BY_FIELD:Record<(typeof FIELD_ITEM_IDS)[number],string[]>={
+'water-drain':['water'],'moisture-leak':['moisture','bathroom-detail','pests'],'light-noise':['light-air','noise'],'windows-doors':['windows','security'],'options-damage':['climate','cost-route','official-check','outlets','kitchen-detail','storage','parking-waste','contract-conditions']};
 export const CHECK_ITEMS:CheckItem[]=[
 {id:'water-drain',group:'물',core:true,title:'물·배수',prompt:'수압과 물 빠짐이 괜찮은지 보세요.',why:'약한 수압과 느린 배수는 입주 후 반복 불편으로 이어질 수 있어요.',how:'화장실과 부엌 물을 같이 틀고 배수를 보세요.',question:'배수 막힘이나 누수 수리 이력이 있나요?',nextAction:'이상이 있으면 수리 책임을 확인하세요.',actions:[{id:'simultaneous-water',label:'화장실과 부엌을 동시에 튼다'},{id:'flush-water',label:'물을 틀어 놓고 변기 물을 내린다'}]},
 {id:'moisture-leak',group:'벽·천장',core:true,title:'곰팡이·누수',prompt:'얼룩과 퀴퀴한 냄새가 있는지 보세요.',why:'새 도배로 흔적이 가려질 수 있어 모서리를 따로 봐야 해요.',how:'창가·외벽 모서리·장롱 뒤를 보세요.',question:'최근 누수나 결로 수리를 했나요?',nextAction:'의심 부위를 사진으로 남기세요.',actions:[{id:'corners',label:'창가와 벽 모서리를 본다'},{id:'behind-furniture',label:'장롱·싱크대 뒤를 확인한다'}]},

@@ -1,3 +1,4 @@
+import {CHECK_ITEMS,LEGACY_ITEM_IDS_BY_FIELD} from './catalog';
 import type {Candidate, CandidateV2, CheckAnswer, EvidenceSource, CheckStatus, StoredCheckState, StoredCheckStateV2} from './types';
 
 export const CHECK_STORAGE_KEY = 'zipsin-check:v1';
@@ -152,7 +153,7 @@ export function migrateV1ToV2(v1: StoredCheckState): StoredCheckStateV2 {
     terms: {transactionType: candidate.transactionType},
     contact: {},
     commute: {},
-    answers: candidate.answers,
+    answers: migrateAnswers(candidate.answers),
     archived: candidate.archived,
     createdAt: candidate.createdAt,
     updatedAt: candidate.updatedAt,
@@ -164,6 +165,9 @@ export function migrateV1ToV2(v1: StoredCheckState): StoredCheckStateV2 {
     activeCandidateId: v1.activeCandidateId,
   };
 }
+
+const STATUS_WEIGHT:Record<CheckStatus,number>={unverified:0,confirmed:1,caution:2,expert:3};
+function migrateAnswers(answers:Record<string,CheckAnswer>){const next={...answers};for(const item of CHECK_ITEMS){const legacy=LEGACY_ITEM_IDS_BY_FIELD[item.id as keyof typeof LEGACY_ITEM_IDS_BY_FIELD].flatMap(id=>answers[id]?[{id,answer:answers[id]}]:[]);if(!legacy.length||next[item.id])continue;const strongest=[...legacy].sort((a,b)=>STATUS_WEIGHT[b.answer.status]-STATUS_WEIGHT[a.answer.status])[0].answer;const memos=legacy.flatMap(entry=>entry.answer.memo?[`${entry.id}: ${entry.answer.memo}`]:[]);next[item.id]={...strongest,...(memos.length?{memo:memos.join(' · ')}:{})}}return next}
 
 export function saveCheckStateV2(state: StoredCheckStateV2, storage: Storage): SaveResult {
   try {

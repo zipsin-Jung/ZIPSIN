@@ -98,4 +98,12 @@ describe('현장 사진 입력', () => {
     expect(await screen.findByRole('button', {name: '습기·곰팡이 사진 제거'})).toBeInTheDocument();
     expect(await screen.findByRole('button', {name: '소음 사진 제거'})).toBeInTheDocument();
   });
+
+  it('새 항목에 대응하는 이전 사진을 모두 보여준다', async () => {
+    const legacy=['moisture','bathroom-detail','pests'].map((legacyId,index):StoredPhoto=>({id:`${candidateId}::${legacyId}`,candidateId,itemId:legacyId,blob:new Blob([String(index)],{type:'image/jpeg'}),mime:'image/jpeg',bytes:1,createdAt:''}));
+    const store:PhotoStore={get:vi.fn(async(_,requested)=>legacy.find(photo=>photo.itemId===requested)),put:vi.fn(async()=>undefined),count:vi.fn(async()=>3),remove:vi.fn(async()=>undefined),removeCandidate:vi.fn(async()=>undefined)};
+    render(<PhotoField candidateId={candidateId} itemId="moisture-leak" itemTitle="곰팡이·누수" store={store}/>);
+    expect(await screen.findAllByRole('img',{name:/곰팡이·누수 현장 사진/})).toHaveLength(3);
+    expect(screen.getAllByRole('button',{name:/곰팡이·누수 사진 [123] 제거/})).toHaveLength(3);
+  });
 });

@@ -4,6 +4,7 @@ import {
   answerItem,
   archiveCandidate,
   buildSummary,
+  buildHomeComparison,
   compareCandidates,
   createCandidate,
   containsSensitiveMemo,
@@ -102,5 +103,13 @@ describe('v2 후보 수명주기', () => {
     const candidates = ['a', 'b'].map((id, index) => createCandidateV2({id, alias: id, index: index + 1, now}));
     const stored: StoredCheckStateV2 = {schemaVersion: 2, candidates, activeCandidateId: 'a', compareCandidateIds: ['a', 'b', 'a', 'missing']};
     expect(removeCandidate(stored, 'a')).toMatchObject({candidates: [{id: 'b'}], compareCandidateIds: ['b'], activeCandidateId: undefined});
+  });
+
+  it('전문가 확인을 비교표에서 미확인으로 약화하지 않는다', () => {
+    const a={...createCandidateV2({id:'a',alias:'A',index:1,now}),answers:{'options-damage':{status:'expert' as const,source:'expert' as const}}};
+    const b=createCandidateV2({id:'b',alias:'B',index:2,now});
+    const rows=buildHomeComparison([a,b],['a','b']);
+    expect(rows.find(row=>row.key==='options-damage')?.values.a).toBe('전문가 확인');
+    expect(rows.find(row=>row.key==='follow-up-count')?.values.a).toBe('1개');
   });
 });
