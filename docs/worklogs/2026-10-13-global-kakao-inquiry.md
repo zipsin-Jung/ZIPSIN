@@ -1,7 +1,7 @@
 # 전역 카카오톡 문의 구현 작업기록
 
 - 일자: 2026-10-13
-- 상태: 구현·로컬 검증 완료, Preview 및 사용자 검토 대기
+- 상태: 구현·로컬·Preview 검증 완료, 사용자 Production 승인 대기
 - 기능 커밋: `4650d82 feat: add global Kakao inquiry channel`
 - 승인 상태: 기능 방향 승인 완료, Production 배포 승인 대기
 
@@ -32,6 +32,6 @@
 ## 남은 일
 
 - 바탕화면의 기존 `docs/02-feature-definition.md`, `docs/04-core-workflows.md`는 저장소 이력과 일치하지 않는 별도 내용이 있어 덮어쓰지 않는다. 새 문서는 동기화하고 두 기존 문서는 사용자 확인 뒤 병합한다.
-- GitHub 푸시 뒤 Vercel Preview 반영 상태를 확인한다.
-- Preview에서 대표 카카오 계정으로 실제 채팅 열림과 메시지 수신을 확인한다.
+- Vercel Preview `https://zipsin-git-codex-public-v1-auth-zipsin-jung.vercel.app/`의 로그인 후 `/home`에서 새 버튼과 공식 채팅 주소 노출을 확인했다.
+- 대표 카카오 계정에서 실제 테스트 메시지 수신 여부는 사용자가 확인한다.
 - 사용자 승인 전 Production에는 배포하지 않는다.
