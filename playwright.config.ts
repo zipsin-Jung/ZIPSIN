@@ -16,7 +16,7 @@ export default defineConfig({
   ],
   webServer: {
     command: `npm run dev -- --hostname 127.0.0.1 --port ${playwrightPort}`,
-    url: baseURL,
+    url: `${baseURL}/login`,
     reuseExistingServer: !process.env.CI,
   },
 });

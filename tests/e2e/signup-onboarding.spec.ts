@@ -15,7 +15,9 @@ for (const viewport of [
     await expect(page.getByLabel('아이디')).toBeVisible();
     await expect(page.getByRole('textbox', { name: '비밀번호', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: '로그인' })).toBeVisible();
-    await expect(page.getByRole('link', { name: '회원가입', exact: true })).toBeVisible();
+    const signupLinks = page.getByRole('link', { name: '회원가입', exact: true });
+    await expect(signupLinks).toHaveCount(2);
+    await expect(signupLinks.first()).toBeVisible();
     await expect(page.getByLabel('이메일 주소')).toHaveCount(0);
     await expect(page.getByText('계약·입주 기록')).toBeVisible();
     await expect(page.getByText('수리·사진 보관')).toBeVisible();

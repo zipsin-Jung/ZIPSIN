@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowLeft, CalendarDays, FileText, ShieldCheck, Wrench } from 'lucide-react';
+import { CalendarDays, FileText, ShieldCheck, UserPlus, Wrench } from 'lucide-react';
 import Brand, { Mascot } from '@/components/Brand';
 import { UsernameLoginForm } from '@/features/auth/components/UsernameLoginForm';
 import { SocialLoginButtons } from '@/features/auth/components/SocialLoginButtons';
@@ -21,13 +21,12 @@ export default async function LoginPage({ searchParams }: Props) {
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#f9f3e6_0,transparent_38%),linear-gradient(145deg,#fbfcfa_0%,#f3f7f3_100%)] px-4 py-5 text-[#12362c] sm:px-7 sm:py-7 lg:px-10">
       <header className="mx-auto flex max-w-[1480px] items-center justify-between px-1 py-1 sm:px-2">
-        <Link aria-label="집신 소개 보기" href="/about">
+        <Link aria-label="집신 로그인" href="/login">
           <Brand />
         </Link>
-        <Link className="flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-bold text-[#31584a] transition hover:bg-white/70" href="/about">
-          <ArrowLeft aria-hidden="true" className="size-4" />
-          <span className="hidden sm:inline">집신 소개로 돌아가기</span>
-          <span className="sm:hidden">돌아가기</span>
+        <Link className="flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-bold text-[#31584a] transition hover:bg-white/70" href="/signup">
+          <UserPlus aria-hidden="true" className="size-4" />
+          <span>회원가입</span>
         </Link>
       </header>
 
