@@ -167,7 +167,7 @@ export function migrateV1ToV2(v1: StoredCheckState): StoredCheckStateV2 {
 }
 
 const STATUS_WEIGHT:Record<CheckStatus,number>={unverified:0,confirmed:1,caution:2,expert:3};
-function migrateAnswers(answers:Record<string,CheckAnswer>){const next={...answers};for(const item of CHECK_ITEMS){const legacy=LEGACY_ITEM_IDS_BY_FIELD[item.id as keyof typeof LEGACY_ITEM_IDS_BY_FIELD].flatMap(id=>answers[id]?[{id,answer:answers[id]}]:[]);if(!legacy.length||next[item.id])continue;const strongest=[...legacy].sort((a,b)=>STATUS_WEIGHT[b.answer.status]-STATUS_WEIGHT[a.answer.status])[0].answer;const memos=legacy.flatMap(entry=>entry.answer.memo?[`${entry.id}: ${entry.answer.memo}`]:[]);next[item.id]={...strongest,...(memos.length?{memo:memos.join(' · ')}:{})}}return next}
+function migrateAnswers(answers:Record<string,CheckAnswer>){const next={...answers};for(const item of CHECK_ITEMS){const mapped=LEGACY_ITEM_IDS_BY_FIELD[item.id as keyof typeof LEGACY_ITEM_IDS_BY_FIELD];if(!mapped)continue;const legacy=mapped.flatMap(id=>answers[id]?[{id,answer:answers[id]}]:[]);if(!legacy.length||next[item.id])continue;const strongest=[...legacy].sort((a,b)=>STATUS_WEIGHT[b.answer.status]-STATUS_WEIGHT[a.answer.status])[0].answer;const memos=legacy.flatMap(entry=>entry.answer.memo?[`${entry.id}: ${entry.answer.memo}`]:[]);next[item.id]={...strongest,...(memos.length?{memo:memos.join(' · ')}:{})}}return next}
 
 export function saveCheckStateV2(state: StoredCheckStateV2, storage: Storage): SaveResult {
   try {

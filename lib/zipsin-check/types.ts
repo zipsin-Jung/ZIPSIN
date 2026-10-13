@@ -24,6 +24,7 @@ export type CheckItem = {
   nextAction: string;
   reviewedAt?: string;
   actions?: FieldAction[];
+  priority?: 'required' | 'recommended';
 };
 
 export type Candidate = {
