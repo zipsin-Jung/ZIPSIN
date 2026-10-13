@@ -14,6 +14,7 @@ function memoryStore(initial?: StoredPhoto) {
     put: vi.fn(async (photo) => { saved = photo; }),
     count: vi.fn(async () => saved ? 1 : 0),
     remove: vi.fn(async () => { saved = undefined; }),
+    removeCandidate: vi.fn(async () => { saved = undefined; }),
   };
   return store;
 }

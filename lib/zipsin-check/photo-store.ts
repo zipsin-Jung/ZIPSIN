@@ -13,6 +13,7 @@ export type PhotoStore = {
   put(photo: StoredPhoto): Promise<void>;
   count(candidateId: string): Promise<number>;
   remove(candidateId: string, itemId: string): Promise<void>;
+  removeCandidate(candidateId: string): Promise<void>;
 };
 
 const DB_NAME = 'zipsin-check-photos:v1';
@@ -118,6 +119,12 @@ export function createBrowserPhotoStore(factory?: IDBFactory): PhotoStore {
     },
     async remove(candidateId, itemId) {
       await withStore('readwrite', async (store) => { await requestResult(store.delete(photoRecordId(candidateId, itemId))); });
+    },
+    async removeCandidate(candidateId) {
+      await withStore('readwrite', async (store) => {
+        const all = await requestResult(store.getAll()) as StoredPhoto[];
+        await Promise.all(all.filter((photo) => photo.candidateId === candidateId).map((photo) => requestResult(store.delete(photo.id))));
+      });
     },
   };
 }

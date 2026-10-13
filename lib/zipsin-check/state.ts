@@ -1,5 +1,5 @@
 import {CHECK_ITEMS, CORE_ITEM_IDS, getItemsForDepth} from './catalog';
-import type {Candidate, CheckAnswer, CheckDepth, CheckSummary, ComparisonRow} from './types';
+import type {Candidate, CandidateV2, CheckAnswer, CheckDepth, CheckSummary, ComparisonRow, StoredCheckStateV2} from './types';
 
 type NewCandidate = {id: string; alias: string; depth: CheckDepth; now: string; locationLabel?: string; discoverySource?: string; housingType?: string; transactionType?: string};
 
@@ -69,4 +69,56 @@ const SENSITIVE_PATTERNS = [
 
 export function containsSensitiveMemo(value: string): boolean {
   return SENSITIVE_PATTERNS.some((pattern) => pattern.test(value));
+}
+
+type NewCandidateV2 = {id: string; alias: string; index: number; now: string; intakeMode?: 'simple' | 'detailed'};
+
+export function createCandidateV2({id, alias, index, now, intakeMode = 'simple'}: NewCandidateV2): CandidateV2 {
+  return {
+    id,
+    alias: alias.trim() || `오늘 본 집 ${index}`,
+    intakeMode,
+    depth: 'quick',
+    listing: {},
+    terms: {},
+    contact: {},
+    commute: {},
+    answers: {},
+    archived: false,
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
+export function updateCandidateDetails(
+  candidate: CandidateV2,
+  details: Partial<Pick<CandidateV2, 'alias' | 'intakeMode' | 'listing' | 'terms' | 'contact' | 'commute'>>,
+  now: string,
+): CandidateV2 {
+  return {
+    ...candidate,
+    ...details,
+    alias: details.alias === undefined ? candidate.alias : details.alias.trim() || candidate.alias,
+    listing: {...candidate.listing, ...details.listing},
+    terms: {...candidate.terms, ...details.terms},
+    contact: {...candidate.contact, ...details.contact},
+    commute: {...candidate.commute, ...details.commute},
+    updatedAt: now,
+  };
+}
+
+export function toggleComparison(ids: string[], candidateId: string): {ok: true; ids: string[]} | {ok: false; reason: 'max-three'} {
+  const unique = [...new Set(ids)];
+  if (unique.includes(candidateId)) return {ok: true, ids: unique.filter((id) => id !== candidateId)};
+  if (unique.length >= 3) return {ok: false, reason: 'max-three'};
+  return {ok: true, ids: [...unique, candidateId]};
+}
+
+export function removeCandidate(state: StoredCheckStateV2, candidateId: string): StoredCheckStateV2 {
+  return {
+    ...state,
+    candidates: state.candidates.filter((candidate) => candidate.id !== candidateId),
+    compareCandidateIds: [...new Set(state.compareCandidateIds)].filter((id) => id !== candidateId && state.candidates.some((candidate) => candidate.id === id && !candidate.archived)),
+    activeCandidateId: state.activeCandidateId === candidateId ? undefined : state.activeCandidateId,
+  };
 }

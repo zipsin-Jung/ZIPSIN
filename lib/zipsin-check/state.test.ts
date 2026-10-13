@@ -9,7 +9,12 @@ import {
   containsSensitiveMemo,
   restoreCandidate,
   switchDepth,
+  createCandidateV2,
+  removeCandidate,
+  toggleComparison,
+  updateCandidateDetails,
 } from './state';
+import type {StoredCheckStateV2} from './types';
 
 const now = '2026-10-13T00:00:00.000Z';
 
@@ -68,5 +73,34 @@ describe('집신체크 상태 규칙', () => {
     expect(containsSensitiveMemo('공동현관 비밀번호 1234')).toBe(true);
     expect(containsSensitiveMemo('중개사 연락처 010-1234-5678')).toBe(true);
     expect(containsSensitiveMemo('창가에 작은 얼룩 있음')).toBe(false);
+  });
+});
+
+describe('v2 후보 수명주기', () => {
+  it('자동 별명과 공백 제거를 지원하고 10채 이상 보관한다', () => {
+    const homes = Array.from({length: 12}, (_, index) => createCandidateV2({id: String(index), alias: index ? `  ${index}집  ` : '', index: index + 1, now}));
+    expect(homes[0].alias).toBe('오늘 본 집 1');
+    expect(homes[1].alias).toBe('1집');
+    expect(homes).toHaveLength(12);
+  });
+
+  it('비교 선택 순서를 유지하고 네 번째는 기록 삭제 없이 거부한다', () => {
+    expect(toggleComparison([], 'b')).toEqual({ok: true, ids: ['b']});
+    expect(toggleComparison(['b'], 'a')).toEqual({ok: true, ids: ['b', 'a']});
+    expect(toggleComparison(['b', 'a', 'c'], 'd')).toEqual({ok: false, reason: 'max-three'});
+    expect(toggleComparison(['b', 'a'], 'b')).toEqual({ok: true, ids: ['a']});
+  });
+
+  it('상세 수정이 기존 답을 보존한다', () => {
+    const candidate = {...createCandidateV2({id: 'a', alias: 'A', index: 1, now}), answers: {water: {status: 'caution' as const, source: 'observed' as const}}};
+    const updated = updateCandidateDetails(candidate, {intakeMode: 'detailed', listing: {location: '망원동'}}, now);
+    expect(updated.listing.location).toBe('망원동');
+    expect(updated.answers).toEqual(candidate.answers);
+  });
+
+  it('영구 삭제가 후보·활성·비교 ID를 함께 정리한다', () => {
+    const candidates = ['a', 'b'].map((id, index) => createCandidateV2({id, alias: id, index: index + 1, now}));
+    const stored: StoredCheckStateV2 = {schemaVersion: 2, candidates, activeCandidateId: 'a', compareCandidateIds: ['a', 'b', 'a', 'missing']};
+    expect(removeCandidate(stored, 'a')).toMatchObject({candidates: [{id: 'b'}], compareCandidateIds: ['b'], activeCandidateId: undefined});
   });
 });

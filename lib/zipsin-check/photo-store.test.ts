@@ -74,6 +74,16 @@ describe('현장 사진 준비', () => {
     expect(await store.get('a', 'moisture')).toBeUndefined();
   });
 
+  it('한 후보의 모든 사진만 일괄 삭제한다', async () => {
+    const store = createBrowserPhotoStore(fakeIndexedDb());
+    for (const [candidateId, itemId] of [['a', 'one'], ['a', 'two'], ['b', 'one']]) {
+      await store.put({id: photoRecordId(candidateId, itemId), candidateId, itemId, blob: new Blob(['x']), mime: 'image/jpeg', bytes: 1, createdAt: ''});
+    }
+    await store.removeCandidate('a');
+    expect(await store.count('a')).toBe(0);
+    expect(await store.count('b')).toBe(1);
+  });
+
   it('한 후보의 신규 사진은 원자적으로 6장까지만 허용하고 기존 사진 교체는 허용한다', async () => {
     const store = createBrowserPhotoStore(fakeIndexedDb());
     for (let index = 0; index < 6; index += 1) await store.put({id: `a::${index}`, candidateId: 'a', itemId: String(index), blob: new Blob(['x']), mime: 'image/jpeg', bytes: 1, createdAt: ''});
