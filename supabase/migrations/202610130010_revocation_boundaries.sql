@@ -37,9 +37,9 @@ as $$
         or (room.room_type = 'group' and public.has_current_chat_peer(room.id))
         or (room.room_type = 'support' and (
           room.created_by = auth.uid() or exists (
-            select 1 from public.support_authorizations authorization
-            where authorization.user_id = auth.uid() and authorization.revoked_at is null
-              and authorization.authorization_role = 'representative'
+            select 1 from public.support_authorizations authz
+            where authz.user_id = auth.uid() and authz.revoked_at is null
+              and authz.authorization_role = 'representative'
           )
         ))
         or (room.room_type = 'office_internal' and exists (

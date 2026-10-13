@@ -3,9 +3,14 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const sql = readFileSync(join(process.cwd(), 'supabase/migrations/202610130009_chat_safety_support.sql'), 'utf8');
+const revocationSql = readFileSync(join(process.cwd(), 'supabase/migrations/202610130010_revocation_boundaries.sql'), 'utf8');
 const fn = (name: string) => sql.match(new RegExp(`create or replace function public\\.${name}\\([\\s\\S]*?\\n\\$\\$;`, 'i'))?.[0] ?? '';
 
 describe('official ZIPSIN support access', () => {
+  it('does not use the reserved authorization keyword as a table alias', () => {
+    expect(`${sql}\n${revocationSql}`).not.toMatch(/support_authorizations\s+authorization\b/i);
+  });
+
   it('seeds one immutable official identity and limits the active representative to one', () => {
     expect(sql).toMatch(/집신 고객지원/);
     expect(sql).toMatch(/support_identities/i);

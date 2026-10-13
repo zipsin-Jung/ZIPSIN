@@ -87,9 +87,9 @@ as $$
         or room.room_type = 'group'
         or (room.room_type = 'support' and (
           room.created_by = auth.uid() or exists (
-            select 1 from public.support_authorizations authorization
-            where authorization.user_id = auth.uid() and authorization.revoked_at is null
-              and authorization.authorization_role = 'representative'
+            select 1 from public.support_authorizations authz
+            where authz.user_id = auth.uid() and authz.revoked_at is null
+              and authz.authorization_role = 'representative'
           )
         ))
         or (room.room_type = 'office_internal' and exists (
@@ -205,8 +205,8 @@ begin
     values (v_room_id, v_user_id, 'owner')
     on conflict (room_id, user_id) where status = 'active' and ended_at is null do nothing;
   insert into public.chat_room_memberships (room_id, user_id)
-    select v_room_id, authorization.user_id from public.support_authorizations authorization
-    where authorization.support_identity_id = v_identity_id and authorization.revoked_at is null
+    select v_room_id, authz.user_id from public.support_authorizations authz
+    where authz.support_identity_id = v_identity_id and authz.revoked_at is null
     on conflict (room_id, user_id) where status = 'active' and ended_at is null do nothing;
   return v_room_id;
 end;
@@ -219,10 +219,10 @@ language plpgsql security definer set search_path = public
 as $$
 declare v_user_id uuid := auth.uid(); v_identity_id uuid; v_message_id bigint; v_body text := btrim(p_body);
 begin
-  select authorization.support_identity_id into v_identity_id
-    from public.support_authorizations authorization
-    where authorization.user_id = v_user_id and authorization.authorization_role = 'representative'
-      and authorization.revoked_at is null;
+  select authz.support_identity_id into v_identity_id
+    from public.support_authorizations authz
+    where authz.user_id = v_user_id and authz.authorization_role = 'representative'
+      and authz.revoked_at is null;
   if not found then raise exception 'permission_denied'; end if;
   perform 1 from public.chat_rooms room where room.id = p_room_id and room.room_type = 'support' and room.status = 'active';
   if not found or not public.can_access_chat_room(p_room_id) then raise exception 'permission_denied'; end if;
@@ -247,8 +247,8 @@ language plpgsql security definer set search_path = public
 as $$
 begin
   if p_status not in ('waiting', 'answered', 'resolved') or not exists (
-    select 1 from public.support_authorizations authorization
-    where authorization.user_id = auth.uid() and authorization.revoked_at is null
+    select 1 from public.support_authorizations authz
+    where authz.user_id = auth.uid() and authz.revoked_at is null
   ) then raise exception 'permission_denied'; end if;
   update public.chat_rooms set support_status = p_status where id = p_room_id and room_type = 'support';
   if not found then raise exception 'invalid_input'; end if;
