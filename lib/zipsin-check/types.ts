@@ -7,7 +7,10 @@ export type CheckAnswer = {
   status: CheckStatus;
   source: EvidenceSource;
   memo?: string;
+  actionChecks?: Record<string, boolean>;
 };
+
+export type FieldAction = {id: string; label: string};
 
 export type CheckItem = {
   id: string;
@@ -20,6 +23,7 @@ export type CheckItem = {
   question: string;
   nextAction: string;
   reviewedAt?: string;
+  actions?: FieldAction[];
 };
 
 export type Candidate = {

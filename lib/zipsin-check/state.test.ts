@@ -21,24 +21,24 @@ const now = '2026-10-13T00:00:00.000Z';
 describe('집신체크 상태 규칙', () => {
   it('후보를 만들고 답변과 모드 전환을 불변 방식으로 보존한다', () => {
     const candidate = createCandidate({id: 'a', alias: '', depth: 'quick', now});
-    const answered = answerItem(candidate, 'moisture', {status: 'caution', source: 'observed', memo: '창가 얼룩'}, now);
+    const answered = answerItem(candidate, 'moisture-leak', {status: 'caution', source: 'observed', memo: '창가 얼룩'}, now);
     const thorough = switchDepth(answered, 'thorough', now);
 
     expect(candidate.alias).toBe('후보 1');
     expect(candidate.answers).toEqual({});
-    expect(thorough.answers.moisture.status).toBe('caution');
+    expect(thorough.answers['moisture-leak'].status).toBe('caution');
     expect(thorough.depth).toBe('thorough');
   });
 
   it('미응답 핵심은 미확인으로 모으고 주의를 별도로 유지한다', () => {
     let candidate = createCandidate({id: 'a', alias: '첫 번째 집', depth: 'quick', now});
-    candidate = answerItem(candidate, 'moisture', {status: 'caution', source: 'observed'}, now);
-    candidate = answerItem(candidate, 'light-air', {status: 'confirmed', source: 'observed'}, now);
+    candidate = answerItem(candidate, 'moisture-leak', {status: 'caution', source: 'observed'}, now);
+    candidate = answerItem(candidate, 'light-noise', {status: 'confirmed', source: 'observed'}, now);
 
     const summary = buildSummary(candidate);
 
-    expect(summary.caution.map((entry) => entry.id)).toEqual(['moisture']);
-    expect(summary.confirmed.map((entry) => entry.id)).toEqual(['light-air']);
+    expect(summary.caution.map((entry) => entry.id)).toEqual(['moisture-leak']);
+    expect(summary.confirmed.map((entry) => entry.id)).toEqual(['light-noise']);
     expect(summary.unverified).toHaveLength(CORE_ITEM_IDS.length - 2);
   });
 
@@ -46,7 +46,7 @@ describe('집신체크 상태 규칙', () => {
     const quick = createCandidate({id: 'a', alias: 'A집', depth: 'quick', now});
     const thorough = answerItem(
       createCandidate({id: 'b', alias: 'B집', depth: 'thorough', now}),
-      'outlets',
+      'options-damage',
       {status: 'caution', source: 'observed'},
       now,
     );
@@ -54,7 +54,7 @@ describe('집신체크 상태 규칙', () => {
     const rows = compareCandidates([quick, thorough]);
 
     expect(rows).toHaveLength(CORE_ITEM_IDS.length);
-    expect(rows.some((row) => row.item.id === 'outlets')).toBe(false);
+    expect(rows.some((row) => row.item.id === 'options-damage')).toBe(true);
   });
 
   it('후보를 삭제하지 않고 제외·복원하며 활성 후보는 3개까지만 둔다', () => {
