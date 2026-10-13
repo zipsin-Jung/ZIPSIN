@@ -1,3 +1,3 @@
 export function resolveRootDestination(hasSession: boolean) {
-  return hasSession ? '/home' : '/login';
+  return hasSession ? '/home' : null;
 }
