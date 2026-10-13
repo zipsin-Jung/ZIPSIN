@@ -7,6 +7,9 @@
 - 운영 `https://zipsin.net/signup`과 `https://zipsin.vercel.app/signup`은 HTTP 404이므로 현재 운영 회원가입은 불가능하다.
 - 운영 배포와 Supabase 실가입 검증은 완료되지 않았다. Preview 접근 허용, 환경값·migration 확인, 테스트 가입과 Auth Users 확인이 남아 있다.
 - 사용자 승인 전 Production은 변경하지 않았다.
+- 관리자 화면 실검수 결과 Vercel 환경값이 비어 있고, Supabase의 집신체크 가입 유입 migration이 누락됐다.
+- Supabase는 이메일 로그인만 활성화되어 있으며 이메일 확인·휴대전화·Google·Kakao 인증은 활성화되지 않았다. Site URL도 localhost이고 허용 Redirect URL이 없다.
+- Preview 테스트 가입은 `service_unavailable`로 종료되어 실제 가입 성공 기준을 충족하지 못했다.
 
 ## 2026-10-14 집신·집신체크 통합 인증 재설계
 

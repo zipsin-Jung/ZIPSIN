@@ -49,3 +49,14 @@
 - 따라서 현재 일반 사용자가 운영 주소에서 실제 회원가입을 완료하고 Supabase `Authentication > Users`에 등록되는 시나리오는 검수할 수 없으며, 광고 유입을 열 수 있는 상태가 아니다.
 - 이 작업 환경에는 Vercel·Supabase 관리자 CLI 세션과 운영 환경값이 없어 Preview DB의 최신 migration 적용 여부와 실제 Users 생성 여부를 확인하거나 변경하지 않았다.
 - 다음 필수 순서는 Preview 보호 해제 또는 검수자 접근 허용 → Vercel Preview 환경값 확인 → Supabase migration 확인 → 테스트 계정 가입 → Auth Users와 관련 테이블 기록 확인 → 사용자 승인이다.
+
+### 관리자 화면에서 확인한 실제 상태
+
+- Vercel Preview 회원가입 화면은 관리자 세션에서 접근되지만 테스트 제출 결과 `/signup?error=service_unavailable`로 실패했다. 테스트 Auth 사용자는 생성되기 전 단계에서 차단됐다.
+- Vercel 프로젝트의 Environment Variables 목록에 프로젝트 환경값이 표시되지 않았다.
+- Supabase `ZIPSIN Preview` 프로젝트는 Healthy이며 실제 Auth 사용자는 2명이다.
+- 읽기 전용 SQL로 `signup_attributions` 테이블과 `complete_check_onboarding(text)` 함수가 모두 없음을 확인했다.
+- Supabase Authentication 설정은 이메일만 활성화됐고, 이메일 확인은 비활성이다. Phone·Google·Kakao는 모두 비활성이다.
+- Supabase Site URL은 `http://localhost:3000`이고 Redirect URL 허용 목록은 비어 있다.
+- 따라서 현재 화면에 표시된 `이메일 확인 → 휴대전화 인증 → 역할` 흐름과 실제 서버 설정이 일치하지 않는다.
+- 외부 문자 공급자와 Google·Kakao 개발자 키가 없는 상태에서는 이 세 인증 방식을 운영에서 완료할 수 없다. 운영 범위 결정과 비밀값 전송 승인을 받기 전에는 Supabase·Vercel 설정을 변경하지 않았다.
