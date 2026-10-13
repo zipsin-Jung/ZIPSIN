@@ -1,12 +1,14 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { getServerEnv } from '@/lib/env/server';
+import { getRuntimeAuthCookieOptions } from '@/lib/supabase/cookie-options';
 
 export async function createServerSupabaseClient() {
   const cookieStore = await cookies();
   const env = getServerEnv();
 
   return createServerClient(env.supabaseUrl, env.supabaseAnonKey, {
+    cookieOptions: getRuntimeAuthCookieOptions(),
     cookies: {
       getAll: () => cookieStore.getAll(),
       setAll: (cookiesToSet) => {
