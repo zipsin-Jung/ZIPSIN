@@ -8,8 +8,10 @@ function repository(overrides: Record<string, unknown> = {}) {
   return {
     getHome: vi.fn().mockResolvedValue({ data: home, error: null }),
     getActiveContract: vi.fn().mockResolvedValue({ data: contract, error: null }),
-    getRelationships: vi.fn().mockResolvedValue({ data: [{ userId: 'user-1', role: 'tenant' }], error: null }),
-    getPlanStates: vi.fn().mockResolvedValue({ data: [{ subjectUserId: 'user-1', planStatus: 'undecided' }], error: null }),
+    getPartyPlans: vi.fn().mockResolvedValue({ data: [
+      { role: 'landlord', planStatus: 'renewal_considering', isCurrentUser: false },
+      { role: 'tenant', planStatus: 'undecided', isCurrentUser: true },
+    ], error: null }),
     getRecords: vi.fn().mockResolvedValue({ data: [{ id: 'record-1', kind: 'document', title: '계약서', taskStatus: null, occurredAt: '2026-10-13T09:00:00Z' }], error: null }),
     canEditContract: vi.fn().mockResolvedValue({ data: false, error: null }),
     ...overrides,
@@ -17,13 +19,19 @@ function repository(overrides: Record<string, unknown> = {}) {
 }
 
 describe('loadContractHomeSummary', () => {
-  it('TEST-ZH-DATA-001 returns the active RLS-visible contract and current user relationship', async () => {
-    const result = await loadContractHomeSummary(repository(), { homeId: 'home-1', userId: 'user-1', today: new Date('2026-10-12T15:00:00Z') });
+  it('TEST-ZH-LIFE-003-L / TEST-ZH-DATA-001 returns separate party plans and the current user relationship', async () => {
+    const repo = repository();
+    const result = await loadContractHomeSummary(repo, { homeId: 'home-1', userId: 'user-1', today: new Date('2026-10-12T15:00:00Z') });
     expect(result.ok).toBe(true);
+    expect(repo.canEditContract).toHaveBeenCalledWith('office-1', 'user-1');
     if (result.ok) {
       expect(result.summary.contract?.id).toBe('contract-1');
       expect(result.summary.currentUserRelationship).toBe('tenant');
       expect(result.summary.ownPlanStatus).toBe('undecided');
+      expect(result.summary.partyPlans).toEqual([
+        { role: 'landlord', status: 'renewal_considering' },
+        { role: 'tenant', status: 'undecided' },
+      ]);
       expect(result.summary.hasContractDocument).toBe(true);
     }
   });
@@ -39,7 +47,6 @@ describe('loadContractHomeSummary', () => {
   it('TEST-ZH-DATA-003 never loads contract-dependent rows when no active contract exists', async () => {
     const repo = repository({ getActiveContract: vi.fn().mockResolvedValue({ data: null, error: null }) });
     await loadContractHomeSummary(repo, { homeId: 'home-1', userId: 'user-1' });
-    expect(repo.getRelationships).not.toHaveBeenCalled();
-    expect(repo.getPlanStates).not.toHaveBeenCalled();
+    expect(repo.getPartyPlans).not.toHaveBeenCalled();
   });
 });

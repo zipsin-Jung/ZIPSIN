@@ -27,4 +27,14 @@ describe('ContractForm', () => {
     expect(action).toHaveBeenCalledTimes(1);
     expect(await screen.findByRole('alert')).toHaveTextContent('저장하지 못했습니다');
   });
+
+  it('TEST-ZH-UI-010 keeps an existing contract kind immutable while still submitting it', async () => {
+    const action = vi.fn().mockResolvedValue({ saved: true });
+    const user = userEvent.setup();
+    render(<ContractForm contractExists homeId={homeId} idempotencyKey={idempotencyKey} action={action} initial={{ contractKind: 'monthly_rent', startsOn: '2026-02-03', endsOn: '2027-02-02' }} />);
+    expect(screen.getByLabelText('계약 종류')).toBeDisabled();
+    await user.click(screen.getByRole('button', { name: '계약 기간 저장' }));
+    const data = action.mock.calls[0]?.[0] as FormData;
+    expect(data.get('contractKind')).toBe('monthly_rent');
+  });
 });

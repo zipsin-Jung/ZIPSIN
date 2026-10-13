@@ -16,6 +16,8 @@ describe('contract plan retry stress boundary', () => {
     const { data: auth, error: authError } = await client.auth.signInWithPassword({ email: config.email!, password: config.password! });
     expect(authError).toBeNull();
     expect(auth.user).toBeTruthy();
+    const { count: eventCountBefore, error: eventCountBeforeError } = await client.from('contract_plan_events').select('id', { count: 'exact', head: true }).eq('contract_id', config.contractId!).eq('subject_user_id', auth.user!.id);
+    expect(eventCountBeforeError).toBeNull();
     const responses = await Promise.all(Array.from({ length: 20 }, () => client.rpc('set_own_contract_plan', {
       p_contract_id: config.contractId!,
       p_plan_status: 'renewal_considering',
@@ -25,5 +27,8 @@ describe('contract plan retry stress boundary', () => {
     const { count, error } = await client.from('contract_plan_states').select('id', { count: 'exact', head: true }).eq('contract_id', config.contractId!).eq('subject_user_id', auth.user!.id);
     expect(error).toBeNull();
     expect(count).toBe(1);
+    const { count: eventCountAfter, error: eventCountAfterError } = await client.from('contract_plan_events').select('id', { count: 'exact', head: true }).eq('contract_id', config.contractId!).eq('subject_user_id', auth.user!.id);
+    expect(eventCountAfterError).toBeNull();
+    expect((eventCountAfter ?? 0) - (eventCountBefore ?? 0)).toBeLessThanOrEqual(1);
   });
 });

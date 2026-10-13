@@ -28,4 +28,18 @@ describe('contract lifecycle database boundary', () => {
     expect(sql).toMatch(/revoke all on public\.contract_plan_states from anon, authenticated/i);
     expect(sql).not.toMatch(/grant (insert|update|delete) on public\.contract_plan_states to authenticated/i);
   });
+
+  it('TEST-ZH-LIFE-003-M returns party roles and statuses without exposing user identifiers', () => {
+    const body = fn('get_contract_party_plan_statuses');
+    expect(body).toMatch(/public\.can_access_contract\(p_contract_id\)/i);
+    expect(body).toMatch(/relationship_role/i);
+    expect(body).toMatch(/plan_status/i);
+    expect(body).toMatch(/is_current_user/i);
+    expect(body).not.toMatch(/returns table\s*\([^)]*user_id/i);
+  });
+
+  it('TEST-ZH-LIFE-003-N serializes identical plan changes before reading the previous state', () => {
+    const body = fn('set_own_contract_plan');
+    expect(body).toMatch(/pg_advisory_xact_lock[\s\S]*select state\.plan_status/i);
+  });
 });

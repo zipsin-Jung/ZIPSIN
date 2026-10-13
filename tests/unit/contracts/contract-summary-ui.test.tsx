@@ -11,7 +11,7 @@ const summary = {
   endsOn: '2027-02-02',
   contractDay: { label: 'D-112', days: 112 },
   ownRelationship: 'tenant' as const,
-  ownPlanStatus: 'undecided' as const,
+  ownPlanStatus: 'move_out_preparing' as const,
   partyPlans: [
     { role: 'landlord' as const, status: 'renewal_considering' as const },
     { role: 'tenant' as const, status: 'move_out_preparing' as const },
@@ -38,6 +38,8 @@ describe('ContractSummary', () => {
     const save = vi.fn().mockResolvedValue({ saved: true });
     const user = userEvent.setup();
     render(<ContractSummary summary={summary} onPlanSave={save} />);
+    expect(screen.getByText('임대인 · 연장 생각 중')).toBeInTheDocument();
+    expect(screen.getByText('임차인 · 퇴거 준비')).toBeInTheDocument();
     expect(screen.getByText('서로 확인이 필요해요')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: '연장 생각 중' }));
     const data = save.mock.calls[0]?.[0] as FormData;

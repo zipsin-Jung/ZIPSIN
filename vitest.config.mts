@@ -42,6 +42,8 @@ export default defineConfig({
         'features/contracts/domain/**/*.{ts,tsx}',
         'features/contracts/schemas/**/*.{ts,tsx}',
         'features/contracts/services/**/*.{ts,tsx}',
+        'features/contracts/actions/**/*.{ts,tsx}',
+        'features/contracts/components/**/*.{ts,tsx}',
         'features/public-home/**/*.{ts,tsx}',
         'features/homes/components/HomeForm.tsx',
         'features/homes/schemas/home.ts',
@@ -56,6 +58,7 @@ export default defineConfig({
         'features/navigation/**/*.{ts,tsx}',
         'features/workspace/components/HomeStart.tsx',
         'features/workspace/domain/**/*.{ts,tsx}',
+        'features/workspace/services/**/*.{ts,tsx}',
         'lib/env/**/*.{ts,tsx}',
       ],
       thresholds: {

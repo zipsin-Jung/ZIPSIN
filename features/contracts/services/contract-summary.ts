@@ -5,17 +5,15 @@ import { buildLifecycleProgress, buildNextActions, formatContractDay, type PlanS
 type Result<T> = Promise<{ data: T; error: unknown }>;
 type HomeRow = { id: string; officeId: string | null; label: string; addressLine1: string; addressDetail: string | null };
 type ContractRow = { id: string; kind: string; startsOn: string | null; endsOn: string | null };
-type RelationshipRow = { userId: string; role: 'landlord' | 'tenant' | 'repairer' };
-type PlanRow = { subjectUserId: string; planStatus: PlanStatus };
+type PartyPlanRow = { role: 'landlord' | 'tenant'; planStatus: PlanStatus; isCurrentUser: boolean };
 type RecordRow = { id: string; kind: string; title: string; taskStatus: string | null; occurredAt: string };
 
 export type ContractSummaryRepository = {
   getHome(homeId: string): Result<HomeRow | null>;
   getActiveContract(homeId: string): Result<ContractRow | null>;
-  getRelationships(contractId: string): Result<RelationshipRow[]>;
-  getPlanStates(contractId: string): Result<PlanRow[]>;
+  getPartyPlans(contractId: string): Result<PartyPlanRow[]>;
   getRecords(homeId: string, contractId: string): Result<RecordRow[]>;
-  canEditContract(officeId: string | null): Result<boolean>;
+  canEditContract(officeId: string | null, userId: string): Result<boolean>;
 };
 
 export type ContractHomeSummary = {
@@ -23,7 +21,6 @@ export type ContractHomeSummary = {
   contract: ContractRow | null;
   currentUserRelationship: 'landlord' | 'tenant' | null;
   ownPlanStatus: PlanStatus;
-  planStates: PlanRow[];
   partyPlans: Array<{ role: 'landlord' | 'tenant'; status: PlanStatus }>;
   canEditContract: boolean;
   contractDay: ReturnType<typeof formatContractDay>;
@@ -49,7 +46,7 @@ export async function loadContractHomeSummary(
   const home = homeResult.data;
   const [contractResult, editResult] = await Promise.all([
     repository.getActiveContract(input.homeId),
-    repository.canEditContract(home.officeId),
+    repository.canEditContract(home.officeId, input.userId),
   ]);
   if (contractResult.error || editResult.error) return { ok: false, error: 'load_failed' };
 
@@ -64,7 +61,6 @@ export async function loadContractHomeSummary(
         contract: null,
         currentUserRelationship: null,
         ownPlanStatus: 'undecided',
-        planStates: [],
         partyPlans: [],
         canEditContract: editResult.data,
         contractDay: null,
@@ -79,20 +75,16 @@ export async function loadContractHomeSummary(
     };
   }
 
-  const [relationshipsResult, plansResult, recordsResult] = await Promise.all([
-    repository.getRelationships(contract.id),
-    repository.getPlanStates(contract.id),
+  const [partyPlansResult, recordsResult] = await Promise.all([
+    repository.getPartyPlans(contract.id),
     repository.getRecords(home.id, contract.id),
   ]);
-  if (relationshipsResult.error || plansResult.error || recordsResult.error) return { ok: false, error: 'load_failed' };
+  if (partyPlansResult.error || recordsResult.error) return { ok: false, error: 'load_failed' };
 
   const records = recordsResult.data;
-  const relationship = relationshipsResult.data.find((item) => item.userId === input.userId && (item.role === 'landlord' || item.role === 'tenant'));
-  const ownPlanStatus = plansResult.data.find((item) => item.subjectUserId === input.userId)?.planStatus ?? 'undecided';
-  const partyPlans = relationshipsResult.data.flatMap((item) => {
-    if (item.role !== 'landlord' && item.role !== 'tenant') return [];
-    return [{ role: item.role, status: plansResult.data.find((plan) => plan.subjectUserId === item.userId)?.planStatus ?? 'undecided' }];
-  });
+  const relationship = partyPlansResult.data.find((item) => item.isCurrentUser);
+  const ownPlanStatus = relationship?.planStatus ?? 'undecided';
+  const partyPlans = partyPlansResult.data.map((item) => ({ role: item.role, status: item.planStatus }));
   const hasContractDocument = records.some((item) => item.kind === 'document' && /계약/.test(item.title));
   const hasMoveInPhoto = records.some((item) => item.kind === 'photo' && /입주/.test(item.title));
   const hasManagementRecord = records.some((item) => ['repair', 'note'].includes(item.kind));
@@ -108,9 +100,8 @@ export async function loadContractHomeSummary(
     summary: {
       home,
       contract,
-      currentUserRelationship: relationship?.role === 'landlord' || relationship?.role === 'tenant' ? relationship.role : null,
+      currentUserRelationship: relationship?.role ?? null,
       ownPlanStatus,
-      planStates: plansResult.data,
       partyPlans,
       canEditContract: editResult.data,
       contractDay: formatContractDay(contract.endsOn, input.today),
@@ -143,21 +134,17 @@ export function createSupabaseContractSummaryRepository(supabase: SupabaseClient
       const { data, error } = await supabase.from('contracts').select('id, contract_kind, starts_on, ends_on').eq('home_id', homeId).eq('status', 'active').maybeSingle();
       return { data: data ? { id: data.id, kind: data.contract_kind, startsOn: data.starts_on, endsOn: data.ends_on } : null, error };
     },
-    async getRelationships(contractId) {
-      const { data, error } = await supabase.from('home_memberships').select('user_id, relationship_role').eq('contract_id', contractId).eq('status', 'active').is('ended_at', null);
-      return { data: (data ?? []).map((item) => ({ userId: item.user_id, role: item.relationship_role as RelationshipRow['role'] })), error };
-    },
-    async getPlanStates(contractId) {
-      const { data, error } = await supabase.from('contract_plan_states').select('subject_user_id, plan_status').eq('contract_id', contractId);
-      return { data: (data ?? []).map((item) => ({ subjectUserId: item.subject_user_id, planStatus: item.plan_status as PlanStatus })), error };
+    async getPartyPlans(contractId) {
+      const { data, error } = await supabase.rpc('get_contract_party_plan_statuses', { p_contract_id: contractId });
+      return { data: (data ?? []).map((item: { relationship_role: string; plan_status: string; is_current_user: boolean }) => ({ role: item.relationship_role as PartyPlanRow['role'], planStatus: item.plan_status as PlanStatus, isCurrentUser: item.is_current_user })), error };
     },
     async getRecords(homeId, contractId) {
       const { data, error } = await supabase.from('records').select('id, record_kind, title, task_status, occurred_at').eq('home_id', homeId).or(`contract_id.eq.${contractId},record_space.eq.office_internal`).order('occurred_at', { ascending: false });
       return { data: (data ?? []).map((item) => ({ id: item.id, kind: item.record_kind, title: item.title, taskStatus: item.task_status, occurredAt: item.occurred_at })), error };
     },
-    async canEditContract(officeId) {
+    async canEditContract(officeId, userId) {
       if (!officeId) return { data: false, error: null };
-      const { data, error } = await supabase.from('office_memberships').select('office_role').eq('office_id', officeId).eq('status', 'active').is('ended_at', null).in('office_role', ['principal_broker', 'associate_broker']).maybeSingle();
+      const { data, error } = await supabase.from('office_memberships').select('office_role').eq('office_id', officeId).eq('user_id', userId).eq('status', 'active').is('ended_at', null).in('office_role', ['principal_broker', 'associate_broker']).maybeSingle();
       return { data: Boolean(data), error };
     },
   };

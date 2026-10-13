@@ -113,6 +113,44 @@ revoke all on public.contract_plan_events from anon, authenticated;
 grant select on public.contract_plan_states to authenticated;
 grant select on public.contract_plan_events to authenticated;
 
+create or replace function public.get_contract_party_plan_statuses(
+  p_contract_id uuid
+) returns table (
+  relationship_role text,
+  plan_status text,
+  is_current_user boolean
+)
+language plpgsql
+stable
+security definer
+set search_path = public
+as $$
+declare
+  v_user_id uuid := auth.uid();
+begin
+  if v_user_id is null then raise exception 'authentication_required'; end if;
+  if p_contract_id is null or not public.can_access_contract(p_contract_id) then
+    raise exception 'permission_denied';
+  end if;
+
+  return query
+  select membership.relationship_role,
+    coalesce(state.plan_status, 'undecided') as plan_status,
+    membership.user_id = v_user_id as is_current_user
+  from public.home_memberships membership
+  left join public.contract_plan_states state
+    on state.contract_id = membership.contract_id
+   and state.subject_user_id = membership.user_id
+  where membership.contract_id = p_contract_id
+    and membership.relationship_role in ('landlord', 'tenant')
+    and membership.access_scope = 'current_contract'
+    and membership.status = 'active'
+    and membership.ended_at is null
+    and membership.starts_at <= now()
+    and (membership.expires_at is null or membership.expires_at > now());
+end;
+$$;
+
 create or replace function public.upsert_active_contract_for_home(
   p_home_id uuid,
   p_contract_kind text,
@@ -223,6 +261,10 @@ begin
   for share;
   if not found then raise exception 'relation_ended'; end if;
 
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended(p_contract_id::text || ':' || v_user_id::text, 0)
+  );
+
   select state.plan_status into v_previous_status
   from public.contract_plan_states state
   where state.contract_id = p_contract_id and state.subject_user_id = v_user_id
@@ -257,5 +299,7 @@ $$;
 
 revoke all on function public.upsert_active_contract_for_home(uuid, text, date, date, uuid) from public, anon, authenticated;
 revoke all on function public.set_own_contract_plan(uuid, text) from public, anon, authenticated;
+revoke all on function public.get_contract_party_plan_statuses(uuid) from public, anon, authenticated;
 grant execute on function public.upsert_active_contract_for_home(uuid, text, date, date, uuid) to authenticated;
 grant execute on function public.set_own_contract_plan(uuid, text) to authenticated;
+grant execute on function public.get_contract_party_plan_statuses(uuid) to authenticated;

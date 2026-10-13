@@ -20,13 +20,14 @@ export default async function HomeDetailPage({
   const summaryResult = await loadContractHomeSummaryFromSupabase(supabase, { homeId, userId: user.id });
   if (!summaryResult.ok) return <Unavailable />;
   const { summary } = summaryResult;
-  const { data: records } = await supabase
+  const { data: records, error: recordsError } = await supabase
     .from("records")
     .select("id, record_kind, title, occurred_at")
     .eq("home_id", homeId)
     .order("occurred_at", { ascending: false })
     .limit(20);
-  const { data: sharedRoom } = await supabase
+  if (recordsError) return <Unavailable />;
+  const { data: sharedRoom, error: sharedRoomError } = await supabase
     .from('chat_rooms')
     .select('id')
     .eq('home_id', homeId)
@@ -34,10 +35,12 @@ export default async function HomeDetailPage({
     .eq('status', 'active')
     .limit(1)
     .maybeSingle();
+  if (sharedRoomError) return <Unavailable />;
   const recordIds = records?.map((record) => record.id) ?? [];
-  const { data: attachments } = recordIds.length
+  const { data: attachments, error: attachmentsError } = recordIds.length
     ? await supabase.from("attachments").select("id, record_id, original_name").in("record_id", recordIds).eq("status", "ready")
-    : { data: [] };
+    : { data: [], error: null };
+  if (attachmentsError) return <Unavailable />;
   return (
     <main className="mx-auto max-w-6xl px-5 py-10 sm:py-16">
       <Link href="/homes" className="text-sm font-bold text-[#0b695c]">
@@ -76,6 +79,7 @@ export default async function HomeDetailPage({
       {summary.canEditContract && (
         <section className="mt-10">
           <ContractForm
+            contractExists={Boolean(summary.contract)}
             homeId={homeId}
             idempotencyKey={randomUUID()}
             initial={{

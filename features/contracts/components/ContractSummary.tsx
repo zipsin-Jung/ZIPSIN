@@ -39,8 +39,12 @@ export function ContractSummary({
   const [current, setCurrent] = useState(summary.ownPlanStatus);
   const [message, setMessage] = useState('');
   const [isPending, startTransition] = useTransition();
-  const landlord = summary.partyPlans.find((item) => item.role === 'landlord')?.status;
-  const tenant = summary.partyPlans.find((item) => item.role === 'tenant')?.status;
+  const visiblePlans = summary.partyPlans.map((item) => ({
+    ...item,
+    status: item.role === summary.ownRelationship ? current : item.status,
+  }));
+  const landlord = visiblePlans.find((item) => item.role === 'landlord')?.status;
+  const tenant = visiblePlans.find((item) => item.role === 'tenant')?.status;
   const disagrees = landlord && tenant && landlord !== 'undecided' && tenant !== 'undecided' && landlord !== tenant;
 
   function save(next: PlanStatus) {
@@ -81,6 +85,15 @@ export function ContractSummary({
             ))}
           </div>
         ) : <p className="mt-4 rounded-xl bg-white p-4 text-sm text-[#607785]">현재 계약의 임대인 또는 임차인만 자신의 준비 상태를 바꿀 수 있습니다.</p>}
+        {visiblePlans.length > 0 && (
+          <div aria-label="계약 당사자 준비 상태" className="mt-4 flex flex-wrap gap-2">
+            {visiblePlans.map((item, index) => (
+              <span className="rounded-full border border-[#d8e3e0] bg-white px-3 py-2 text-xs font-bold text-[#476772]" key={`${item.role}-${index}`}>
+                {item.role === 'landlord' ? '임대인' : '임차인'} · {statusLabels[item.status]}
+              </span>
+            ))}
+          </div>
+        )}
         <p className="mt-4 text-xs leading-5 text-[#687b84]">이 선택은 집신 안에서 준비 순서를 정하기 위한 것입니다. 계약 연장이나 퇴거 통지가 자동으로 전달되지는 않습니다.</p>
         {disagrees && <p className="mt-3 font-bold text-[#a75b16]">서로 확인이 필요해요</p>}
         {message && <p className={message.includes('저장했습니다') ? 'mt-3 text-sm font-semibold text-[#0b695c]' : 'mt-3 text-sm font-semibold text-red-700'} role="status">{message}</p>}

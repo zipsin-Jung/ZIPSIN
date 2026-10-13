@@ -142,4 +142,31 @@ describe('home route server boundaries', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('이 집을 확인할 수 없습니다.');
     expect(screen.queryByText('load_failed')).not.toBeInTheDocument();
   });
+
+  it('TEST-ZH-UI-009 does not present a record query failure as an empty home', async () => {
+    const homeId = '00000000-0000-4000-8000-000000000013';
+    const db = database({ records: { data: null, error: { message: 'private record failure' } } });
+    guard.mockResolvedValue({ supabase: db, user: { id: 'user-1' } });
+    loadSummary.mockResolvedValue({
+      ok: true,
+      status: 'no_contract',
+      summary: {
+        home: { id: homeId, officeId: null, label: '오류 확인 집', addressLine1: '서울시 예시로 13', addressDetail: null },
+        contract: null,
+        currentUserRelationship: null,
+        ownPlanStatus: 'undecided',
+        partyPlans: [],
+        canEditContract: false,
+        contractDay: null,
+        lifecycle: [],
+        nextActions: [],
+      },
+    });
+
+    render(await HomeDetailPage({ params: Promise.resolve({ homeId }) }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent('이 집을 확인할 수 없습니다.');
+    expect(screen.queryByText('아직 남긴 기록이 없습니다.')).not.toBeInTheDocument();
+    expect(screen.queryByText('private record failure')).not.toBeInTheDocument();
+  });
 });

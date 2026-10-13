@@ -28,6 +28,10 @@ export type HomeDashboardResult =
   | { ok: true; homes: DashboardHome[]; offices: Array<{ id: string; name: string; canRegisterHome: boolean }>; unreadChatCount: number; notificationCount: number }
   | { ok: false; error: 'load_failed' };
 
+export function formatDashboardAddress(addressLine1: string, addressDetail: string | null): string {
+  return addressDetail ? `${addressLine1} · 상세 주소 보호됨` : addressLine1;
+}
+
 export async function loadHomeDashboard(repository: HomeDashboardRepository, input: { today?: Date } = {}): Promise<HomeDashboardResult> {
   const result = await repository.load();
   if (result.error || !result.data) return { ok: false, error: 'load_failed' };
@@ -81,7 +85,7 @@ export async function loadHomeDashboardFromSupabase(supabase: SupabaseClient, us
       return {
         error: null,
         data: {
-          homes: (homes ?? []).map((home) => ({ id: home.id, label: home.home_label ?? home.address_line1, address: `${home.address_line1}${home.address_detail ? ` · ${home.address_detail}` : ''}`, updatedAt: home.updated_at })),
+          homes: (homes ?? []).map((home) => ({ id: home.id, label: home.home_label ?? home.address_line1, address: formatDashboardAddress(home.address_line1, home.address_detail), updatedAt: home.updated_at })),
           contracts: (contracts ?? []).map((contract) => ({ id: contract.id, homeId: contract.home_id, endsOn: contract.ends_on })),
           records: (records ?? []).map((record) => ({ id: record.id, homeId: record.home_id, kind: record.record_kind, title: record.title, taskStatus: record.task_status, taskDueAt: record.task_due_at, occurredAt: record.occurred_at })),
           notifications: (notifications ?? []).map((notice) => ({ kind: notice.notification_kind, readAt: notice.read_at })),

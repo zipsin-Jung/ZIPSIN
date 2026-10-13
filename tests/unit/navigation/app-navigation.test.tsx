@@ -4,7 +4,7 @@ vi.mock('next/navigation', () => ({ usePathname: () => '/home' }));
 import { AppNavigation } from '@/features/navigation/components/AppNavigation';
 
 describe('AppNavigation', () => {
-  it('links the five mobile destinations to real app routes', () => {
+  it('TEST-ZH-HOME-007 links the five mobile destinations and marks the current route', () => {
     render(<AppNavigation />);
 
     const mobile = screen.getByRole('navigation', { name: '모바일 주요 메뉴' });

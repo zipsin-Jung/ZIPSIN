@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { loadHomeDashboard } from '@/features/workspace/services/home-dashboard';
+import { formatDashboardAddress, loadHomeDashboard } from '@/features/workspace/services/home-dashboard';
 
 const rows = {
   homes: [
@@ -22,6 +22,10 @@ const rows = {
 };
 
 describe('loadHomeDashboard', () => {
+  it('TEST-ZH-DATA-007 masks the unit detail before it reaches the dashboard UI', () => {
+    expect(formatDashboardAddress('서울 노원구 예시로 10', '101동 1401호')).toBe('서울 노원구 예시로 10 · 상세 주소 보호됨');
+    expect(formatDashboardAddress('서울 노원구 예시로 10', null)).toBe('서울 노원구 예시로 10');
+  });
   it('TEST-ZH-DATA-004 sorts expiry first, then open work, then recent use', async () => {
     const load = vi.fn().mockResolvedValue({ data: rows, error: null });
     const result = await loadHomeDashboard({ load }, { today: new Date('2026-10-12T15:00:00Z') });
