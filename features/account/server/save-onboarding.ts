@@ -9,7 +9,7 @@ export async function saveOnboarding(input:{userType:string;transferConsent:bool
   const user=await requireUser();
   const records=buildOnboardingRecords({userId:user.id,userType:parseUserType(input.userType)});
   const supabase=await createServerSupabaseClient();
-  const {error:profileError}=await supabase.from('profiles').upsert({id:records.profile.id,user_type:records.profile.userType,onboarding_state:records.profile.onboardingState});
+  const {error:profileError}=await supabase.from('profiles').upsert({user_id:records.profile.userId,user_type:records.profile.userType,onboarding_state:records.profile.onboardingState},{onConflict:'user_id'});
   if(profileError)throw new Error('PROFILE_SAVE_FAILED');
   const {error:sourceError}=await supabase.from('signup_attributions').upsert({user_id:records.attribution.userId,source:records.attribution.source},{onConflict:'user_id,source'});
   if(sourceError)throw new Error('ATTRIBUTION_SAVE_FAILED');

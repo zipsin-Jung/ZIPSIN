@@ -4,7 +4,7 @@ import {buildOnboardingRecords, parseUserType} from './profile';
 describe('tenant onboarding records', () => {
   it('stores acquisition source separately from confirmed user type', () => {
     expect(buildOnboardingRecords({userId: 'user-1', userType: 'tenant'})).toEqual({
-      profile: {id: 'user-1', userType: 'tenant', onboardingState: 'complete'},
+      profile: {userId: 'user-1', userType: 'tenant', onboardingState: 'complete'},
       attribution: {userId: 'user-1', source: 'zipsin_check'},
     });
   });

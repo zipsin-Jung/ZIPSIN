@@ -1,12 +1,10 @@
 create extension if not exists pgcrypto;
 
-create table public.profiles (
-  id uuid primary key references auth.users(id) on delete cascade,
-  onboarding_state text not null default 'pending' check (onboarding_state in ('pending', 'complete')),
-  user_type text check (user_type in ('house_hunter', 'tenant')),
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
+alter table public.profiles
+  add column if not exists onboarding_state text not null default 'pending'
+    check (onboarding_state in ('pending', 'complete')),
+  add column if not exists user_type text
+    check (user_type in ('house_hunter', 'tenant'));
 
 create table public.signup_attributions (
   id uuid primary key default gen_random_uuid(),
@@ -77,7 +75,6 @@ create table public.transfer_items (
   unique (manifest_id, item_key)
 );
 
-alter table public.profiles enable row level security;
 alter table public.signup_attributions enable row level security;
 alter table public.transfer_manifests enable row level security;
 alter table public.candidate_drafts enable row level security;
@@ -85,7 +82,6 @@ alter table public.candidate_answers enable row level security;
 alter table public.candidate_photos enable row level security;
 alter table public.transfer_items enable row level security;
 
-create policy "profiles_owner_all" on public.profiles for all using (id = auth.uid()) with check (id = auth.uid());
 create policy "attributions_owner_all" on public.signup_attributions for all using (user_id = auth.uid()) with check (user_id = auth.uid());
 create policy "manifests_owner_all" on public.transfer_manifests for all using (owner_user_id = auth.uid()) with check (owner_user_id = auth.uid());
 create policy "drafts_owner_all" on public.candidate_drafts for all using (owner_user_id = auth.uid()) with check (owner_user_id = auth.uid());
@@ -98,6 +94,13 @@ create policy "photos_owner_all" on public.candidate_photos for all
 create policy "transfer_items_owner_all" on public.transfer_items for all
   using (exists (select 1 from public.transfer_manifests m where m.id = manifest_id and m.owner_user_id = auth.uid()))
   with check (exists (select 1 from public.transfer_manifests m where m.id = manifest_id and m.owner_user_id = auth.uid()));
+
+grant select, insert on public.signup_attributions to authenticated;
+grant select, insert, update, delete on public.transfer_manifests to authenticated;
+grant select, insert, update, delete on public.candidate_drafts to authenticated;
+grant select, insert, update, delete on public.candidate_answers to authenticated;
+grant select, insert, update, delete on public.candidate_photos to authenticated;
+grant select, insert, update, delete on public.transfer_items to authenticated;
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('candidate-photos', 'candidate-photos', false, 10485760, array['image/jpeg', 'image/png', 'image/webp'])

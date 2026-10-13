@@ -7,7 +7,7 @@ export function parseUserType(value: string): AccountUserType {
 
 export function buildOnboardingRecords(input: {userId: string; userType: AccountUserType}) {
   return {
-    profile: {id: input.userId, userType: input.userType, onboardingState: 'complete' as const},
+    profile: {userId: input.userId, userType: input.userType, onboardingState: 'complete' as const},
     attribution: {userId: input.userId, source: 'zipsin_check' as const},
   };
 }

@@ -54,6 +54,18 @@ describe('registerPasswordAccountAction', () => {
     await expect(registerPasswordAccountAction(form())).rejects.toThrow('REDIRECT:/signup/verify');
   });
 
+  it('집신체크에서 시작한 가입의 안전한 복귀 경로를 인증 단계까지 유지한다', async () => {
+    signUp.mockResolvedValue({ data: { user: { id: 'user-1', identities: [{ id: 'identity-1' }] }, session: { access_token: 'masked' } }, error: null });
+    await expect(registerPasswordAccountAction(form({ next: '/ck' }))).rejects.toThrow(
+      'REDIRECT:/signup/verify?next=%2Fck',
+    );
+    expect(signUp).toHaveBeenCalledWith(expect.objectContaining({
+      options: expect.objectContaining({
+        emailRedirectTo: expect.stringContaining('next=%2Fsignup%2Fverify%3Fnext%3D%252Fck'),
+      }),
+    }));
+  });
+
   it('uses a generic unavailable error and compensates a failed reservation', async () => {
     insert.mockResolvedValue({ error: new Error('duplicate') });
     await expect(registerPasswordAccountAction(form())).rejects.toThrow('REDIRECT:/signup?error=account_unavailable');

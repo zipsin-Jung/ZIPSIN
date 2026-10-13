@@ -2,9 +2,10 @@ import { registerPasswordAccountAction } from '@/features/auth/actions/register-
 
 const inputClass = 'mt-2 min-h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-950 outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20';
 
-export function PasswordSignupForm() {
+export function PasswordSignupForm({ next }: { next?: string }) {
   return (
     <form action={registerPasswordAccountAction} className="grid gap-5">
+      {next && <input name="next" type="hidden" value={next} />}
       <label className="font-semibold text-slate-800">
         아이디
         <input className={inputClass} name="username" required autoComplete="username" minLength={4} maxLength={20} placeholder="영문, 숫자, 밑줄 4~20자" />

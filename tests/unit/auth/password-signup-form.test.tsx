@@ -9,7 +9,7 @@ import { PasswordSignupForm } from '@/features/auth/components/PasswordSignupFor
 
 describe('PasswordSignupForm', () => {
   it('collects username password confirmation and email with required agreements', () => {
-    render(<PasswordSignupForm />);
+    render(<PasswordSignupForm next="/ck" />);
 
     expect(screen.getByLabelText('아이디')).toBeRequired();
     expect(screen.getByLabelText('비밀번호', { selector: 'input' })).toBeRequired();
@@ -17,5 +17,6 @@ describe('PasswordSignupForm', () => {
     expect(screen.getByLabelText('이메일')).toBeRequired();
     expect(screen.getByRole('checkbox', { name: /서비스 이용약관/ })).toBeRequired();
     expect(screen.getByRole('button', { name: '회원가입' })).toBeInTheDocument();
+    expect(document.querySelector('input[name="next"]')).toHaveValue('/ck');
   });
 });

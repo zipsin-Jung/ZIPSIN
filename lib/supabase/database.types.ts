@@ -4,7 +4,7 @@ export type Json = string | number | boolean | null | {[key: string]: Json | und
 export type Database = {
   public: {
     Tables: {
-      profiles: {Row: {id: string; onboarding_state: string; user_type: string | null; created_at: string; updated_at: string}};
+      profiles: {Row: {user_id: string; display_name: string | null; email: string | null; phone_e164: string | null; phone_verified_at: string | null; onboarding_state: string; user_type: string | null; created_at: string; updated_at: string}};
       signup_attributions: {Row: {id: string; user_id: string; source: string; created_at: string}};
       transfer_manifests: {Row: {id: string; owner_user_id: string; request_key: string; status: string; expected_counts_json: Json; confirmed_counts_json: Json; created_at: string; updated_at: string}};
       candidate_drafts: {Row: {id: string; owner_user_id: string; manifest_id: string | null; local_candidate_id: string; alias: string; listing_json: Json; terms_json: Json; contact_json: Json; commute_json: Json; created_at: string; updated_at: string}};

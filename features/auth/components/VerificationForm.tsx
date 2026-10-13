@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { completeSignup } from '@/features/auth/actions/complete-signup';
 
-export function VerificationForm({ email = '', displayName = '' }) {
+export function VerificationForm({ email = '', displayName = '', next }: { email?: string; displayName?: string; next?: string }) {
   const router = useRouter();
   const [challengeId, setChallengeId] = useState('');
   const [phone, setPhone] = useState('');
@@ -82,7 +82,7 @@ export function VerificationForm({ email = '', displayName = '' }) {
       marketingEmailAccepted: formData.get('marketingEmailAccepted') === 'on',
     });
     if (result.ok) {
-      router.replace('/onboarding/role');
+      router.replace(next ? `/onboarding/role?next=${encodeURIComponent(next)}` : '/onboarding/role');
       router.refresh();
       return;
     }

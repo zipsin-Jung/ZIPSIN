@@ -1,11 +1,14 @@
 import { redirect } from 'next/navigation';
 import { VerificationForm } from '@/features/auth/components/VerificationForm';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { sanitizeNextPath } from '@/features/auth/domain/redirect';
 
-export default async function VerifySignupPage() {
+export default async function VerifySignupPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
+  const params = await searchParams;
+  const next = sanitizeNextPath(params.next);
   const supabase = await createServerSupabaseClient();
   const { data } = await supabase.auth.getUser();
-  if (!data.user) redirect('/login?next=/signup/verify');
+  if (!data.user) redirect(`/login?next=${encodeURIComponent(params.next ? `/signup/verify?next=${encodeURIComponent(next)}` : '/signup/verify')}`);
 
   return (
     <main className="min-h-screen bg-[#f8faf8] px-5 py-12 text-[#12362c]">
@@ -16,6 +19,7 @@ export default async function VerifySignupPage() {
         <VerificationForm
           displayName={data.user.user_metadata?.full_name ?? data.user.user_metadata?.name ?? ''}
           email={data.user.email ?? ''}
+          next={params.next ? next : undefined}
         />
       </section>
     </main>
