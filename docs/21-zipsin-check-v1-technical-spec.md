@@ -1,5 +1,7 @@
 # 집신체크 V1 기술 설계
 
+> 2026-10-13: V2는 `zipsin-check:v2` 텍스트 저장과 기존 `zipsin-check-photos:v1` IndexedDB를 사용한다. v1 원본을 자동 삭제하지 않고 ID를 보존해 사진 연결을 유지한다. 현재 구현계획은 `docs/superpowers/plans/2026-10-13-zipsin-check-comparison-v2.md`다.
+
 ## 2026-10-13 현장형 사진 저장 설계
 
 - 텍스트 상태와 메모는 기존 `localStorage` 스키마를 유지한다.
