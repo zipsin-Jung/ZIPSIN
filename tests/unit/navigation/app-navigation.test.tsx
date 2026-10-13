@@ -1,5 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+vi.mock('next/navigation', () => ({ usePathname: () => '/home' }));
 import { AppNavigation } from '@/features/navigation/components/AppNavigation';
 
 describe('AppNavigation', () => {
@@ -13,6 +14,8 @@ describe('AppNavigation', () => {
     expect(mobile).toHaveTextContent('채팅');
     expect(mobile).toHaveTextContent('마이');
     expect(within(mobile).getByRole('link', { name: '홈' })).toHaveAttribute('href', '/home');
+    expect(within(mobile).getByRole('link', { name: '홈' })).toHaveAttribute('aria-current', 'page');
+    expect(within(mobile).getByRole('link', { name: '추가' })).toHaveAttribute('href', '/homes');
     expect(within(mobile).getByRole('link', { name: '채팅' })).toHaveAttribute('href', '/chats');
     expect(within(mobile).getByRole('link', { name: '마이' })).toHaveAttribute('href', '/my');
   });
