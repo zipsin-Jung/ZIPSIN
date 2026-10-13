@@ -69,3 +69,193 @@ $$;
 
 revoke all on function public.complete_usage_onboarding(text, text) from public, anon, authenticated;
 grant execute on function public.complete_usage_onboarding(text, text) to authenticated;
+
+alter table public.contracts add column idempotency_key uuid;
+alter table public.contracts add constraint contracts_creator_idempotency_unique unique (created_by, idempotency_key);
+create unique index contracts_one_active_per_home on public.contracts (home_id) where status = 'active';
+
+create table public.contract_plan_states (
+  id uuid primary key default gen_random_uuid(),
+  contract_id uuid not null,
+  home_id uuid not null,
+  subject_user_id uuid not null references auth.users(id) on delete restrict,
+  plan_status text not null default 'undecided'
+    check (plan_status in ('undecided', 'renewal_considering', 'move_out_preparing')),
+  updated_by uuid not null references auth.users(id) on delete restrict,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (contract_id, subject_user_id),
+  foreign key (contract_id, home_id) references public.contracts (id, home_id) on delete restrict
+);
+
+create table public.contract_plan_events (
+  id bigint generated always as identity primary key,
+  contract_id uuid not null,
+  home_id uuid not null,
+  subject_user_id uuid not null references auth.users(id) on delete restrict,
+  actor_user_id uuid not null references auth.users(id) on delete restrict,
+  previous_status text check (previous_status is null or previous_status in ('undecided', 'renewal_considering', 'move_out_preparing')),
+  next_status text not null check (next_status in ('undecided', 'renewal_considering', 'move_out_preparing')),
+  created_at timestamptz not null default now(),
+  foreign key (contract_id, home_id) references public.contracts (id, home_id) on delete restrict
+);
+
+alter table public.contract_plan_states enable row level security;
+alter table public.contract_plan_events enable row level security;
+
+create policy "contract_plan_states_select_authorized" on public.contract_plan_states
+  for select to authenticated using (public.can_access_contract(contract_id));
+create policy "contract_plan_events_select_authorized" on public.contract_plan_events
+  for select to authenticated using (public.can_access_contract(contract_id));
+
+revoke all on public.contract_plan_states from anon, authenticated;
+revoke all on public.contract_plan_events from anon, authenticated;
+grant select on public.contract_plan_states to authenticated;
+grant select on public.contract_plan_events to authenticated;
+
+create or replace function public.upsert_active_contract_for_home(
+  p_home_id uuid,
+  p_contract_kind text,
+  p_starts_on date,
+  p_ends_on date,
+  p_idempotency_key uuid
+) returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_user_id uuid := auth.uid();
+  v_home public.homes%rowtype;
+  v_contract public.contracts%rowtype;
+begin
+  if v_user_id is null then raise exception 'authentication_required'; end if;
+  if p_home_id is null or p_idempotency_key is null
+    or p_contract_kind not in ('owner_occupied', 'jeonse', 'monthly_rent', 'other')
+    or (p_starts_on is not null and p_ends_on is not null and p_ends_on < p_starts_on) then
+    raise exception 'invalid_input';
+  end if;
+
+  select * into v_home from public.homes home
+  where home.id = p_home_id and home.status = 'active' and home.office_id is not null
+  for share;
+  if not found then raise exception 'permission_denied'; end if;
+
+  perform 1 from public.office_memberships membership
+  where membership.office_id = v_home.office_id
+    and membership.user_id = v_user_id
+    and membership.office_role in ('principal_broker', 'associate_broker')
+    and membership.status = 'active'
+    and membership.ended_at is null
+    and membership.started_at <= now()
+  for share;
+  if not found then raise exception 'permission_denied'; end if;
+
+  select * into v_contract from public.contracts contract
+  where contract.home_id = p_home_id and contract.status = 'active'
+  for update;
+
+  if found then
+    if v_contract.contract_kind is distinct from p_contract_kind then raise exception 'conflict'; end if;
+    update public.contracts
+    set starts_on = p_starts_on, ends_on = p_ends_on, updated_at = now()
+    where id = v_contract.id
+    returning * into v_contract;
+  else
+    select * into v_contract from public.contracts contract
+    where contract.created_by = v_user_id and contract.idempotency_key = p_idempotency_key;
+    if found then
+      if v_contract.home_id is distinct from p_home_id or v_contract.contract_kind is distinct from p_contract_kind
+        or v_contract.starts_on is distinct from p_starts_on or v_contract.ends_on is distinct from p_ends_on then
+        raise exception 'conflict';
+      end if;
+      return v_contract.id;
+    end if;
+
+    insert into public.contracts (home_id, contract_kind, status, starts_on, ends_on, created_by, idempotency_key)
+    values (p_home_id, p_contract_kind, 'active', p_starts_on, p_ends_on, v_user_id, p_idempotency_key)
+    returning * into v_contract;
+  end if;
+
+  insert into public.access_audit_events (
+    actor_user_id, action, resource_type, resource_id, office_id, home_id, outcome, reason_code
+  ) values (
+    v_user_id, 'upsert', 'contract', v_contract.id, v_home.office_id, p_home_id, 'allowed', 'contract_dates_saved'
+  );
+  return v_contract.id;
+end;
+$$;
+
+create or replace function public.set_own_contract_plan(
+  p_contract_id uuid,
+  p_plan_status text
+) returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_user_id uuid := auth.uid();
+  v_contract public.contracts%rowtype;
+  v_previous_status text;
+  v_state_id uuid;
+begin
+  if v_user_id is null then raise exception 'authentication_required'; end if;
+  if p_contract_id is null or p_plan_status not in ('undecided', 'renewal_considering', 'move_out_preparing') then
+    raise exception 'invalid_input';
+  end if;
+
+  select * into v_contract from public.contracts contract
+  where contract.id = p_contract_id and contract.status = 'active'
+  for share;
+  if not found then raise exception 'relation_ended'; end if;
+
+  perform 1 from public.home_memberships membership
+  where membership.contract_id = v_contract.id
+    and membership.home_id = v_contract.home_id
+    and membership.user_id = auth.uid()
+    and membership.relationship_role in ('landlord', 'tenant')
+    and membership.access_scope = 'current_contract'
+    and membership.status = 'active'
+    and membership.ended_at is null
+    and membership.starts_at <= now()
+    and (membership.expires_at is null or membership.expires_at > now())
+  for share;
+  if not found then raise exception 'relation_ended'; end if;
+
+  select state.plan_status into v_previous_status
+  from public.contract_plan_states state
+  where state.contract_id = p_contract_id and state.subject_user_id = v_user_id
+  for update;
+
+  insert into public.contract_plan_states (
+    contract_id, home_id, subject_user_id, plan_status, updated_by
+  ) values (
+    v_contract.id, v_contract.home_id, v_user_id, p_plan_status, v_user_id
+  ) on conflict (contract_id, subject_user_id) do update set
+    plan_status = excluded.plan_status,
+    updated_by = excluded.updated_by,
+    updated_at = now()
+  returning id into v_state_id;
+
+  if v_previous_status is distinct from p_plan_status then
+    insert into public.contract_plan_events (
+      contract_id, home_id, subject_user_id, actor_user_id, previous_status, next_status
+    ) values (
+      v_contract.id, v_contract.home_id, v_user_id, v_user_id, v_previous_status, p_plan_status
+    );
+  end if;
+
+  insert into public.access_audit_events (
+    actor_user_id, action, resource_type, resource_id, home_id, outcome, reason_code
+  ) values (
+    v_user_id, 'update', 'contract_plan', v_state_id, v_contract.home_id, 'allowed', p_plan_status
+  );
+  return v_state_id;
+end;
+$$;
+
+revoke all on function public.upsert_active_contract_for_home(uuid, text, date, date, uuid) from public, anon, authenticated;
+revoke all on function public.set_own_contract_plan(uuid, text) from public, anon, authenticated;
+grant execute on function public.upsert_active_contract_for_home(uuid, text, date, date, uuid) to authenticated;
+grant execute on function public.set_own_contract_plan(uuid, text) to authenticated;
