@@ -2,6 +2,8 @@
 
 - 일자: 2026-10-13
 - 상태: 구현·로컬 검증 완료, Preview 및 사용자 검토 대기
+- 기능 커밋: `4650d82 feat: add global Kakao inquiry channel`
+- 승인 상태: 기능 방향 승인 완료, Production 배포 승인 대기
 
 ## 수행 순서
 
