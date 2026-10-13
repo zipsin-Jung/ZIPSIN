@@ -26,6 +26,7 @@
 - [집신체크 V1 구현계획](superpowers/plans/2026-10-13-zipsin-check-v1.md)
 - [집신체크 비교 중심 V2 제품·UX 설계](superpowers/specs/2026-10-13-zipsin-check-comparison-design.md)
 - [집신체크 단일계정·후보기록 이전 제품·UX·기술 설계](superpowers/specs/2026-10-13-zipsin-check-account-sync-design.md)
+- [집신체크 단일계정·후보기록 이전 구현계획](superpowers/plans/2026-10-13-zipsin-check-account-sync.md)
 - [집신체크 비교 중심 V2 구현계획](superpowers/plans/2026-10-13-zipsin-check-comparison-v2.md)
 - [에이전트 지침 설계](06-agent-instructions.md)
 - [에이전트 시스템과 스킬](07-agent-system-and-skills.md)

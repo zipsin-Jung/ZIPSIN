@@ -1,5 +1,7 @@
 # 작업 보고서
 
+- [2026-10-13 집신체크 단일계정·후보기록 이전 구현계획](2026-10-13-zipsin-check-account-sync-plan.md)
+
 - [2026-10-13 에이전트 시스템 확장·통합 프롬프트](2026-10-13-agent-system-expansion.md)
 - [2026-10-13 집신 초보자 제품·권한 학습자료](2026-10-13-beginner-product-permission-guide.md)
 - [2026-10-12 사무소 구성원 개인 계정 검토](2026-10-12-office-member-account-review.md)
