@@ -1,6 +1,6 @@
 import {expect, test} from '@playwright/test';
 
-for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}]) {
+for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}, {width: 768, height: 900}, {width: 1440, height: 1000}]) {
   test(`홈 최근 카드와 고정 메뉴가 ${viewport.width}px에서 겹치지 않는다`, async ({page}) => {
     await page.setViewportSize(viewport);
     await page.goto('/ck');
@@ -36,5 +36,49 @@ for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}]) {
       navigationBox!.y + navigationBox!.height <= kakaoBox!.y
     );
     expect(overlaps).toBe(false);
+  });
+}
+
+test('전체 목록의 빈 상태와 모션 감소 설정을 지원한다', async ({page}) => {
+  await page.emulateMedia({reducedMotion: 'reduce'});
+  await page.goto('/ck');
+  await page.getByRole('button', {name: '내가 본 집'}).click();
+  await expect(page.getByRole('heading', {name: '내가 본 집 0채'})).toBeVisible();
+  const first = page.getByRole('button', {name: '첫 집 등록하기'});
+  await expect(first).toBeVisible();
+  await first.hover();
+  expect(await first.evaluate(element => getComputedStyle(element).transform)).toBe('none');
+});
+
+for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}]) {
+  test(`전체 10채와 긴 별명이 ${viewport.width}px 고정 요소에 가리지 않는다`, async ({page}) => {
+    await page.setViewportSize(viewport);
+    await page.goto('/ck');
+    await page.evaluate(() => {
+      const candidates=Array.from({length:10},(_,index)=>({
+        id:`house-${index+1}`,alias:`아주 긴 사회초년생 첫 자취방 별명 ${index+1}`,
+        intakeMode:'simple',depth:'quick',listing:{location:`서울시 아주 긴 동네 이름 ${index+1}`},
+        terms:{},contact:{},commute:{},answers:{},archived:false,
+        createdAt:new Date(Date.UTC(2026,9,13,0,index)).toISOString(),
+        updatedAt:new Date(Date.UTC(2026,9,13,0,index)).toISOString(),
+      }));
+      localStorage.setItem('zipsin-check:v2',JSON.stringify({schemaVersion:2,candidates,compareCandidateIds:[]}));
+    });
+    await page.reload();
+    await page.getByRole('button',{name:'내가 본 집'}).click();
+    await expect(page.getByRole('heading',{name:'내가 본 집 10채'})).toBeVisible();
+    const last=page.getByRole('button',{name:'아주 긴 사회초년생 첫 자취방 별명 1 서울시 아주 긴 동네 이름 1',exact:true});
+    await last.scrollIntoViewIfNeeded();
+    const [lastBox,navigationBox,kakaoBox]=await Promise.all([
+      last.boundingBox(),
+      page.getByRole('navigation',{name:'집신체크 주요 메뉴'}).boundingBox(),
+      page.getByRole('link',{name:'집신 카카오톡 채널에서 문의하기'}).boundingBox(),
+    ]);
+    expect(lastBox).not.toBeNull();
+    expect(navigationBox).not.toBeNull();
+    expect(kakaoBox).not.toBeNull();
+    expect(lastBox!.y+lastBox!.height).toBeLessThanOrEqual(navigationBox!.y);
+    expect(lastBox!.y+lastBox!.height).toBeLessThanOrEqual(kakaoBox!.y);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth)).toBe(false);
   });
 }

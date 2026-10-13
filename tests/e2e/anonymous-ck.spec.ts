@@ -14,6 +14,8 @@ test('로그인 없이 첫 후보를 만들고 새로고침 뒤 이어서 본다
   await page.getByRole('button', {name: '물·배수 괜찮음'}).click();
 
   await page.reload();
+  await expect(page.getByRole('button', {name: '최근 집 열기: 성수역 햇살집'})).toBeVisible();
+  await page.getByRole('button', {name: '내가 본 집'}).click();
   await expect(page.getByRole('heading', {name: '내가 본 집 1채'})).toBeVisible();
   await page.getByRole('button', {name: '성수역 햇살집 위치 미입력'}).click();
   await expect(page.getByRole('heading', {name: '성수역 햇살집 체크'})).toBeVisible();
