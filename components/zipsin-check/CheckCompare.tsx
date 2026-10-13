@@ -16,6 +16,7 @@ export default function CheckCompare({candidates, selectedIds, onToggle, onBack,
   candidates: CandidateV2[]; selectedIds: string[]; onToggle: (id: string) => void; onBack: () => void;
   onEdit: (id: string) => void; onDelete: (id: string) => void; photoStore: PhotoStore;
 }) {
+  const [showTable, setShowTable] = useState(false);
   const selected = useMemo(() => selectedIds.map((id) => candidates.find((candidate) => candidate.id === id)).filter((candidate): candidate is CandidateV2 => !!candidate), [candidates, selectedIds]);
   const rows = buildHomeComparison(candidates, selectedIds);
   const [photos, setPhotos] = useState<Record<string, PhotoSummary>>({});
@@ -38,8 +39,8 @@ export default function CheckCompare({candidates, selectedIds, onToggle, onBack,
   return <main className={styles.compare}>
     <button type="button" className={styles.back} onClick={onBack}>← 목록으로</button>
     <header><p>2~3채를 같은 기준으로</p><h1>집 비교</h1><span>점수나 순위 없이 입력한 사실만 비교해요.</span></header>
-    <ComparePicker candidates={candidates} selectedIds={selectedIds} onToggle={onToggle}/>
-    {selected.length >= 2 && <div className={`${styles.tableWrap} ${compareStyles.table}`} style={{maxHeight:'72vh', overflow:'auto'}}><table>
+    <ComparePicker candidates={candidates} selectedIds={selectedIds} onToggle={(id) => { setShowTable(false); onToggle(id); }} onCompare={() => setShowTable(true)}/>
+    {showTable && selected.length >= 2 && <div className={`${styles.tableWrap} ${compareStyles.table}`} style={{maxHeight:'72vh', overflow:'auto'}}><table>
       <thead><tr><th scope="col">항목</th>{selected.map((candidate) => <th scope="col" key={candidate.id}><strong>{candidate.alias}</strong><small>{candidate.listing.location || '위치 미입력'}</small><button type="button" onClick={() => onEdit(candidate.id)} aria-label={`${candidate.alias} 수정`}>수정</button></th>)}</tr></thead>
       <tbody>
         <tr><th scope="row">대표 사진</th>{selected.map((candidate) => <td key={candidate.id}>{photos[candidate.id]?.previews[0] ? <img className={compareStyles.preview} src={photos[candidate.id].previews[0]} alt={`${candidate.alias} 대표 현장 사진`}/> : <span>없음</span>}</td>)}</tr>
@@ -51,6 +52,6 @@ export default function CheckCompare({candidates, selectedIds, onToggle, onBack,
         <tr><th scope="row">관리</th>{selected.map((candidate) => <td key={candidate.id}><button type="button" className={compareStyles.delete} onClick={() => onDelete(candidate.id)}>{candidate.alias} 영구 삭제</button></td>)}</tr>
       </tbody>
     </table></div>}
-    <a className={styles.signupCta} href={`/ck/transfer?candidates=${encodeURIComponent(selectedIds.join(','))}`}><strong>집신에 저장하기</strong><span>선택한 집과 사진을 확인한 뒤 내 계정에 옮길 수 있어요.</span></a>
+    {showTable && <a className={styles.signupCta} href={`/ck/transfer?candidates=${encodeURIComponent(selectedIds.join(','))}`}><strong>집신에 저장하기</strong><span>선택한 집과 사진을 확인한 뒤 내 계정에 옮길 수 있어요.</span></a>}
   </main>;
 }

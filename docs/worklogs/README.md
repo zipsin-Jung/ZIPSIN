@@ -4,6 +4,7 @@
 - [2026-10-13 집신체크 단일계정·후보기록 이전 구현](2026-10-13-zipsin-check-account-sync-implementation.md)
 - [2026-10-13 집신체크 Preview 브라우저 검수](2026-10-13-zipsin-check-preview-browser-verification.md)
 - [2026-10-13 집신체크 이동·가시성 개선](2026-10-13-zipsin-check-navigation-usability.md)
+- [2026-10-13 집신체크 별명·수동 비교 선택](2026-10-13-zipsin-check-alias-manual-comparison.md)
 
 - [2026-10-13 에이전트 시스템 확장·통합 프롬프트](2026-10-13-agent-system-expansion.md)
 - [2026-10-13 집신 초보자 제품·권한 학습자료](2026-10-13-beginner-product-permission-guide.md)
