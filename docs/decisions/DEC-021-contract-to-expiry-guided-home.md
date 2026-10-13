@@ -37,4 +37,6 @@
 
 ## 승인 후 후속
 
-승인된 명세를 기준으로 `docs/superpowers/plans/2026-10-13-contract-to-expiry-roadmap.md`와 단계별 상세 구현 계획을 작성하고 검토 후 실행한다.
+승인된 명세를 기준으로 `docs/superpowers/plans/2026-10-13-contract-to-expiry-roadmap.md`와 단계별 상세 구현 계획을 작성했다.
+
+1단계는 2026-10-13 기능 브랜치에 구현했다. 사용 목적과 권한 분리, 계약 날짜 보안 RPC, 사용자별 만기 계획과 감사 이벤트, D-day, 최대 3개 다음 행동, 한 집·여러 집 홈이 포함된다. OCR·PDF·외부 통지와 개인 집 자동 연결은 후속 단계로 유지한다.
