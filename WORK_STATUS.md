@@ -276,3 +276,10 @@
 - 로컬 Docker/Postgres와 실제 Supabase/OAuth 환경값이 없어 pgTAP RLS, 실제 로그인, 다른 기기 서버 복원은 아직 실행하지 못했습니다. 따라서 Production 배포 승인을 요청할 단계는 아닙니다.
 - 앱 내 실제 브라우저에서 `/ck` 진입과 필수 5개 체크 화면을 확인했습니다.
 - 독립 검수에서 발견한 서버 수량 조작, 사진 부분 실패 중단, 재시도 소유권, Storage 경로 문제를 수정했습니다.
+
+# 2026-10-13 Preview 배포 검수
+
+- Vercel Preview는 `Ready`이며 `/ck` 진입, 필수 체크, 메모, 새로고침 복원, 이전 미리보기, 로그인 복귀를 실제 Preview 주소에서 확인했습니다.
+- Vercel Preview에 Supabase 환경변수가 없어 Google·Kakao·Naver는 `준비 중`으로 안전하게 표시됩니다.
+- Preview 전용 Supabase 프로젝트가 필요하지만 검수 시점 Supabase 기술 문제 안내와 새 프로젝트 폼 로드 실패로 연결을 완료하지 못했습니다.
+- Production·DNS·기존 Supabase 프로젝트는 변경하지 않았습니다.

@@ -11,6 +11,8 @@
 
 `codex/zipsin-check-comparison-v2`에 단일계정·후보기록 이전 코드와 Preview 준비 문서가 있습니다. 130개 자동검사·빌드·Chromium E2E·앱 내 브라우저 필수 5개 화면 검수는 통과했지만 실제 Supabase 프로젝트, RLS pgTAP, OAuth 성공·취소, 다른 기기 복원은 미검수입니다. 다음 작업은 Preview Supabase 환경을 연결하고 `docs/deployment/zipsin-check-preview-runbook.md` 순서대로 통합검수하는 것입니다. Production·DNS는 사용자 G6 승인 전 변경하지 않습니다.
 
+Vercel Preview 주소는 `https://zipsin-git-codex-zipsin-check-comparison-v2-zipsin-jung.vercel.app`이며 실제 브라우저 현장 흐름은 통과했습니다. Preview Supabase 연결은 환경변수 미설정과 Supabase 대시보드의 기술 문제로 차단되었습니다. 기존 프로젝트를 임의로 사용하지 말고 Preview 전용 프로젝트를 생성한 뒤 migration·Vercel env·OAuth 순서로 이어갑니다.
+
 ## 중요한 구분
 작업 파일을 옮기면 이어 작업할 수 있습니다. 계정 간 사용량이나 대화 맥락이 자동으로 이전된다는 뜻은 아닙니다.
 사용자의 Mac 바탕화면에 직접 파일을 저장한 적은 없습니다. 압축본을 다운로드하고 바탕화면에 압축을 풀면 실제 로컬 프로젝트가 됩니다.
