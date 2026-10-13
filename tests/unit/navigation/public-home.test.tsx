@@ -48,4 +48,22 @@ describe('PublicHome', () => {
     expect(contract).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByRole('tabpanel')).toHaveTextContent('계약 만기일');
   });
+
+  it('TEST-RC-PUB-005 모든 사례를 좌우 키로 순환하며 해당 증거 화면을 보여준다', async () => {
+    const user = userEvent.setup();
+    render(<PublicHome />);
+    const expected = ['장기수선충당금 관련 자료', '거실 바닥 상태 비교', '임대차계약', '이 집의 다음 일', '입주부터 퇴거까지'];
+    let selected = screen.getByRole('tab', { name: /에어컨이 고장 났을 때/ });
+    selected.focus();
+    for (const text of expected) {
+      await user.keyboard('{ArrowRight}');
+      selected = screen.getByRole('tab', { selected: true });
+      expect(selected).toHaveFocus();
+      expect(screen.getByRole('tabpanel')).toHaveTextContent(text);
+    }
+    await user.keyboard('{ArrowRight}');
+    expect(screen.getByRole('tabpanel')).toHaveTextContent('에어컨 설치·수리 기록');
+    await user.keyboard('{ArrowLeft}');
+    expect(screen.getByRole('tabpanel')).toHaveTextContent('입주부터 퇴거까지');
+  });
 });

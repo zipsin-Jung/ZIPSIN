@@ -7,8 +7,10 @@ const previewPassword = process.env.PREVIEW_TEST_PASSWORD;
 test.describe('current Preview auth roundtrip', () => {
   test.skip(!previewBaseUrl, 'PREVIEW_BASE_URL is required for deployed verification');
 
-  test('routes the service root to login', async ({ page }) => {
+  test('shows the public product home and opens login', async ({ page }) => {
     await page.goto(new URL('/', previewBaseUrl).toString());
+    await expect(page.getByRole('heading', { level: 1, name: /집에 관한 일/ })).toBeVisible();
+    await page.getByRole('link', { name: '로그인' }).first().click();
     await expect(page).toHaveURL(/\/login$/);
     await expect(page.getByRole('heading', { name: '집신 시작하기' })).toBeVisible();
   });
