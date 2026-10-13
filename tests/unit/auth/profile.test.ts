@@ -9,6 +9,7 @@ const completeProfile: OnboardingProfile = {
   acceptedTermsVersion: '2026-10-02',
   acceptedPrivacyVersion: '2026-10-02',
   confirmedAgeOver14: true,
+  usagePurpose: 'landlord',
   primaryRole: 'landlord',
 };
 
@@ -18,12 +19,18 @@ describe('isOnboardingComplete', () => {
     ['이용약관', { acceptedTermsVersion: null }],
     ['개인정보 동의', { acceptedPrivacyVersion: null }],
     ['만 14세 확인', { confirmedAgeOver14: false }],
-    ['역할', { primaryRole: null }],
+    ['사용 목적', { usagePurpose: null }],
   ] as const)('%s가 없으면 완료가 아니다', (_label, missing) => {
     expect(isOnboardingComplete({ ...completeProfile, ...missing })).toBe(false);
   });
 
-  it('전화 인증·필수 동의·역할이 모두 있으면 완료다', () => {
+  it('전화 인증·필수 동의·사용 목적이 모두 있으면 완료다', () => {
     expect(isOnboardingComplete(completeProfile)).toBe(true);
+  });
+
+  it('TEST-ZH-LIFE-001-E 관리기타는 권한 역할 없이 완료하고 중개사는 세부 역할이 필요하다', () => {
+    expect(isOnboardingComplete({ ...completeProfile, usagePurpose: 'management_other', primaryRole: null })).toBe(true);
+    expect(isOnboardingComplete({ ...completeProfile, usagePurpose: 'broker', primaryRole: null })).toBe(false);
+    expect(isOnboardingComplete({ ...completeProfile, usagePurpose: 'broker', primaryRole: 'assistant' })).toBe(true);
   });
 });

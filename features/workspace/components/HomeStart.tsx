@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-type PrimaryRole = 'principal_broker' | 'assistant' | 'landlord' | 'tenant';
+type PrimaryRole = 'principal_broker' | 'associate_broker' | 'assistant' | 'landlord' | 'tenant';
 type OfficeSummary = { id: string; name: string; canRegisterHome?: boolean };
 type RecentHome = { id: string; label: string; address: string };
 type NextTask = { id: string; homeId: string; title: string; dueAt: string | null };
@@ -41,7 +41,7 @@ export function HomeStart({
   unreadChatCount = 0,
   nextTask = null,
 }: {
-  primaryRole: PrimaryRole;
+  primaryRole: PrimaryRole | null;
   offices: OfficeSummary[];
   createOfficeAction?: (formData: FormData) => void | Promise<void>;
   recentHomes?: RecentHome[];

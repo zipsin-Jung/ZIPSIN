@@ -16,7 +16,7 @@ export default async function MyPage({ searchParams }: Props) {
   const params = await searchParams;
   const { supabase, user } = await requireOnboardingComplete();
   const [{ data: profile }, { data: role }] = await Promise.all([
-    supabase.from('profiles').select('display_name').eq('user_id', user.id).maybeSingle(),
+    supabase.from('profiles').select('display_name, usage_purpose').eq('user_id', user.id).maybeSingle(),
     supabase.from('user_roles').select('primary_role').eq('user_id', user.id).maybeSingle(),
   ]);
   const displayName = profile?.display_name?.trim() || '사용자';
@@ -30,7 +30,7 @@ export default async function MyPage({ searchParams }: Props) {
       </h1>
       {params.error === 'logout_failed' && <p className="mt-6 rounded-2xl bg-red-50 p-4 font-semibold text-red-800" role="alert">로그아웃하지 못했습니다. 잠시 후 다시 시도해 주세요.</p>}
       <section className="app-panel mt-8 rounded-[28px] p-7">
-        <p className="text-sm text-[#607785]">현재 역할</p>
+        <p className="text-sm text-[#607785]">현재 사용 목적과 역할</p>
         <p className="mt-2 text-xl font-extrabold text-[#102a43]">{roleLabel}</p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link className="app-primary rounded-2xl px-5 py-3 text-sm font-bold text-white" href="/homes">

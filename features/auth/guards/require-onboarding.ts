@@ -13,7 +13,8 @@ export function evaluateOnboarding(state: Evaluation): string | null {
     !state.acceptedPrivacyVersion ||
     !state.confirmedAgeOver14
   ) return '/signup/verify';
-  if (!state.primaryRole) return '/onboarding/role';
+  if (!state.usagePurpose) return '/onboarding/role';
+  if (state.usagePurpose === 'broker' && !state.primaryRole) return '/onboarding/role';
   return isOnboardingComplete(state) ? null : '/signup/verify';
 }
 
@@ -28,7 +29,7 @@ export async function requireUser() {
 export async function requireOnboardingComplete() {
   const { supabase, user } = await requireUser();
   const [{ data: profile }, { data: consents }, { data: role }] = await Promise.all([
-    supabase.from('profiles').select('phone_verified_at').eq('user_id', user.id).maybeSingle(),
+    supabase.from('profiles').select('phone_verified_at, usage_purpose').eq('user_id', user.id).maybeSingle(),
     supabase.from('consent_acceptances').select('document_type, document_version, accepted').eq('user_id', user.id),
     supabase.from('user_roles').select('primary_role').eq('user_id', user.id).maybeSingle(),
   ]);
@@ -41,9 +42,10 @@ export async function requireOnboardingComplete() {
     acceptedTermsVersion: accepted.get('terms') ?? null,
     acceptedPrivacyVersion: accepted.get('privacy') ?? null,
     confirmedAgeOver14: accepted.has('age_over_14'),
+    usagePurpose: profile?.usage_purpose ?? null,
     primaryRole: role?.primary_role ?? null,
   });
   if (destination) redirect(destination);
-  return { supabase, user, primaryRole: role!.primary_role };
+  return { supabase, user, usagePurpose: profile!.usage_purpose, primaryRole: role?.primary_role ?? null };
 }
 /* v8 ignore stop */

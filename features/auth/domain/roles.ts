@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import type { PrimaryRole } from './profile';
 
-const roleSchema = z.enum(['principal_broker', 'assistant', 'landlord', 'tenant']);
+const roleSchema = z.enum(['principal_broker', 'associate_broker', 'assistant', 'landlord', 'tenant']);
 
 export const ROLE_OPTIONS: ReadonlyArray<{
   id: PrimaryRole;

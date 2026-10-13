@@ -95,13 +95,13 @@
 
 **Produces:** `UsagePurpose`, `BrokerRole`, `parseUsageSelection()`, 목적을 포함한 `OnboardingProfile`, 목적·세부역할을 원자적으로 저장하는 `complete_usage_onboarding` RPC
 
-- [ ] **Step 1: 실패 테스트 작성** — 네 목적, broker 세부 역할 필수, management_other 무권한 완료, 목적 선택만으로 집 접근 SQL이 생기지 않음을 `TEST-ZH-LIFE-001-A~E`로 작성한다.
-- [ ] **Step 2: 실패 확인** — 목적 모듈·컬럼·RPC가 없어 테스트가 FAIL하는지 확인한다.
-- [ ] **Step 3: 최소 마이그레이션 구현** — `profiles.usage_purpose`, `associate_broker` 역할 허용, 기존 사용자 안전 백필, 조합 검증 RPC를 한 트랜잭션에 구현한다.
-- [ ] **Step 4: 도메인·가드 구현** — 온보딩 완료 조건을 `휴대전화+필수동의+목적+(broker면 세부 역할)`로 계산하고 `primaryRole`은 권한 판단용 보조 값으로 유지한다.
-- [ ] **Step 5: 목적 선택 UI 구현** — 네 카드, 공인중개사 세부 선택, `선택만으로 기록이 열리지 않음` 안내, 관리·기타 초대 안내를 모바일·PC 공통 흐름으로 만든다.
-- [ ] **Step 6: 기존 경계 회귀 확인** — 대표만 사무소 생성 가능하고 다른 목적·세부 역할은 우회할 수 없는지 확인한다.
-- [ ] **Step 7: 검사·커밋** — 관련 단위·통합 테스트와 `git diff --check`; `feat: separate usage purpose from access roles`.
+- [x] **Step 1: 실패 테스트 작성** — 네 목적, broker 세부 역할 필수, management_other 무권한 완료, 목적 선택만으로 집 접근 SQL이 생기지 않음을 `TEST-ZH-LIFE-001-A~E`로 작성한다.
+- [x] **Step 2: 실패 확인** — 목적 모듈·컬럼·RPC가 없어 테스트가 FAIL하는지 확인한다.
+- [x] **Step 3: 최소 마이그레이션 구현** — `profiles.usage_purpose`, `associate_broker` 역할 허용, 기존 사용자 안전 백필, 조합 검증 RPC를 한 트랜잭션에 구현한다.
+- [x] **Step 4: 도메인·가드 구현** — 온보딩 완료 조건을 `휴대전화+필수동의+목적+(broker면 세부 역할)`로 계산하고 `primaryRole`은 권한 판단용 보조 값으로 유지한다.
+- [x] **Step 5: 목적 선택 UI 구현** — 네 카드, 공인중개사 세부 선택, `선택만으로 기록이 열리지 않음` 안내, 관리·기타 초대 안내를 모바일·PC 공통 흐름으로 만든다.
+- [x] **Step 6: 기존 경계 회귀 확인** — 대표만 사무소 생성 가능하고 다른 목적·세부 역할은 우회할 수 없는지 확인한다.
+- [x] **Step 7: 검사·커밋** — 관련 단위·통합 테스트와 `git diff --check`; `feat: separate usage purpose from access roles`.
 
 ### Task 2: 계약 날짜와 만기 계획 저장 경계
 
