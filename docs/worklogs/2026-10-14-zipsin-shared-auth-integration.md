@@ -40,3 +40,12 @@
 - 첫 계정 생성 화면의 중복 연령 체크를 제거했다.
 - 서버 전용 가입 설정 누락 예외를 잡아 검은 오류 화면 대신 `/signup?error=service_unavailable`로 복귀시킨다.
 - 전체 525개 자동 테스트, 커버리지 문장 92.16%·분기 84.92%·함수 92.05%·줄 96.11%, 타입검사, Production build, 회원가입 Chromium 10개 시나리오를 통과했다.
+
+## 실제 운영 연결 검수
+
+- GitHub 원격 브랜치 `codex/zipsin-shared-auth-integration`의 최신 커밋이 `a3f51ae`인 것을 확인했다.
+- GitHub의 Vercel 배포 상태는 Preview 성공이지만, Preview 주소는 Vercel Authentication의 302 로그인 보호가 적용되어 일반 사용자가 회원가입 화면에 접근할 수 없다.
+- `https://zipsin.net/signup`과 `https://zipsin.vercel.app/signup`은 모두 HTTP 404를 반환했다. 운영 `main`은 회원가입 통합 브랜치를 아직 포함하지 않는다.
+- 따라서 현재 일반 사용자가 운영 주소에서 실제 회원가입을 완료하고 Supabase `Authentication > Users`에 등록되는 시나리오는 검수할 수 없으며, 광고 유입을 열 수 있는 상태가 아니다.
+- 이 작업 환경에는 Vercel·Supabase 관리자 CLI 세션과 운영 환경값이 없어 Preview DB의 최신 migration 적용 여부와 실제 Users 생성 여부를 확인하거나 변경하지 않았다.
+- 다음 필수 순서는 Preview 보호 해제 또는 검수자 접근 허용 → Vercel Preview 환경값 확인 → Supabase migration 확인 → 테스트 계정 가입 → Auth Users와 관련 테이블 기록 확인 → 사용자 승인이다.

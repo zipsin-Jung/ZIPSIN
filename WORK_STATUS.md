@@ -1,5 +1,13 @@
 # 집신 작업 현황
 
+## 2026-10-14 통합 회원가입 실제 운영 연결 검수
+
+- 회원가입 통합 최신 커밋 `a3f51ae`는 GitHub와 Vercel Preview에 존재한다.
+- Preview는 Vercel 로그인 보호로 일반 사용자 접근이 막혀 있다.
+- 운영 `https://zipsin.net/signup`과 `https://zipsin.vercel.app/signup`은 HTTP 404이므로 현재 운영 회원가입은 불가능하다.
+- 운영 배포와 Supabase 실가입 검증은 완료되지 않았다. Preview 접근 허용, 환경값·migration 확인, 테스트 가입과 Auth Users 확인이 남아 있다.
+- 사용자 승인 전 Production은 변경하지 않았다.
+
 ## 2026-10-14 집신·집신체크 통합 인증 재설계
 
 - 사용자는 `ck.zipsin.net`과 `zipsin.net`이 같은 집신 회원가입·로그인·간편로그인·사용자 ID·세션을 사용하는 방향을 승인했습니다.
