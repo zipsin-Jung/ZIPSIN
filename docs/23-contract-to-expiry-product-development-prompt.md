@@ -1,7 +1,7 @@
 # 집신 계약 후부터 만기까지 제품 개발 프롬프트
 
 - 작성일: 2026-10-13
-- 상태: 사용자 검토·승인 대기
+- 상태: 2026-10-13 사용자 개발 진행 승인
 - 목적: 집신을 기능 모음이 아니라 `계약 후부터 만기·연장·퇴거까지 필요한 기록과 다음 행동을 알려주는 집 홈`으로 구현한다.
 - 선행 시각 프롬프트: `docs/22-authenticated-home-development-prompt.md`
 - 제품 명세: `docs/superpowers/specs/2026-10-13-contract-to-expiry-home-design.md`

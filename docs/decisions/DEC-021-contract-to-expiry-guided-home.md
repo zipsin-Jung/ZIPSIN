@@ -1,7 +1,7 @@
 # DEC-021 계약 후부터 만기까지 안내하는 집 홈
 
 - 날짜: 2026-10-13
-- 상태: 제안 — 사용자 승인 대기
+- 상태: 승인 — 2026-10-13
 
 ## 결정 제안
 
@@ -37,4 +37,4 @@
 
 ## 승인 후 후속
 
-`docs/superpowers/specs/2026-10-13-contract-to-expiry-home-design.md` 승인 후 구현 계획을 별도로 작성한다.
+승인된 명세를 기준으로 `docs/superpowers/plans/2026-10-13-contract-to-expiry-roadmap.md`와 단계별 상세 구현 계획을 작성하고 검토 후 실행한다.
