@@ -15,7 +15,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./vitest.setup.ts'],
-    include: ['tests/unit/**/*.test.{ts,tsx}', 'tests/integration/**/*.test.{ts,tsx}'],
+    include: ['tests/unit/**/*.test.{ts,tsx}', 'tests/integration/**/*.test.{ts,tsx}', 'tests/stress/**/*.test.{ts,tsx}'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json-summary'],
@@ -36,6 +36,9 @@ export default defineConfig({
         'features/auth/components/AccountRecoveryForm.tsx',
         'features/auth/components/VerificationForm.tsx',
         'features/auth/guards/**/*.{ts,tsx}',
+        'features/chat/domain/**/*.{ts,tsx}',
+        'features/chat/schemas/**/*.{ts,tsx}',
+        'features/chat/services/**/*.{ts,tsx}',
         'lib/env/**/*.{ts,tsx}',
       ],
       thresholds: {

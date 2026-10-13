@@ -118,11 +118,11 @@
 - Produces RPCs: `send_chat_message(p_room_id,p_body,p_idempotency_key)`, `mark_chat_read(p_room_id,p_last_read_message_id)`
 - Produces functions: `can_access_chat_room`, `can_send_chat_message`
 
-- [ ] 비멤버·종료 멤버·공백·길이 초과·중복 20회·읽음 역행·알림 개인정보 비저장 테스트를 먼저 작성한다.
-- [ ] 실패 원인이 미구현 스키마와 RPC임을 확인한다.
-- [ ] 직접 테이블 쓰기를 막고 서버가 발신자와 방 관계를 결정하는 원자 RPC를 구현한다.
-- [ ] 최근 메시지 페이지네이션과 사용자별 마지막 읽음 위치를 구현한다.
-- [ ] 전체 테스트 후 `feat: add secure chat core`로 커밋한다.
+- [x] 비멤버·종료 멤버·공백·길이 초과·중복 20회·읽음 역행·알림 개인정보 비저장 테스트를 먼저 작성한다.
+- [x] 실패 원인이 미구현 스키마와 RPC임을 확인한다.
+- [x] 직접 테이블 쓰기를 막고 서버가 발신자와 방 관계를 결정하는 원자 RPC를 구현한다.
+- [x] 최근 메시지 페이지네이션과 사용자별 마지막 읽음 위치를 구현한다.
+- [x] 전체 테스트 후 `feat: add secure chat core`로 커밋한다.
 
 ### Task 5: 여섯 종류의 방과 초대
 

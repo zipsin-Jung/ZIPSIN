@@ -63,6 +63,36 @@ export type Database = {
         Update: { status?: 'pending' | 'ready' | 'failed' | 'quarantined'; checksum_sha256?: string | null };
         Relationships: [];
       };
+      chat_rooms: {
+        Row: { id: string; room_type: string; title: string | null; office_id: string | null; home_id: string | null; contract_id: string | null; created_by: string; status: 'active' | 'closed'; created_at: string; closed_at: string | null };
+        Insert: { id?: string; room_type: string; title?: string | null; office_id?: string | null; home_id?: string | null; contract_id?: string | null; created_by: string; status?: 'active' | 'closed'; created_at?: string; closed_at?: string | null };
+        Update: { title?: string | null; status?: 'active' | 'closed'; closed_at?: string | null };
+        Relationships: [];
+      };
+      chat_room_memberships: {
+        Row: { id: string; room_id: string; user_id: string; membership_role: 'owner' | 'member'; status: 'active' | 'ended'; joined_at: string; ended_at: string | null };
+        Insert: { id?: string; room_id: string; user_id: string; membership_role?: 'owner' | 'member'; status?: 'active' | 'ended'; joined_at?: string; ended_at?: string | null };
+        Update: { status?: 'active' | 'ended'; ended_at?: string | null };
+        Relationships: [];
+      };
+      chat_messages: {
+        Row: { id: number; room_id: string; sender_user_id: string; body: string; idempotency_key: string; created_at: string };
+        Insert: { id?: never; room_id: string; sender_user_id: string; body: string; idempotency_key: string; created_at?: string };
+        Update: never;
+        Relationships: [];
+      };
+      chat_read_states: {
+        Row: { room_id: string; user_id: string; last_read_message_id: number; read_at: string };
+        Insert: { room_id: string; user_id: string; last_read_message_id: number; read_at?: string };
+        Update: { last_read_message_id?: number; read_at?: string };
+        Relationships: [];
+      };
+      notifications: {
+        Row: { id: number; user_id: string; notification_kind: 'chat_message'; room_id: string; message_id: number; created_at: string; read_at: string | null };
+        Insert: { id?: never; user_id: string; notification_kind: 'chat_message'; room_id: string; message_id: number; created_at?: string; read_at?: string | null };
+        Update: { read_at?: string | null };
+        Relationships: [];
+      };
       access_audit_events: {
         Row: { id: number; actor_user_id: string | null; action: string; resource_type: string; resource_id: string | null; office_id: string | null; home_id: string | null; outcome: 'allowed' | 'denied'; reason_code: string; created_at: string };
         Insert: { actor_user_id?: string | null; action: string; resource_type: string; resource_id?: string | null; office_id?: string | null; home_id?: string | null; outcome: 'allowed' | 'denied'; reason_code: string; created_at?: string };
@@ -194,6 +224,10 @@ export type Database = {
       accept_relationship_invitation: { Args: { p_token: string }; Returns: string };
       preview_relationship_invitation: { Args: { p_token: string }; Returns: Json };
       end_home_relationship: { Args: { p_membership_id: string }; Returns: undefined };
+      can_access_chat_room: { Args: { p_room_id: string }; Returns: boolean };
+      can_send_chat_message: { Args: { p_room_id: string }; Returns: boolean };
+      send_chat_message: { Args: { p_room_id: string; p_body: string; p_idempotency_key: string }; Returns: number };
+      mark_chat_read: { Args: { p_room_id: string; p_last_read_message_id: number }; Returns: undefined };
       assign_office_member_to_home: { Args: { p_office_id: string; p_home_id: string; p_user_id: string }; Returns: string };
       end_office_home_assignment: { Args: { p_assignment_id: string }; Returns: undefined };
       create_home_record: { Args: { p_home_id: string; p_office_id: string | null; p_contract_id: string | null; p_space: string; p_kind: string; p_title: string; p_body: string; p_idempotency_key: string; p_task_due_at: string | null; p_task_assigned_to: string | null }; Returns: string };
