@@ -87,6 +87,12 @@ export type Database = {
         Update: { last_read_message_id?: number; read_at?: string };
         Relationships: [];
       };
+      chat_attachments: {
+        Row: { id: string; room_id: string; message_id: number; storage_path: string; original_name: string; media_type: string; byte_size: number; status: 'pending' | 'ready' | 'failed'; created_by: string; upload_expires_at: string; created_at: string; completed_at: string | null };
+        Insert: { id?: string; room_id: string; message_id: number; storage_path: string; original_name: string; media_type: string; byte_size: number; status?: 'pending' | 'ready' | 'failed'; created_by: string; upload_expires_at?: string; created_at?: string; completed_at?: string | null };
+        Update: { status?: 'pending' | 'ready' | 'failed'; completed_at?: string | null };
+        Relationships: [];
+      };
       notifications: {
         Row: { id: number; user_id: string; notification_kind: 'chat_message'; room_id: string; message_id: number; created_at: string; read_at: string | null };
         Insert: { id?: never; user_id: string; notification_kind: 'chat_message'; room_id: string; message_id: number; created_at?: string; read_at?: string | null };
@@ -234,6 +240,9 @@ export type Database = {
       create_relationship_room: { Args: { p_room_type: string; p_office_id: string | null; p_home_id: string | null; p_contract_id: string | null; p_relationship_id: string | null }; Returns: string };
       invite_chat_member: { Args: { p_room_id: string; p_user_id: string }; Returns: string };
       leave_chat_room: { Args: { p_room_id: string }; Returns: undefined };
+      prepare_chat_attachment_upload: { Args: { p_room_id: string; p_message_id: number; p_original_name: string; p_media_type: string; p_byte_size: number }; Returns: Json };
+      complete_chat_attachment_upload: { Args: { p_attachment_id: string }; Returns: undefined };
+      fail_chat_attachment_upload: { Args: { p_attachment_id: string }; Returns: undefined };
       assign_office_member_to_home: { Args: { p_office_id: string; p_home_id: string; p_user_id: string }; Returns: string };
       end_office_home_assignment: { Args: { p_assignment_id: string }; Returns: undefined };
       create_home_record: { Args: { p_home_id: string; p_office_id: string | null; p_contract_id: string | null; p_space: string; p_kind: string; p_title: string; p_body: string; p_idempotency_key: string; p_task_due_at: string | null; p_task_assigned_to: string | null }; Returns: string };

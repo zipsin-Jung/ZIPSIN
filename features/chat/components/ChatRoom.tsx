@@ -1,0 +1,19 @@
+'use client';
+
+import { useRoomStream } from '@/features/chat/hooks/use-room-stream';
+import { MessageComposer } from '@/features/chat/components/MessageComposer';
+import type { ChatMessagePageItem } from '@/features/chat/domain/room';
+
+type Attachment = { id: string; message_id: number; original_name: string; media_type: string };
+
+export function ChatRoom({ roomId, currentUserId, active, initialMessages, attachments }: { roomId: string; currentUserId: string; active: boolean; initialMessages: ChatMessagePageItem[]; attachments: Attachment[] }) {
+  const { messages, connection } = useRoomStream(roomId, initialMessages);
+  const byMessage = new Map<number, Attachment[]>();
+  for (const attachment of attachments) byMessage.set(attachment.message_id, [...(byMessage.get(attachment.message_id) ?? []), attachment]);
+  return <section className="app-panel mx-auto flex min-h-[calc(100dvh-150px)] max-w-4xl flex-col overflow-hidden rounded-none sm:min-h-[680px] sm:rounded-[28px]"><div className="flex items-center justify-between border-b border-[#deeaeb] px-4 py-3 sm:px-6"><div><strong className="text-[#102a43]">대화</strong><p className="mt-0.5 text-xs text-[#708793]">{connection === 'connected' ? '연결됨' : connection === 'offline' ? '오프라인' : '다시 연결 중…'}</p></div></div><div aria-live="polite" className="flex flex-1 flex-col-reverse gap-3 overflow-y-auto bg-[#f4f8f7] p-4 sm:p-6">{messages.length ? messages.map((message) => { const mine = message.sender_user_id === currentUserId; return <article key={message.id} className={`max-w-[85%] ${mine ? 'self-end' : 'self-start'}`}><p className={`mb-1 text-xs font-bold ${mine ? 'text-right' : ''}`}>{mine ? '나' : '참여자'}</p><div className={`rounded-2xl px-4 py-3 leading-6 shadow-sm ${mine ? 'rounded-tr-md bg-[#0b695c] text-white' : 'rounded-tl-md bg-white text-[#183746]'}`}><p className="whitespace-pre-wrap break-words">{message.body}</p>{(byMessage.get(message.id) ?? []).map((attachment) => <AttachmentButton key={attachment.id} attachment={attachment} />)}</div></article>; }) : <div className="m-auto text-center text-[#708793]"><p className="text-3xl" aria-hidden>💬</p><p className="mt-3 font-semibold">첫 메시지를 남겨 보세요.</p></div>}</div>{active ? <MessageComposer roomId={roomId} online={connection !== 'offline'} /> : <div className="border-t border-[#deeaeb] bg-white p-5 text-center font-semibold text-[#607785]">이 대화의 참여 권한이 종료되었습니다.</div>}</section>;
+}
+
+function AttachmentButton({ attachment }: { attachment: Attachment }) {
+  async function open() { const response = await fetch(`/api/chat-attachments/${attachment.id}/url`); if (!response.ok) return; const data = await response.json() as { url?: string }; if (data.url) window.open(data.url, '_blank', 'noopener,noreferrer'); }
+  return <button type="button" onClick={open} className="mt-3 block max-w-full truncate rounded-xl border border-current/20 px-3 py-2 text-sm font-bold underline-offset-2 hover:underline">{attachment.media_type === 'application/pdf' ? 'PDF' : '사진'} · {attachment.original_name}</button>;
+}
