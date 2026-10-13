@@ -4,6 +4,7 @@
 
 ## 주요 문서
 
+- [유료 출시 완성 통합 프롬프트](21-zipsin-paid-launch-completion-master-prompt.md)
 - [다른 Codex용 종합 인수인계 프롬프트](13-codex-handoff-master-prompt.md)
 - [작업 운영 규칙](00-working-rules.md)
 - [제품 개요](01-product-brief.md)

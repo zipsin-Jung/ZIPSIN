@@ -1,5 +1,6 @@
 # 대화 기록
 
+- [2026-10-13 유료 출시 완성 프롬프트](2026-10-13-paid-launch-completion-master-prompt.md)
 - [2026-10-08 집 키·홈 화면 방향](2026-10-08-home-key-and-dashboard-direction.md)
 - [2026-10-02 집신 사업계획서](2026-10-02-business-plan.md)
 - [2026-10-02 공개형 서비스 V1](2026-10-02-public-service-v1.md)

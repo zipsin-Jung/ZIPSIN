@@ -1,5 +1,6 @@
 # 결정 기록
 
+- [2026-10-13: 유료 출시 범위와 완료 판정 기준](2026-10-13-paid-launch-scope-and-completion-gate.md)
 - [DEC-012: 아이디 로그인과 소셜 로그인 병행](DEC-012-username-and-social-auth.md)
 - [DEC-011: Supabase 인증과 네이버 Custom OAuth](DEC-011-supabase-auth-with-naver-custom-oauth.md)
 - [DEC-010: 공개형 서비스와 테스트 결제 우선 개발](DEC-010-public-service-and-test-payment.md)
