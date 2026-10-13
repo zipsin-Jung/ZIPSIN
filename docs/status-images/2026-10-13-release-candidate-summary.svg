@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">집신 출시 후보 진행 현황</title>
+  <desc id="desc">공개 홈부터 권한 종료까지 완료된 항목과 Production 전 남은 항목을 한 장에 정리한 이미지</desc>
+  <rect width="1440" height="900" fill="#f6f8f7"/>
+  <text x="92" y="105" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#0b695c">ZIPSIN RELEASE CANDIDATE</text>
+  <text x="92" y="174" font-family="Arial, sans-serif" font-size="48" font-weight="800" fill="#102a43">배포 직전, 어디까지 왔나요?</text>
+  <text x="92" y="220" font-family="Arial, sans-serif" font-size="22" fill="#607785">핵심 제품 흐름과 권한 경계는 Preview에서 확인했습니다.</text>
+  <g font-family="Arial, sans-serif">
+    <rect x="92" y="280" width="800" height="420" rx="28" fill="#ffffff" stroke="#dbe5e2"/>
+    <text x="136" y="338" font-size="22" font-weight="800" fill="#102a43">실제로 확인한 흐름</text>
+    <g font-size="20" fill="#274b47">
+      <text x="138" y="397">✓ 공개 홈페이지 → 회원가입</text><text x="515" y="397">✓ 역할 → 사무소 → 집 등록</text>
+      <text x="138" y="457">✓ 첫 기록 → 집 타임라인</text><text x="515" y="457">✓ 대표 직속 고객지원 채팅</text>
+      <text x="138" y="517">✓ 임대인 보안 초대</text><text x="515" y="517">✓ 초대 링크 재사용 거부</text>
+      <text x="138" y="577">✓ 계약 범위만 열람</text><text x="515" y="577">✓ 관계 종료 즉시 접근 차단</text>
+    </g>
+    <rect x="136" y="620" width="708" height="48" rx="24" fill="#e9f6f2"/>
+    <text x="490" y="651" text-anchor="middle" font-size="18" font-weight="700" fill="#0b695c">330 tests · coverage 80%+ · type error 0 · build success</text>
+    <rect x="932" y="280" width="416" height="420" rx="28" fill="#102a43"/>
+    <text x="972" y="338" font-size="22" font-weight="800" fill="#ffffff">Production 전 남은 것</text>
+    <g font-size="19" fill="#dce8e5">
+      <text x="972" y="405">1. 실제 문자 인증 공급자</text>
+      <text x="972" y="459">2. 이메일·소셜 로그인 설정</text>
+      <text x="972" y="513">3. 계약 생성 화면</text>
+      <text x="972" y="567">4. 사진·PDF 실제 업로드 왕복</text>
+      <text x="972" y="611">5. 20회 동시 저장 스트레스</text>
+    </g>
+    <text x="972" y="661" font-size="18" font-weight="700" fill="#ffb4a8">현재: 독립 검수 FAIL · 보완 중</text>
+  </g>
+  <text x="92" y="790" font-family="Arial, sans-serif" font-size="30" font-weight="800" fill="#102a43">다음 결정은 하나입니다.</text>
+  <text x="92" y="835" font-family="Arial, sans-serif" font-size="22" fill="#607785">가입·계약 초대·첨부 권한 증거를 보완하고 재검수한 뒤 Production을 검토합니다.</text>
+</svg>

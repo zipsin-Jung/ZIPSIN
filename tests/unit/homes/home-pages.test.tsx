@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 const { guard, action } = vi.hoisted(() => ({ guard: vi.fn(), action: vi.fn() }));
+vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }));
 vi.mock('@/features/auth/guards/require-onboarding', () => ({ requireOnboardingComplete: guard }));
 vi.mock('@/features/homes/actions/create-home', () => ({ createHomeAction: action }));
 import NewHomePage from '@/app/(app)/homes/new/page';
