@@ -5,6 +5,7 @@ vi.mock('@/features/auth/guards/require-onboarding', () => ({ requireOnboardingC
 vi.mock('@/features/homes/actions/create-home', () => ({ createHomeAction: action }));
 import NewHomePage from '@/app/(app)/homes/new/page';
 import HomesPage from '@/app/(app)/homes/page';
+import HomeDetailPage from '@/app/(app)/homes/[homeId]/page';
 const officeId = '00000000-0000-4000-8000-000000000001';
 function database(results: Record<string, { data: unknown; error: unknown }>) {
   const chains: Record<string, Record<string, ReturnType<typeof vi.fn>>> = {};
@@ -59,5 +60,19 @@ describe('home route server boundaries', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('처리하지 못했습니다. 잠시 후 다시 시도해 주세요.');
     expect(screen.queryByText('아직 연결된 집이 없습니다.')).not.toBeInTheDocument();
     expect(screen.queryByText('private database details')).not.toBeInTheDocument();
+  });
+  it('TEST-RC-REC-001 gives an empty home one clear first-record action', async () => {
+    const homeId = '00000000-0000-4000-8000-000000000010';
+    const db = database({
+      homes: { data: { id: homeId, office_id: officeId, home_label: '첫 번째 집', address_line1: '서울시 예시로 10', address_detail: '101호' }, error: null },
+      records: { data: [], error: null },
+      chat_rooms: { data: null, error: null },
+    });
+    guard.mockResolvedValue({ supabase: db, user: { id: 'user-1' } });
+
+    render(await HomeDetailPage({ params: Promise.resolve({ homeId }) }));
+
+    expect(screen.getByText('아직 남긴 기록이 없습니다.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '첫 기록 남기기' })).toHaveAttribute('href', `/homes/${homeId}/records/new`);
   });
 });

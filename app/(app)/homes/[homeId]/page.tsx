@@ -85,6 +85,7 @@ export default async function HomeDetailPage({
             <p className="mt-2 text-sm text-[#607785]">
               첫 사진이나 메모를 남기면 이 집의 시간순 기록이 시작됩니다.
             </p>
+            <Link href={`/homes/${homeId}/records/new`} className="app-primary mt-5 inline-flex min-h-12 items-center rounded-2xl px-5 text-sm font-bold text-white">첫 기록 남기기</Link>
           </div>
         )}
       </section>
