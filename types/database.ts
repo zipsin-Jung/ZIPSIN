@@ -46,9 +46,9 @@ export type Database = {
         Relationships: [];
       };
       invitations: {
-        Row: { id: string; token_hash: string; invitation_kind: 'office_member' | 'home_member' | 'repair_event'; office_id: string | null; home_id: string | null; contract_id: string | null; intended_role: string; invited_identifier_hash: string; created_by: string; expires_at: string; revoked_at: string | null; accepted_at: string | null; accepted_by: string | null; created_at: string };
-        Insert: { id?: string; token_hash: string; invitation_kind: 'office_member' | 'home_member' | 'repair_event'; office_id?: string | null; home_id?: string | null; contract_id?: string | null; intended_role: string; invited_identifier_hash: string; created_by: string; expires_at: string; revoked_at?: string | null; accepted_at?: string | null; accepted_by?: string | null; created_at?: string };
-        Update: { revoked_at?: string | null; accepted_at?: string | null; accepted_by?: string | null };
+        Row: { id: string; token_hash: string; invitation_kind: 'office_member' | 'home_member' | 'repair_event'; office_id: string | null; home_id: string | null; contract_id: string | null; intended_role: string; access_scope: 'current_contract' | 'repair_event' | null; relationship_expires_at: string | null; invited_identifier_hash: string; created_by: string; expires_at: string; revoked_at: string | null; accepted_at: string | null; accepted_by: string | null; created_at: string };
+        Insert: { id?: string; token_hash: string; invitation_kind: 'office_member' | 'home_member' | 'repair_event'; office_id?: string | null; home_id?: string | null; contract_id?: string | null; intended_role: string; access_scope?: 'current_contract' | 'repair_event' | null; relationship_expires_at?: string | null; invited_identifier_hash: string; created_by: string; expires_at: string; revoked_at?: string | null; accepted_at?: string | null; accepted_by?: string | null; created_at?: string };
+        Update: { revoked_at?: string | null; accepted_at?: string | null; accepted_by?: string | null; relationship_expires_at?: string | null };
         Relationships: [];
       };
       records: {
@@ -190,6 +190,10 @@ export type Database = {
       accept_office_invitation: { Args: { p_token: string }; Returns: string };
       preview_office_invitation: { Args: { p_token: string }; Returns: Json };
       revoke_office_invitation: { Args: { p_invitation_id: string }; Returns: undefined };
+      create_relationship_invitation: { Args: { p_home_id: string; p_contract_id: string | null; p_role: string; p_scope: string; p_token: string; p_expires_at: string; p_relationship_expires_at: string | null }; Returns: string };
+      accept_relationship_invitation: { Args: { p_token: string }; Returns: string };
+      preview_relationship_invitation: { Args: { p_token: string }; Returns: Json };
+      end_home_relationship: { Args: { p_membership_id: string }; Returns: undefined };
       assign_office_member_to_home: { Args: { p_office_id: string; p_home_id: string; p_user_id: string }; Returns: string };
       end_office_home_assignment: { Args: { p_assignment_id: string }; Returns: undefined };
       create_home_record: { Args: { p_home_id: string; p_office_id: string | null; p_contract_id: string | null; p_space: string; p_kind: string; p_title: string; p_body: string; p_idempotency_key: string; p_task_due_at: string | null; p_task_assigned_to: string | null }; Returns: string };

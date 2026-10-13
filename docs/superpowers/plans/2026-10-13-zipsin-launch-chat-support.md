@@ -94,11 +94,11 @@
 - Produces roles: `landlord|tenant|repairer`
 - Produces scopes: `current_contract|repair_event`
 
-- [ ] 만료·철회·재사용·동시 수락, 다른 집·계약 혼합, 이전 계약 차단, 수리 만료 테스트를 먼저 작성한다.
-- [ ] 테스트가 아직 없는 RPC와 화면 때문에 실패하는 것을 확인한다.
-- [ ] 초대 토큰 해시·일회성 소비·원자 관계 생성·종료 감사 기록을 구현한다.
-- [ ] 초대 전 공개 범위, 수락, 종료 상태와 쉬운 오류 복구 화면을 구현한다.
-- [ ] 전체 테스트 후 `feat: add home relationships and repair invitations`로 커밋한다.
+- [x] 만료·철회·재사용·동시 수락, 다른 집·계약 혼합, 이전 계약 차단, 수리 만료 테스트를 먼저 작성한다.
+- [x] 테스트가 아직 없는 RPC와 화면 때문에 실패하는 것을 확인한다.
+- [x] 초대 토큰 해시·일회성 소비·원자 관계 생성·종료 감사 기록을 구현한다.
+- [x] 초대 전 공개 범위, 수락, 종료 상태와 쉬운 오류 복구 화면을 구현한다.
+- [x] 전체 테스트 후 `feat: add home relationships and repair invitations`로 커밋한다.
 
 ### Task 4: 공통 채팅 저장·읽음·알림 기반
 

@@ -183,3 +183,13 @@
 - Vercel 기본 주소: https://zipsin.vercel.app
 - 가비아 DNS에 `start` CNAME을 추가해 https://start.zipsin.net 연결.
 - 공용 DNS CNAME 전파, HTTPS 인증서 검증, HTTP 200 응답을 확인했습니다.
+
+## 2026-10-13 정식 웹앱 이어서 개발
+
+- 현재 작업 기준은 `/Users/zipsin/.codex/worktrees/public-v1-auth/배포`, 브랜치 `codex/public-v1-auth`입니다.
+- 활성 사무소 구성원은 별도 담당 배정 없이 사무소 집을 사용하도록 전환했습니다.
+- 임대인·임차인은 현재 활성 계약, 수리기사는 기간 제한 수리 참여로 초대·수락·종료하도록 로컬 구현했습니다.
+- 초대 전에는 주소·계약서·연락처를 공개하지 않고, 토큰은 해시 저장·일회성 소비합니다.
+- 전체 48개 테스트 파일·252개 테스트와 TypeScript 검사·Production build가 통과했습니다.
+- Preview·Production DB에는 최신 migration을 적용하지 않았고, 최신 Preview 배포와 실제 다계정 브라우저 검증도 남아 있습니다.
+- 다음 구현은 공통 채팅 저장·읽음·알림 기반입니다. 사용자 최종 승인 전에는 푸시·migration·배포하지 않습니다.
