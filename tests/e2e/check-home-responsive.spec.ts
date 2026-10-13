@@ -39,6 +39,38 @@ for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}, {w
   });
 }
 
+for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}]) {
+  test(`상세 체크 안내와 시작 버튼이 ${viewport.width}px에서 깨지지 않는다`, async ({page}) => {
+    await page.setViewportSize(viewport);
+    await page.goto('/ck');
+    const preview=page.locator('#check-preview');
+    const detail=preview.getByRole('button',{name:'상세 체크 먼저 보기'});
+    const memo=preview.getByRole('button',{name:'메모·사진으로 시작'});
+    await expect(preview.getByText('각 항목의 상세 체크를 꼭 눌러보세요')).toBeVisible();
+    await expect(detail).toBeVisible();
+    await expect(memo).toBeVisible();
+    for(const target of [detail,memo]){
+      const box=await target.boundingBox();
+      expect(box).not.toBeNull();
+      expect(box!.width).toBeGreaterThan(120);
+      expect(box!.x).toBeGreaterThanOrEqual(0);
+      expect(box!.x+box!.width).toBeLessThanOrEqual(viewport.width);
+    }
+    const previewButtons=preview.getByRole('button',{name:/체크 시작$/});
+    await expect(previewButtons).toHaveCount(5);
+    for(let index=0;index<5;index++){
+      const box=await previewButtons.nth(index).boundingBox();
+      expect(box).not.toBeNull();
+      expect(box!.width).toBeGreaterThan(200);
+      expect(box!.x).toBeGreaterThanOrEqual(0);
+      expect(box!.x+box!.width).toBeLessThanOrEqual(viewport.width);
+    }
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth)).toBe(false);
+    await detail.click();
+    await expect(page.getByRole('dialog',{name:'이 집 별명 정하기'})).toBeVisible();
+  });
+}
+
 test('전체 목록의 빈 상태와 모션 감소 설정을 지원한다', async ({page}) => {
   await page.emulateMedia({reducedMotion: 'reduce'});
   await page.goto('/ck');
