@@ -19,7 +19,7 @@ export default function CheckSummary({candidate, canCompare, onBack, onAdd, onCo
   useEffect(() => { headingRef.current?.focus(); }, []);
   return (
     <main className={styles.results}>
-      <button type="button" className={styles.back} onClick={onBack}>← 체크로 돌아가기</button>
+      <button type="button" className={styles.back} onClick={onBack}>현장 체크 수정</button>
       <header className={styles.resultHero}>
         <p>{candidate.alias} 방문 요약</p>
         <h1 ref={headingRef} tabIndex={-1}>좋고 나쁨 대신,<br/>다시 볼 것을 정리했어요.</h1>

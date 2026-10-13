@@ -66,6 +66,6 @@ export default function CandidateForm({initial, onSubmit, onCancel}: {initial?: 
       <p className={styles.localOnly}>주소와 연락처는 이 브라우저에만 저장되며 자동 전송되지 않아요.</p>
     </div>}
     {error && <p role="alert" className={styles.formError}>{error}</p>}
-    <div className={styles.formActions}>{onCancel && <button type="button" onClick={onCancel}>취소</button>}<button type="button" className={styles.formPrimary} onClick={submit}>{initial ? '저장' : '체크 시작'}</button></div>
+    <div className={styles.formActions}>{onCancel && <button type="button" onClick={onCancel}>{initial ? '수정하지 않고 닫기':'등록하지 않고 닫기'}</button>}<button type="button" className={styles.formPrimary} onClick={submit}>{initial ? '저장' : '체크 시작'}</button></div>
   </section>;
 }
