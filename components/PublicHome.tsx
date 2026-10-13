@@ -1,135 +1,54 @@
 import Link from 'next/link';
-import {
-  ArrowRight,
-  CalendarDays,
-  Check,
-  FileText,
-  House,
-  Image as ImageIcon,
-  MessageCircle,
-  ShieldCheck,
-  Users,
-  Wrench,
-} from 'lucide-react';
+import { ArrowRight, FileText, House, MessageCircle, ShieldCheck } from 'lucide-react';
 import Brand from '@/components/Brand';
+import { ScenarioExplorer } from '@/features/public-home/components/ScenarioExplorer';
 import styles from './PublicHome.module.css';
 
-const records = [
-  { icon: FileText, title: '계약과 문서', body: '계약서와 필요한 문서를 집에 연결합니다.' },
-  { icon: ImageIcon, title: '사진 기록', body: '입주부터 퇴거까지 변화를 시간순으로 남깁니다.' },
-  { icon: Wrench, title: '수리 과정', body: '수리 전·중·후와 비용을 한 흐름으로 확인합니다.' },
-  { icon: CalendarDays, title: '일정과 할 일', body: '만기와 방문 일정을 놓치지 않게 이어갑니다.' },
-];
-
-const roles = [
-  ['공인중개사무소', '사진과 문서가 직원 개인 휴대전화에 흩어지지 않도록 사무소의 집 기록으로 관리합니다.'],
-  ['임대인', '직접 방문하지 않아도 집의 변화와 수리 과정을 확인합니다.'],
-  ['임차인', '입주 상태와 요청 내용을 남기고 필요한 기록을 함께 확인합니다.'],
-];
-
 export default function PublicHome() {
-  return (
-    <div className={styles.page}>
-      <a className={styles.skip} href="#main">본문 바로가기</a>
-      <header className={styles.header}>
-        <Link href="/" aria-label="집신 메인"><Brand /></Link>
-        <nav aria-label="주 메뉴">
-          <a href="#why">집신이 필요한 이유</a>
-          <a href="#record">무엇을 기록하나요</a>
-          <a href="#roles">누가 사용하나요</a>
-        </nav>
-        <div className={styles.headerActions}>
-          <Link className={styles.login} href="/login">로그인</Link>
-          <Link className={styles.primarySmall} href="/signup">집신 시작하기</Link>
+  return <div className={styles.page}>
+    <a className={styles.skip} href="#main">본문 바로가기</a>
+    <header className={styles.header}>
+      <Link href="/" aria-label="집신 메인"><Brand /></Link>
+      <nav aria-label="주 메뉴"><a href="#intro">집신 소개</a><a href="#moments">이런 순간에 집신</a><a href="#features">주요 기능</a><a href="#how">이용 방법</a><Link href="/support">고객지원</Link></nav>
+      <div className={styles.headerActions}><Link className={styles.login} href="/login">로그인</Link><Link className={styles.primarySmall} href="/signup">웹에서 시작하기</Link></div>
+    </header>
+
+    <main id="main">
+      <section id="intro" className={styles.hero}>
+        <div className={styles.heroCopy}>
+          <span className={styles.kicker}>집 한 채에 이어지는 기록</span>
+          <h1>집에 관한 일,<br />다시 묻고 다시 찾지 않도록.</h1>
+          <p>계약서, 사진, 대화, 일정과 집에서 있었던 일을 집 한 채에 이어서 기록하세요.</p>
+          <div className={styles.heroActions}><Link className={styles.primary} href="/signup">웹에서 시작하기 <ArrowRight size={19} /></Link><Link className={styles.secondary} href="/login">로그인</Link></div>
+          <span className={styles.safety}><ShieldCheck size={17} /> 주소만 알아서는 어떤 기록도 볼 수 없습니다.</span>
         </div>
-      </header>
 
-      <main id="main">
-        <section className={styles.hero}>
-          <div className={styles.heroCopy}>
-            <span className={styles.kicker}>집 한 채에 이어지는 모든 기록</span>
-            <h1>사람이 바뀌어도,<br />집의 기록은 남아야 하니까.</h1>
-            <p>계약부터 입주, 사진, 수리, 일정과 대화까지.<br />흩어진 기록을 집 한 채를 기준으로 이어서 관리하세요.</p>
-            <div className={styles.heroActions}>
-              <Link className={styles.primary} href="/signup">내 집 기록 시작하기 <ArrowRight size={19} /></Link>
-              <Link className={styles.secondary} href="/login">이미 계정이 있어요</Link>
-            </div>
-            <span className={styles.safety}><ShieldCheck size={17} /> 주소만 안다고 기록을 볼 수 없습니다.</span>
-          </div>
-          <div className={styles.productScene} aria-label="집신의 집 기록 구조">
-            <div className={styles.addressCard}>
-              <span><House size={18} /> 집 기록</span>
-              <strong>서울시 노원구 · 1203호</strong>
-              <small>초대받은 사람만 함께 확인</small>
-            </div>
-            <div className={styles.timeline}>
-              <div><span className={styles.dot} /><b>입주 사진 등록</b><small>사진 12장</small></div>
-              <div><span className={styles.dot} /><b>수리 요청 기록</b><small>진행 과정 공유</small></div>
-              <div><span className={styles.dot} /><b>계약 일정 확인</b><small>필요한 사람과 함께</small></div>
-            </div>
-            <div className={styles.people}><Users size={17} /> 임대인 · 임차인 · 공인중개사가 같은 기록을 확인합니다.</div>
-          </div>
-        </section>
+        <div className={styles.heroProduct} aria-label="집신 실제 제품 화면 예시">
+          <div className={styles.appTopbar}><span>우리 집</span><strong>서울 노원구 · 1203호</strong></div>
+          <div className={styles.nextAction}><span>다음 일정</span><strong>계약 만기 전 갱신 여부 확인</strong><time>2027년 2월 28일</time></div>
+          <div className={styles.quickRecords}><span><FileText size={18} /> 계약 문서</span><span><MessageCircle size={18} /> 집 대화</span><span><House size={18} /> 전체 기록</span></div>
+          <div className={styles.latestRecord}><small>최근 기록</small><strong>입주 전 거실 상태 사진</strong><span>사진 8장 · 2025. 02. 18</span></div>
+        </div>
+      </section>
 
-        <section id="why" className={styles.problem}>
-          <span className={styles.kicker}>집은 그대로인데 기록만 흩어집니다</span>
-          <h2>사진은 휴대전화에,<br />대화는 카카오톡에, 문서는 사무실에.</h2>
-          <p>필요한 순간마다 다시 찾고, 다시 묻고, 다시 설명하는 일을 줄입니다.</p>
-          <div className={styles.turn}>
-            <span>흩어진 사진·문서·대화·일정</span><ArrowRight size={22} /><strong>집 하나의 기록</strong>
-          </div>
-        </section>
+      <section id="moments" className={styles.moments}>
+        <div className={styles.sectionHeading}><span className={styles.kicker}>이런 순간에 집신</span><h2>찾고, 묻고, 설명하는 일을<br />한 번으로 줄입니다.</h2><p>상황을 좌우로 넘겨 보세요. 선택한 순간에 필요한 집신 화면이 바로 나타납니다.</p></div>
+        <ScenarioExplorer />
+      </section>
 
-        <section id="record" className={styles.records}>
-          <div className={styles.sectionHeading}>
-            <span className={styles.kicker}>주소가 아니라 권한으로 연결합니다</span>
-            <h2>필요한 기록을, 필요한 사람과.</h2>
-            <p>집 주소를 아는 것만으로는 열 수 없습니다. 초대와 관계가 확인된 사람만 함께합니다.</p>
-          </div>
-          <div className={styles.recordGrid}>
-            {records.map(({ icon: Icon, title, body }) => (
-              <article key={title}><Icon size={24} /><h3>{title}</h3><p>{body}</p></article>
-            ))}
-          </div>
-        </section>
+      <section id="features" className={styles.principle}>
+        <div><span className={styles.kicker}>사람이 아니라 집에 남는 기록</span><h2>기록은 이어지고,<br />개인정보는 따라가지 않습니다.</h2></div>
+        <ul><li><strong>집 한 채에 연결</strong><span>사진·문서·대화·일정을 같은 흐름에서 확인합니다.</span></li><li><strong>관계가 있는 사람만</strong><span>역할·관계·기간이 확인된 사람에게 필요한 범위만 엽니다.</span></li><li><strong>관계가 끝나면 접근 종료</strong><span>기록은 안전하게 남고 이전 계약자의 개인자료는 다음 계약에 넘어가지 않습니다.</span></li></ul>
+      </section>
 
-        <section className={styles.chatSection}>
-          <div>
-            <span className={styles.kicker}>개인 휴대전화 밖에서 이어지는 대화</span>
-            <h2>집 이야기까지<br />집신 안에서 이어집니다.</h2>
-            <p>공인중개사, 임대인, 임차인과 수리기사가 필요한 범위에서 대화하고 사진과 PDF를 직접 공유합니다.</p>
-          </div>
-          <div className={styles.chatCard}>
-            <div><MessageCircle size={18} /><b>월계동 1203호 대화</b></div>
-            <p>수리 전 사진을 올렸습니다.</p>
-            <p className={styles.own}>확인했습니다. 완료 후 사진도 이곳에 남겨주세요.</p>
-            <small>집과 관계가 끝나면 접근 권한도 종료됩니다.</small>
-          </div>
-        </section>
+      <section id="how" className={styles.how}>
+        <div className={styles.sectionHeading}><span className={styles.kicker}>시작은 간단하게</span><h2>집을 만들고, 기록하고, 함께 봅니다.</h2></div>
+        <ol><li><span>1</span><strong>집 등록</strong><p>주소를 등록하면 비공개 집 공간과 내부 집 ID가 만들어집니다.</p></li><li><span>2</span><strong>첫 기록</strong><p>사진, PDF, 메모와 일정을 집의 시간순 기록에 남깁니다.</p></li><li><span>3</span><strong>대화와 초대</strong><p>필요한 사람만 초대해 집 관련 대화를 한곳에서 이어갑니다.</p></li></ol>
+      </section>
 
-        <section id="roles" className={styles.roles}>
-          <div className={styles.sectionHeading}>
-            <span className={styles.kicker}>같은 집, 서로 다른 이유</span>
-            <h2>필요한 이유는 달라도 기록은 하나입니다.</h2>
-          </div>
-          <div className={styles.roleGrid}>
-            {roles.map(([title, body]) => <article key={title}><Check size={20} /><h3>{title}</h3><p>{body}</p></article>)}
-          </div>
-        </section>
+      <section className={styles.finalCta}><span>한 집부터 시작하세요</span><h2>집에 관한 다음 일,<br />이제 놓치지 않도록.</h2><div><Link className={styles.primary} href="/signup">웹에서 시작하기 <ArrowRight size={19} /></Link><Link className={styles.secondary} href="/support">고객지원</Link></div></section>
+    </main>
 
-        <section className={styles.finalCta}>
-          <span>한 집부터 시작하세요</span>
-          <h2>집의 기록이 필요한 순간,<br />다시 찾지 않도록.</h2>
-          <Link className={styles.primary} href="/signup">집신 시작하기 <ArrowRight size={19} /></Link>
-          <Link className={styles.finalLogin} href="/login">로그인</Link>
-        </section>
-      </main>
-
-      <footer className={styles.footer}>
-        <Brand />
-        <p>집 한 채를 기준으로 이어지는 주거 기록 관리 서비스</p>
-        <span>© 2026 ZIPSIN</span>
-      </footer>
-    </div>
-  );
+    <footer className={styles.footer}><Brand /><p>집 한 채를 기준으로 이어지는 주거 기록 관리 서비스</p><Link href="/login">로그인</Link><span>© 2026 ZIPSIN</span></footer>
+  </div>;
 }
