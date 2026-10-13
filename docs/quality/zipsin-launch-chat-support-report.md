@@ -1,7 +1,7 @@
 # 집신 정식 웹앱·채팅·고객지원 품질 보고서
 
-- 검수 버전: `codex/public-v1-auth` 로컬 최신 커밋 이후 작업본
-- 환경: macOS 로컬, Next.js 16.3.6, 실제 Preview 최신 migration 미적용
+- 검수 버전: `codex/public-v1-auth` Preview 배포본
+- 환경: macOS 로컬, Next.js 16.3.6, Vercel Preview, 실제 Preview 최신 migration 미적용
 - 판정: **FAIL — Production 배포 승인 불가**
 
 ## 통과한 로컬 항목
@@ -14,6 +14,8 @@
 
 커버리지: 문장 91.00%, 분기 83.75%, 함수 91.17%, 줄 91.73%.
 - 담당자 문구, 가상 수치, 사전가입·데모 문구를 실제 앱 홈에서 제거
+- GitHub 최신 브랜치 푸시와 Vercel Preview 배포 성공
+- 허용된 실제 브라우저에서 `/`→`/login` 즉시 이동과 `/signup` 실제 회원가입 화면 확인
 
 ## 열린 출시 차단 항목
 
@@ -33,4 +35,4 @@
 
 ## 결론
 
-로컬 코드는 사용자 검토가 가능한 단계지만, 최신 Preview 배포와 실제 다계정 권한 검증 없이는 정식 출시 완료라고 할 수 없다. 사용자 승인 뒤에도 Preview부터 적용·검수하고, P0·P1 0건일 때만 Production 승인을 다시 요청한다.
+최신 화면은 Preview에서 확인할 수 있지만, Preview DB migration과 실제 다계정 권한 검증 없이는 정식 출시 완료라고 할 수 없다. P0·P1 0건일 때만 Production 승인을 다시 요청한다.
