@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-const { guard, action } = vi.hoisted(() => ({ guard: vi.fn(), action: vi.fn() }));
+const { guard, action, loadSummary } = vi.hoisted(() => ({ guard: vi.fn(), action: vi.fn(), loadSummary: vi.fn() }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }));
 vi.mock('@/features/auth/guards/require-onboarding', () => ({ requireOnboardingComplete: guard }));
 vi.mock('@/features/homes/actions/create-home', () => ({ createHomeAction: action }));
+vi.mock('@/features/contracts/services/contract-summary', () => ({ loadContractHomeSummaryFromSupabase: loadSummary }));
 import NewHomePage from '@/app/(app)/homes/new/page';
 import HomesPage from '@/app/(app)/homes/page';
 import HomeDetailPage from '@/app/(app)/homes/[homeId]/page';
@@ -65,15 +66,80 @@ describe('home route server boundaries', () => {
   it('TEST-RC-REC-001 gives an empty home one clear first-record action', async () => {
     const homeId = '00000000-0000-4000-8000-000000000010';
     const db = database({
-      homes: { data: { id: homeId, office_id: officeId, home_label: '첫 번째 집', address_line1: '서울시 예시로 10', address_detail: '101호' }, error: null },
       records: { data: [], error: null },
       chat_rooms: { data: null, error: null },
     });
     guard.mockResolvedValue({ supabase: db, user: { id: 'user-1' } });
+    loadSummary.mockResolvedValue({
+      ok: true,
+      status: 'ready',
+      summary: {
+        home: { id: homeId, officeId, label: '첫 번째 집', addressLine1: '서울시 예시로 10', addressDetail: '101호' },
+        contract: { id: 'contract-1', kind: 'jeonse', startsOn: '2026-02-03', endsOn: '2027-02-02' },
+        currentUserRelationship: 'tenant',
+        ownPlanStatus: 'undecided',
+        partyPlans: [{ role: 'tenant', status: 'undecided' }],
+        canEditContract: false,
+        contractDay: { label: 'D-112', days: 112 },
+        lifecycle: [
+          { id: 'contract', label: '계약 보관', completed: true },
+          { id: 'move_in', label: '입주 기록', completed: false },
+          { id: 'management', label: '거주·관리', completed: false },
+          { id: 'expiry', label: '만기·퇴거', completed: false },
+        ],
+        nextActions: [],
+      },
+    });
 
     render(await HomeDetailPage({ params: Promise.resolve({ homeId }) }));
 
+    expect(screen.getByRole('heading', { name: '첫 번째 집' })).toBeInTheDocument();
+    expect(screen.getByText('D-112')).toBeInTheDocument();
+    expect(screen.getByText('집의 시간')).toBeInTheDocument();
     expect(screen.getByText('아직 남긴 기록이 없습니다.')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '첫 기록 남기기' })).toHaveAttribute('href', `/homes/${homeId}/records/new`);
+  });
+
+  it('TEST-ZH-UI-007 shows the contract form only when the summary grants contract editing', async () => {
+    const homeId = '00000000-0000-4000-8000-000000000011';
+    const db = database({ records: { data: [], error: null }, chat_rooms: { data: null, error: null } });
+    guard.mockResolvedValue({ supabase: db, user: { id: 'broker-1' } });
+    loadSummary.mockResolvedValue({
+      ok: true,
+      status: 'no_contract',
+      summary: {
+        home: { id: homeId, officeId, label: '관리 집', addressLine1: '서울시 예시로 11', addressDetail: null },
+        contract: null,
+        currentUserRelationship: null,
+        ownPlanStatus: 'undecided',
+        partyPlans: [],
+        canEditContract: true,
+        contractDay: null,
+        lifecycle: [
+          { id: 'contract', label: '계약 보관', completed: false },
+          { id: 'move_in', label: '입주 기록', completed: false },
+          { id: 'management', label: '거주·관리', completed: false },
+          { id: 'expiry', label: '만기·퇴거', completed: false },
+        ],
+        nextActions: [],
+      },
+    });
+
+    render(await HomeDetailPage({ params: Promise.resolve({ homeId }) }));
+
+    expect(screen.getByRole('heading', { name: '계약 기간 확인' })).toBeInTheDocument();
+    expect(loadSummary).toHaveBeenCalledWith(db, { homeId, userId: 'broker-1' });
+  });
+
+  it('TEST-ZH-UI-008 hides internal database details when the contract summary fails', async () => {
+    const homeId = '00000000-0000-4000-8000-000000000012';
+    const db = database({});
+    guard.mockResolvedValue({ supabase: db, user: { id: 'user-1' } });
+    loadSummary.mockResolvedValue({ ok: false, error: 'load_failed' });
+
+    render(await HomeDetailPage({ params: Promise.resolve({ homeId }) }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent('이 집을 확인할 수 없습니다.');
+    expect(screen.queryByText('load_failed')).not.toBeInTheDocument();
   });
 });

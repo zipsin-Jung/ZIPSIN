@@ -1,8 +1,13 @@
+import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import { z } from "zod";
 import { requireOnboardingComplete } from "@/features/auth/guards/require-onboarding";
 import { AttachmentUploader } from "@/features/attachments/components/AttachmentUploader";
 import { AttachmentLink } from "@/features/attachments/components/AttachmentLink";
+import { ContractForm } from "@/features/contracts/components/ContractForm";
+import { ContractSummary } from "@/features/contracts/components/ContractSummary";
+import { NextActions } from "@/features/contracts/components/NextActions";
+import { loadContractHomeSummaryFromSupabase } from "@/features/contracts/services/contract-summary";
 
 export default async function HomeDetailPage({
   params,
@@ -11,14 +16,10 @@ export default async function HomeDetailPage({
 }) {
   const { homeId } = await params;
   if (!z.uuid().safeParse(homeId).success) return <Unavailable />;
-  const { supabase } = await requireOnboardingComplete();
-  const { data: home, error } = await supabase
-    .from("homes")
-    .select("id, office_id, home_label, address_line1, address_detail")
-    .eq("id", homeId)
-    .eq("status", "active")
-    .maybeSingle();
-  if (error || !home) return <Unavailable />;
+  const { supabase, user } = await requireOnboardingComplete();
+  const summaryResult = await loadContractHomeSummaryFromSupabase(supabase, { homeId, userId: user.id });
+  if (!summaryResult.ok) return <Unavailable />;
+  const { summary } = summaryResult;
   const { data: records } = await supabase
     .from("records")
     .select("id, record_kind, title, occurred_at")
@@ -42,23 +43,59 @@ export default async function HomeDetailPage({
       <Link href="/homes" className="text-sm font-bold text-[#0b695c]">
         ← 집 목록
       </Link>
-      <section className="relative mt-6 overflow-hidden rounded-[32px] bg-gradient-to-br from-[#092f3e] via-[#0a4f55] to-[#08715e] px-7 py-10 text-white shadow-[0_30px_80px_rgba(7,52,64,.2)] sm:px-10">
-        <p className="text-sm font-bold text-[#9ee8d7]">비공개 집 기록</p>
-        <h1 className="mt-3 text-4xl font-extrabold tracking-[-0.05em] sm:text-5xl">
-          {home.home_label ?? home.address_line1}
-        </h1>
-        <p className="mt-4 text-[#d7eeeb]">
-          {home.address_line1}
-          {home.address_detail ? ` · ${home.address_detail}` : ""}
-        </p>
-        <div className="mt-7 flex flex-wrap gap-3">
-          <Link href={`/homes/${homeId}/records/new`} className="rounded-2xl bg-white px-5 py-3 text-sm font-bold text-[#0a4f55]">새 기록 남기기</Link>
-          <Link href={sharedRoom ? `/chats/${sharedRoom.id}` : '/chats'} className="rounded-2xl border border-white/40 bg-white/10 px-5 py-3 text-sm font-bold text-white">집 대화 보기</Link>
-          <Link href={`/homes/${homeId}/people`} className="rounded-2xl border border-white/40 bg-white/10 px-5 py-3 text-sm font-bold text-white">함께하는 사람</Link>
-        </div>
+      <div className="mt-6">
+        <ContractSummary summary={{
+          homeLabel: summary.home.label,
+          addressLine1: summary.home.addressLine1,
+          addressDetail: summary.home.addressDetail,
+          contractId: summary.contract?.id ?? null,
+          endsOn: summary.contract?.endsOn ?? null,
+          contractDay: summary.contractDay,
+          ownRelationship: summary.currentUserRelationship,
+          ownPlanStatus: summary.ownPlanStatus,
+          partyPlans: summary.partyPlans,
+        }} />
+      </div>
+
+      <div className="mt-10"><NextActions actions={summary.nextActions} /></div>
+
+      <section className="mt-10" aria-labelledby="home-time-title">
+        <p className="text-sm font-bold text-[#0b695c]">계약부터 퇴거까지</p>
+        <h2 className="mt-1 text-2xl font-black tracking-[-0.035em] text-[#102a43]" id="home-time-title">집의 시간</h2>
+        <ol className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {summary.lifecycle.map((step, index) => (
+            <li className={step.completed ? "rounded-2xl border border-[#9bc7c0] bg-[#edf7f4] p-5" : "rounded-2xl border border-[#dce7e4] bg-white p-5"} key={step.id}>
+              <span aria-hidden="true" className="text-sm font-black text-[#0b695c]">{step.completed ? "✓" : String(index + 1).padStart(2, "0")}</span>
+              <p className="mt-3 font-black text-[#102a43]">{step.label}</p>
+              <p className="mt-1 text-sm text-[#607785]">{step.completed ? "기록이 준비되어 있어요" : "필요한 기록을 차례로 채워보세요"}</p>
+            </li>
+          ))}
+        </ol>
       </section>
-      <section className="mt-8">
-        <h2 className="text-2xl font-extrabold text-[#102a43]">집 타임라인</h2>
+
+      {summary.canEditContract && (
+        <section className="mt-10">
+          <ContractForm
+            homeId={homeId}
+            idempotencyKey={randomUUID()}
+            initial={{
+              contractKind: (summary.contract?.kind as "owner_occupied" | "jeonse" | "monthly_rent" | "other") ?? "jeonse",
+              startsOn: summary.contract?.startsOn ?? "",
+              endsOn: summary.contract?.endsOn ?? "",
+            }}
+          />
+        </section>
+      )}
+
+      <nav aria-label="집 바로가기" className="mt-10 grid gap-3 sm:grid-cols-3">
+        <Link href={`/homes/${homeId}/records/new`} className="app-primary flex min-h-14 items-center justify-center rounded-2xl px-5 text-sm font-bold text-white">새 기록 남기기</Link>
+        <Link href={sharedRoom ? `/chats/${sharedRoom.id}` : "/chats"} className="app-panel flex min-h-14 items-center justify-center rounded-2xl px-5 text-sm font-bold text-[#244657]">집 대화 보기</Link>
+        <Link href={`/homes/${homeId}/people`} className="app-panel flex min-h-14 items-center justify-center rounded-2xl px-5 text-sm font-bold text-[#244657]">함께하는 사람</Link>
+      </nav>
+
+      <section className="mt-10">
+        <p className="text-sm font-bold text-[#0b695c]">필요할 때 다시 찾는 기록</p>
+        <h2 className="mt-1 text-2xl font-black tracking-[-0.035em] text-[#102a43]">최근 기록</h2>
         {records?.length ? (
           <ul className="mt-5 grid gap-3">
             {records.map((record) => (

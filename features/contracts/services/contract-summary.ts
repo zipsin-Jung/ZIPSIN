@@ -24,6 +24,7 @@ export type ContractHomeSummary = {
   currentUserRelationship: 'landlord' | 'tenant' | null;
   ownPlanStatus: PlanStatus;
   planStates: PlanRow[];
+  partyPlans: Array<{ role: 'landlord' | 'tenant'; status: PlanStatus }>;
   canEditContract: boolean;
   contractDay: ReturnType<typeof formatContractDay>;
   hasContractDocument: boolean;
@@ -64,6 +65,7 @@ export async function loadContractHomeSummary(
         currentUserRelationship: null,
         ownPlanStatus: 'undecided',
         planStates: [],
+        partyPlans: [],
         canEditContract: editResult.data,
         contractDay: null,
         hasContractDocument: false,
@@ -87,6 +89,10 @@ export async function loadContractHomeSummary(
   const records = recordsResult.data;
   const relationship = relationshipsResult.data.find((item) => item.userId === input.userId && (item.role === 'landlord' || item.role === 'tenant'));
   const ownPlanStatus = plansResult.data.find((item) => item.subjectUserId === input.userId)?.planStatus ?? 'undecided';
+  const partyPlans = relationshipsResult.data.flatMap((item) => {
+    if (item.role !== 'landlord' && item.role !== 'tenant') return [];
+    return [{ role: item.role, status: plansResult.data.find((plan) => plan.subjectUserId === item.userId)?.planStatus ?? 'undecided' }];
+  });
   const hasContractDocument = records.some((item) => item.kind === 'document' && /계약/.test(item.title));
   const hasMoveInPhoto = records.some((item) => item.kind === 'photo' && /입주/.test(item.title));
   const hasManagementRecord = records.some((item) => ['repair', 'note'].includes(item.kind));
@@ -105,6 +111,7 @@ export async function loadContractHomeSummary(
       currentUserRelationship: relationship?.role === 'landlord' || relationship?.role === 'tenant' ? relationship.role : null,
       ownPlanStatus,
       planStates: plansResult.data,
+      partyPlans,
       canEditContract: editResult.data,
       contractDay: formatContractDay(contract.endsOn, input.today),
       hasContractDocument,
@@ -119,6 +126,13 @@ export async function loadContractHomeSummary(
 }
 
 /* v8 ignore start -- exercised through authenticated Preview and page boundary tests. */
+export async function loadContractHomeSummaryFromSupabase(
+  supabase: SupabaseClient,
+  input: { homeId: string; userId: string; today?: Date },
+) {
+  return loadContractHomeSummary(createSupabaseContractSummaryRepository(supabase), input);
+}
+
 export function createSupabaseContractSummaryRepository(supabase: SupabaseClient): ContractSummaryRepository {
   return {
     async getHome(homeId) {
