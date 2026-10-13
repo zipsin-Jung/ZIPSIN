@@ -56,3 +56,16 @@ const detailedItems = DETAIL_SEEDS.map(seed => makeItem(seed));
 export const CHECK_ITEMS: CheckItem[] = [...requiredItems, ...detailedItems];
 export const CORE_ITEM_IDS = [...FIELD_ITEM_IDS];
 export function getItemsForDepth(depth: CheckDepth) { return depth === 'quick' ? requiredItems : CHECK_ITEMS; }
+
+const DETAIL_IDS_BY_FIELD: Record<(typeof FIELD_ITEM_IDS)[number], string[]> = {
+  'water-drain': ['toilet', 'sink-leak', 'bath-silicone'],
+  'moisture-leak': ['floor-wall', 'bath-vent', 'hood'],
+  'light-noise': ['room-size', 'neighborhood', 'waste', 'parking'],
+  'windows-doors': ['entrance', 'cctv', 'outlets'],
+  'options-damage': ['cooking', 'boiler', 'aircon', 'breaker', 'fees', 'repair-promise'],
+};
+
+export function getDetailItemsForField(fieldId: string) {
+  const ids = DETAIL_IDS_BY_FIELD[fieldId as keyof typeof DETAIL_IDS_BY_FIELD] ?? [];
+  return ids.map(id => detailedItems.find(item => item.id === id)).filter((item): item is CheckItem => Boolean(item));
+}

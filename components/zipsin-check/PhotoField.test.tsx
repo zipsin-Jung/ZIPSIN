@@ -72,7 +72,7 @@ describe('현장 사진 입력', () => {
     render(<PhotoField candidateId={candidateId} itemId={itemId} itemTitle="습기·곰팡이" store={store}/>);
     const large = new File([new Uint8Array(10 * 1024 * 1024 + 1)], 'large.png', {type: 'image/png'});
     fireEvent.change(screen.getByLabelText('습기·곰팡이 사진 추가'), {target: {files: [large]}});
-    expect(await screen.findByRole('alert')).toHaveTextContent('10MB 이하');
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('10MB 이하'));
     expect(store.put).not.toHaveBeenCalled();
   });
 
