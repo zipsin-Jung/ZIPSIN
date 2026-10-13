@@ -14,7 +14,7 @@ const items = [
 
 export function AppNavigation() {
   const pathname = usePathname();
-  const isCurrent = (href: string) => pathname === href || (href !== '/home' && pathname.startsWith(`${href}/`));
+  const isCurrent = (href: string) => pathname === href || (href !== '/home' && Boolean(pathname?.startsWith(`${href}/`)));
   return (
     <>
       <nav aria-label="주요 메뉴" className="hidden items-center gap-1 rounded-2xl border border-white/80 bg-white/75 p-1.5 shadow-[0_10px_34px_rgba(15,42,55,0.06)] backdrop-blur-xl md:flex">
