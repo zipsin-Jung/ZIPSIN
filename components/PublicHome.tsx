@@ -49,6 +49,6 @@ export default function PublicHome() {
       <section className={styles.finalCta}><span>한 집부터 시작하세요</span><h2>집에 관한 다음 일,<br />이제 놓치지 않도록.</h2><div><Link className={styles.primary} href="/signup">웹에서 시작하기 <ArrowRight size={19} /></Link><Link className={styles.secondary} href="/support">고객지원</Link></div></section>
     </main>
 
-    <footer className={styles.footer}><Brand /><p>집 한 채를 기준으로 이어지는 주거 기록 관리 서비스</p><Link href="/login">로그인</Link><span>© 2026 ZIPSIN</span></footer>
+    <footer className={styles.footer}><Brand /><p>집 한 채를 기준으로 이어지는 주거 기록 관리 서비스</p><Link href="/login">로그인</Link><a aria-label="집신 카카오 채널 (새 창)" href="https://pf.kakao.com/_xhcxkFX" target="_blank" rel="noopener noreferrer external" referrerPolicy="no-referrer">카카오 채널</a><span>© 2026 ZIPSIN</span></footer>
   </div>;
 }

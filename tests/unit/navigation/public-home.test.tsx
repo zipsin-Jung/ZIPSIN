@@ -33,6 +33,16 @@ describe('PublicHome', () => {
     expect(screen.queryByRole('link', { name: /앱 다운로드|App Store|Google Play/ })).not.toBeInTheDocument();
   });
 
+  it('TEST-SUPPORT-KAKAO-004 푸터에서 공식 카카오 채널을 안전하게 연다', () => {
+    render(<PublicHome />);
+
+    const channel = screen.getByRole('link', { name: '집신 카카오 채널 (새 창)' });
+    expect(channel).toHaveAttribute('href', 'https://pf.kakao.com/_xhcxkFX');
+    expect(channel).toHaveAttribute('target', '_blank');
+    expect(channel).toHaveAttribute('rel', expect.stringContaining('noopener'));
+    expect(channel).toHaveAttribute('rel', expect.stringContaining('noreferrer'));
+  });
+
   it('TEST-RC-PUB-004 사례를 키보드로 바꾸면 해당 집신 화면이 나타난다', async () => {
     const user = userEvent.setup();
     render(<PublicHome />);
