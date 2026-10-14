@@ -45,20 +45,27 @@
 
 ## 배포 전 남은 일
 
-- Supabase Preview에 `202610140004_anonymous_signup_phone.sql` 적용
-- Vercel Preview의 Supabase service-role·HMAC·SOLAPI 환경값 확인
+- Vercel Preview의 SOLAPI 환경값 연결
 - 실제 번호로 정상 수신, 오답, 만료, 재전송, 공급자 오류 확인
 - OTP 전 계정 0건과 성공 후 관련 데이터 각 1건 확인
 - 가입 뒤 `/ck` 복귀와 집신·집신체크 공통 로그인 확인
-- WebKit 검수
-- Supabase Cron의 `cron.job`·`cron.job_run_details`에서 예약과 실제 개인정보 삭제 실행 확인
 - 사용자 최종 승인 전 Production 배포 금지
+
+## 2026-10-14 외부 환경 후속 검수
+
+- Supabase Preview 프로젝트에 `202610140004_anonymous_signup_phone.sql`을 적용했다.
+- 가입 challenge 테이블, 최종 가입 함수, 15분 정리 Cron이 활성 상태임을 재조회했다.
+- Cron은 2026-10-14 13:30 KST에 실제로 `succeeded`했고 정리 함수 직접 실행도 성공했다.
+- Vercel Preview 브랜치에 `PHONE_OTP_HMAC_SECRET`를 새 비밀값으로 추가했다. 비밀값 원문은 문서·Git에 저장하지 않았다.
+- Playwright에 WebKit 프로젝트를 추가하고 회원가입 18개 시나리오를 WebKit에서 모두 통과했다.
+- 첫 실행에서 기존 landing smoke 1개가 병렬 부하로 5초 시간초과했지만 단독 재현은 420ms로 통과했고, worker 50% 전체 재실행은 602개 통과했다.
+- 실제 문자 발송은 SOLAPI API Key, API Secret, 발신번호가 Vercel에 없어 아직 검증할 수 없다. `PHONE_VERIFICATION_PROVIDER=disabled`를 유지해 잘못된 발송은 차단했다.
 
 ## 독립 품질 판정
 
 - 최종 재검수: 코드 P0 0건, P1 0건, 코드 품질 PASS
 - 출시 판정: PENDING
-- 보류 이유: Preview DB migration·Cron 실행, SOLAPI 실문자 가입 정합성, WebKit 실검수 증거가 아직 없다.
+- 보류 이유: SOLAPI 실문자 가입 정합성과 성공 후 관련 데이터 각 1건 확인 증거가 아직 없다. Preview DB migration·Cron·WebKit은 후속 검수로 확인했다.
 
 ## 롤백
 

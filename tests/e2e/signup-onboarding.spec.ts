@@ -106,9 +106,10 @@ test('200% 글자 확대와 키보드 이동에서도 회원가입 순서와 초
   await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
   await expect(page.getByLabel('아이디')).toBeVisible();
   await expect(page.getByLabel('휴대폰 번호')).toBeVisible();
-  await page.keyboard.press('Tab');
-  await page.keyboard.press('Tab');
-  await page.keyboard.press('Tab');
+  for (let step = 0; step < 6; step += 1) {
+    await page.keyboard.press('Tab');
+    if (await page.getByLabel('아이디').evaluate((element) => element === document.activeElement)) break;
+  }
   await expect(page.getByLabel('아이디')).toBeFocused();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);

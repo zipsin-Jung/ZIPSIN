@@ -2,14 +2,14 @@
 
 - 기준일: 2026-10-06
 - 범위: `PSV1-AUTH-001`~`004`, `PSV1-ROLE-001`
-- 상태: 단일 화면 아이디·휴대폰 인증 로컬 구현·자동 검증 완료, Preview DB·실문자 연동 검수 대기
+- 상태: 단일 화면 아이디·휴대폰 인증 구현, Preview DB·Cron·WebKit 검증 완료, 실문자 공급자 연동 대기
 
 ## 요구사항과 구현 증거
 
 | 요구사항 | 화면·상태 | 대표 소스 | 대표 테스트 | 확인 결과 |
 |---|---|---|---|---|
 | `PSV1-AUTH-001` 세 간편가입 진입 | `/login`, `/auth/callback`; 준비 중·취소·오류·성공 복귀 | `features/auth/components/SocialLoginButtons.tsx`, `features/auth/actions/start-oauth.ts`, `app/(auth)/auth/callback/route.ts` | `tests/unit/auth/providers.test.ts`, `tests/integration/auth/callback.test.ts`, `tests/e2e/signup-onboarding.spec.ts` | 제공자 구분, 키보드 버튼, 안전한 복귀 경로와 오류 복구 자동 테스트 통과. 실제 제공자 왕복은 Preview 키 설정 후 필요 |
-| `PSV1-AUTH-002` 전화 인증·동의 | 신규 비밀번호 가입은 `/signup` 한 화면의 `/api/auth/signup/phone/send`, `/verify`; OAuth·기존 미완료 계정은 `/signup/verify` 보존 | `features/auth/services/anonymous-signup-phone.ts`, `features/auth/server/signup-intent.ts`, `features/auth/actions/register-verified-password-account.ts`, `supabase/migrations/202610140004_anonymous_signup_phone.sql` | `tests/integration/auth/anonymous-signup-phone.test.ts`, `tests/integration/auth/register-verified-password-account.test.ts`, `tests/e2e/signup-onboarding.spec.ts` | OTP 전 계정 0건, 인증 증거 단일 소비, 필수 동의 전 가입 차단과 실패 보상 자동 테스트 통과. Preview migration·실문자 왕복은 대기 |
+| `PSV1-AUTH-002` 전화 인증·동의 | 신규 비밀번호 가입은 `/signup` 한 화면의 `/api/auth/signup/phone/send`, `/verify`; OAuth·기존 미완료 계정은 `/signup/verify` 보존 | `features/auth/services/anonymous-signup-phone.ts`, `features/auth/server/signup-intent.ts`, `features/auth/actions/register-verified-password-account.ts`, `supabase/migrations/202610140004_anonymous_signup_phone.sql` | `tests/integration/auth/anonymous-signup-phone.test.ts`, `tests/integration/auth/register-verified-password-account.test.ts`, `tests/e2e/signup-onboarding.spec.ts` | OTP 전 계정 0건, 인증 증거 단일 소비, 필수 동의 전 가입 차단과 실패 보상 자동 테스트 통과. Preview migration·Cron 실제 성공 확인, SOLAPI 실문자 왕복은 대기 |
 | `PSV1-AUTH-003` 아이디 가입·로그인 | `/signup`, `/login`; 중복·확인 대기·공통 실패·성공 | `features/auth/domain/username.ts`, `features/auth/services/register-verified-password-account.ts`, `features/auth/services/login-with-username.ts`, `supabase/migrations/202610060001_account_usernames.sql` | `tests/unit/auth/password-signup.test.ts`, `tests/integration/auth/register-verified-password-account.test.ts`, `tests/integration/auth/login-with-username.test.ts`, `tests/e2e/signup-onboarding.spec.ts` | 집신·집신체크가 같은 가입 화면과 계정을 사용한다. 아이디 중복 확인, 비공개 매핑, 중복 방지, 계정 열거 방지와 반응형 자동 테스트 통과. 기존 로그인 화면은 유지 |
 | `PSV1-AUTH-004` 계정 복구 | `/account-recovery`, `/reset-password`; 동일 안내·만료·변경 | `features/auth/services/account-recovery.ts`, `features/auth/actions/request-account-recovery.ts`, `features/auth/actions/update-password.ts` | `tests/integration/auth/account-recovery.test.ts`, `tests/unit/auth/recovery-actions.test.ts` | 계정 상태와 무관한 요청 응답, 유효 세션 확인과 변경 후 로그아웃 자동 테스트 통과. 실제 메일 왕복 대기 |
 | `PSV1-ROLE-001` 역할 선택 | `/onboarding/role`, `/home`; 미선택·저장·오류·완료 | `features/auth/components/RolePicker.tsx`, `features/auth/actions/save-role.ts`, `features/auth/guards/require-onboarding.ts`, `app/(app)/layout.tsx` | `tests/unit/auth/role.test.tsx`, `tests/integration/auth/guards.test.ts` | 네 역할 설명, 미인증 접근 차단, 역할이 자원 권한을 만들지 않는 구조 확인 |
@@ -50,24 +50,25 @@
 | 커버리지 | Statements 90.06%, Branches 81.08%, Functions 90.76%, Lines 93.23% |
 | 타입·빌드·비밀정보 검사 | 모두 성공 |
 | Chromium 브라우저 | 가입 시나리오 18개 확인; 320·390·768·1280·1440px, 200% 글자 확대·키보드와 실제 Route Handler 쿠키 왕복. 병렬 실행의 2개 시간초과는 1-worker 재실행 통과 |
-| WebKit | 프로젝트 브라우저 설정에 없어 미검증 |
-| Preview 실문자·DB | migration·환경값 적용 후 별도 검증 필요 |
+| WebKit | 가입 시나리오 18개 모두 통과; Chromium과 합산 36개 통과 |
+| Preview DB·Cron | migration 적용, 테이블·함수·Cron 활성, 2026-10-14 13:30 KST Cron `succeeded` 확인 |
+| Preview 실문자 | SOLAPI key·secret·발신번호 미준비로 대기 |
 
 빌드 성공과 Chromium 브라우저 검수는 분리해 기록했다. 이 결과는 Production 배포 또는 실제 문자 수신 성공을 뜻하지 않는다.
 
-독립 최종 재검수는 코드 P0·P1 0건으로 **코드 품질 PASS**다. 다만 Preview migration·Cron 실행, SOLAPI 실문자와 가입 데이터 정합성, WebKit 증거가 없어 **출시 게이트는 PENDING**이다.
+독립 최종 재검수는 코드 P0·P1 0건으로 **코드 품질 PASS**다. Preview migration·Cron 실행·WebKit 증거는 확보했지만, SOLAPI 실문자와 성공 가입 데이터 정합성 증거가 없어 **출시 게이트는 PENDING**이다.
 
 ### SUA-AUTH 양방향 추적
 
 | 요구사항·AC | 화면·상태 | 구현 증거 | 테스트·결과 |
 |---|---|---|---|
-| `001 / AC-001~004` | `/signup` 단일 화면·반응형·확대 | `PasswordSignupForm`, signup page | `password-signup-form`, `signup-onboarding`; Chromium 통과, WebKit 대기 |
-| `002 / AC-005~009` | OTP 전 데이터 0건·발송/검증·단일 증거 | anonymous phone service, signup intent, send/verify routes, migration issue/verify/claim | anonymous phone service·route·migration·cookie E2E 통과; Preview DB 0건 확인 대기 |
+| `001 / AC-001~004` | `/signup` 단일 화면·반응형·확대 | `PasswordSignupForm`, signup page | `password-signup-form`, `signup-onboarding`; Chromium·WebKit 통과 |
+| `002 / AC-005~009` | OTP 전 데이터 0건·발송/검증·단일 증거 | anonymous phone service, signup intent, send/verify routes, migration issue/verify/claim | service·route·migration·cookie E2E·Preview migration 통과; 실문자 OTP 전 0건 확인 대기 |
 | `003 / AC-010~014` | 완료 버튼·서버 재검증·충돌 복구·`/ck` 복귀 | verified signup schema/action/service, finalize RPC | form/action/service 테스트 통과; 실계정 1건·동시 제출 Preview 확인 대기 |
 | `004 / AC-015~019` | 아이디·문자·최종 상태, 레거시 OAuth·verify | form 상태, legacy callback/verification/guard | 신규 form/action 및 기존 callback/verification 회귀 통과 |
-| `005 / AC-020~024` | 동의·label·live/alert·tel/OTP·비성인인증 문구 | form, finalize consent, challenge redaction cron | 접근성 component/E2E·migration 보안 테스트 통과; 실제 cron 실행 대기 |
+| `005 / AC-020~024` | 동의·label·live/alert·tel/OTP·비성인인증 문구 | form, finalize consent, challenge redaction cron | 접근성 component/E2E·migration 보안 테스트·실제 Cron `succeeded` 통과 |
 
-대표 실행 명령은 `npm run test:coverage`, `npm run typecheck`, `npm run build`, `npm run check:secrets`, `PLAYWRIGHT_PORT=3021 npx playwright test tests/e2e/signup-onboarding.spec.ts --project=chromium`이다.
+대표 실행 명령은 `npm run test:coverage -- --maxWorkers=50%`, `npm run typecheck`, `npm run build`, `npm run check:secrets`, `npx playwright test tests/e2e/signup-onboarding.spec.ts --project=chromium --project=webkit --workers=1`이다.
 
 ## 2026-10-02 검증 결과
 
