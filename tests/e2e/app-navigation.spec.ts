@@ -9,6 +9,17 @@ test('signed-out users understand the product and can enter the real login flow'
   await expect(page.getByText(/사전 가입|데모/)).toHaveCount(0);
 });
 
+test('public header offers install before login and web signup', async ({ page }) => {
+  await page.goto('/');
+
+  const actions = page.locator('[data-header-actions] > button, [data-header-actions] > a');
+  await expect(actions).toHaveCount(3);
+  await expect(actions.nth(0)).toHaveAccessibleName('앱으로 다운로드');
+  await expect(actions.nth(1)).toHaveAccessibleName('로그인');
+  await expect(actions.nth(2)).toHaveAccessibleName('웹에서 시작하기');
+  await expect(actions.nth(0)).toHaveCSS('min-height', '44px');
+});
+
 for (const width of [320, 390, 768, 1440]) {
   test(`Kakao inquiry stays reachable without covering the viewport at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });

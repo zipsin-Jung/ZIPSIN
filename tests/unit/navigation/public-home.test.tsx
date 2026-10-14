@@ -42,12 +42,21 @@ describe('PublicHome', () => {
     expect(image).toHaveAttribute('src', expect.stringContaining('story-01-gather.png'));
   });
 
-  it('TEST-RC-PUB-003 실제 서비스 경로로만 연결한다', () => {
+  it('TEST-PUB-INSTALL-CTA-001 설치, 로그인, 웹 시작 순서로 실제 서비스 진입을 제공한다', () => {
     render(<PublicHome />);
 
-    expect(screen.getAllByRole('link', { name: '로그인' })[0]).toHaveAttribute('href', '/login');
-    expect(screen.getAllByRole('link', { name: /웹에서 시작하기|내 집 기록 시작하기/ })[0]).toHaveAttribute('href', '/signup');
-    expect(screen.queryByRole('link', { name: /앱 다운로드|App Store|Google Play/ })).not.toBeInTheDocument();
+    const header = document.querySelector('header');
+    const headerActions = header?.querySelector('[data-header-actions]');
+    expect(headerActions).toBeInTheDocument();
+    const actions = Array.from(headerActions?.children ?? []).filter((element) => element.matches('button, a'));
+
+    expect(actions).toHaveLength(3);
+    expect(actions[0]).toHaveAccessibleName('앱으로 다운로드');
+    expect(actions[1]).toHaveAccessibleName('로그인');
+    expect(actions[1]).toHaveAttribute('href', '/login');
+    expect(actions[2]).toHaveAccessibleName('웹에서 시작하기');
+    expect(actions[2]).toHaveAttribute('href', '/signup');
+    expect(screen.queryByRole('link', { name: /App Store|Google Play/ })).not.toBeInTheDocument();
   });
 
   it('TEST-RC-PUB-IMG-003 이미지가 실패해도 설명과 실제 CTA를 유지한다', () => {
