@@ -21,9 +21,9 @@ for (const viewport of [
     await expect(signupLinks).toHaveCount(2);
     await expect(signupLinks.first()).toBeVisible();
     await expect(page.getByLabel('이메일 주소')).toHaveCount(0);
-    await expect(page.getByText('계약·입주 기록')).toBeVisible();
-    await expect(page.getByText('수리·사진 보관')).toBeVisible();
-    await expect(page.getByText('일정·비용 관리')).toBeVisible();
+    const visual = page.getByRole('img', { name: '집별 계약·사진·수리·일정 기록이 이어지는 집신 화면 예시' });
+    if (viewport.width <= 390) await expect(visual).toBeHidden();
+    else await expect(visual).toBeVisible();
     await page.reload();
     await expect(page.getByRole('heading', { name: '집신 시작하기' })).toBeVisible();
   });
@@ -32,8 +32,8 @@ for (const viewport of [
     await page.setViewportSize(viewport);
     await page.goto('/signup');
     await expect(page.getByRole('heading', { name: '회원가입' })).toBeVisible();
-    await expect(page.getByRole('list', { name: '회원가입 진행 단계' })).toContainText('휴대전화 인증');
-    await expect(page.getByText(/노트북·PC에서도 같은 계정/)).toBeVisible();
+    await expect(page.getByRole('list', { name: '회원가입 진행 단계' })).toContainText('2 휴대폰 인증');
+    await expect(page.getByText(/노트북·PC에서도 같은 집신 계정/)).toBeVisible();
     await expect(page.getByText('영문 소문자·숫자·특수문자를 포함해 8자 이상')).toBeVisible();
     await expect(page.getByRole('button', { name: '비밀번호 보기' })).toBeVisible();
     await expect(page.getByRole('checkbox', { name: '필수 항목 전체 동의' })).toBeVisible();
@@ -42,12 +42,12 @@ for (const viewport of [
     expect(overflow).toBe(false);
   });
 
-  test(`집신체크 회원가입은 ${viewport.width}px에서 문자 인증 없이 복귀함을 알린다`, async ({ page }) => {
+  test(`집신체크 회원가입은 ${viewport.width}px에서 휴대폰 인증 뒤 복귀함을 알린다`, async ({ page }) => {
     await page.setViewportSize(viewport);
     await page.goto('/signup?next=%2Fck');
     await expect(page.getByText(/집신체크로 바로 돌아가요/)).toBeVisible();
-    await expect(page.getByText('3 휴대전화 인증')).toHaveCount(0);
-    await expect(page.getByText(/문자 인증 없이 가입/)).toBeVisible();
+    await expect(page.getByText('2 휴대폰 인증')).toBeVisible();
+    await expect(page.getByText(/문자 인증 없이 가입/)).toHaveCount(0);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     expect(overflow).toBe(false);
   });

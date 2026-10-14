@@ -80,3 +80,12 @@
 2. 문제가 발견되면 로그인 진입 링크를 기존 체험 폼으로 되돌리고 인증 경로 배포를 중단한다.
 3. Supabase 적용 후 되돌릴 때는 `docs/technical/public-v1-data-access.md`의 롤백 순서를 사용한다.
 4. 비밀값은 Git이 아니라 Vercel·Supabase 설정에서 제거하거나 회전한다.
+# 2026-10-14 인증 보강 추적
+
+- `AUTHUX-001`: 로그인 기록 이미지와 활성 OAuth만 표시 — `9694d82`
+- `AUTHUX-002`: 아이디 중복확인 API·UI, DB unique 최종 판정 유지 — `da49feb`
+- `AUTHUX-003`: `집신과 함께 해요 → 휴대폰 인증`과 `/ck` 복귀 — `4a084a5`
+- `AUTHUX-004`: SOLAPI 전송 어댑터, HMAC OTP, 만료·시도·소비 경계 — `f739e36`
+- `AUTHUX-005`: 이메일 또는 인증 휴대폰 계정 확인 — `1d5e076`
+- 자동 검증: 553 passed, 1 skipped; coverage 90.82/83.08/90.88/94.51; typecheck·build·secret scan 통과
+- 인증 반응형 E2E: 5개 화면 폭 15개 통과. 전체 E2E의 인증 외 기존 실패 16개는 작업 기록에 분리했다.

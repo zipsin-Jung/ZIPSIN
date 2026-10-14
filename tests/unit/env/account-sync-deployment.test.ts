@@ -36,4 +36,13 @@ describe('집신·집신체크 배포 환경 검사', () => {
       NEXT_PUBLIC_AUTH_COOKIE_DOMAIN: '.zipsin.net',
     })).toEqual([]);
   });
+
+  it('운영 mock을 거부하고 SOLAPI 선택 시 서버 비밀값을 모두 요구한다', () => {
+    expect(validateAccountSyncEnv({ ...base, NODE_ENV: 'production', PHONE_VERIFICATION_PROVIDER: 'mock' }))
+      .toContain('Production PHONE_VERIFICATION_PROVIDER=mock 금지');
+    expect(validateAccountSyncEnv({ ...base, NODE_ENV: 'development', PHONE_VERIFICATION_PROVIDER: 'solapi' }))
+      .toEqual(expect.arrayContaining([
+        'SOLAPI 설정 누락: SOLAPI_API_KEY, SOLAPI_API_SECRET, SOLAPI_SENDER_NUMBER, PHONE_OTP_HMAC_SECRET',
+      ]));
+  });
 });
