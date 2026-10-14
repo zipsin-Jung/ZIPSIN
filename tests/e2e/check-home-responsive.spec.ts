@@ -82,7 +82,7 @@ for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}]) {
     const detail=page.getByRole('button',{name:'물·배수 상세 체크 펼치기'});
     const finish=page.getByRole('button',{name:'저장하고 내가 본 집으로'});
     await expect(detail).toHaveAttribute('data-attention','required');
-    await expect(detail).toContainText('꼭 눌러보세요');
+    await expect(detail).toHaveText('상세 체크');
     await expect(finish).toBeVisible();
 
     for(const target of [detail,finish]){

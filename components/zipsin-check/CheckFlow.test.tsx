@@ -27,7 +27,8 @@ describe('초보 임차인 현장 체크',()=>{
     renderFlow();
     const detail=screen.getByRole('button',{name:'물·배수 상세 체크 펼치기'});
     expect(detail).toHaveAttribute('data-attention','required');
-    expect(detail).toHaveTextContent('꼭 눌러보세요');
+    expect(detail).toHaveTextContent('상세 체크');
+    expect(detail).not.toHaveTextContent('꼭 눌러보세요');
     fireEvent.click(detail);
     fireEvent.click(screen.getByRole('button',{name:'물·배수 상세 체크 접기'}));
     expect(screen.getByRole('button',{name:'물·배수 상세 체크 펼치기'})).toHaveAttribute('data-attention','seen');

@@ -61,7 +61,7 @@ function Row({item, candidate, onChange, store, questionIndex, detailSeen, onDet
         {isQuestion ? (answer?.memo ? '답변 있음' : '답변 기록') : (answer?.memo ? '메모·사진 있음' : '메모·사진')}
       </button>
       <button type="button" aria-label={`${item.title} 상세 체크 ${detail ? '접기' : '펼치기'}`} aria-expanded={detail} data-attention={isQuestion ? undefined : detailSeen ? 'seen' : 'required'} onClick={toggleDetail}>
-        {detail ? '상세 접기' : isQuestion ? '질문 펼치기' : <><span>상세 체크</span>{!detailSeen && <small>꼭 눌러보세요</small>}</>}
+        {detail ? '상세 접기' : isQuestion ? '질문 펼치기' : '상세 체크'}
       </button>
     </div>
     {detail && <section className={styles.actionChecks} aria-label={`${item.title} 상세 체크`}>
