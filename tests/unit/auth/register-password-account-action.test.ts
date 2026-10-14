@@ -64,18 +64,14 @@ describe('registerPasswordAccountAction', () => {
     await expect(registerPasswordAccountAction(form())).rejects.toThrow('REDIRECT:/signup/verify');
   });
 
-  it('집신체크에서 시작한 가입은 문자 인증에 막히지 않고 바로 복귀한다', async () => {
+  it('집신체크에서 시작한 가입도 휴대폰 인증으로 이동한다', async () => {
     signUp.mockResolvedValue({ data: { user: { id: 'user-1', identities: [{ id: 'identity-1' }] }, session: { access_token: 'masked' } }, error: null });
-    await expect(registerPasswordAccountAction(form({ next: '/ck' }))).rejects.toThrow('REDIRECT:/ck');
+    await expect(registerPasswordAccountAction(form({ next: '/ck' }))).rejects.toThrow('REDIRECT:/signup/verify?next=%2Fck');
     expect(signUp).toHaveBeenCalledWith(expect.objectContaining({
       options: expect.objectContaining({
-        emailRedirectTo: expect.stringContaining('next=%2Fck'),
+        emailRedirectTo: expect.stringContaining('next=%2Fsignup%2Fverify%3Fnext%3D%252Fck'),
       }),
     }));
-    expect(consentInsert).toHaveBeenCalledWith([
-      expect.objectContaining({ user_id: 'user-1', document_type: 'terms', document_version: '2026-10-02', accepted: true }),
-      expect.objectContaining({ user_id: 'user-1', document_type: 'privacy', document_version: '2026-10-02', accepted: true }),
-    ]);
     expect(attributionInsert).toHaveBeenCalledWith({ user_id: 'user-1', source: 'zipsin_check' });
   });
 

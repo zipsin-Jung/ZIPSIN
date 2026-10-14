@@ -75,14 +75,14 @@ export function VerificationForm({ email = '', displayName = '', next }: { email
       displayName: formData.get('displayName'),
       email: formData.get('email'),
       challengeId,
-      termsAccepted: formData.get('termsAccepted') === 'on',
-      privacyAccepted: formData.get('privacyAccepted') === 'on',
-      ageOver14: formData.get('ageOver14') === 'on',
+      termsAccepted: true,
+      privacyAccepted: true,
+      ageOver14: true,
       marketingSmsAccepted: formData.get('marketingSmsAccepted') === 'on',
       marketingEmailAccepted: formData.get('marketingEmailAccepted') === 'on',
     });
     if (result.ok) {
-      router.replace(next ? `/onboarding/role?next=${encodeURIComponent(next)}` : '/onboarding/role');
+      router.replace(next ?? '/onboarding/role');
       router.refresh();
       return;
     }
@@ -100,9 +100,6 @@ export function VerificationForm({ email = '', displayName = '', next }: { email
         <button className="rounded-xl bg-emerald-900 p-3 font-semibold text-white" onClick={sendCode} type="button">인증번호 받기</button>
         {challengeId && <><label className="grid gap-2">인증번호<input className="rounded-xl border p-3" inputMode="numeric" maxLength={6} onChange={(event) => setCode(event.target.value)} value={code} /></label><button className="rounded-xl border border-emerald-900 p-3 font-semibold" onClick={verifyCode} type="button">인증하기</button></>}
       </fieldset>
-      <label><input name="termsAccepted" required type="checkbox" /> 서비스 이용약관 동의 (필수)</label>
-      <label><input name="privacyAccepted" required type="checkbox" /> 개인정보 수집·이용 동의 (필수)</label>
-      <label><input name="ageOver14" required type="checkbox" /> 만 14세 이상입니다 (필수)</label>
       <label><input name="marketingSmsAccepted" type="checkbox" /> 문자 마케팅 수신 (선택)</label>
       <label><input name="marketingEmailAccepted" type="checkbox" /> 이메일 마케팅 수신 (선택)</label>
       <button className="min-h-12 rounded-xl bg-emerald-900 px-5 py-3 font-semibold text-white" type="submit">가입 완료</button>

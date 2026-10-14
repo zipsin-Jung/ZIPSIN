@@ -15,7 +15,7 @@ export async function registerPasswordAccountAction(formData: FormData) {
   const next = sanitizeNextPath(hasNext ? rawNext : undefined);
   const isCheckSignup = next === '/ck' || next.startsWith('/ck/');
   const verifyPath = hasNext ? `/signup/verify?next=${encodeURIComponent(next)}` : '/signup/verify';
-  const completionPath = isCheckSignup ? next : verifyPath;
+  const completionPath = verifyPath;
   const parsed = passwordSignupSchema.safeParse({
     username: formData.get('username'),
     password: formData.get('password'),
@@ -102,15 +102,11 @@ export async function registerPasswordAccountAction(formData: FormData) {
 
   if (!result.ok) redirect(`/signup?error=${result.error}`);
   if (isCheckSignup) {
-    const { error: consentError } = await admin.from('consent_acceptances').insert([
-      { user_id: result.userId, document_type: 'terms', document_version: '2026-10-02', accepted: true },
-      { user_id: result.userId, document_type: 'privacy', document_version: '2026-10-02', accepted: true },
-    ]);
     const { error: attributionError } = await admin.from('signup_attributions').insert({
       user_id: result.userId,
       source: 'zipsin_check',
     });
-    if (consentError || attributionError) {
+    if (attributionError) {
       await deleteCreatedUser(result.userId);
       redirect(`/signup?error=service_unavailable&next=${encodeURIComponent(next)}`);
     }
