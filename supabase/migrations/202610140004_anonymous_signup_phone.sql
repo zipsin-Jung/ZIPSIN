@@ -11,6 +11,7 @@ create table public.anonymous_signup_phone_challenges (
   claim_digest text,
   claim_expires_at timestamptz,
   consumed_at timestamptz,
+  quarantined_at timestamptz,
   delivery_status text not null default 'pending'
     check (delivery_status in ('pending', 'sent', 'failed')),
   provider_message_id text,
@@ -92,7 +93,8 @@ begin
     for update;
   if state.id is null then return null; end if;
   update public.anonymous_signup_phone_challenges
-    set claimed_at = now(), claim_digest = p_claim_digest, claim_expires_at = p_claim_expires_at
+    set claimed_at = now(), claim_digest = p_claim_digest,
+      claim_expires_at = greatest(p_claim_expires_at, state.expires_at + interval '1 second')
     where id = p_id;
   return state.phone_e164;
 end;
@@ -110,6 +112,39 @@ begin
     where id = p_id and intent_digest = p_intent_digest
       and claim_digest = p_claim_digest and consumed_at is null;
   return found;
+end;
+$$;
+
+create or replace function public.isolate_anonymous_signup_phone_challenge(
+  p_id uuid,
+  p_intent_digest text,
+  p_claim_digest text
+) returns boolean
+language plpgsql security definer set search_path = public as $$
+begin
+  update public.anonymous_signup_phone_challenges
+    set consumed_at = now(), quarantined_at = now(), phone_e164 = null,
+      code_digest = 'isolated', provider_message_id = null,
+      claim_digest = null, claim_expires_at = null
+    where id = p_id and intent_digest = p_intent_digest
+      and claim_digest = p_claim_digest and consumed_at is null;
+  return found;
+end;
+$$;
+
+create or replace function public.redact_expired_anonymous_signup_phone_challenges()
+returns bigint
+language plpgsql security definer set search_path = public as $$
+declare redacted bigint;
+begin
+  update public.anonymous_signup_phone_challenges
+    set phone_e164 = null, code_digest = 'expired', provider_message_id = null,
+      consumed_at = coalesce(consumed_at, now()), claim_digest = null, claim_expires_at = null
+    where created_at <= now() - interval '23 hours 45 minutes'
+      and (phone_e164 is not null or provider_message_id is not null
+        or code_digest not in ('consumed', 'isolated', 'expired'));
+  get diagnostics redacted = row_count;
+  return redacted;
 end;
 $$;
 
@@ -165,7 +200,7 @@ begin
   end if;
   update public.anonymous_signup_phone_challenges
     set consumed_at = now(), phone_e164 = null, code_digest = 'consumed',
-      claim_digest = null, claim_expires_at = null
+      provider_message_id = null, claim_digest = null, claim_expires_at = null
     where id = p_id;
 end;
 $$;
@@ -178,5 +213,16 @@ revoke all on function public.claim_anonymous_signup_phone_challenge(uuid,text,t
 grant execute on function public.claim_anonymous_signup_phone_challenge(uuid,text,text,timestamptz) to service_role;
 revoke all on function public.release_anonymous_signup_phone_claim(uuid,text,text) from public, anon, authenticated;
 grant execute on function public.release_anonymous_signup_phone_claim(uuid,text,text) to service_role;
+revoke all on function public.isolate_anonymous_signup_phone_challenge(uuid,text,text) from public, anon, authenticated;
+grant execute on function public.isolate_anonymous_signup_phone_challenge(uuid,text,text) to service_role;
+revoke all on function public.redact_expired_anonymous_signup_phone_challenges() from public, anon, authenticated;
+grant execute on function public.redact_expired_anonymous_signup_phone_challenges() to service_role;
 revoke all on function public.finalize_verified_password_signup(uuid,uuid,text,text,text,text,text,text,text,text) from public, anon, authenticated;
 grant execute on function public.finalize_verified_password_signup(uuid,uuid,text,text,text,text,text,text,text,text) to service_role;
+
+create extension if not exists pg_cron;
+select cron.schedule(
+  'redact-anonymous-signup-phone-challenges',
+  '*/15 * * * *',
+  $$select public.redact_expired_anonymous_signup_phone_challenges()$$
+);

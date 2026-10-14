@@ -12,9 +12,10 @@ function repository() {
   return {
     claimPhoneProof: vi.fn().mockResolvedValue(true),
     createAuthUser: vi.fn().mockResolvedValue({ userId: 'user-1', sessionCreated: true }),
-    finalizeSignup: vi.fn().mockResolvedValue(true),
+    finalizeSignup: vi.fn().mockResolvedValue('ok'),
     releaseClaim: vi.fn().mockResolvedValue(true),
     deleteAuthUser: vi.fn().mockResolvedValue(true),
+    isolatePhoneProof: vi.fn().mockResolvedValue(true),
     queueCleanup: vi.fn().mockResolvedValue(true),
   };
 }
@@ -37,25 +38,36 @@ describe('registerVerifiedPasswordAccount', () => {
   it('releases the proof when Auth creation fails', async () => {
     const repo = repository();
     repo.createAuthUser.mockResolvedValue({ error: 'account_unavailable' });
-    await expect(registerVerifiedPasswordAccount(repo, input)).resolves.toEqual({ ok: false, error: 'account_unavailable' });
+    await expect(registerVerifiedPasswordAccount(repo, input)).resolves.toEqual({ ok: false, error: 'email_unavailable' });
     expect(repo.releaseClaim).toHaveBeenCalled();
     expect(repo.finalizeSignup).not.toHaveBeenCalled();
   });
 
   it('deletes only the new Auth user when finalization loses a username or phone race', async () => {
     const repo = repository();
-    repo.finalizeSignup.mockResolvedValue(false);
-    await expect(registerVerifiedPasswordAccount(repo, input)).resolves.toEqual({ ok: false, error: 'account_unavailable' });
+    repo.finalizeSignup.mockResolvedValue('username_unavailable');
+    await expect(registerVerifiedPasswordAccount(repo, input)).resolves.toEqual({ ok: false, error: 'username_unavailable' });
     expect(repo.deleteAuthUser).toHaveBeenCalledWith('user-1');
     expect(repo.releaseClaim).toHaveBeenCalled();
   });
 
   it('queues cleanup and isolates the proof if compensating deletion fails', async () => {
     const repo = repository();
-    repo.finalizeSignup.mockResolvedValue(false);
+    repo.finalizeSignup.mockResolvedValue('service_unavailable');
     repo.deleteAuthUser.mockResolvedValue(false);
     await expect(registerVerifiedPasswordAccount(repo, input)).resolves.toEqual({ ok: false, error: 'service_unavailable' });
     expect(repo.queueCleanup).toHaveBeenCalledWith('user-1');
+    expect(repo.isolatePhoneProof).toHaveBeenCalledWith(expect.objectContaining({ challengeId: input.challengeId }));
+    expect(repo.releaseClaim).not.toHaveBeenCalled();
+  });
+
+  it('remains failed closed when both isolation and cleanup reporting fail', async () => {
+    const repo = repository();
+    repo.finalizeSignup.mockResolvedValue('service_unavailable');
+    repo.deleteAuthUser.mockResolvedValue(false);
+    repo.isolatePhoneProof.mockResolvedValue(false);
+    repo.queueCleanup.mockResolvedValue(false);
+    await expect(registerVerifiedPasswordAccount(repo, input)).resolves.toEqual({ ok: false, error: 'service_unavailable' });
     expect(repo.releaseClaim).not.toHaveBeenCalled();
   });
 });

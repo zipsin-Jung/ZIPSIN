@@ -61,6 +61,7 @@ test('문자 발송과 인증을 회원가입 화면에서 연속 완료한다',
   }));
   await page.route('**/api/auth/signup/phone/verify', (route) => route.fulfill({ json: { ok: true } }));
   await page.goto('/signup?next=%2Fck');
+  await page.waitForTimeout(300);
   await page.getByLabel('아이디').fill('new_user');
   await page.getByRole('button', { name: '아이디 중복 확인' }).click();
   await page.getByLabel('비밀번호', { exact: true }).fill('password-2026');
@@ -73,4 +74,42 @@ test('문자 발송과 인증을 회원가입 화면에서 연속 완료한다',
   await expect(page.getByText('휴대폰 인증이 완료되었습니다.')).toBeVisible();
   await page.getByRole('checkbox', { name: '필수 항목 전체 동의' }).check();
   await expect(page.getByRole('button', { name: '회원가입 완료' })).toBeEnabled();
+});
+
+test('가입 의도 쿠키는 문자 발송 API에서 생성되어 인증 API에도 전달된다', async ({ page, context }) => {
+  await page.goto('/signup');
+  await page.evaluate(async () => {
+    await fetch('/api/auth/signup/phone/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: '01012345678' }),
+    });
+  });
+  const intent = (await context.cookies()).find((cookie) => cookie.name === 'zipsin_signup_intent');
+  expect(intent).toMatchObject({ httpOnly: true, path: '/', sameSite: 'Lax' });
+
+  const verify = await page.evaluate(async () => {
+    const response = await fetch('/api/auth/signup/phone/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ challengeId: '11111111-1111-4111-8111-111111111111', code: '123456' }),
+    });
+    return { status: response.status, body: await response.json() as { error?: string } };
+  });
+  expect(verify.body.error).not.toBe('not_found');
+});
+
+test('200% 글자 확대와 키보드 이동에서도 회원가입 순서와 초점이 유지된다', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/signup');
+  await page.waitForTimeout(300);
+  await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+  await expect(page.getByLabel('아이디')).toBeVisible();
+  await expect(page.getByLabel('휴대폰 번호')).toBeVisible();
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Tab');
+  await expect(page.getByLabel('아이디')).toBeFocused();
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+  expect(overflow).toBe(false);
 });

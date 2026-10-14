@@ -16,9 +16,10 @@ export type VerifiedPasswordAccountRepository = {
     email: string;
     displayName: string;
     source: 'zipsin_check' | null;
-  }): Promise<boolean>;
+  }): Promise<'ok' | 'username_unavailable' | 'phone_unavailable' | 'service_unavailable'>;
   releaseClaim(input: { challengeId: string; intentDigest: string; claimDigest: string }): Promise<boolean>;
   deleteAuthUser(userId: string): Promise<boolean>;
+  isolatePhoneProof(input: { challengeId: string; intentDigest: string; claimDigest: string }): Promise<boolean>;
   queueCleanup(userId: string): Promise<boolean>;
 };
 
@@ -49,7 +50,7 @@ export async function registerVerifiedPasswordAccount(
   });
   if (created.error) {
     await repository.releaseClaim(claim);
-    return { ok: false as const, error: created.error };
+    return { ok: false as const, error: created.error === 'account_unavailable' ? 'email_unavailable' as const : created.error };
   }
 
   const finalized = await repository.finalizeSignup({
@@ -60,14 +61,15 @@ export async function registerVerifiedPasswordAccount(
     displayName: input.displayName,
     source: input.next === '/ck' || input.next.startsWith('/ck/') ? 'zipsin_check' : null,
   });
-  if (finalized) {
+  if (finalized === 'ok') {
     return { ok: true as const, userId: created.userId, sessionCreated: created.sessionCreated };
   }
 
   if (await repository.deleteAuthUser(created.userId)) {
     await repository.releaseClaim(claim);
-    return { ok: false as const, error: 'account_unavailable' as const };
+    return { ok: false as const, error: finalized };
   }
+  await repository.isolatePhoneProof(claim);
   await repository.queueCleanup(created.userId);
   return { ok: false as const, error: 'service_unavailable' as const };
 }

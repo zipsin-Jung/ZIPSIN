@@ -6,12 +6,20 @@ import { getPhoneOtpSecret, getSolapiSmsTransport } from '@/features/auth/phone/
 import { getOrCreateSignupIntent } from '@/features/auth/server/signup-intent';
 import { reserveSmsSend, type SmsRateLimitAdmin } from '@/features/auth/server/sms-rate-limit';
 import { sendAnonymousSignupPhoneCode } from '@/features/auth/services/anonymous-signup-phone';
+import { normalizeKoreanMobile } from '@/features/auth/schemas/verification';
 
 const noStore = { 'Cache-Control': 'no-store' };
 
 export async function POST(request: NextRequest) {
+  let phone: string;
   try {
-    const { phone } = await request.json() as { phone?: string };
+    const body = await request.json() as { phone?: string };
+    phone = body.phone ?? '';
+    normalizeKoreanMobile(phone);
+  } catch {
+    return NextResponse.json({ ok: false, error: 'invalid_phone' }, { status: 400, headers: noStore });
+  }
+  try {
     const intent = await getOrCreateSignupIntent();
     const challengeId = randomUUID();
     const code = randomInt(0, 1_000_000).toString().padStart(6, '0');
@@ -52,6 +60,6 @@ export async function POST(request: NextRequest) {
     const status = result.ok ? 200 : result.error === 'rate_limited' ? 429 : 503;
     return NextResponse.json(result, { status, headers: noStore });
   } catch {
-    return NextResponse.json({ ok: false, error: 'invalid_phone' }, { status: 400, headers: noStore });
+    return NextResponse.json({ ok: false, error: 'temporarily_unavailable' }, { status: 503, headers: noStore });
   }
 }

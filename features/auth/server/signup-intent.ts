@@ -23,7 +23,7 @@ export async function getOrCreateSignupIntent(): Promise<{ raw: string; digest: 
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
-    path: '/signup',
+    path: '/',
     maxAge: SIGNUP_INTENT_MAX_AGE,
   });
   return { raw, digest: digestSignupIntent(raw) };

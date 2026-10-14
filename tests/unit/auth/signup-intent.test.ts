@@ -26,9 +26,19 @@ describe('signup intent cookie', () => {
     expect(set).toHaveBeenCalledWith(SIGNUP_INTENT_COOKIE, intent.raw, expect.objectContaining({
       httpOnly: true,
       sameSite: 'lax',
-      path: '/signup',
+      path: '/',
       maxAge: 600,
     }));
+  });
+
+  it('shares the intent with signup APIs and the final server action', async () => {
+    get.mockReturnValue(undefined);
+    await getOrCreateSignupIntent();
+    expect(set).toHaveBeenCalledWith(
+      SIGNUP_INTENT_COOKIE,
+      expect.any(String),
+      expect.objectContaining({ path: '/' }),
+    );
   });
 
   it('reuses the server cookie without exposing a new token', async () => {

@@ -11,11 +11,19 @@ import { clearSignupIntent, getSignupIntent } from '@/features/auth/server/signu
 import { verifiedPasswordSignupSchema } from '@/features/auth/schemas/password-signup';
 import { registerVerifiedPasswordAccount } from '@/features/auth/services/register-verified-password-account';
 
+export type VerifiedSignupActionState = {
+  error?: string;
+  field?: 'signup-username' | 'signup-password' | 'signup-password-confirm' | 'signup-email' | 'signup-phone' | 'signup-form-error';
+};
+
 function signupPath(code: string, next: string, hasNext: boolean) {
   return `/signup?${code}${hasNext ? `&next=${encodeURIComponent(next)}` : ''}`;
 }
 
-export async function registerVerifiedPasswordAccountAction(formData: FormData) {
+export async function registerVerifiedPasswordAccountAction(
+  _previousState: VerifiedSignupActionState,
+  formData: FormData,
+): Promise<VerifiedSignupActionState> {
   const rawNext = formData.get('next');
   const hasNext = typeof rawNext === 'string' && rawNext.length > 0;
   const next = sanitizeNextPath(hasNext ? rawNext : undefined);
@@ -28,10 +36,18 @@ export async function registerVerifiedPasswordAccountAction(formData: FormData) 
     termsAccepted: formData.get('termsAccepted') === 'on',
     privacyAccepted: formData.get('privacyAccepted') === 'on',
   });
-  if (!parsed.success) redirect(signupPath('error=invalid_input', next, hasNext));
+  if (!parsed.success) {
+    const invalidField = parsed.error.issues[0]?.path[0];
+    const field = invalidField === 'username' ? 'signup-username'
+      : invalidField === 'password' ? 'signup-password'
+        : invalidField === 'passwordConfirm' ? 'signup-password-confirm'
+          : invalidField === 'email' ? 'signup-email'
+            : 'signup-form-error';
+    return { error: invalidField === 'passwordConfirm' ? '비밀번호가 서로 다릅니다.' : '입력한 내용을 다시 확인해 주세요.', field };
+  }
 
   const intent = await getSignupIntent();
-  if (!intent) redirect(signupPath('error=phone_not_verified', next, hasNext));
+  if (!intent) return { error: '휴대폰 인증을 다시 완료해 주세요.', field: 'signup-phone' };
 
   let admin: ReturnType<typeof createAdminSupabaseClient>;
   let secret: string;
@@ -39,7 +55,7 @@ export async function registerVerifiedPasswordAccountAction(formData: FormData) 
     admin = createAdminSupabaseClient();
     secret = getRateLimitSecret();
   } catch {
-    redirect(signupPath('error=service_unavailable', next, hasNext));
+    return { error: '가입 설정을 확인하고 있습니다. 잠시 후 다시 시도해 주세요.', field: 'signup-form-error' };
   }
 
   const requestHeaders = await headers();
@@ -58,7 +74,7 @@ export async function registerVerifiedPasswordAccountAction(formData: FormData) 
       p_limit: limit.limit,
       p_window_seconds: 3600,
     });
-    if (error || data !== true) redirect(signupPath('error=service_unavailable', next, hasNext));
+    if (error || data !== true) return { error: '요청이 많습니다. 잠시 후 다시 시도해 주세요.', field: 'signup-form-error' };
   }
 
   const claimToken = randomBytes(32).toString('base64url');
@@ -72,7 +88,9 @@ export async function registerVerifiedPasswordAccountAction(formData: FormData) 
         p_id: input.challengeId,
         p_intent_digest: input.intentDigest,
         p_claim_digest: input.claimDigest,
-        p_claim_expires_at: new Date(Date.now() + 2 * 60_000).toISOString(),
+        // Keep the claim beyond the five-minute OTP lifetime so an interrupted
+        // compensation cannot reopen the same proof before the proof expires.
+        p_claim_expires_at: new Date(Date.now() + 10 * 60_000).toISOString(),
       } as never);
       const claimedPhone = data as unknown;
       return !error && typeof claimedPhone === 'string' && claimedPhone.length > 0;
@@ -105,7 +123,11 @@ export async function registerVerifiedPasswordAccountAction(formData: FormData) 
         p_privacy_version: '2026-10-02',
         p_source: input.source,
       } as never);
-      return !error;
+      if (!error) return 'ok' as const;
+      const detail = `${error.code ?? ''} ${error.message ?? ''} ${error.details ?? ''}`.toLowerCase();
+      if (detail.includes('phone_already_registered')) return 'phone_unavailable' as const;
+      if (detail.includes('account_usernames') || detail.includes('username')) return 'username_unavailable' as const;
+      return 'service_unavailable' as const;
     },
     async releaseClaim(input) {
       const { data, error } = await admin.rpc('release_anonymous_signup_phone_claim' as never, {
@@ -118,6 +140,14 @@ export async function registerVerifiedPasswordAccountAction(formData: FormData) 
     async deleteAuthUser(userId) {
       const { error } = await admin.auth.admin.deleteUser(userId);
       return !error;
+    },
+    async isolatePhoneProof(input) {
+      const { data, error } = await admin.rpc('isolate_anonymous_signup_phone_challenge' as never, {
+        p_id: input.challengeId,
+        p_intent_digest: input.intentDigest,
+        p_claim_digest: input.claimDigest,
+      } as never);
+      return !error && data === true;
     },
     async queueCleanup(userId) {
       const { error } = await admin.from('auth_cleanup_queue').insert({
@@ -135,7 +165,13 @@ export async function registerVerifiedPasswordAccountAction(formData: FormData) 
     next,
   });
 
-  if (!result.ok) redirect(signupPath(`error=${result.error}`, next, hasNext));
+  if (!result.ok) {
+    if (result.error === 'phone_not_verified') return { error: '휴대폰 인증을 다시 완료해 주세요.', field: 'signup-phone' };
+    if (result.error === 'email_unavailable') return { error: '이 이메일로는 지금 가입할 수 없습니다.', field: 'signup-email' };
+    if (result.error === 'username_unavailable') return { error: '아이디를 다시 확인해 주세요.', field: 'signup-username' };
+    if (result.error === 'phone_unavailable') return { error: '휴대폰 번호를 다시 확인해 주세요.', field: 'signup-phone' };
+    return { error: '지금 가입을 완료할 수 없습니다. 잠시 후 다시 시도해 주세요.', field: 'signup-form-error' };
+  }
   await clearSignupIntent();
   redirect(result.sessionCreated ? next : signupPath('notice=check_email', next, hasNext));
 }

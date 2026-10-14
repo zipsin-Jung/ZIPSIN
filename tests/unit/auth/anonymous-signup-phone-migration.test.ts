@@ -18,12 +18,22 @@ describe('anonymous signup phone migration', () => {
     expect(sql).toContain('function public.verify_anonymous_signup_phone_challenge');
     expect(sql).toContain('function public.claim_anonymous_signup_phone_challenge');
     expect(sql).toContain('function public.release_anonymous_signup_phone_claim');
+    expect(sql).toContain('function public.isolate_anonymous_signup_phone_challenge');
     expect(sql).toContain('function public.finalize_verified_password_signup');
     expect(sql).toContain('attempts >= 5');
     expect(sql).toContain('expires_at > now()');
     expect(sql).toContain('consumed_at is null');
     expect(sql).toContain('for update');
     expect(sql).toContain('pg_advisory_xact_lock');
+    expect(sql).toContain("greatest(p_claim_expires_at, state.expires_at + interval '1 second')");
+  });
+
+  it('redacts abandoned phone data within 24 hours and isolates failed compensation proofs', () => {
+    expect(sql).toContain('quarantined_at');
+    expect(sql).toContain("code_digest = 'isolated'");
+    expect(sql).toContain("interval '23 hours 45 minutes'");
+    expect(sql).toContain('cron.schedule');
+    expect(sql).toContain('provider_message_id = null');
   });
 
   it('finalizes username, profile, consents, attribution, and proof together', () => {
@@ -42,5 +52,6 @@ describe('anonymous signup phone migration', () => {
     expect(sql).toMatch(/grant execute on function public\.issue_anonymous_signup_phone_challenge[\s\S]*to service_role/);
     expect(sql).toMatch(/revoke all on function public\.finalize_verified_password_signup[\s\S]*from public, anon, authenticated/);
     expect(sql).toMatch(/grant execute on function public\.finalize_verified_password_signup[\s\S]*to service_role/);
+    expect(sql).toMatch(/grant execute on function public\.isolate_anonymous_signup_phone_challenge[\s\S]*to service_role/);
   });
 });
