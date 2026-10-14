@@ -50,3 +50,5 @@
 - Git 비밀값 검사: 통과
 - 인증·집신체크 진입 Playwright: 320·390·768·1280·1440px 포함 17개 통과
 - 실제 Postgres migration 경쟁 조건과 SOLAPI 문자 수신: Preview 자격증명·발신번호가 없어 미검수
+- Git: `69431e7`을 `codex/zipsin-shared-auth-integration`에 푸시했다.
+- Vercel: 해당 커밋 Preview 배포 상태 `success`를 GitHub 상태 API로 확인했다. Preview는 Vercel SSO 보호 상태라 익명 실제 화면 왕복은 미검수다.
