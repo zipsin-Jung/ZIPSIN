@@ -47,4 +47,23 @@ describe('PasswordSignupForm', () => {
     expect(screen.getByRole('checkbox', { name: /개인정보 수집/ })).toBeChecked();
     expect(screen.queryByRole('checkbox', { name: /14세/ })).not.toBeInTheDocument();
   });
+
+  it('아이디 중복 확인 뒤 값을 바꾸면 확인 상태를 무효화한다', async () => {
+    const user = userEvent.setup();
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ status: 'available' }),
+    }));
+    render(<PasswordSignupForm />);
+
+    const username = screen.getByLabelText('아이디');
+    await user.type(username, 'new_user');
+    await user.click(screen.getByRole('button', { name: '아이디 중복 확인' }));
+    expect(await screen.findByText('사용할 수 있는 아이디입니다.')).toBeInTheDocument();
+
+    await user.type(username, '2');
+    expect(screen.queryByText('사용할 수 있는 아이디입니다.')).not.toBeInTheDocument();
+    expect(screen.getByText('아이디 중복 확인이 필요합니다.')).toBeInTheDocument();
+    vi.unstubAllGlobals();
+  });
 });

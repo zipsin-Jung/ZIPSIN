@@ -7,19 +7,54 @@ import { registerPasswordAccountAction } from '@/features/auth/actions/register-
 const inputClass = 'mt-2 min-h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-950 outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20';
 
 export function PasswordSignupForm({ next }: { next?: string }) {
+  const [username, setUsername] = useState('');
+  const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'unavailable' | 'invalid' | 'error'>('idle');
   const [passwordPinned, setPasswordPinned] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const allRequired = termsAccepted && privacyAccepted;
   const showPassword = passwordPinned;
 
+  async function checkUsername() {
+    setUsernameStatus('checking');
+    try {
+      const response = await fetch('/api/auth/username-availability', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username }),
+      });
+      const body = await response.json() as { status?: string };
+      const status = body.status;
+      setUsernameStatus(
+        status === 'available' || status === 'unavailable' || status === 'invalid'
+          ? status
+          : 'error',
+      );
+    } catch {
+      setUsernameStatus('error');
+    }
+  }
+
+  const usernameMessage = {
+    idle: username ? '아이디 중복 확인이 필요합니다.' : '',
+    checking: '아이디를 확인하고 있습니다.',
+    available: '사용할 수 있는 아이디입니다.',
+    unavailable: '이미 사용 중인 아이디입니다.',
+    invalid: '영문 소문자·숫자·밑줄 4~20자로 입력해 주세요.',
+    error: '지금 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.',
+  }[usernameStatus];
+
   return (
     <form action={registerPasswordAccountAction} className="grid gap-5">
       {next && <input name="next" type="hidden" value={next} />}
-      <label className="font-semibold text-slate-800">
-        아이디
-        <input className={inputClass} name="username" required autoComplete="username" minLength={4} maxLength={20} placeholder="영문, 숫자, 밑줄 4~20자" />
-      </label>
+      <div className="font-semibold text-slate-800">
+        <label htmlFor="signup-username">아이디</label>
+        <div className="mt-2 flex gap-2">
+          <input aria-describedby="username-status" className={`${inputClass} mt-0`} id="signup-username" name="username" required autoComplete="username" minLength={4} maxLength={20} onChange={(event) => { setUsername(event.target.value); setUsernameStatus('idle'); }} placeholder="영문, 숫자, 밑줄 4~20자" value={username} />
+          <button className="min-h-12 shrink-0 rounded-xl border border-emerald-700 px-4 font-bold text-emerald-800 disabled:cursor-not-allowed disabled:opacity-50" disabled={!username || usernameStatus === 'checking'} onClick={checkUsername} type="button">아이디 중복 확인</button>
+        </div>
+        {usernameMessage && <p aria-live="polite" className="mt-2 text-sm font-medium text-slate-600" id="username-status">{usernameMessage}</p>}
+      </div>
       <div className="font-semibold text-slate-800">
         <label htmlFor="signup-password">비밀번호</label>
         <span className="relative block">
