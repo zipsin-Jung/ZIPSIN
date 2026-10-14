@@ -1,7 +1,7 @@
 # DEC-025 공개 홈의 앱 다운로드를 온라인 전용 PWA 설치로 제공
 
 - 날짜: 2026-10-14
-- 상태: 사용자 승인 완료, 구현 전
+- 상태: 구현·Preview 검증 완료, Production 승인 대기
 - 결정권자: 사용자
 
 ## 결정
@@ -41,3 +41,10 @@
 ## 제외
 
 App Store·Google Play 배지, QR, 네이티브 앱 주장, 오프라인 보장과 Production 배포는 이 결정에 포함되지 않는다.
+
+## 구현 결과
+
+- App Router Manifest와 192·512px, Apple 180px 아이콘을 추가했다.
+- Chromium 설치 이벤트, iOS 안내, 일반 브라우저 안내, standalone 상태를 구분한다.
+- 네이티브 설치 요청이 실패해도 페이지 오류로 끝나지 않고 일반 설치 안내로 복구한다.
+- 실제 iPhone Safari와 Chromium standalone 실행은 Preview 이후 기기 검증 항목으로 남긴다.

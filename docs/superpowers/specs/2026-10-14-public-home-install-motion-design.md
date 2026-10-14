@@ -1,7 +1,7 @@
 # 공개 홈 웹앱 설치·시네마틱 모션 설계
 
 - 날짜: 2026-10-14
-- 상태: 사용자 승인 완료, 구현계획 검토 대기
+- 상태: 구현·Vercel Preview 검증 완료, 사용자 승인 대기
 - 대상: 비로그인 공개 홈 `/`
 - 기준: `docs/superpowers/specs/2026-10-14-public-home-single-viewport-design.md`
 
@@ -203,8 +203,8 @@
 - G1 제품: 사용자 방향 승인 완료
 - G2 UX: 사용자 승인 완료
 - G3 설계: 온라인 전용 PWA·무서비스워커 구조 승인 완료
-- G4 테스트 설계: 구현계획 검토 대기
-- G5 검증: 구현 뒤 타입·단위·커버리지·build·E2E·실제 Preview 별도 증거 필요
+- G4 테스트 설계: 완료
+- G5 검증: 로컬 타입·단위·커버리지·build·E2E·독립 품질검수·Vercel Preview 검증 완료
 - G6 사용자 승인: Preview 확인 전 Production 금지
 
-다음 단계는 사용자가 구현계획을 검토한 뒤 현재 작업창에서 테스트 우선으로 실행하는 것이다.
+다음 단계는 사용자가 Preview를 확인하고 Production 배포 여부를 승인하는 것이다. 실제 iPhone Safari 설치와 Chromium standalone 재실행은 실기기 후속 검증으로 남긴다.
