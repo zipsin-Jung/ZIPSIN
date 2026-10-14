@@ -10,7 +10,8 @@
 - 타입 오류 0건, 단위·통합 417개 통과·2개 skip, 커버리지 네 지표 80% 이상, build 성공, Chromium 28개 통과·외부 환경 전용 11개 skip입니다.
 - 320·390·768·1440px에서 가로 넘침, 44px 조작, axe, console/pageerror, CLS를 검사했고 390·1440px 결과를 직접 확인했습니다.
 - 외부 통화·문자·메신저 자동 연동은 제공하지 않으며, 이번 변경은 공개 홈만 대상으로 합니다.
-- GitHub branch와 Vercel Preview 검수 뒤 사용자 승인을 기다리며 Production은 변경하지 않습니다.
+- GitHub branch를 푸시했고 Vercel Preview가 `Ready`인 것을 확인했습니다. 실제 브라우저에서 네 장 자동 전환·직접 선택과 승인 이미지·문구·제품 증거 UI를 검수했습니다.
+- Preview 보호 환경에서 `/`, `/signup`, `/login` 200과 로그인 전 `/support` 307을 확인했습니다. 사용자 화면 승인을 기다리며 Production은 변경하지 않습니다.
 - 상세 추적표: `docs/traceability/public-home-four-story-carousel.md`
 
 ## 2026-10-14 공개 메인 4장 스토리 캐러셀 설계

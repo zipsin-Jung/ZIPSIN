@@ -1,7 +1,7 @@
 # 공개 메인 4장 스토리 캐러셀 추적표
 
 - 날짜: 2026-10-14
-- 상태: 로컬 검증 완료, Preview 사용자 승인 대기
+- 상태: 로컬·Vercel Preview 검증 완료, 사용자 화면 승인 대기
 - 대상: 공개 `/`
 
 | 요구사항·수용 기준 | 화면·상태 | 소스 | 대표 테스트·증거 |
@@ -25,6 +25,8 @@
 - 커버리지 Statements 85.89% / Branches 81.96% / Functions 87.09% / Lines 89.25%
 - Production build 성공
 - Chromium 28개 통과·환경변수와 Preview 데이터가 필요한 11개 skip
+- Vercel Preview `Ready`, 실제 브라우저에서 네 장 자동 전환·목차 직접 선택·승인 이미지·제품 증거 UI 확인
+- Preview 보호 요청 기준 `/`, `/signup`, `/login` 200, 로그인 전 `/support` 307
 - 공개 홈 집중 Chromium 12개 통과
 
 ## 기능 경계

@@ -1,7 +1,7 @@
 # 공개 메인 4장 스토리 캐러셀 구현 기록
 
 - 날짜: 2026-10-14
-- 상태: 로컬 검증 완료, Preview 사용자 승인 대기
+- 상태: 로컬·Vercel Preview 검증 완료, 사용자 화면 승인 대기
 - 범위: 공개 `/`만 변경, 로그인 후 앱·DB·권한·Production 미변경
 
 ## 요청
@@ -35,6 +35,9 @@
 - 공개 홈 집중 E2E: 12개 통과
 - 320·390·768·1440px: 가로 넘침 ≤1px, 버튼 44px 이상, axe 위반 0, console/pageerror 0, CLS ≤0.1
 - 390px과 1440px 전체 페이지 스크린샷을 직접 확인했다.
+- Vercel Preview `https://zipsin-ovyzr9ro1-zipsin-jung.vercel.app/`가 `Ready`인 것을 확인했다.
+- 실제 Preview 브라우저에서 공개 홈과 네 장 자동 전환·목차 직접 선택을 확인했고, 3번 `연결된다`와 4번 `가치가 된다`의 승인 이미지·문구·제품 증거 UI가 함께 바뀌는 것을 시각 검수했다.
+- Preview 보호 인증을 통과한 요청에서 `/`, `/signup`, `/login`은 200, 로그인 전 `/support`는 보호 경로로 307 응답하는 것을 확인했다.
 
 ## 사용할 수 있는 기능
 
@@ -52,7 +55,7 @@
 
 ## 남은 일
 
-GitHub branch를 푸시하고 새 Vercel Preview의 `/`, `/signup`, `/login`, `/support`와 네 장을 확인한다. 사용자의 화면 승인 전에는 Production을 변경하지 않는다.
+사용자가 Preview 화면을 최종 승인한다. 승인 전에는 Production을 변경하지 않는다.
 
 바탕화면 문서함에는 관련 설계·결정·대화·작업기록·추적표를 같은 구조로 복사했다. 바탕화면의 `WORK_STATUS.md`는 저장소 기준본과 다른 독립 변경이 있어 덮어쓰지 않고 저장소 안의 기준본만 갱신했다.
 
@@ -64,3 +67,5 @@ GitHub branch를 푸시하고 새 Vercel Preview의 `/`, `/signup`, `/login`, `/
 - `d844dbe test: verify public home carousel journeys`
 - `64d9a65 test: align public home navigation journey`
 - `9445a78 docs: record public home carousel delivery`
+- `7e66b55 fix: harden public home carousel interactions`
+- `5d6e413 fix: release carousel pointer outside stage`
