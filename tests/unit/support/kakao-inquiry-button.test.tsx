@@ -1,8 +1,18 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { KakaoInquiryButton } from '@/features/support/components/KakaoInquiryButton';
 
+const navigation = vi.hoisted(() => ({ pathname: '/' }));
+
+vi.mock('next/navigation', () => ({
+  usePathname: () => navigation.pathname,
+}));
+
 describe('KakaoInquiryButton', () => {
+  beforeEach(() => {
+    navigation.pathname = '/';
+  });
+
   it('TEST-SUPPORT-KAKAO-002 opens the official Kakao chat safely in a new window', () => {
     render(<KakaoInquiryButton />);
 
@@ -27,5 +37,17 @@ describe('KakaoInquiryButton', () => {
     expect(link.className).toContain('bottom-[calc(5rem+env(safe-area-inset-bottom))]');
     expect(link.className).toContain('md:bottom-6');
     expect(link.className).toContain('md:right-6');
+  });
+
+  it('TEST-SUPPORT-KAKAO-004 leaves the ZIPSIN Check route to its single route-specific inquiry button', () => {
+    navigation.pathname = '/ck';
+
+    render(<KakaoInquiryButton />);
+
+    expect(
+      screen.queryByRole('link', {
+        name: '카카오톡으로 집신 대표에게 문의하기 (새 창)',
+      }),
+    ).not.toBeInTheDocument();
   });
 });

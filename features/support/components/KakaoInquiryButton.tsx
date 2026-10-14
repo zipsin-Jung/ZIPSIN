@@ -1,8 +1,15 @@
+'use client';
+
 import { MessageCircle } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 const KAKAO_CHAT_URL = 'https://pf.kakao.com/_xhcxkFX/chat';
 
 export function KakaoInquiryButton() {
+  const pathname = usePathname();
+
+  if (pathname === '/ck' || pathname.startsWith('/ck/')) return null;
+
   return (
     <aside aria-label="빠른 고객지원">
       <a

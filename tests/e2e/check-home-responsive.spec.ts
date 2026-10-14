@@ -22,6 +22,10 @@ for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}, {w
 
     const navigation = page.getByRole('navigation', {name: '집신체크 주요 메뉴'});
     const kakao = page.getByRole('link', {name: '집신 카카오톡 채널에서 문의하기'});
+    await expect(kakao).toHaveCount(1);
+    await expect(
+      page.getByRole('link', {name: '카카오톡으로 집신 대표에게 문의하기 (새 창)'}),
+    ).toHaveCount(0);
     const [navigationBox, kakaoBox] = await Promise.all([
       navigation.boundingBox(),
       kakao.boundingBox(),
