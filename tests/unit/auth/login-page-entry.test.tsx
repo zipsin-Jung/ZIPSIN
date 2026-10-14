@@ -9,6 +9,8 @@ describe('production login entry', () => {
     expect(screen.queryByRole('link', { name: /집신 소개/ })).not.toBeInTheDocument();
     expect(screen.getAllByRole('link', { name: '회원가입' }).every((link) => link.getAttribute('href') === '/signup')).toBe(true);
     expect(screen.queryByText(/사전\s*가입|데모/)).not.toBeInTheDocument();
+    expect(screen.getByRole('img', { name: '집별 계약·사진·수리·일정 기록이 이어지는 집신 화면 예시' })).toBeInTheDocument();
+    expect(screen.queryByText(/계약·입주 기록/)).not.toBeInTheDocument();
   });
 
   it('집신체크에서 온 사용자의 회원가입에도 안전한 복귀 경로를 전달한다', async () => {

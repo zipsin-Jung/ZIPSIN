@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { CalendarDays, FileText, ShieldCheck, UserPlus, Wrench } from 'lucide-react';
-import Brand, { Mascot } from '@/components/Brand';
+import Image from 'next/image';
+import { ShieldCheck, UserPlus } from 'lucide-react';
+import Brand from '@/components/Brand';
 import { UsernameLoginForm } from '@/features/auth/components/UsernameLoginForm';
 import { SocialLoginButtons } from '@/features/auth/components/SocialLoginButtons';
 import { SUPPORTED_PROVIDERS } from '@/features/auth/domain/providers';
@@ -41,26 +42,8 @@ export default async function LoginPage({ searchParams }: Props) {
       </header>
 
       <section className="mx-auto mt-5 grid max-w-[1480px] overflow-hidden rounded-[30px] border border-white/90 bg-white shadow-[0_30px_80px_-42px_rgba(20,61,46,0.35)] lg:min-h-[760px] lg:grid-cols-[1.06fr_0.94fr]">
-        <div className="order-2 relative flex min-h-[570px] flex-col overflow-hidden bg-[#fbf7ec] px-7 py-10 sm:px-12 sm:py-14 lg:order-1 lg:min-h-0 lg:px-16 lg:py-16 xl:px-20">
-          <div className="relative z-10 max-w-[650px]">
-            <p className="mb-5 text-sm font-extrabold tracking-[0.18em] text-[#a87527]">HOME RECORD PLATFORM</p>
-            <h1 className="text-[clamp(2.45rem,4.6vw,4.8rem)] font-black leading-[1.13] tracking-[-0.055em] text-[#0d4938]">
-              집의 모든 기록을<br />
-              <span className="text-[#c18a31]">한곳에서</span> 관리하세요
-            </h1>
-            <p className="mt-6 max-w-[560px] text-base leading-8 text-[#526b61] sm:text-lg">
-              계약부터 수리, 사진, 일정까지<br className="hidden sm:block" /> 집마다 안전하게 이어서 관리합니다.
-            </p>
-          </div>
-
-          <ul className="relative z-10 mt-9 grid max-w-md gap-3 text-base font-extrabold text-[#174b3b] sm:mt-10">
-            <li className="flex min-h-16 items-center gap-4 rounded-2xl bg-white/85 px-5 shadow-sm"><FileText aria-hidden="true" className="size-7 text-[#0d5b45]" />계약·입주 기록</li>
-            <li className="flex min-h-16 items-center gap-4 rounded-2xl bg-white/85 px-5 shadow-sm"><Wrench aria-hidden="true" className="size-7 text-[#0d5b45]" />수리·사진 보관</li>
-            <li className="flex min-h-16 items-center gap-4 rounded-2xl bg-white/85 px-5 shadow-sm"><CalendarDays aria-hidden="true" className="size-7 text-[#0d5b45]" />일정·비용 관리</li>
-          </ul>
-
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-16 -right-7 h-64 w-64 rounded-full bg-[#e9efdf] sm:h-80 sm:w-80 lg:-bottom-11 lg:right-2" />
-          <Mascot className="absolute -bottom-7 right-0 z-10 !w-40 sm:!w-52 lg:bottom-0 lg:right-5 xl:!w-64" pose="hello" />
+        <div className="order-2 relative hidden min-h-[570px] overflow-hidden bg-[#fbf7ec] min-[391px]:flex lg:order-1 lg:min-h-0">
+          <Image alt="집별 계약·사진·수리·일정 기록이 이어지는 집신 화면 예시" className="object-contain p-6 sm:p-10" fill priority sizes="(min-width: 1024px) 53vw, 100vw" src="/images/auth/zipsin-record-visual.png" />
         </div>
 
         <div className="order-1 flex items-center px-6 py-12 sm:px-12 lg:order-2 lg:px-14 xl:px-20">
@@ -69,13 +52,12 @@ export default async function LoginPage({ searchParams }: Props) {
             <h2 className="mt-3 text-4xl font-black tracking-[-0.045em] text-[#0d4938] sm:text-5xl">집신 시작하기</h2>
             <p className="mb-7 mt-4 text-base leading-7 text-[#60736c]">간편 로그인 또는 아이디로 시작하세요.</p>
 
-            <SocialLoginButtons enabledProviders={enabledProviders} next={next} />
-
+            {enabledProviders.length > 0 && <><SocialLoginButtons enabledProviders={enabledProviders} next={next} />
             <div className="my-7 flex items-center gap-4 text-sm font-semibold text-[#6c7d76]">
               <span className="h-px flex-1 bg-[#dce4df]" />
               또는 아이디로 로그인
               <span className="h-px flex-1 bg-[#dce4df]" />
-            </div>
+            </div></>}
 
             {errorMessage && (
               <p className="mb-6 rounded-2xl border border-[#eccdc8] bg-[#fff6f4] p-4 text-sm font-semibold leading-6 text-[#9b352d]" role="alert">
@@ -86,7 +68,7 @@ export default async function LoginPage({ searchParams }: Props) {
             <UsernameLoginForm next={next} />
 
             <div className="mt-4 text-right">
-              <Link className="min-h-11 py-3 text-sm font-bold text-[#0d5b45] underline underline-offset-4" href="/account-recovery">아이디·비밀번호를 잊으셨나요?</Link>
+              <Link className="min-h-11 py-3 text-sm font-bold text-[#0d5b45] underline underline-offset-4" href="/account-recovery">아이디 찾기 · 비밀번호 재설정</Link>
             </div>
 
             <Link className="mt-3 flex min-h-14 items-center justify-center rounded-2xl border-2 border-[#0b543f] text-base font-extrabold text-[#0b543f]" href={signupHref}>회원가입</Link>

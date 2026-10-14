@@ -23,7 +23,7 @@ describe('social providers', () => {
     expect(toSupabaseProvider('google')).toBe('google');
   });
 
-  it('설정된 제공자는 선택하고 준비 중 제공자는 실행하지 않는다', async () => {
+  it('설정된 제공자만 표시하고 준비 중 안내를 노출하지 않는다', async () => {
     const onSelect = vi.fn();
     const user = userEvent.setup();
     render(
@@ -36,9 +36,13 @@ describe('social providers', () => {
     await user.click(screen.getByRole('button', { name: 'Google로 계속하기' }));
     expect(onSelect).toHaveBeenCalledWith('google');
 
-    const naver = screen.getByRole('button', { name: '네이버로 계속하기 준비 중' });
-    expect(naver).toBeDisabled();
-    expect(screen.getByText('네이버 로그인은 연결 설정 후 사용할 수 있습니다.')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /네이버/ })).not.toBeInTheDocument();
+    expect(screen.queryByText(/연결 설정 후/)).not.toBeInTheDocument();
     expect(onSelect).toHaveBeenCalledTimes(1);
+  });
+
+  it('활성 제공자가 없으면 간편 로그인 영역을 숨긴다', () => {
+    render(<SocialLoginButtons enabledProviders={[]} />);
+    expect(screen.queryByLabelText('간편 로그인 제공자')).not.toBeInTheDocument();
   });
 });
