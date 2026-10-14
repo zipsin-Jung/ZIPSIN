@@ -61,12 +61,17 @@ export function InstallAppButton() {
 
     if (mode === 'prompt-ready' && promptEvent) {
       promptEventRef.current = null;
-      await promptEvent.prompt();
-      const choice = await promptEvent.userChoice;
-      if (choice.outcome === 'accepted') {
-        setMode('installed');
-      } else {
+      try {
+        await promptEvent.prompt();
+        const choice = await promptEvent.userChoice;
+        if (choice.outcome === 'accepted') {
+          setMode('installed');
+        } else {
+          setMode(resolveInstallMode({ promptAvailable: false, ios: iosRef.current, standalone: false }));
+        }
+      } catch {
         setMode(resolveInstallMode({ promptAvailable: false, ios: iosRef.current, standalone: false }));
+        setGuideOpen(true);
       }
       return;
     }

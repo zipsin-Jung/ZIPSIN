@@ -104,6 +104,46 @@ for (const width of viewports) {
   });
 }
 
+for (const width of viewports) {
+  test(`TEST-PUB-ANIM-CROP-${width} normal motion keeps the approved first story readable from start to finish`, async ({ page }) => {
+    const viewportHeight = width <= 390 ? 844 : 900;
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.setViewportSize({ width, height: viewportHeight });
+    await page.goto('/');
+
+    const firstSlide = page.locator('[data-story="gather"]');
+    const foreground = firstSlide.locator('[data-story-foreground]');
+    await expect(foreground).toBeVisible();
+    await page.getByRole('button', { name: '이어진다 장면 보기' }).click();
+    await page.getByRole('button', { name: '모인다 장면 보기' }).click();
+    await page.waitForTimeout(900);
+    const startPosition = await foreground.evaluate((element) => getComputedStyle(element).objectPosition);
+    expect(startPosition).not.toBe('50% 89%');
+    await page.screenshot({ path: `test-results/release-motion-start-${width}.png`, fullPage: false });
+
+    await page.waitForTimeout(2500);
+    const endPosition = await foreground.evaluate((element) => getComputedStyle(element).objectPosition);
+    expect(endPosition).toBe('50% 89%');
+    const frame = firstSlide.locator('[class*="storyImagePortrait"]');
+    const frameBox = await frame.boundingBox();
+    if (width === 768) expect(frameBox?.width ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(521);
+    await page.screenshot({ path: `test-results/release-motion-complete-${width}.png`, fullPage: false });
+  });
+}
+
+test('TEST-PUB-IMAGE-LAZY-001 initial load does not fetch inactive raw story backgrounds', async ({ page }) => {
+  const rawStoryRequests: string[] = [];
+  page.on('request', (request) => {
+    const url = new URL(request.url());
+    if (/\/images\/public-home\/story-0[1-4].*\.png$/.test(url.pathname)) rawStoryRequests.push(url.pathname);
+  });
+
+  await page.goto('/');
+  await page.waitForTimeout(1000);
+
+  expect(new Set(rawStoryRequests)).toEqual(new Set(['/images/public-home/story-01-gather.png']));
+});
+
 test('TEST-PUB-ANIM-REDUCE-001 reduced motion keeps the first slide and every image motion still', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');

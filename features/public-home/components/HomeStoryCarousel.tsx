@@ -110,6 +110,7 @@ export function HomeStoryCarousel() {
   }, []);
 
   function selectManually(index: number) {
+    cancelHoverSelection();
     setSelectedIndex(Math.max(0, Math.min(lastIndex, index)));
     setActivationSequence((current) => current + 1);
     setManual(true);
@@ -119,6 +120,7 @@ export function HomeStoryCarousel() {
   function scheduleHoverSelection(index: number) {
     if (hoverSelectTimer.current) clearTimeout(hoverSelectTimer.current);
     hoverSelectTimer.current = setTimeout(() => {
+      hoverSelectTimer.current = null;
       setSelectedIndex(index);
       setActivationSequence((current) => current + 1);
     }, HOVER_SELECT_MS);
@@ -237,7 +239,7 @@ export function HomeStoryCarousel() {
               className={`${styles.storyVisual} ${item.id === 'gather' ? styles.storyVisualPortrait : ''}`}
             >
               <div className={styles.storyMotionStage} data-motion-story={motionId}>
-                {!failedImages.has(item.id) && <div
+                {active && !failedImages.has(item.id) && <div
                   aria-hidden="true"
                   className={styles.storyImageBackdrop}
                   data-story-backdrop

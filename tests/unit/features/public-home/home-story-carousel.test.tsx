@@ -98,16 +98,30 @@ describe('HomeStoryCarousel', () => {
     expect(document.querySelector(`[data-motion-story="${motionId}"]`)).toBeInTheDocument();
   });
 
-  it('장식 배경은 숨기고 승인 이미지의 대체 설명은 장면마다 하나만 유지한다', () => {
+  it('활성 장면의 장식 배경만 렌더링하고 승인 이미지의 대체 설명은 장면마8다 하나만 유지한다', () => {
     render(<HomeStoryCarousel />);
 
     const backdrops = document.querySelectorAll('[data-story-backdrop]');
-    expect(backdrops).toHaveLength(4);
+    expect(backdrops).toHaveLength(1);
     for (const backdrop of backdrops) expect(backdrop).toHaveAttribute('aria-hidden', 'true');
 
     const foregrounds = document.querySelectorAll('img[data-story-foreground]');
     expect(foregrounds).toHaveLength(4);
     for (const foreground of foregrounds) expect(foreground).not.toHaveAttribute('alt', '');
+  });
+
+  it('TEST-RC-HERO-HOVER-CLICK-001 hover 예약 중 클릭하면 같은 장면의 모션을 두 번 시작하지 않는다', () => {
+    vi.useFakeTimers();
+    render(<HomeStoryCarousel />);
+    const secondDot = screen.getByRole('button', { name: '이어진다 장면 보기' });
+
+    fireEvent.pointerEnter(secondDot);
+    fireEvent.click(secondDot);
+    const clickedRun = document.querySelector('[data-active="true"]')?.getAttribute('data-motion-run');
+    act(() => vi.advanceTimersByTime(250));
+
+    expect(screen.getByText('2 / 4')).toBeInTheDocument();
+    expect(document.querySelector('[data-active="true"]')).toHaveAttribute('data-motion-run', clickedRun);
   });
 
   it('활성 장면을 떠났다가 다시 선택하면 모션 실행 식별자를 새로 만든다', () => {

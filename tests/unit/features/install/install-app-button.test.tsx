@@ -14,6 +14,16 @@ function createInstallEvent(choice: InstallChoice) {
   return event;
 }
 
+function createRejectedInstallEvent() {
+  const event = new Event('beforeinstallprompt') as Event & {
+    prompt: ReturnType<typeof vi.fn>;
+    userChoice: Promise<{ outcome: InstallChoice; platform: string }>;
+  };
+  event.prompt = vi.fn().mockRejectedValue(new Error('native prompt unavailable'));
+  event.userChoice = Promise.resolve({ outcome: 'dismissed', platform: 'web' });
+  return event;
+}
+
 describe('InstallAppButton', () => {
   beforeEach(() => {
     Object.defineProperty(window, 'matchMedia', {
@@ -59,6 +69,18 @@ describe('InstallAppButton', () => {
 
     await waitFor(() => expect(event.prompt).toHaveBeenCalledTimes(1));
     expect(screen.queryByRole('button', { name: '앱 설치됨' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '앱으로 다운로드' })).toBeEnabled();
+  });
+
+  it('TEST-PWA-PROMPT-ERROR-001 브라우저 설치 요청이 실패하면 일반 설치 안내로 복구한다', async () => {
+    render(<InstallAppButton />);
+    const event = createRejectedInstallEvent();
+
+    act(() => window.dispatchEvent(event));
+    fireEvent.click(screen.getByRole('button', { name: '앱으로 다운로드' }));
+
+    await waitFor(() => expect(event.prompt).toHaveBeenCalledTimes(1));
+    expect(await screen.findByRole('dialog', { name: '집신 앱 설치 안내' })).toHaveAttribute('open');
     expect(screen.getByRole('button', { name: '앱으로 다운로드' })).toBeEnabled();
   });
 
