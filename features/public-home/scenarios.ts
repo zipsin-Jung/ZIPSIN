@@ -13,7 +13,7 @@ export type PublicHomeStory = {
   imageAlt: string;
 };
 
-export const publicHomeStories = [
+export const publicHomeStories: readonly PublicHomeStory[] = [
   {
     id: 'gather',
     shortTitle: '모인다',
@@ -51,7 +51,7 @@ export const publicHomeStories = [
     imageSrc: '/images/public-home/story-04-home-history.png',
     imageAlt: '집 안에서 위치와 계약 서류뿐 아니라 에어컨과 배관, 난방과 마감의 관리 이력을 함께 확인하는 모습',
   },
-] as const satisfies readonly PublicHomeStory[];
+];
 
 export type LegacyEvidenceType = 'scattered-records' | 'air-conditioner' | 'condition-compare' | 'contract';
 
