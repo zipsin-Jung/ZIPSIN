@@ -1,4 +1,59 @@
-export type EvidenceType = 'scattered-records' | 'air-conditioner' | 'condition-compare' | 'contract';
+export type HomeStoryId = 'gather' | 'continuity' | 'communication' | 'home-history';
+
+export type EvidenceType = HomeStoryId;
+
+export type PublicHomeStory = {
+  id: HomeStoryId;
+  shortTitle: string;
+  headline: string;
+  description: string;
+  conclusion?: string;
+  evidenceType: EvidenceType;
+  imageSrc: string;
+  imageAlt: string;
+};
+
+export const publicHomeStories = [
+  {
+    id: 'gather',
+    shortTitle: '모인다',
+    headline: '집에 관한 모든 일, 이제 집신으로.',
+    description: '사진·문서·대화·일정을 집 한 채에 이어서 기록하세요.',
+    evidenceType: 'gather',
+    imageSrc: '/images/public-home/story-01-gather.png',
+    imageAlt: '흩어진 계약서와 사진, 통화와 일정이 집신의 한 집 기록으로 모이는 모습',
+  },
+  {
+    id: 'continuity',
+    shortTitle: '이어진다',
+    headline: '사람은 바뀌어도, 집의 기록은 이어집니다.',
+    description: '접근 권한은 끝나도 집에서 있었던 일을 다시 처음부터 시작하지 않도록.',
+    evidenceType: 'continuity',
+    imageSrc: '/images/public-home/story-02-continuity.png',
+    imageAlt: '같은 집에서 계절과 사람이 바뀌어도 집의 관리 기록이 이어지는 모습',
+  },
+  {
+    id: 'communication',
+    shortTitle: '연결된다',
+    headline: '어디서 나눈 말인지, 누구의 집인지 헤매지 않도록.',
+    description: '사람을 초대하고 집별 연락처와 집신 채팅으로 새 대화를 시작하세요.',
+    evidenceType: 'communication',
+    imageSrc: '/images/public-home/story-03-communication.png',
+    imageAlt: '뒤섞인 연락과 대화가 집신에서 집별 연락처와 전용 채팅으로 정리되는 모습',
+  },
+  {
+    id: 'home-history',
+    shortTitle: '가치가 된다',
+    headline: '위치와 서류만 보고 계신가요?',
+    description: '집도 시간이 지나면 노후됩니다. 에어컨·배관·난방·벽지·바닥까지, 지나온 관리 기록을 함께 확인하세요.',
+    conclusion: '잘 관리한 시간은 집의 신뢰가 됩니다. 주거 이력이 가치가 되는 새로운 문화, 집신.',
+    evidenceType: 'home-history',
+    imageSrc: '/images/public-home/story-04-home-history.png',
+    imageAlt: '집 안에서 위치와 계약 서류뿐 아니라 에어컨과 배관, 난방과 마감의 관리 이력을 함께 확인하는 모습',
+  },
+] as const satisfies readonly PublicHomeStory[];
+
+export type LegacyEvidenceType = 'scattered-records' | 'air-conditioner' | 'condition-compare' | 'contract';
 
 export type PublicHomeScenario = {
   id: string;
@@ -7,7 +62,7 @@ export type PublicHomeScenario = {
   question: string;
   result: string;
   prevents: '반복' | '누락' | '단절' | '반복·누락' | '누락·단절';
-  evidenceType: EvidenceType;
+  evidenceType: LegacyEvidenceType;
   imageSrc: string;
   imageAlt: string;
 };
