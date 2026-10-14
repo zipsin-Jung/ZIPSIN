@@ -293,6 +293,27 @@ export type Database = {
         Args: { p_scope: string; p_key: string; p_limit: number; p_window_seconds: number };
         Returns: boolean;
       };
+      issue_phone_challenge: {
+        Args: {
+          p_user_id: string;
+          p_challenge_id: string;
+          p_phone_e164: string;
+          p_code_digest: string;
+          p_expires_at: string;
+          p_provider_message_id: string;
+          p_purpose: string;
+        };
+        Returns: undefined;
+      };
+      verify_phone_challenge: {
+        Args: {
+          p_user_id: string;
+          p_challenge_id: string;
+          p_code_digest: string;
+          p_purpose: string;
+        };
+        Returns: string;
+      };
       complete_signup: {
         Args: {
           p_display_name: string;
