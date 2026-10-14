@@ -5,7 +5,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Pause, Play, ShieldCheck } from 'lucide-react';
 import { publicHomeStories, type HomeStoryId } from '../scenarios';
-import { ProductEvidence } from './ProductEvidence';
 import styles from '@/components/PublicHome.module.css';
 
 const AUTOPLAY_MS = 7000;
@@ -24,15 +23,13 @@ export function HomeStoryCarousel() {
   const [pointerActive, setPointerActive] = useState(false);
   const [resumeReady, setResumeReady] = useState(true);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [stageHeight, setStageHeight] = useState<number | null>(null);
   const [failedImages, setFailedImages] = useState<Set<HomeStoryId>>(() => new Set());
   const hoverSelectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pointerStart = useRef<{ x: number; y: number } | null>(null);
   const wasInteractionPaused = useRef(false);
-  const slideRef = useRef<HTMLDivElement | null>(null);
   const carouselRef = useRef<HTMLElement | null>(null);
   const lastIndex = publicHomeStories.length - 1;
-  const story = publicHomeStories[selectedIndex];
+  const trackOffset = selectedIndex === 0 ? 0 : selectedIndex * -100;
 
   useEffect(() => {
     const query = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -102,19 +99,6 @@ export function HomeStoryCarousel() {
   useEffect(() => () => {
     if (hoverSelectTimer.current) clearTimeout(hoverSelectTimer.current);
   }, []);
-
-  useEffect(() => {
-    const node = slideRef.current;
-    if (!node) return;
-    const updateHeight = () => {
-      const measuredHeight = Math.ceil(node.getBoundingClientRect().height);
-      if (measuredHeight > 0) setStageHeight(measuredHeight);
-    };
-    updateHeight();
-    const observer = new ResizeObserver(updateHeight);
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [story.id]);
 
   function selectManually(index: number) {
     setSelectedIndex(Math.max(0, Math.min(lastIndex, index)));
@@ -198,7 +182,6 @@ export function HomeStoryCarousel() {
     <div
       className={styles.storyStage}
       data-testid="home-story-stage"
-      style={stageHeight ? { height: `${stageHeight}px` } : undefined}
       onPointerDown={(event) => {
         pointerStart.current = { x: event.clientX, y: event.clientY };
         setPointerActive(true);
@@ -209,30 +192,53 @@ export function HomeStoryCarousel() {
         setPointerActive(false);
       }}
     >
-      <div ref={slideRef} key={story.id} className={styles.storySlide} role="group" aria-roledescription="slide" aria-label={`${selectedIndex + 1} / ${publicHomeStories.length}: ${story.shortTitle}`}>
-        <div className={styles.storyCopy}>
-          <span className={styles.kicker}>{story.shortTitle}</span>
-          <h1>{story.headline}</h1>
-          <p>{story.description}</p>
-          {story.conclusion && <strong className={styles.storyConclusion}>{story.conclusion}</strong>}
-        </div>
+      <div
+        className={styles.storyTrack}
+        data-testid="home-story-track"
+        style={{ transform: `translate3d(${trackOffset}%, 0, 0)` }}
+      >
+        {publicHomeStories.map((item, index) => {
+          const active = selectedIndex === index;
+          const headlineLines = item.id === 'gather'
+            ? ['계약과 동시에 흩어지는 부동산 정보,', '집신 한곳에 모아 관리하고', '하나의 집 이력으로 가치를 키웁니다.']
+            : [item.headline];
+          return <div
+            key={item.id}
+            className={styles.storySlide}
+            data-active={active ? 'true' : 'false'}
+            data-story={item.id}
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`${index + 1} / ${publicHomeStories.length}: ${item.shortTitle}`}
+            aria-hidden={active ? undefined : true}
+            inert={active ? undefined : true}
+          >
+            <div className={`${styles.storyVisual} ${item.id === 'gather' ? styles.storyVisualPortrait : ''}`}>
+              <div className={`${styles.storyImageFrame} ${item.id === 'gather' ? styles.storyImagePortrait : ''}`}>
+                {failedImages.has(item.id)
+                  ? <div className={styles.imageFallback} role="status">이미지를 불러오지 못했습니다.</div>
+                  : <Image src={item.imageSrc} alt={item.imageAlt} fill sizes="(max-width: 700px) 100vw, 58vw" priority={index === 0} onError={() => markImageFailed(item.id)} />}
+              </div>
+            </div>
 
-        <div className={`${styles.storyVisual} ${story.id === 'gather' ? styles.storyVisualPortrait : ''}`}>
-          <div className={`${styles.storyImageFrame} ${story.id === 'gather' ? styles.storyImagePortrait : ''}`}>
-            {failedImages.has(story.id)
-              ? <div className={styles.imageFallback} role="status">이미지를 불러오지 못했습니다.</div>
-              : <Image key={story.id} src={story.imageSrc} alt={story.imageAlt} fill sizes="(max-width: 980px) 100vw, 54vw" priority={selectedIndex === 0} onError={() => markImageFailed(story.id)} />}
-          </div>
-          <ProductEvidence story={story} />
-        </div>
+            <div className={styles.storyMessage}>
+              <span className={styles.kicker}>{item.id === 'gather' ? '집에 관한 모든 기록의 시작' : item.shortTitle}</span>
+              <h1 className={item.id === 'gather' ? styles.typeHeadline : undefined}>
+                {headlineLines.map((line, lineIndex) => <span key={line} className={`${styles.typeLine} ${styles[`typeLine${lineIndex + 1}`] ?? ''}`}>{line}</span>)}
+              </h1>
+              <p>{item.description}</p>
+              {item.conclusion && <strong className={styles.storyConclusion}>{item.conclusion}</strong>}
 
-        <div className={styles.storyActions}>
-          <div className={styles.heroActions}>
-            <Link className={styles.primary} href="/signup">{selectedIndex === lastIndex ? '내 집 기록 시작하기' : '웹에서 시작하기'} <ArrowRight size={19} aria-hidden="true" /></Link>
-            <Link className={styles.secondary} href="/login">로그인</Link>
+              <div className={styles.storyActions}>
+                <div className={styles.heroActions}>
+                  <Link className={styles.primary} href="/signup">내 집 기록 시작하기 <ArrowRight size={19} aria-hidden="true" /></Link>
+                  <Link className={styles.secondary} href="/login">로그인</Link>
+                </div>
+                <span className={styles.safety}><ShieldCheck size={17} aria-hidden="true" /> 주소만 알아서는 어떤 기록도 볼 수 없습니다.</span>
+              </div>
+            </div>
           </div>
-          <span className={styles.safety}><ShieldCheck size={17} aria-hidden="true" /> 주소만 알아서는 어떤 기록도 볼 수 없습니다.</span>
-        </div>
+        })}
       </div>
     </div>
 

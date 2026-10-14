@@ -12,7 +12,7 @@ describe('public home story content', () => {
       '가치가 된다',
     ]);
     expect(publicHomeStories).toHaveLength(4);
-    expect(publicHomeStories[0].headline).toBe('집에 관한 모든 일, 이제 집신으로.');
+    expect(publicHomeStories[0].headline).toBe('계약과 동시에 흩어지는 부동산 정보, 집신 한곳에 모아 관리하고 하나의 집 이력으로 가치를 키웁니다.');
     expect(publicHomeStories[3].headline).toBe('위치와 서류만 보고 계신가요?');
   });
 

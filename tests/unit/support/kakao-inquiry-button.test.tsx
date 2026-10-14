@@ -17,7 +17,7 @@ describe('KakaoInquiryButton', () => {
     expect(link).toHaveTextContent('카카오톡 문의');
   });
 
-  it('TEST-SUPPORT-KAKAO-003 reserves a touch target above the mobile navigation', () => {
+  it('TEST-SUPPORT-KAKAO-003 reserves a touch target above mobile and tablet controls', () => {
     render(<KakaoInquiryButton />);
 
     const link = screen.getByRole('link', {
@@ -25,7 +25,8 @@ describe('KakaoInquiryButton', () => {
     });
     expect(link).toHaveClass('fixed', 'right-4', 'z-[60]', 'min-h-14', 'min-w-14');
     expect(link.className).toContain('bottom-[calc(5rem+env(safe-area-inset-bottom))]');
-    expect(link.className).toContain('md:bottom-6');
+    expect(link.className).toContain('md:bottom-24');
     expect(link.className).toContain('md:right-6');
+    expect(link.className).toContain('lg:bottom-6');
   });
 });

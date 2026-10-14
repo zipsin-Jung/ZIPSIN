@@ -54,3 +54,111 @@
 @media(max-width:700px){.storyHero{padding:26px 18px 56px}.storySlide{gap:24px;align-content:start}.storyCopy{padding:20px 0 0}.storyCopy h1{font-size:clamp(36px,10vw,48px);line-height:1.12}.storyCopy>p{margin-top:19px;font-size:16px;line-height:1.65}.storyActions{padding:0 0 20px}.storyActions .heroActions{flex-direction:column}.storyVisual,.storyVisualPortrait{display:grid;grid-template-columns:1fr;grid-template-rows:auto auto;padding:8px;border-radius:24px}.storyImageFrame{width:100%;height:auto;aspect-ratio:16/9;border-radius:18px}.storyVisualPortrait .storyImageFrame{height:min(520px,132vw);aspect-ratio:auto}.storyVisual .evidenceRows{grid-template-columns:repeat(2,minmax(0,1fr))}.storyControls{flex-wrap:wrap;gap:5px;margin-top:16px}.storyDots{order:-1;width:100%;justify-content:center;gap:4px;padding:5px}.storyDots button{min-width:44px;width:44px;padding:0;border-radius:50%}.storyDots button span{width:7px;height:7px;overflow:hidden;border-radius:50%;background:currentColor;color:transparent}}
 @media(max-width:380px){.storyHero{padding-left:14px;padding-right:14px}.storyCopy h1{font-size:34px}.storyControls{justify-content:space-between}.storyDots button{min-width:44px;width:44px}.storyControls>button,.storyDots button{min-height:44px}.storyVisual .evidenceRows{grid-template-columns:1fr 1fr}}
 @media(prefers-reduced-motion:reduce){.storyStage{transition:none}.storySlide{animation:none}.storyControls>button,.storyDots button{transition:none}}
+
+/* 2026-10-14 single-viewport horizontal public home */
+.page{height:100svh;min-height:620px;overflow:hidden;display:grid;grid-template-rows:76px minmax(0,1fr)}
+.header{position:relative;height:76px;justify-content:space-between}
+.headerActions{margin-left:auto}
+.singleMain{min-height:0;overflow:hidden}
+.storyHero{height:100%;padding:18px 24px 14px;overflow:hidden;background:radial-gradient(circle at 20% 10%,rgba(240,228,204,.58),transparent 32%),radial-gradient(circle at 84% 12%,rgba(212,231,224,.72),transparent 30%),linear-gradient(135deg,#fbfaf6 0%,#f2f7f5 100%)}
+.storyCarousel{height:100%;max-width:1480px;display:grid;grid-template-rows:minmax(0,1fr) 52px;gap:8px}
+.storyStage{min-height:0;height:100%;overflow:hidden;border:1px solid rgba(201,218,214,.78);border-radius:34px;background:rgba(255,255,255,.68);box-shadow:0 26px 80px rgba(13,58,56,.11);touch-action:pan-y}
+.storyTrack{display:flex;width:100%;height:100%;transition:transform .56s cubic-bezier(.22,.8,.28,1);will-change:transform}
+.storySlide{position:relative;flex:0 0 100%;width:100%;height:100%;min-height:0;display:grid;grid-template-columns:minmax(0,1.18fr) minmax(340px,.82fr);grid-template-areas:"visual message";align-items:center;gap:clamp(30px,4vw,76px);padding:clamp(18px,2.3vw,36px) clamp(20px,3.6vw,58px);overflow:hidden;animation:none}
+.storySlide::after{display:none}
+.storySlide[data-active=false]{pointer-events:none}
+.storyVisual{grid-area:visual;align-self:stretch;min-height:0;display:block;padding:0;border:0;border-radius:28px;background:transparent;box-shadow:none;backdrop-filter:none}
+.storyImageFrame{position:relative;width:100%;height:100%;overflow:hidden;aspect-ratio:auto;border-radius:28px;background:linear-gradient(145deg,#ece8de,#f8f5ed);box-shadow:0 24px 70px rgba(19,54,52,.17)}
+.storyImageFrame img{object-fit:cover;transform:scale(1);filter:saturate(.96) contrast(1.01)}
+.storyVisualPortrait{min-height:0;display:block}
+.storyVisualPortrait .storyImageFrame{height:100%;aspect-ratio:auto}
+.storyImagePortrait img{object-fit:contain;background:#f7f1e7}
+.storyImagePortrait::after{content:"";position:absolute;inset:-30% -25%;z-index:1;pointer-events:none;opacity:0;background:linear-gradient(155deg,transparent 32%,rgba(255,247,205,.08) 44%,rgba(255,239,163,.62) 50%,rgba(128,205,178,.18) 56%,transparent 68%);transform:translateY(-65%) rotate(-4deg)}
+.storySlide[data-active=true][data-story=gather] .storyImagePortrait img{animation:gatherIntoHome 2.35s cubic-bezier(.18,.78,.24,1) .12s both}
+.storySlide[data-active=true][data-story=gather] .storyImagePortrait::after{animation:gatherLight 2.3s cubic-bezier(.2,.72,.3,1) .15s both}
+.storyMessage{grid-area:message;min-width:0;align-self:center;padding-right:clamp(0px,2vw,24px)}
+.storyMessage .kicker{margin-bottom:20px;padding:8px 13px;border:1px solid rgba(11,107,93,.16);border-radius:999px;background:rgba(255,255,255,.72);font-size:13px}
+.storyMessage h1{max-width:660px;font-size:clamp(36px,3.1vw,50px);font-weight:880;line-height:1.14;letter-spacing:-.058em;text-wrap:balance}
+.storyMessage h1 span{display:block}
+.storyMessage>p{max-width:600px;margin-top:22px;color:var(--muted);font-size:clamp(15px,1.25vw,18px);line-height:1.68;letter-spacing:-.018em}
+.storyConclusion{max-width:600px;margin-top:15px;font-size:15px;line-height:1.55}
+.storyActions{padding:0;opacity:1}
+.storyActions .heroActions{justify-content:flex-start;margin-top:27px}
+.storyActions .safety{justify-content:flex-start;margin-top:15px}
+.typeLine{position:relative;width:100%;max-width:100%;overflow:visible;white-space:normal;clip-path:inset(0 100% 0 0);opacity:0}
+.storySlide[data-active=true] .typeLine{animation:typeReveal .8s steps(14,end) forwards}
+.storySlide[data-active=true] .typeLine1{animation-delay:.75s}
+.storySlide[data-active=true] .typeLine2{animation-delay:1.5s}
+.storySlide[data-active=true] .typeLine3{animation-delay:2.25s}
+.typeLine::after{content:"";position:absolute;right:0;top:.12em;width:2px;height:.92em;background:var(--green);opacity:0}
+.storySlide[data-active=true] .typeLine::after{animation:typeCursor .8s steps(2,end) forwards}
+.storySlide[data-active=true] .typeLine1::after{animation-delay:.75s}
+.storySlide[data-active=true] .typeLine2::after{animation-delay:1.5s}
+.storySlide[data-active=true] .typeLine3::after{animation-delay:2.25s}
+.storyControls{height:52px;margin:0;gap:8px}
+.storyControls>button,.storyDots button{background:rgba(255,255,255,.92)}
+@keyframes gatherIntoHome{0%{transform:scale(1.22) translateY(-4.5%);filter:saturate(.88) contrast(1.04) blur(.2px)}45%{transform:scale(1.12) translateY(-2%);filter:saturate(.94) contrast(1.03)}100%{transform:scale(1) translateY(0);filter:saturate(.98) contrast(1.01)}}
+@keyframes gatherLight{0%{opacity:0;transform:translateY(-65%) rotate(-4deg)}25%{opacity:.72}72%{opacity:.42}100%{opacity:0;transform:translateY(62%) rotate(-4deg)}}
+@keyframes typeReveal{0%{clip-path:inset(0 100% 0 0);opacity:1}100%{clip-path:inset(0 0 0 0);opacity:1}}
+@keyframes typeCursor{0%,85%{opacity:1}100%{opacity:0}}
+
+@media(max-width:900px){
+  .page{grid-template-rows:68px minmax(0,1fr);min-height:600px}
+  .header{height:68px}
+  .storyHero{padding:12px 14px 10px}
+  .storyCarousel{grid-template-rows:minmax(0,1fr) 50px;gap:6px}
+  .storyStage{border-radius:26px}
+  .storySlide{grid-template-columns:1fr;grid-template-rows:minmax(0,48%) minmax(0,52%);grid-template-areas:"visual" "message";gap:14px;padding:14px 16px 10px;overflow-y:auto;overscroll-behavior:contain}
+  .storyVisual{min-height:0}
+  .storyImageFrame{border-radius:20px}
+  .storyMessage{align-self:start;padding:0 4px 4px}
+  .storyMessage .kicker{margin-bottom:10px;padding:5px 9px;font-size:10px}
+  .storyMessage h1{font-size:clamp(27px,6.4vw,42px);line-height:1.12;letter-spacing:-.052em}
+  .storyMessage>p{margin-top:10px;font-size:13px;line-height:1.5}
+  .storyConclusion{margin-top:8px;font-size:12px;line-height:1.45}
+  .storyActions .heroActions{flex-direction:row;margin-top:12px}
+  .storyActions .primary,.storyActions .secondary{width:auto;min-height:44px;padding:10px 14px;font-size:12px}
+  .storyActions .safety{margin-top:8px;font-size:10px}
+  .storyDots{order:0;width:auto}
+}
+
+@media(max-width:520px){
+  .header{padding:0 14px}
+  .primarySmall{padding:9px 11px}
+  .storyHero{padding:8px 9px 7px}
+  .storyCarousel{grid-template-rows:minmax(0,1fr) 48px;gap:4px}
+  .storyStage{border-radius:22px}
+  .storySlide{grid-template-rows:minmax(0,45%) minmax(0,55%);gap:10px;padding:10px 11px 8px}
+  .storyVisual{border-radius:18px}
+  .storyImageFrame{border-radius:17px}
+  .storyMessage{padding:0 2px}
+  .storyMessage h1{font-size:clamp(26px,7.2vw,32px)}
+  .typeLine{width:100%;white-space:normal;overflow:visible}
+  .storyMessage>p{font-size:12px}
+  .storyActions .heroActions{gap:7px}
+  .storyActions .primary,.storyActions .secondary{padding:9px 11px;font-size:11px}
+  .storyActions .safety{line-height:1.3}
+  .storyControls{height:48px;justify-content:space-between;gap:4px;flex-wrap:nowrap}
+  .storyCount{min-width:36px;font-size:11px}
+  .storyDots{gap:2px;padding:2px}
+  .storyDots button{min-width:44px;width:44px;padding:0;border-radius:50%}
+  .storyDots button span{width:7px;height:7px;overflow:hidden;border-radius:50%;background:currentColor;color:transparent}
+  .storyControls>button:last-child{display:none}
+}
+
+@media(max-width:340px){.storyCount{display:none}}
+
+@media(max-height:700px) and (min-width:901px){
+  .page{min-height:540px}
+  .storySlide{padding-top:14px;padding-bottom:14px}
+  .storyMessage h1{font-size:clamp(34px,3.2vw,50px)}
+  .storyMessage>p{margin-top:14px;font-size:14px}
+  .storyActions .heroActions{margin-top:16px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .storyTrack{transition:none}
+  .storySlide[data-active=true][data-story=gather] .storyImagePortrait img,.storySlide[data-active=true][data-story=gather] .storyImagePortrait::after,.storySlide[data-active=true] .typeLine,.storySlide[data-active=true] .typeLine::after{animation:none}
+  .storySlide[data-active=true] .typeLine{clip-path:inset(0 0 0 0);opacity:1}
+  .storyImagePortrait::after{display:none}
+}

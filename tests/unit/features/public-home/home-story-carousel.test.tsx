@@ -71,18 +71,29 @@ describe('HomeStoryCarousel', () => {
     vi.useRealTimers();
   });
 
-  it('TEST-RC-HERO-A11Y-001 첫 장과 이름 있는 제어만 접근성 트리에 노출한다', () => {
+  it('TEST-PUB-SV-TRACK-001 네 장을 하나의 가로 트랙에 두고 활성 장만 접근성 트리에 노출한다', () => {
     render(<HomeStoryCarousel />);
 
     expect(screen.getByRole('region', { name: '집신이 필요한 네 장면' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: '집에 관한 모든 일, 이제 집신으로.' })).toBeInTheDocument();
-    expect(screen.queryByText('사람은 바뀌어도, 집의 기록은 이어집니다.')).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /계약과 동시에 흩어지는 부동산 정보.*하나의 집 이력으로 가치를 키웁니다/ })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: '사람은 바뀌어도, 집의 기록은 이어집니다.' })).not.toBeInTheDocument();
+    expect(screen.getAllByRole('group', { hidden: true })).toHaveLength(4);
+    expect(screen.getByTestId('home-story-track')).toHaveStyle({ transform: 'translate3d(0%, 0, 0)' });
     expect(screen.getByText('1 / 4')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '이전 장면' })).toBeDisabled();
     expect(screen.getByRole('button', { name: '다음 장면' })).toBeEnabled();
     expect(screen.getByRole('button', { name: '자동 넘김 일시정지' })).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: /장면 보기/ })).toHaveLength(4);
-    expect(screen.getByRole('link', { name: /웹에서 시작하기/ })).toHaveAttribute('href', '/signup');
+    expect(screen.getByRole('link', { name: /내 집 기록 시작하기/ })).toHaveAttribute('href', '/signup');
+  });
+
+  it('TEST-PUB-SV-TRACK-002 다음 장 선택 시 트랙을 정확히 한 화면 왼쪽으로 이동한다', () => {
+    render(<HomeStoryCarousel />);
+
+    fireEvent.click(screen.getByRole('button', { name: '다음 장면' }));
+
+    expect(screen.getByTestId('home-story-track')).toHaveStyle({ transform: 'translate3d(-100%, 0, 0)' });
+    expect(screen.getByRole('heading', { name: '사람은 바뀌어도, 집의 기록은 이어집니다.' })).toBeInTheDocument();
   });
 
   it('TEST-RC-HERO-MANUAL-001 화살표와 Home·End 키가 경계 안에서 이동하고 포커스를 빼앗지 않는다', () => {
@@ -106,7 +117,7 @@ describe('HomeStoryCarousel', () => {
 
   it('TEST-RC-HERO-FOCUS-002 CTA의 방향키는 장면을 바꾸거나 포커스를 잃게 하지 않는다', () => {
     render(<HomeStoryCarousel />);
-    const cta = screen.getByRole('link', { name: /웹에서 시작하기/ });
+    const cta = screen.getByRole('link', { name: /내 집 기록 시작하기/ });
     cta.focus();
 
     fireEvent.keyDown(cta, { key: 'ArrowRight' });
@@ -278,14 +289,13 @@ describe('HomeStoryCarousel', () => {
     expect(screen.getByText('2 / 4')).toBeInTheDocument();
   });
 
-  it('TEST-RC-HERO-ERROR-001 이미지 실패 뒤에도 설명과 제품 증거와 가입 CTA를 유지한다', () => {
+  it('TEST-RC-HERO-ERROR-001 이미지 실패 뒤에도 설명과 가입 CTA를 유지한다', () => {
     render(<HomeStoryCarousel />);
 
     fireEvent.error(screen.getByRole('img', { name: /흩어진 계약서와 사진/ }));
 
     expect(screen.getByText('이미지를 불러오지 못했습니다.')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: '집에 관한 모든 일, 이제 집신으로.' })).toBeInTheDocument();
-    expect(screen.getByText('사진·문서·대화·일정')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /웹에서 시작하기/ })).toHaveAttribute('href', '/signup');
+    expect(screen.getByRole('heading', { name: /계약과 동시에 흩어지는 부동산 정보/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /내 집 기록 시작하기/ })).toHaveAttribute('href', '/signup');
   });
 });
