@@ -9,6 +9,12 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      account_recovery_challenges: {
+        Row: { id: string; phone_e164: string; user_id: string | null; code_digest: string; attempts: number; expires_at: string; consumed_at: string | null; provider_message_id: string | null; created_at: string };
+        Insert: { id: string; phone_e164: string; user_id?: string | null; code_digest: string; attempts?: number; expires_at: string; consumed_at?: string | null; provider_message_id?: string | null; created_at?: string };
+        Update: { attempts?: number; consumed_at?: string | null };
+        Relationships: [];
+      };
       offices: {
         Row: { id: string; name: string; created_by: string; verification_status: 'pending' | 'verified' | 'rejected' | 'suspended'; created_at: string; updated_at: string };
         Insert: { id?: string; name: string; created_by: string; verification_status?: 'pending' | 'verified' | 'rejected' | 'suspended'; created_at?: string; updated_at?: string };
