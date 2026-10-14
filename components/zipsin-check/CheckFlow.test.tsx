@@ -19,6 +19,21 @@ describe('초보 임차인 현장 체크',()=>{
     expect(within(priority).getByRole('heading',{name:'온수·난방'})).toBeInTheDocument();
     expect(screen.getByRole('heading',{name:'화장실 배수·냄새'})).toBeInTheDocument();
     expect(screen.getByRole('heading',{name:'옵션 상태'})).toBeInTheDocument();
+    const more=screen.getByRole('region',{name:'전체 현장 체크'});
+    expect(within(more).getAllByRole('heading',{level:2})[1]).toHaveTextContent('옵션 상태');
+  });
+
+  it('상세 체크를 처음에는 강조하고 한 번 열면 일반 상태로 바꾼다',()=>{
+    renderFlow();
+    const detail=screen.getByRole('button',{name:'물·배수 상세 체크 펼치기'});
+    expect(detail).toHaveAttribute('data-attention','required');
+    expect(detail).toHaveTextContent('꼭 눌러보세요');
+    fireEvent.click(detail);
+    fireEvent.click(screen.getByRole('button',{name:'물·배수 상세 체크 접기'}));
+    expect(screen.getByRole('button',{name:'물·배수 상세 체크 펼치기'})).toHaveAttribute('data-attention','seen');
+    fireEvent.click(screen.getByRole('button',{name:'물어볼 것 8개'}));
+    fireEvent.click(screen.getByRole('button',{name:`집 안에서 확인 9개`}));
+    expect(screen.getByRole('button',{name:'물·배수 상세 체크 펼치기'})).toHaveAttribute('data-attention','seen');
   });
 
   it('상태 이름을 문제없음·문제 있음·못 봤음으로 명확하게 표시한다',()=>{
@@ -51,6 +66,14 @@ describe('초보 임차인 현장 체크',()=>{
     renderFlow();
     expect(screen.getByText('이 기기의 집신체크에 먼저 저장돼요')).toBeInTheDocument();
     expect(screen.getByRole('link',{name:'집신에 저장'})).toHaveAttribute('href','/login?next=%2Fck%2Ftransfer%3Fcandidate%3Da');
+  });
+
+  it('완료 버튼은 별도 요약 없이 내가 본 집으로 돌아간다',()=>{
+    const onFinish=vi.fn();
+    renderFlow({onFinish});
+    fireEvent.click(screen.getByRole('button',{name:'저장하고 내가 본 집으로'}));
+    expect(onFinish).toHaveBeenCalledOnce();
+    expect(screen.queryByRole('button',{name:'체크 결과 보기'})).not.toBeInTheDocument();
   });
 
   it('상세 행동 체크가 부모 결과를 임의로 바꾸지 않는다',()=>{

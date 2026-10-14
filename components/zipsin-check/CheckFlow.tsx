@@ -15,9 +15,11 @@ type RowProps = {
   onChange: (value: Candidate) => void;
   store: PhotoStore;
   questionIndex?: number;
+  detailSeen: boolean;
+  onDetailSeen: (itemId: string) => void;
 };
 
-function Row({item, candidate, onChange, store, questionIndex}: RowProps) {
+function Row({item, candidate, onChange, store, questionIndex, detailSeen, onDetailSeen}: RowProps) {
   const answer = candidate.answers[item.id];
   const [detail, setDetail] = useState(false);
   const [memoOpen, setMemoOpen] = useState(false);
@@ -38,6 +40,10 @@ function Row({item, candidate, onChange, store, questionIndex}: RowProps) {
     setMemoOpen(false);
     requestAnimationFrame(() => memoButton.current?.focus());
   };
+  const toggleDetail = () => {
+    onDetailSeen(item.id);
+    setDetail(value => !value);
+  };
 
   return <article className={`${styles.fieldRow} ${isQuestion ? styles.questionRow : ''}`}>
     <div className={styles.fieldQuestion}>
@@ -54,8 +60,8 @@ function Row({item, candidate, onChange, store, questionIndex}: RowProps) {
       <button ref={memoButton} type="button" aria-label={isQuestion ? `${item.title} 답변 기록` : `${item.title} ${answer?.memo ? '메모·사진 있음' : '메모·사진'}`} onClick={() => setMemoOpen(true)}>
         {isQuestion ? (answer?.memo ? '답변 있음' : '답변 기록') : (answer?.memo ? '메모·사진 있음' : '메모·사진')}
       </button>
-      <button type="button" aria-label={`${item.title} 상세 체크 ${detail ? '접기' : '펼치기'}`} aria-expanded={detail} onClick={() => setDetail(value => !value)}>
-        {detail ? '상세 접기' : isQuestion ? '질문 펼치기' : '상세 체크'}
+      <button type="button" aria-label={`${item.title} 상세 체크 ${detail ? '접기' : '펼치기'}`} aria-expanded={detail} data-attention={isQuestion ? undefined : detailSeen ? 'seen' : 'required'} onClick={toggleDetail}>
+        {detail ? '상세 접기' : isQuestion ? '질문 펼치기' : <><span>상세 체크</span>{!detailSeen && <small>꼭 눌러보세요</small>}</>}
       </button>
     </div>
     {detail && <section className={styles.actionChecks} aria-label={`${item.title} 상세 체크`}>
@@ -88,10 +94,19 @@ type CheckFlowProps = {
   photoStore?: PhotoStore;
   canSaveToAccount?: boolean;
   onSaveToAccount?: () => boolean;
+  seenDetailIds?: ReadonlySet<string>;
+  onDetailSeen?: (itemId: string) => void;
 };
 
-export default function CheckFlow({candidate, onChange, onFinish, onBack, photoStore = DEFAULT_STORE, canSaveToAccount = true, onSaveToAccount = () => true}: CheckFlowProps) {
+export default function CheckFlow({candidate, onChange, onFinish, onBack, photoStore = DEFAULT_STORE, canSaveToAccount = true, onSaveToAccount = () => true, seenDetailIds, onDetailSeen}: CheckFlowProps) {
   const [view, setView] = useState<'checks' | 'questions'>('checks');
+  const [localSeenDetailIds, setLocalSeenDetailIds] = useState<ReadonlySet<string>>(new Set());
+  const effectiveSeenDetailIds = seenDetailIds ?? localSeenDetailIds;
+  const hasSeenDetail = (itemId: string) => effectiveSeenDetailIds.has(itemId) || effectiveSeenDetailIds.has(`${candidate.id}:${itemId}`);
+  const markDetailSeen = (itemId: string) => {
+    if (onDetailSeen) onDetailSeen(itemId);
+    else setLocalSeenDetailIds(current => new Set(current).add(itemId));
+  };
   const completed = CHECK_ITEMS.filter(item => {
     const status = candidate.answers[item.id]?.status;
     return status !== undefined && status !== 'unverified';
@@ -108,9 +123,9 @@ export default function CheckFlow({candidate, onChange, onFinish, onBack, photoS
       <button type="button" aria-pressed={view === 'questions'} onClick={() => setView('questions')}>물어볼 것 {ASK_ITEMS.length}개</button>
     </nav>
     {view === 'checks' ? <>
-      <section className={styles.prioritySection} aria-label="먼저 볼 3개"><div className={styles.sectionHeading}><span>PRIORITY</span><h2>먼저 볼 3개</h2><p>시간이 없으면 이 세 가지만 먼저 확인하세요.</p></div><div className={styles.fieldList}>{priorityItems.map(item => <Row key={item.id} item={item} candidate={candidate} onChange={onChange} store={photoStore} />)}</div></section>
-      <section className={styles.otherSection} aria-label="전체 현장 체크"><div className={styles.sectionHeading}><span>MORE CHECKS</span><h2>여유가 있으면 더 보기</h2><p>필요한 것만 골라 확인하고, 못 본 항목은 그대로 두세요.</p></div><div className={styles.fieldList}>{otherItems.map(item => <Row key={item.id} item={item} candidate={candidate} onChange={onChange} store={photoStore} />)}</div></section>
-    </> : <section className={styles.questionSection} aria-label="중개사에게 물어볼 것"><div className={styles.sectionHeading}><span>ASK IN ORDER</span><h3>중개사에게 물어볼 것</h3><p>비용과 수리 약속부터 차례로 묻고, 바로 답변을 기록하세요.</p></div><div className={styles.fieldList}>{ASK_ITEMS.map((item, index) => <Row key={item.id} item={item} candidate={candidate} onChange={onChange} store={photoStore} questionIndex={index + 1} />)}</div></section>}
-    <div className={styles.stickyFinish}><span><b>{completed}개 체크됨</b><em>{canSaveToAccount ? '이 기기의 집신체크에 먼저 저장돼요' : '이 화면을 벗어나면 기록이 사라질 수 있어요'}</em></span><div>{canSaveToAccount ? <a href={`/login?next=${encodeURIComponent(returnTo)}`} onClick={event => {if (!onSaveToAccount()) event.preventDefault();}}>집신에 저장</a> : <button type="button" disabled>집신에 저장</button>}<button type="button" onClick={onFinish}>체크 결과 보기</button></div></div>
+      <section className={styles.prioritySection} aria-label="먼저 볼 3개"><div className={styles.sectionHeading}><span>PRIORITY</span><h2>먼저 볼 3개</h2><p>시간이 없으면 이 세 가지만 먼저 확인하세요.</p></div><div className={styles.fieldList}>{priorityItems.map(item => <Row key={item.id} item={item} candidate={candidate} onChange={onChange} store={photoStore} detailSeen={hasSeenDetail(item.id)} onDetailSeen={markDetailSeen} />)}</div></section>
+      <section className={styles.otherSection} aria-label="전체 현장 체크"><div className={styles.sectionHeading}><span>MORE CHECKS</span><h2>여유가 있으면 더 보기</h2><p>필요한 것만 골라 확인하고, 못 본 항목은 그대로 두세요.</p></div><div className={styles.fieldList}>{otherItems.map(item => <Row key={item.id} item={item} candidate={candidate} onChange={onChange} store={photoStore} detailSeen={hasSeenDetail(item.id)} onDetailSeen={markDetailSeen} />)}</div></section>
+    </> : <section className={styles.questionSection} aria-label="중개사에게 물어볼 것"><div className={styles.sectionHeading}><span>ASK IN ORDER</span><h3>중개사에게 물어볼 것</h3><p>비용과 수리 약속부터 차례로 묻고, 바로 답변을 기록하세요.</p></div><div className={styles.fieldList}>{ASK_ITEMS.map((item, index) => <Row key={item.id} item={item} candidate={candidate} onChange={onChange} store={photoStore} questionIndex={index + 1} detailSeen={hasSeenDetail(item.id)} onDetailSeen={markDetailSeen} />)}</div></section>}
+    <div className={styles.stickyFinish}><span><b>{completed}개 체크됨</b><em>{canSaveToAccount ? '이 기기의 집신체크에 먼저 저장돼요' : '이 화면을 벗어나면 기록이 사라질 수 있어요'}</em></span><div>{canSaveToAccount ? <a href={`/login?next=${encodeURIComponent(returnTo)}`} onClick={event => {if (!onSaveToAccount()) event.preventDefault();}}>집신에 저장</a> : <button type="button" disabled>집신에 저장</button>}<button type="button" onClick={onFinish}>저장하고 내가 본 집으로</button></div></div>
   </main>;
 }

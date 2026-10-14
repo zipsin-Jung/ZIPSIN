@@ -71,6 +71,36 @@ for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}]) {
   });
 }
 
+for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}]) {
+  test(`현장 상세 체크 강조와 완료 버튼이 ${viewport.width}px에서 겹치지 않는다`, async ({page}) => {
+    await page.setViewportSize(viewport);
+    await page.goto('/ck');
+    await page.getByRole('button',{name:'바로 체크'}).click();
+    await page.getByRole('textbox',{name:'집 별명',exact:true}).fill('검수 집');
+    await page.getByRole('button',{name:'별명 저장하고 체크 시작'}).click();
+
+    const detail=page.getByRole('button',{name:'물·배수 상세 체크 펼치기'});
+    const finish=page.getByRole('button',{name:'저장하고 내가 본 집으로'});
+    await expect(detail).toHaveAttribute('data-attention','required');
+    await expect(detail).toContainText('꼭 눌러보세요');
+    await expect(finish).toBeVisible();
+
+    for(const target of [detail,finish]){
+      const box=await target.boundingBox();
+      expect(box).not.toBeNull();
+      expect(box!.x).toBeGreaterThanOrEqual(0);
+      expect(box!.x+box!.width).toBeLessThanOrEqual(viewport.width);
+    }
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth)).toBe(false);
+
+    await detail.click();
+    await page.getByRole('button',{name:'물·배수 상세 체크 접기'}).click();
+    await page.getByRole('button',{name:'물어볼 것 8개'}).click();
+    await page.getByRole('button',{name:'집 안에서 확인 9개'}).click();
+    await expect(page.getByRole('button',{name:'물·배수 상세 체크 펼치기'})).toHaveAttribute('data-attention','seen');
+  });
+}
+
 test('전체 목록의 빈 상태와 모션 감소 설정을 지원한다', async ({page}) => {
   await page.emulateMedia({reducedMotion: 'reduce'});
   await page.goto('/ck');
