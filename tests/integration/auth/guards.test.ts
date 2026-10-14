@@ -6,7 +6,6 @@ const complete = {
   phoneVerifiedAt: '2026-10-02T09:00:00.000Z',
   acceptedTermsVersion: '2026-10-02',
   acceptedPrivacyVersion: '2026-10-02',
-  confirmedAgeOver14: true,
   primaryRole: 'landlord' as const,
 };
 
@@ -26,5 +25,10 @@ describe('evaluateOnboarding', () => {
 
   it('온보딩이 완료되면 이동시키지 않는다', () => {
     expect(evaluateOnboarding(complete)).toBeNull();
+  });
+
+  it('별도 연령 동의 없이 전화·약관·개인정보·역할만으로 완료한다', () => {
+    expect(evaluateOnboarding(complete)).toBeNull();
+    expect('confirmedAgeOver14' in complete).toBe(false);
   });
 });

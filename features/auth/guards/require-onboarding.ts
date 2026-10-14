@@ -10,8 +10,7 @@ export function evaluateOnboarding(state: Evaluation): string | null {
   if (
     !state.phoneVerifiedAt ||
     !state.acceptedTermsVersion ||
-    !state.acceptedPrivacyVersion ||
-    !state.confirmedAgeOver14
+    !state.acceptedPrivacyVersion
   ) return '/signup/verify';
   if (!state.primaryRole) return '/onboarding/role';
   return isOnboardingComplete(state) ? null : '/signup/verify';
@@ -40,7 +39,6 @@ export async function requireOnboardingComplete() {
     phoneVerifiedAt: profile?.phone_verified_at ?? null,
     acceptedTermsVersion: accepted.get('terms') ?? null,
     acceptedPrivacyVersion: accepted.get('privacy') ?? null,
-    confirmedAgeOver14: accepted.has('age_over_14'),
     primaryRole: role?.primary_role ?? null,
   });
   if (destination) redirect(destination);
