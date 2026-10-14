@@ -1,7 +1,7 @@
 # 공개 홈 단일 화면 추적표
 
 - 날짜: 2026-10-14
-- 상태: 로컬 검증 완료, Preview·사용자 승인 대기
+- 상태: Preview 실제 검수 완료, 사용자 승인 대기
 - 대상: 공개 `/`
 
 | 요구사항·수용 기준 | 화면·상태 | 소스 | 대표 테스트·증거 |
@@ -25,10 +25,13 @@
 - Chromium 전체: 29개 통과, 외부 인증·Preview 데이터가 필요한 11개 skip
 - 집중 반응형: 320·390·768·1440px에서 문서 가로·세로 overflow 1px 이하, 문장·제어 viewport 경계, 44px, axe, console·pageerror, CLS 검사
 
-## 남은 검증
+## Preview 검증
 
 - Vercel Preview `Ready` 확인
-- Preview 실제 브라우저에서 첫 애니메이션, 네 장 좌우 이동, `/signup`, `/login`, 카카오 문의 확인
+- 실제 브라우저에서 첫 장 승인 문구와 네 장 좌우 이동 확인
+- `/signup`, `/login` 실제 이동 확인
+- 카카오 문의 경로 유지와 브라우저 console warning·error 0건 확인
+- Preview: `https://zipsin-git-codex-contract-to-expiry-home-zipsin-jung.vercel.app`
 - 사용자 화면 승인 뒤에만 Production 여부 결정
 
 ## 독립 품질 판정

@@ -9,7 +9,9 @@
 - 독립 검수에서 발견한 320px 다음 버튼 이탈과 768px 카카오 문의·자동재생 겹침을 수정하고 자동 회귀 검사를 추가했습니다.
 - 타입 오류 0건, 단위·통합 416개 통과·2개 skip, 커버리지 네 지표 80% 이상, Production build 성공입니다.
 - Chromium 전체 29개 통과·외부 환경 전용 11개 skip이며 독립 품질검수는 P0·P1·P2 0건으로 통과했습니다.
-- GitHub·Vercel Preview 동기화와 사용자 화면 승인을 기다리며 Production은 변경하지 않습니다.
+- GitHub에 푸시했고 Vercel Preview가 `Ready`인 것을 확인했습니다. 실제 브라우저에서 네 장 좌우 이동, 회원가입·로그인 연결, 카카오 문의 경로와 콘솔 오류 0건을 확인했습니다.
+- Preview: `https://zipsin-git-codex-contract-to-expiry-home-zipsin-jung.vercel.app`
+- 사용자 화면 승인을 기다리며 Production은 변경하지 않습니다.
 - 상세 추적표: `docs/traceability/public-home-single-viewport.md`
 
 ## 2026-10-14 공개 메인 4장 스토리 캐러셀 구현

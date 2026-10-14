@@ -1,7 +1,7 @@
 # 공개 홈 단일 화면 구현 작업 기록
 
 - 날짜: 2026-10-14
-- 상태: 로컬 검증 완료, Preview·사용자 승인 대기
+- 상태: Preview 실제 검수 완료, 사용자 승인 대기
 
 ## 요청
 
@@ -39,10 +39,12 @@
 - `npm run test:e2e`: 최종 단독 실행 29개 통과·외부 환경 전용 11개 skip.
 - 320·390·768·1440px 실제 캡처를 직접 확인했다.
 - 독립 품질검수: PASS, P0 0 / P1 0 / P2 0, 사용자 승인 대기.
+- Vercel Preview가 `Ready`인 것을 확인했다.
+- 실제 Preview 브라우저에서 네 장의 좌우 이동, `/signup`, `/login`, 카카오 문의 경로와 콘솔 오류 0건을 확인했다.
+- Preview: `https://zipsin-git-codex-contract-to-expiry-home-zipsin-jung.vercel.app`
 - Production은 변경하지 않았다.
 
 ## 남은 일
 
-- Git 변경·민감정보 검사, 커밋·푸시
-- Vercel Preview `Ready`와 실제 브라우저 확인
 - 사용자 화면 승인
+- 사용자 승인 뒤에만 Production 배포 여부 결정
