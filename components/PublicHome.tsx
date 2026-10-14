@@ -1,8 +1,7 @@
 import Link from 'next/link';
-import Image from 'next/image';
-import { ArrowRight, FileText, House, MessageCircle, ShieldCheck } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Brand from '@/components/Brand';
-import { ScenarioExplorer } from '@/features/public-home/components/ScenarioExplorer';
+import { HomeStoryCarousel } from '@/features/public-home/components/HomeStoryCarousel';
 import styles from './PublicHome.module.css';
 
 export default function PublicHome() {
@@ -10,34 +9,14 @@ export default function PublicHome() {
     <a className={styles.skip} href="#main">본문 바로가기</a>
     <header className={styles.header}>
       <Link href="/" aria-label="집신 메인"><Brand /></Link>
-      <nav aria-label="주 메뉴"><a href="#intro">집신 소개</a><a href="#moments">이런 순간에 집신</a><a href="#features">주요 기능</a><a href="#how">이용 방법</a><Link href="/support">고객지원</Link></nav>
+      <nav aria-label="주 메뉴"><a href="#intro">집신 소개</a><a href="#stories">이런 순간에 집신</a><a href="#features">주요 기능</a><a href="#how">이용 방법</a><Link href="/support">고객지원</Link></nav>
       <div className={styles.headerActions}><Link className={styles.login} href="/login">로그인</Link><Link className={styles.primarySmall} href="/signup">웹에서 시작하기</Link></div>
     </header>
 
     <main id="main">
-      <section id="intro" className={styles.hero}>
-        <div className={styles.heroCopy}>
-          <span className={styles.kicker}>집 한 채에 이어지는 기록</span>
-          <h1>집에 관한 일,<br />다시 묻고 다시 찾지 않도록.</h1>
-          <p>계약서, 사진, 대화, 일정과 집에서 있었던 일을 집 한 채에 이어서 기록하세요.</p>
-          <div className={styles.heroActions}><Link className={styles.primary} href="/signup">웹에서 시작하기 <ArrowRight size={19} /></Link><Link className={styles.secondary} href="/login">로그인</Link></div>
-          <span className={styles.safety}><ShieldCheck size={17} /> 주소만 알아서는 어떤 기록도 볼 수 없습니다.</span>
-        </div>
-
-        <div className={styles.heroVisual}>
-          <span className={styles.heroSceneLabel}>생활 장면 예시</span>
-          <div className={styles.heroPhoto}><Image src="/images/public-home/scattered-records.png" alt="여러 기기에 흩어진 집 기록을 찾는 장면" fill sizes="(max-width: 980px) 100vw, 48vw" priority /></div>
-          <div className={styles.heroProduct} aria-label="집신 제품 화면 예시">
-            <div className={styles.appTopbar}><span>제품 화면 예시</span><strong>우리 집</strong></div>
-            <div className={styles.nextAction}><span>다음 일정</span><strong>계약 만기 전 연장·퇴거 계획 확인</strong><time>만기 D-112</time></div>
-            <div className={styles.quickRecords}><span><FileText size={18} /> 계약 문서</span><span><MessageCircle size={18} /> 집 대화</span><span><House size={18} /> 전체 기록</span></div>
-          </div>
-        </div>
-      </section>
-
-      <section id="moments" className={styles.moments}>
-        <div className={styles.sectionHeading}><span className={styles.kicker}>이런 순간에 집신</span><h2>찾고, 묻고, 설명하는 일을<br />한 번으로 줄입니다.</h2><p>상황을 좌우로 넘겨 보세요. 선택한 순간에 필요한 집신 화면이 바로 나타납니다.</p></div>
-        <ScenarioExplorer />
+      <section id="intro" className={styles.storyHero}>
+        <span id="stories" className={styles.anchorTarget} aria-hidden="true" />
+        <HomeStoryCarousel />
       </section>
 
       <section id="features" className={styles.principle}>

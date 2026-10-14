@@ -156,7 +156,7 @@ export function HomeStoryCarousel() {
       onPointerUp={handlePointerUp}
       onPointerCancel={() => { pointerStart.current = null; }}
     >
-      <article className={styles.storySlide} role="group" aria-roledescription="slide" aria-label={`${selectedIndex + 1} / ${publicHomeStories.length}: ${story.shortTitle}`}>
+      <article key={story.id} className={styles.storySlide} role="group" aria-roledescription="slide" aria-label={`${selectedIndex + 1} / ${publicHomeStories.length}: ${story.shortTitle}`}>
         <div className={styles.storyCopy}>
           <span className={styles.kicker}>{story.shortTitle}</span>
           <h1>{story.headline}</h1>
@@ -169,8 +169,8 @@ export function HomeStoryCarousel() {
           <span className={styles.safety}><ShieldCheck size={17} aria-hidden="true" /> 주소만 알아서는 어떤 기록도 볼 수 없습니다.</span>
         </div>
 
-        <div className={styles.storyVisual}>
-          <div className={styles.storyImageFrame}>
+        <div className={`${styles.storyVisual} ${story.id === 'gather' ? styles.storyVisualPortrait : ''}`}>
+          <div className={`${styles.storyImageFrame} ${story.id === 'gather' ? styles.storyImagePortrait : ''}`}>
             {failedImages.has(story.id)
               ? <div className={styles.imageFallback} role="status">이미지를 불러오지 못했습니다.</div>
               : <Image key={story.id} src={story.imageSrc} alt={story.imageAlt} fill sizes="(max-width: 980px) 100vw, 54vw" priority={selectedIndex === 0} onError={() => markImageFailed(story.id)} />}
