@@ -87,6 +87,42 @@ describe('HomeStoryCarousel', () => {
     expect(screen.getByRole('link', { name: /내 집 기록 시작하기/ })).toHaveAttribute('href', '/signup');
   });
 
+  it.each([
+    ['TEST-PUB-ANIM-001', 'gather'],
+    ['TEST-PUB-ANIM-002', 'continuity'],
+    ['TEST-PUB-ANIM-003', 'communication'],
+    ['TEST-PUB-ANIM-004', 'history'],
+  ])('%s 네 장면은 서로 다른 모션 식별자를 가진다', (_testId, motionId) => {
+    render(<HomeStoryCarousel />);
+
+    expect(document.querySelector(`[data-motion-story="${motionId}"]`)).toBeInTheDocument();
+  });
+
+  it('장식 배경은 숨기고 승인 이미지의 대체 설명은 장면마다 하나만 유지한다', () => {
+    render(<HomeStoryCarousel />);
+
+    const backdrops = document.querySelectorAll('[data-story-backdrop]');
+    expect(backdrops).toHaveLength(4);
+    for (const backdrop of backdrops) expect(backdrop).toHaveAttribute('aria-hidden', 'true');
+
+    const foregrounds = document.querySelectorAll('img[data-story-foreground]');
+    expect(foregrounds).toHaveLength(4);
+    for (const foreground of foregrounds) expect(foreground).not.toHaveAttribute('alt', '');
+  });
+
+  it('활성 장면을 떠났다가 다시 선택하면 모션 실행 식별자를 새로 만든다', () => {
+    render(<HomeStoryCarousel />);
+    const firstRun = document.querySelector('[data-active="true"]')?.getAttribute('data-motion-run');
+
+    fireEvent.click(screen.getByRole('button', { name: '다음 장면' }));
+    fireEvent.click(screen.getByRole('button', { name: '모인다 장면 보기' }));
+
+    const replayRun = document.querySelector('[data-active="true"]')?.getAttribute('data-motion-run');
+    expect(firstRun).toBeTruthy();
+    expect(replayRun).toBeTruthy();
+    expect(replayRun).not.toBe(firstRun);
+  });
+
   it('TEST-PUB-SV-TRACK-002 다음 장 선택 시 트랙을 정확히 한 화면 왼쪽으로 이동한다', () => {
     render(<HomeStoryCarousel />);
 

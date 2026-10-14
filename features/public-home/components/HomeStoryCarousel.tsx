@@ -12,6 +12,13 @@ const HOVER_SELECT_MS = 250;
 const HOVER_RESUME_MS = 1500;
 const SWIPE_THRESHOLD_PX = 48;
 
+const storyMotionIds: Record<HomeStoryId, 'gather' | 'continuity' | 'communication' | 'history'> = {
+  gather: 'gather',
+  continuity: 'continuity',
+  communication: 'communication',
+  'home-history': 'history',
+};
+
 export function HomeStoryCarousel() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [autoplay, setAutoplay] = useState(true);
@@ -23,6 +30,7 @@ export function HomeStoryCarousel() {
   const [pointerActive, setPointerActive] = useState(false);
   const [resumeReady, setResumeReady] = useState(true);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [activationSequence, setActivationSequence] = useState(0);
   const [failedImages, setFailedImages] = useState<Set<HomeStoryId>>(() => new Set());
   const hoverSelectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pointerStart = useRef<{ x: number; y: number } | null>(null);
@@ -91,6 +99,7 @@ export function HomeStoryCarousel() {
     const timer = window.setTimeout(() => {
       const nextIndex = selectedIndex + 1;
       setSelectedIndex(nextIndex);
+      setActivationSequence((current) => current + 1);
       if (nextIndex === lastIndex) setAutoplay(false);
     }, AUTOPLAY_MS);
     return () => window.clearTimeout(timer);
@@ -102,13 +111,17 @@ export function HomeStoryCarousel() {
 
   function selectManually(index: number) {
     setSelectedIndex(Math.max(0, Math.min(lastIndex, index)));
+    setActivationSequence((current) => current + 1);
     setManual(true);
     setAutoplay(false);
   }
 
   function scheduleHoverSelection(index: number) {
     if (hoverSelectTimer.current) clearTimeout(hoverSelectTimer.current);
-    hoverSelectTimer.current = setTimeout(() => setSelectedIndex(index), HOVER_SELECT_MS);
+    hoverSelectTimer.current = setTimeout(() => {
+      setSelectedIndex(index);
+      setActivationSequence((current) => current + 1);
+    }, HOVER_SELECT_MS);
   }
 
   function cancelHoverSelection() {
@@ -145,7 +158,10 @@ export function HomeStoryCarousel() {
       return;
     }
     if (reducedMotion) return;
-    if (selectedIndex === lastIndex) setSelectedIndex(0);
+    if (selectedIndex === lastIndex) {
+      setSelectedIndex(0);
+      setActivationSequence((current) => current + 1);
+    }
     setManual(false);
     setResumeReady(true);
     setAutoplay(true);
@@ -199,6 +215,7 @@ export function HomeStoryCarousel() {
       >
         {publicHomeStories.map((item, index) => {
           const active = selectedIndex === index;
+          const motionId = storyMotionIds[item.id];
           const headlineLines = item.id === 'gather'
             ? ['계약과 동시에 흩어지는 부동산 정보,', '집신 한곳에 모아 관리하고', '하나의 집 이력으로 가치를 키웁니다.']
             : [item.headline];
@@ -206,6 +223,8 @@ export function HomeStoryCarousel() {
             key={item.id}
             className={styles.storySlide}
             data-active={active ? 'true' : 'false'}
+            data-motion-run={`${motionId}-${active ? activationSequence : 'idle'}`}
+            data-motion-story={motionId}
             data-story={item.id}
             role="group"
             aria-roledescription="slide"
@@ -213,11 +232,24 @@ export function HomeStoryCarousel() {
             aria-hidden={active ? undefined : true}
             inert={active ? undefined : true}
           >
-            <div className={`${styles.storyVisual} ${item.id === 'gather' ? styles.storyVisualPortrait : ''}`}>
-              <div className={`${styles.storyImageFrame} ${item.id === 'gather' ? styles.storyImagePortrait : ''}`}>
+            <div
+              key={`${item.id}-${active ? activationSequence : 'idle'}`}
+              className={`${styles.storyVisual} ${item.id === 'gather' ? styles.storyVisualPortrait : ''}`}
+            >
+              <div className={styles.storyMotionStage} data-motion-story={motionId}>
+                {!failedImages.has(item.id) && <div
+                  aria-hidden="true"
+                  className={styles.storyImageBackdrop}
+                  data-story-backdrop
+                  style={{ backgroundImage: `url(${item.imageSrc})` }}
+                />}
+                <div className={`${styles.storyImageFrame} ${item.id === 'gather' ? styles.storyImagePortrait : ''}`}>
                 {failedImages.has(item.id)
                   ? <div className={styles.imageFallback} role="status">이미지를 불러오지 못했습니다.</div>
-                  : <Image src={item.imageSrc} alt={item.imageAlt} fill sizes="(max-width: 700px) 100vw, 58vw" priority={index === 0} onError={() => markImageFailed(item.id)} />}
+                  : <Image data-story-foreground src={item.imageSrc} alt={item.imageAlt} className={styles.storyImageForeground} fill sizes="(max-width: 700px) 100vw, 60vw" priority={index === 0} onError={() => markImageFailed(item.id)} />}
+                  <span aria-hidden="true" className={styles.motionSweep} />
+                  <span aria-hidden="true" className={styles.motionMarkers}><i /><i /><i /><i /></span>
+                </div>
               </div>
             </div>
 
