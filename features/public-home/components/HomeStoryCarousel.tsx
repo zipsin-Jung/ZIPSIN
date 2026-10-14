@@ -22,10 +22,12 @@ export function HomeStoryCarousel() {
   const [visible, setVisible] = useState(true);
   const [resumeReady, setResumeReady] = useState(true);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [stageHeight, setStageHeight] = useState<number | null>(null);
   const [failedImages, setFailedImages] = useState<Set<HomeStoryId>>(() => new Set());
   const hoverSelectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pointerStart = useRef<{ x: number; y: number } | null>(null);
   const wasInteractionPaused = useRef(false);
+  const slideRef = useRef<HTMLDivElement | null>(null);
   const lastIndex = publicHomeStories.length - 1;
   const story = publicHomeStories[selectedIndex];
 
@@ -73,6 +75,19 @@ export function HomeStoryCarousel() {
   useEffect(() => () => {
     if (hoverSelectTimer.current) clearTimeout(hoverSelectTimer.current);
   }, []);
+
+  useEffect(() => {
+    const node = slideRef.current;
+    if (!node) return;
+    const updateHeight = () => {
+      const measuredHeight = Math.ceil(node.getBoundingClientRect().height);
+      if (measuredHeight > 0) setStageHeight(measuredHeight);
+    };
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [story.id]);
 
   function selectManually(index: number) {
     setSelectedIndex(Math.max(0, Math.min(lastIndex, index)));
@@ -152,11 +167,12 @@ export function HomeStoryCarousel() {
     <div
       className={styles.storyStage}
       data-testid="home-story-stage"
+      style={stageHeight ? { height: `${stageHeight}px` } : undefined}
       onPointerDown={(event) => { pointerStart.current = { x: event.clientX, y: event.clientY }; }}
       onPointerUp={handlePointerUp}
       onPointerCancel={() => { pointerStart.current = null; }}
     >
-      <article key={story.id} className={styles.storySlide} role="group" aria-roledescription="slide" aria-label={`${selectedIndex + 1} / ${publicHomeStories.length}: ${story.shortTitle}`}>
+      <div ref={slideRef} key={story.id} className={styles.storySlide} role="group" aria-roledescription="slide" aria-label={`${selectedIndex + 1} / ${publicHomeStories.length}: ${story.shortTitle}`}>
         <div className={styles.storyCopy}>
           <span className={styles.kicker}>{story.shortTitle}</span>
           <h1>{story.headline}</h1>
@@ -177,7 +193,7 @@ export function HomeStoryCarousel() {
           </div>
           <ProductEvidence story={story} />
         </div>
-      </article>
+      </div>
     </div>
 
     <div className={styles.storyControls} aria-label="장면 제어">

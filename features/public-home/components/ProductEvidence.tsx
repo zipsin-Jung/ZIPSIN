@@ -30,14 +30,14 @@ function StoryEvidence({ story }: { story: PublicHomeStory }) {
 }
 
 function EvidenceSequence({ title, items }: { title: string; items: readonly string[] }) {
-  return <section className={styles.evidenceBody}><h3><CheckCircle2 size={19} /> {title}</h3><ol className={styles.evidenceRows}>
+  return <section className={styles.evidenceBody}><h2><CheckCircle2 size={19} /> {title}</h2><ol className={styles.evidenceRows}>
     {items.map((item, index) => <li key={item}><span className={styles.rowIcon}><CheckCircle2 size={17} /></span><span><small>{String(index + 1).padStart(2, '0')}</small><strong>{item}</strong></span></li>)}
   </ol></section>;
 }
 
 function CommunicationEvidence() {
   return <section className={styles.evidenceBody}>
-    <h3><UserPlus size={19} /> 직접 초대</h3>
+    <h2><UserPlus size={19} /> 직접 초대</h2>
     <ul className={styles.evidenceRows}>
       <li><span className={styles.rowIcon}><UserPlus size={17} /></span><span><small>이 집 사람들</small><strong>집별 연락처</strong></span></li>
       <li><span className={styles.rowIcon}><MessageCircle size={17} /></span><span><small>집 안에서 시작</small><strong>집신 채팅</strong></span></li>
