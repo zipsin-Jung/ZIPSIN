@@ -11,6 +11,8 @@ export function VerificationForm({ email = '', displayName = '', next }: { email
   const [code, setCode] = useState('');
   const [message, setMessage] = useState('');
   const [verified, setVerified] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
 
   async function sendCode() {
     setMessage('인증번호를 요청하고 있습니다.');
@@ -75,9 +77,8 @@ export function VerificationForm({ email = '', displayName = '', next }: { email
       displayName: formData.get('displayName'),
       email: formData.get('email'),
       challengeId,
-      termsAccepted: true,
-      privacyAccepted: true,
-      ageOver14: true,
+      termsAccepted,
+      privacyAccepted,
       marketingSmsAccepted: formData.get('marketingSmsAccepted') === 'on',
       marketingEmailAccepted: formData.get('marketingEmailAccepted') === 'on',
     });
@@ -96,9 +97,14 @@ export function VerificationForm({ email = '', displayName = '', next }: { email
       <fieldset className="grid gap-3 rounded-2xl border p-4">
         <legend className="px-2 font-semibold">필수 휴대전화 번호 인증</legend>
         <p className="text-sm leading-6 text-slate-600">이 번호 확인은 공인중개사 자격이나 집 소유권 인증이 아닙니다.</p>
-        <label className="grid gap-2">전화번호<input className="rounded-xl border p-3" onChange={(event) => setPhone(event.target.value)} placeholder="010-1234-5678" type="tel" value={phone} /></label>
+        <label className="grid gap-2">전화번호<input autoComplete="tel" className="rounded-xl border p-3" onChange={(event) => setPhone(event.target.value)} placeholder="010-1234-5678" type="tel" value={phone} /></label>
         <button className="rounded-xl bg-emerald-900 p-3 font-semibold text-white" onClick={sendCode} type="button">인증번호 받기</button>
-        {challengeId && <><label className="grid gap-2">인증번호<input className="rounded-xl border p-3" inputMode="numeric" maxLength={6} onChange={(event) => setCode(event.target.value)} value={code} /></label><button className="rounded-xl border border-emerald-900 p-3 font-semibold" onClick={verifyCode} type="button">인증하기</button></>}
+        {challengeId && <><label className="grid gap-2">인증번호<input autoComplete="one-time-code" className="rounded-xl border p-3" inputMode="numeric" maxLength={6} onChange={(event) => setCode(event.target.value)} value={code} /></label><button className="rounded-xl border border-emerald-900 p-3 font-semibold" onClick={verifyCode} type="button">인증하기</button></>}
+      </fieldset>
+      <fieldset className="grid gap-3 rounded-2xl bg-slate-50 p-4 text-sm">
+        <legend className="px-1 font-semibold">필수 동의</legend>
+        <label><input checked={termsAccepted} onChange={(event) => setTermsAccepted(event.target.checked)} required type="checkbox" /> 서비스 이용약관 동의</label>
+        <label><input checked={privacyAccepted} onChange={(event) => setPrivacyAccepted(event.target.checked)} required type="checkbox" /> 개인정보 수집·이용 동의</label>
       </fieldset>
       <label><input name="marketingSmsAccepted" type="checkbox" /> 문자 마케팅 수신 (선택)</label>
       <label><input name="marketingEmailAccepted" type="checkbox" /> 이메일 마케팅 수신 (선택)</label>

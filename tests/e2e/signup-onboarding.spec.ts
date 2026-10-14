@@ -11,9 +11,7 @@ for (const viewport of [
     await page.setViewportSize(viewport);
     await page.goto('/login');
     await expect(page.getByRole('heading', { name: '집신 시작하기' })).toBeVisible();
-    await expect(page.getByRole('button', { name: /Google로 계속하기/ })).toBeVisible();
-    await expect(page.getByRole('button', { name: /카카오로 계속하기/ })).toBeVisible();
-    await expect(page.getByRole('button', { name: /네이버로 계속하기/ })).toBeVisible();
+    await expect(page.getByText(/연결 설정 후 사용할 수 있습니다/)).toHaveCount(0);
     await expect(page.getByLabel('아이디')).toBeVisible();
     await expect(page.getByRole('textbox', { name: '비밀번호', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: '로그인' })).toBeVisible();

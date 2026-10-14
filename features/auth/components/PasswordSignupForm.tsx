@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { registerPasswordAccountAction } from '@/features/auth/actions/register-password-account';
 
@@ -8,7 +8,8 @@ const inputClass = 'mt-2 min-h-12 w-full rounded-xl border border-slate-300 bg-w
 
 export function PasswordSignupForm({ next }: { next?: string }) {
   const [username, setUsername] = useState('');
-  const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'unavailable' | 'invalid' | 'error'>('idle');
+  const usernameRef = useRef('');
+  const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'unavailable' | 'invalid' | 'rate_limited' | 'error'>('idle');
   const [passwordPinned, setPasswordPinned] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
@@ -16,6 +17,7 @@ export function PasswordSignupForm({ next }: { next?: string }) {
   const showPassword = passwordPinned;
 
   async function checkUsername() {
+    const requestedUsername = username.trim().toLowerCase();
     setUsernameStatus('checking');
     try {
       const response = await fetch('/api/auth/username-availability', {
@@ -24,9 +26,10 @@ export function PasswordSignupForm({ next }: { next?: string }) {
         body: JSON.stringify({ username }),
       });
       const body = await response.json() as { status?: string };
+      if (requestedUsername !== usernameRef.current.trim().toLowerCase()) return;
       const status = body.status;
       setUsernameStatus(
-        status === 'available' || status === 'unavailable' || status === 'invalid'
+        status === 'available' || status === 'unavailable' || status === 'invalid' || status === 'rate_limited'
           ? status
           : 'error',
       );
@@ -41,6 +44,7 @@ export function PasswordSignupForm({ next }: { next?: string }) {
     available: '사용할 수 있는 아이디입니다.',
     unavailable: '이미 사용 중인 아이디입니다.',
     invalid: '영문 소문자·숫자·밑줄 4~20자로 입력해 주세요.',
+    rate_limited: '확인 요청이 많습니다. 잠시 후 다시 시도해 주세요.',
     error: '지금 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.',
   }[usernameStatus];
 
@@ -50,8 +54,8 @@ export function PasswordSignupForm({ next }: { next?: string }) {
       <div className="font-semibold text-slate-800">
         <label htmlFor="signup-username">아이디</label>
         <div className="mt-2 flex gap-2">
-          <input aria-describedby="username-status" className={`${inputClass} mt-0`} id="signup-username" name="username" required autoComplete="username" minLength={4} maxLength={20} onChange={(event) => { setUsername(event.target.value); setUsernameStatus('idle'); }} placeholder="영문, 숫자, 밑줄 4~20자" value={username} />
-          <button className="min-h-12 shrink-0 rounded-xl border border-emerald-700 px-4 font-bold text-emerald-800 disabled:cursor-not-allowed disabled:opacity-50" disabled={!username || usernameStatus === 'checking'} onClick={checkUsername} type="button">아이디 중복 확인</button>
+          <input aria-describedby="username-status" className={`${inputClass} mt-0`} id="signup-username" name="username" required autoComplete="username" minLength={4} maxLength={20} onChange={(event) => { usernameRef.current = event.target.value; setUsername(event.target.value); setUsernameStatus('idle'); }} placeholder="영문, 숫자, 밑줄 4~20자" value={username} />
+          <button className="min-h-12 shrink-0 rounded-xl border border-emerald-700 px-4 font-bold text-emerald-800 disabled:cursor-not-allowed disabled:opacity-50" disabled={!/^[a-z0-9_]{4,20}$/.test(username.trim().toLowerCase()) || usernameStatus === 'checking'} onClick={checkUsername} type="button">아이디 중복 확인</button>
         </div>
         {usernameMessage && <p aria-live="polite" className="mt-2 text-sm font-medium text-slate-600" id="username-status">{usernameMessage}</p>}
       </div>
@@ -81,7 +85,7 @@ export function PasswordSignupForm({ next }: { next?: string }) {
         <label className="flex min-h-11 items-center gap-3"><input checked={privacyAccepted} name="privacyAccepted" onChange={(event) => setPrivacyAccepted(event.target.checked)} required type="checkbox" /> 개인정보 수집·이용에 동의합니다.</label>
       </fieldset>
 
-      <button className="min-h-13 rounded-xl bg-[#0d5b45] px-5 py-3 text-lg font-extrabold text-white transition hover:bg-[#084b39]" type="submit">회원가입</button>
+      <button className="min-h-13 rounded-xl bg-[#0d5b45] px-5 py-3 text-lg font-extrabold text-white transition hover:bg-[#084b39] disabled:cursor-not-allowed disabled:opacity-50" disabled={usernameStatus !== 'available' || !allRequired} type="submit">회원가입</button>
     </form>
   );
 }

@@ -14,6 +14,14 @@ alter table public.account_recovery_challenges enable row level security;
 revoke all on public.account_recovery_challenges from public, anon, authenticated;
 grant select, insert, update on public.account_recovery_challenges to service_role;
 
-create unique index profiles_one_verified_phone
-  on public.profiles(phone_e164)
-  where phone_verified_at is not null and phone_e164 is not null;
+do $$
+begin
+  if not exists (
+    select 1 from public.profiles where phone_verified_at is not null and phone_e164 is not null
+    group by phone_e164 having count(*) > 1
+  ) then
+    create unique index if not exists profiles_one_verified_phone
+      on public.profiles(phone_e164)
+      where phone_verified_at is not null and phone_e164 is not null;
+  end if;
+end $$;

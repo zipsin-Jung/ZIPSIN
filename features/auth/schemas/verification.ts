@@ -19,7 +19,6 @@ export const signupSchema = z.object({
   challengeId: z.string().min(1),
   termsAccepted: z.literal(true),
   privacyAccepted: z.literal(true),
-  ageOver14: z.literal(true),
   marketingSmsAccepted: z.boolean().default(false),
   marketingEmailAccepted: z.boolean().default(false),
 });

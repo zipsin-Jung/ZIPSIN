@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const rpc = vi.fn();
-vi.mock('@/features/auth/server/session', () => ({ requireUser: vi.fn(async () => ({ id: 'user-1' })) }));
+vi.mock('@/features/auth/server/session', () => ({ requirePhoneVerifiedUser: vi.fn(async () => ({ id: 'user-1' })) }));
 vi.mock('@/lib/supabase/server', () => ({ createServerSupabaseClient: vi.fn(async () => ({ rpc })) }));
 
 import { saveOnboarding } from '@/features/account/server/save-onboarding';

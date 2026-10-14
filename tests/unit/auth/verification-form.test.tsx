@@ -32,6 +32,8 @@ describe('VerificationForm', () => {
     await user.click(screen.getByRole('button', { name: '인증번호 받기' }));
     await user.type(await screen.findByRole('textbox', { name: '인증번호' }), '123456');
     await user.click(screen.getByRole('button', { name: '인증하기' }));
+    await user.click(screen.getByRole('checkbox', { name: /서비스 이용약관/ }));
+    await user.click(screen.getByRole('checkbox', { name: /개인정보 수집/ }));
     await user.click(screen.getByRole('button', { name: '가입 완료' }));
 
     expect(completeSignup).toHaveBeenCalled();

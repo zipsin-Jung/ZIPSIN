@@ -19,7 +19,11 @@ export class SolapiSmsTransport {
     const salt = (this.config.salt ?? randomUUID)();
     const signature = createHmac('sha256', this.config.apiSecret).update(date + salt).digest('hex');
     const fetcher = this.config.fetcher ?? fetch;
-    const response = await fetcher('https://api.solapi.com/messages/v4/send', {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8_000);
+    let response: Awaited<ReturnType<Fetcher>>;
+    try {
+      response = await fetcher('https://api.solapi.com/messages/v4/send', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -32,9 +36,22 @@ export class SolapiSmsTransport {
           text: `[집신] 인증번호는 ${input.code}입니다. ${input.expiresInMinutes}분 안에 입력해 주세요.`,
         },
       }),
-    });
-    const body = await response.json() as { groupId?: string; messageId?: string };
+      signal: controller.signal,
+      });
+    } catch {
+      throw new Error('sms_provider_unavailable');
+    } finally {
+      clearTimeout(timeout);
+    }
+    let body: { groupId?: string; messageId?: string };
+    try {
+      body = await response.json() as { groupId?: string; messageId?: string };
+    } catch {
+      throw new Error('sms_provider_invalid_response');
+    }
     if (!response.ok) throw new Error('sms_provider_unavailable');
-    return { providerMessageId: body.groupId ?? body.messageId ?? 'accepted' };
+    const providerMessageId = body.groupId ?? body.messageId;
+    if (!providerMessageId) throw new Error('sms_provider_invalid_response');
+    return { providerMessageId };
   }
 }

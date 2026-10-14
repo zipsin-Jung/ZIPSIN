@@ -12,7 +12,6 @@ export type SignupRepository = {
     phoneVerifiedAt: string;
     termsVersion: string;
     privacyVersion: string;
-    ageOver14: true;
     marketingSmsAccepted: boolean;
     marketingEmailAccepted: boolean;
   }): Promise<void>;
@@ -37,7 +36,6 @@ export async function completeSignupWithRepository(
     phoneVerifiedAt: phone.verifiedAt,
     termsVersion: DOCUMENT_VERSION,
     privacyVersion: DOCUMENT_VERSION,
-    ageOver14: true,
     marketingSmsAccepted: input.marketingSmsAccepted,
     marketingEmailAccepted: input.marketingEmailAccepted,
   });

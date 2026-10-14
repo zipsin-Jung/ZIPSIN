@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     }
     return NextResponse.json({ ok: true });
   } catch (error) {
-    const unavailable = error instanceof Error && (error.message.includes('공급자') || error.message === 'sms_provider_unavailable');
+    const unavailable = error instanceof Error && (error.message.includes('공급자') || error.message.startsWith('sms_provider_'));
     return NextResponse.json(
       { error: unavailable ? 'provider_unavailable' : 'invalid_request' },
       { status: unavailable ? 503 : 400 },

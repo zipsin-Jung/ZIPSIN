@@ -1,9 +1,9 @@
 import {NextResponse} from 'next/server';
-import {requireUser} from '@/features/auth/server/session';
+import {requirePhoneVerifiedUser} from '@/features/auth/server/session';
 import {createPhotoTransferService,type PhotoRepository} from '@/features/check-transfer/server/photo-service';
 import {createSupabaseServerClient} from '@/lib/supabase/server';
 
-export async function POST(request:Request,{params}:{params:Promise<{id:string}>}){try{const user=await requireUser(),{id:manifestId}=await params,form=await request.formData(),file=form.get('file'),candidateId=String(form.get('candidateId')??''),itemId=String(form.get('itemId')??''),localPhotoId=String(form.get('localPhotoId')??'');if(!(file instanceof File)||!candidateId||!itemId||!localPhotoId)return NextResponse.json({code:'INVALID_PHOTO_INPUT'},{status:400});const client=await createSupabaseServerClient();const repository:PhotoRepository={
+export async function POST(request:Request,{params}:{params:Promise<{id:string}>}){try{const user=await requirePhoneVerifiedUser(),{id:manifestId}=await params,form=await request.formData(),file=form.get('file'),candidateId=String(form.get('candidateId')??''),itemId=String(form.get('itemId')??''),localPhotoId=String(form.get('localPhotoId')??'');if(!(file instanceof File)||!candidateId||!itemId||!localPhotoId)return NextResponse.json({code:'INVALID_PHOTO_INPUT'},{status:400});const client=await createSupabaseServerClient();const repository:PhotoRepository={
   async ownsCandidate(owner,candidate,manifest){const{data}=await client.from('candidate_drafts').select('id').eq('id',candidate).eq('owner_user_id',owner).eq('manifest_id',manifest).maybeSingle();return !!data},
   async photoExists(candidate,local){const{data}=await client.from('candidate_photos').select('id').eq('candidate_id',candidate).eq('local_photo_id',local).maybeSingle();return !!data},
   async uploadObject(path,value){const{error}=await client.storage.from('candidate-photos').upload(path,value,{upsert:false,contentType:value.type});if(error)throw new Error('PHOTO_UPLOAD_FAILED')},

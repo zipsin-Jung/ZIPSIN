@@ -89,3 +89,5 @@
 - `AUTHUX-005`: 이메일 또는 인증 휴대폰 계정 확인 — `1d5e076`
 - 자동 검증: 553 passed, 1 skipped; coverage 90.82/83.08/90.88/94.51; typecheck·build·secret scan 통과
 - 인증 반응형 E2E: 5개 화면 폭 15개 통과. 전체 E2E의 인증 외 기존 실패 16개는 작업 기록에 분리했다.
+- 독립 검수 P1 수정: 문자 원자 제한, 복구 OTP 행 잠금·단일 소비, 10분 HttpOnly 비밀번호 복구 세션, 전화 미인증 저장/RLS 차단, 실제 약관 입력, 아이디 확인 제한·오래된 응답 폐기, SOLAPI timeout·응답 검증.
+- 수정 후 자동 검증: 559 passed, 1 skipped; coverage 89.88/81.87/90.93/93.26; typecheck·build·secret scan 통과; 인증 관련 Playwright 17개 통과.

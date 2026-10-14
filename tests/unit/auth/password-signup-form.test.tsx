@@ -66,4 +66,20 @@ describe('PasswordSignupForm', () => {
     expect(screen.getByText('아이디 중복 확인이 필요합니다.')).toBeInTheDocument();
     vi.unstubAllGlobals();
   });
+
+  it('늦게 도착한 이전 아이디 응답은 현재 아이디를 승인하지 않는다', async () => {
+    let resolveResponse!: (value: unknown) => void;
+    vi.stubGlobal('fetch', vi.fn(() => new Promise((resolve) => { resolveResponse = resolve; })));
+    const user = userEvent.setup();
+    render(<PasswordSignupForm />);
+    const username = screen.getByLabelText('아이디');
+    await user.type(username, 'first_user');
+    await user.click(screen.getByRole('button', { name: '아이디 중복 확인' }));
+    await user.clear(username);
+    await user.type(username, 'second_user');
+    resolveResponse({ ok: true, json: async () => ({ status: 'available' }) });
+    expect(await screen.findByText('아이디 중복 확인이 필요합니다.')).toBeInTheDocument();
+    expect(screen.queryByText('사용할 수 있는 아이디입니다.')).not.toBeInTheDocument();
+    vi.unstubAllGlobals();
+  });
 });

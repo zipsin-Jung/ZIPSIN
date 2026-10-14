@@ -9,10 +9,11 @@ const { resetPasswordForEmail, getUser, updateUser, signOut, rpc } = vi.hoisted(
 }));
 
 vi.mock('next/navigation', () => ({ redirect: (url: string) => { throw new Error(`REDIRECT:${url}`); } }));
+vi.mock('next/headers', () => ({ cookies: async () => ({ get: vi.fn(() => undefined), delete: vi.fn() }), headers: async () => new Headers() }));
 vi.mock('@/lib/supabase/server', () => ({
   createServerSupabaseClient: async () => ({ auth: { resetPasswordForEmail, getUser, updateUser, signOut } }),
 }));
-vi.mock('@/lib/supabase/admin', () => ({ createAdminSupabaseClient: () => ({ rpc }) }));
+vi.mock('@/lib/supabase/admin', () => ({ createAdminSupabaseClient: () => ({ rpc, auth: { admin: { updateUserById: vi.fn() } } }) }));
 
 import { requestAccountRecoveryAction } from '@/features/auth/actions/request-account-recovery';
 import { updatePasswordAction } from '@/features/auth/actions/update-password';
