@@ -1,20 +1,84 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import { registerPasswordAccountAction } from '@/features/auth/actions/register-password-account';
+import { registerVerifiedPasswordAccountAction } from '@/features/auth/actions/register-verified-password-account';
 
 const inputClass = 'mt-2 min-h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-950 outline-none transition focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20';
 
 export function PasswordSignupForm({ next }: { next?: string }) {
+  const formRef = useRef<HTMLFormElement>(null);
   const [username, setUsername] = useState('');
   const usernameRef = useRef('');
   const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'unavailable' | 'invalid' | 'rate_limited' | 'error'>('idle');
   const [passwordPinned, setPasswordPinned] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [phone, setPhone] = useState('');
+  const [challengeId, setChallengeId] = useState('');
+  const [phoneStatus, setPhoneStatus] = useState<'idle' | 'sending' | 'sent' | 'verifying' | 'verified' | 'error'>('idle');
+  const [phoneMessage, setPhoneMessage] = useState('');
+  const [otp, setOtp] = useState('');
+  const [cooldown, setCooldown] = useState(0);
+  const [formValid, setFormValid] = useState(false);
   const allRequired = termsAccepted && privacyAccepted;
   const showPassword = passwordPinned;
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = window.setInterval(() => setCooldown((value) => Math.max(0, value - 1)), 1000);
+    return () => window.clearInterval(timer);
+  }, [cooldown]);
+
+  function refreshValidity() {
+    queueMicrotask(() => setFormValid(formRef.current?.checkValidity() ?? false));
+  }
+
+  async function sendPhoneCode() {
+    setPhoneStatus('sending');
+    setPhoneMessage('인증번호를 보내고 있습니다.');
+    try {
+      const response = await fetch('/api/auth/signup/phone/send', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone }),
+      });
+      const body = await response.json() as { ok?: boolean; challengeId?: string; maskedPhone?: string; error?: string };
+      if (!response.ok || !body.ok || !body.challengeId) {
+        setPhoneStatus('error');
+        setPhoneMessage(body.error === 'rate_limited' ? '요청이 많습니다. 잠시 후 다시 시도해 주세요.' : '현재 인증문자를 보낼 수 없습니다. 잠시 후 다시 시도해 주세요.');
+        return;
+      }
+      setChallengeId(body.challengeId);
+      setOtp('');
+      setPhoneStatus('sent');
+      setCooldown(60);
+      setPhoneMessage(`${body.maskedPhone ?? '입력한 번호'}로 인증번호를 보냈습니다.`);
+    } catch {
+      setPhoneStatus('error');
+      setPhoneMessage('현재 인증문자를 보낼 수 없습니다. 잠시 후 다시 시도해 주세요.');
+    }
+  }
+
+  async function verifyPhoneCode() {
+    setPhoneStatus('verifying');
+    setPhoneMessage('인증번호를 확인하고 있습니다.');
+    try {
+      const response = await fetch('/api/auth/signup/phone/verify', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ challengeId, code: otp }),
+      });
+      const body = await response.json() as { ok?: boolean; error?: string };
+      if (!response.ok || !body.ok) {
+        setPhoneStatus('sent');
+        setPhoneMessage(body.error === 'expired' ? '인증번호가 만료되었습니다. 다시 받아 주세요.' : body.error === 'attempts_exceeded' ? '입력 횟수를 초과했습니다. 인증번호를 다시 받아 주세요.' : '인증번호가 맞지 않습니다. 다시 확인해 주세요.');
+        return;
+      }
+      setPhoneStatus('verified');
+      setPhoneMessage('휴대폰 인증이 완료되었습니다.');
+      refreshValidity();
+    } catch {
+      setPhoneStatus('sent');
+      setPhoneMessage('현재 인증번호를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.');
+    }
+  }
 
   async function checkUsername() {
     const requestedUsername = username.trim().toLowerCase();
@@ -49,8 +113,9 @@ export function PasswordSignupForm({ next }: { next?: string }) {
   }[usernameStatus];
 
   return (
-    <form action={registerPasswordAccountAction} className="grid gap-5">
+    <form action={registerVerifiedPasswordAccountAction} className="grid gap-5" onInput={refreshValidity} ref={formRef}>
       {next && <input name="next" type="hidden" value={next} />}
+      <input name="challengeId" type="hidden" value={phoneStatus === 'verified' ? challengeId : ''} />
       <div className="font-semibold text-slate-800">
         <label htmlFor="signup-username">아이디</label>
         <div className="mt-2 flex gap-2">
@@ -78,6 +143,49 @@ export function PasswordSignupForm({ next }: { next?: string }) {
         <input className={inputClass} name="email" required type="email" autoComplete="email" placeholder="계정 확인과 비밀번호 찾기에 사용합니다" />
       </label>
 
+      <div className="font-semibold text-slate-800">
+        <label htmlFor="signup-phone">휴대폰 번호</label>
+        <div className="mt-2 grid gap-2 sm:grid-cols-[1fr_auto]">
+          <input
+            aria-describedby="phone-status"
+            autoComplete="tel"
+            className={`${inputClass} mt-0`}
+            id="signup-phone"
+            inputMode="tel"
+            onChange={(event) => {
+              setPhone(event.target.value);
+              setChallengeId('');
+              setOtp('');
+              setPhoneStatus('idle');
+              setPhoneMessage('');
+              setCooldown(0);
+              refreshValidity();
+            }}
+            pattern="01[016789]-?[0-9]{3,4}-?[0-9]{4}"
+            placeholder="010-1234-5678"
+            required
+            type="tel"
+            value={phone}
+          />
+          <button
+            className="min-h-12 rounded-xl border border-emerald-700 px-4 font-bold text-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={!/^01[016789]-?\d{3,4}-?\d{4}$/.test(phone) || phoneStatus === 'sending' || phoneStatus === 'verified' || cooldown > 0}
+            onClick={sendPhoneCode}
+            type="button"
+          >
+            {cooldown > 0 ? `${cooldown}초 후 다시 받기` : challengeId ? '인증번호 다시 받기' : '인증번호 받기'}
+          </button>
+        </div>
+        {challengeId && phoneStatus !== 'verified' && (
+          <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto]">
+            <label className="sr-only" htmlFor="signup-otp">인증번호</label>
+            <input autoComplete="one-time-code" className={`${inputClass} mt-0`} id="signup-otp" inputMode="numeric" maxLength={6} onChange={(event) => setOtp(event.target.value.replace(/\D/g, ''))} pattern="[0-9]{6}" placeholder="인증번호 6자리" value={otp} />
+            <button className="min-h-12 rounded-xl bg-emerald-700 px-5 font-bold text-white disabled:opacity-50" disabled={otp.length !== 6 || phoneStatus === 'verifying'} onClick={verifyPhoneCode} type="button">인증 확인</button>
+          </div>
+        )}
+        {phoneMessage && <p aria-live="polite" className={`mt-2 text-sm font-medium ${phoneStatus === 'error' ? 'text-red-700' : phoneStatus === 'verified' ? 'text-emerald-700' : 'text-slate-600'}`} id="phone-status" role={phoneStatus === 'error' ? 'alert' : undefined}>{phoneMessage}</p>}
+      </div>
+
       <fieldset className="grid gap-3 rounded-2xl bg-[#f7faf8] p-4 text-sm text-slate-700">
         <legend className="px-1 font-bold text-slate-900">필수 동의</legend>
         <label className="flex min-h-11 items-center gap-3 border-b border-slate-200 pb-3 font-bold"><input checked={allRequired} onChange={(event) => { setTermsAccepted(event.target.checked); setPrivacyAccepted(event.target.checked); }} type="checkbox" /> 필수 항목 전체 동의</label>
@@ -85,7 +193,7 @@ export function PasswordSignupForm({ next }: { next?: string }) {
         <label className="flex min-h-11 items-center gap-3"><input checked={privacyAccepted} name="privacyAccepted" onChange={(event) => setPrivacyAccepted(event.target.checked)} required type="checkbox" /> 개인정보 수집·이용에 동의합니다.</label>
       </fieldset>
 
-      <button className="min-h-13 rounded-xl bg-[#0d5b45] px-5 py-3 text-lg font-extrabold text-white transition hover:bg-[#084b39] disabled:cursor-not-allowed disabled:opacity-50" disabled={usernameStatus !== 'available' || !allRequired} type="submit">회원가입</button>
+      <button className="min-h-13 rounded-xl bg-[#0d5b45] px-5 py-3 text-lg font-extrabold text-white transition hover:bg-[#084b39] disabled:cursor-not-allowed disabled:opacity-50" disabled={usernameStatus !== 'available' || phoneStatus !== 'verified' || !allRequired || !formValid} type="submit">회원가입 완료</button>
     </form>
   );
 }

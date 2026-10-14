@@ -2,8 +2,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('@/features/auth/actions/register-password-account', () => ({
-  registerPasswordAccountAction: vi.fn(),
+vi.mock('@/features/auth/actions/register-verified-password-account', () => ({
+  registerVerifiedPasswordAccountAction: vi.fn(),
 }));
 
 import { PasswordSignupForm } from '@/features/auth/components/PasswordSignupForm';
@@ -16,9 +16,46 @@ describe('PasswordSignupForm', () => {
     expect(screen.getByLabelText('비밀번호', { selector: 'input' })).toBeRequired();
     expect(screen.getByLabelText('비밀번호 확인')).toBeRequired();
     expect(screen.getByLabelText('이메일')).toBeRequired();
+    expect(screen.getByLabelText('휴대폰 번호')).toBeRequired();
+    expect(screen.getByRole('button', { name: '인증번호 받기' })).toBeInTheDocument();
+    expect(screen.queryByLabelText('인증번호')).not.toBeInTheDocument();
     expect(screen.getByRole('checkbox', { name: /서비스 이용약관/ })).toBeRequired();
-    expect(screen.getByRole('button', { name: '회원가입' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '회원가입 완료' })).toBeDisabled();
     expect(document.querySelector('input[name="next"]')).toHaveValue('/ck');
+  });
+
+  it('문자 발송 뒤 인증번호 입력을 바로 아래에 펼치고 성공 상태를 저장한다', async () => {
+    const user = userEvent.setup();
+    vi.stubGlobal('fetch', vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ ok: true, challengeId: '11111111-1111-4111-8111-111111111111', maskedPhone: '010-****-5678', expiresAt: '2026-10-14T01:05:00.000Z' }) })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ ok: true }) }));
+    render(<PasswordSignupForm />);
+    await user.type(screen.getByLabelText('휴대폰 번호'), '01012345678');
+    await user.click(screen.getByRole('button', { name: '인증번호 받기' }));
+    expect(await screen.findByLabelText('인증번호')).toHaveAttribute('autocomplete', 'one-time-code');
+    await user.type(screen.getByLabelText('인증번호'), '123456');
+    await user.click(screen.getByRole('button', { name: '인증 확인' }));
+    expect(await screen.findByText('휴대폰 인증이 완료되었습니다.')).toBeInTheDocument();
+    expect(document.querySelector('input[name="challengeId"]')).toHaveValue('11111111-1111-4111-8111-111111111111');
+    vi.unstubAllGlobals();
+  });
+
+  it('인증 뒤 휴대폰 번호를 바꾸면 인증 상태를 즉시 무효화한다', async () => {
+    const user = userEvent.setup();
+    vi.stubGlobal('fetch', vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ ok: true, challengeId: '11111111-1111-4111-8111-111111111111', maskedPhone: '010-****-5678' }) })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ ok: true }) }));
+    render(<PasswordSignupForm />);
+    const phone = screen.getByLabelText('휴대폰 번호');
+    await user.type(phone, '01012345678');
+    await user.click(screen.getByRole('button', { name: '인증번호 받기' }));
+    await user.type(await screen.findByLabelText('인증번호'), '123456');
+    await user.click(screen.getByRole('button', { name: '인증 확인' }));
+    expect(await screen.findByText('휴대폰 인증이 완료되었습니다.')).toBeInTheDocument();
+    await user.type(phone, '9');
+    expect(screen.queryByText('휴대폰 인증이 완료되었습니다.')).not.toBeInTheDocument();
+    expect(document.querySelector('input[name="challengeId"]')).toHaveValue('');
+    vi.unstubAllGlobals();
   });
 
   it('비밀번호 조건과 보기 버튼을 제공한다', async () => {

@@ -26,11 +26,14 @@ for (const viewport of [
     await expect(page.getByRole('heading', { name: '집신 시작하기' })).toBeVisible();
   });
 
-  test(`회원가입 화면은 ${viewport.width}px에서 휴대전화 인증과 PC 이용을 미리 알린다`, async ({ page }) => {
+  test(`회원가입 화면은 ${viewport.width}px에서 휴대전화 인증을 같은 화면에 제공한다`, async ({ page }) => {
     await page.setViewportSize(viewport);
     await page.goto('/signup');
     await expect(page.getByRole('heading', { name: '회원가입' })).toBeVisible();
-    await expect(page.getByRole('list', { name: '회원가입 진행 단계' })).toContainText('2 휴대폰 인증');
+    await expect(page.getByRole('list', { name: '회원가입 진행 단계' })).toHaveCount(0);
+    await expect(page.getByLabel('휴대폰 번호')).toBeVisible();
+    await expect(page.getByRole('button', { name: '인증번호 받기' })).toBeVisible();
+    await expect(page.getByLabel('인증번호')).toHaveCount(0);
     await expect(page.getByText(/노트북·PC에서도 같은 집신 계정/)).toBeVisible();
     await expect(page.getByText('영문 소문자·숫자·특수문자를 포함해 8자 이상')).toBeVisible();
     await expect(page.getByRole('button', { name: '비밀번호 보기' })).toBeVisible();
@@ -43,10 +46,31 @@ for (const viewport of [
   test(`집신체크 회원가입은 ${viewport.width}px에서 휴대폰 인증 뒤 복귀함을 알린다`, async ({ page }) => {
     await page.setViewportSize(viewport);
     await page.goto('/signup?next=%2Fck');
-    await expect(page.getByText(/집신체크로 바로 돌아가요/)).toBeVisible();
-    await expect(page.getByText('2 휴대폰 인증')).toBeVisible();
+    await expect(page.getByText(/가입을 마치면 집신체크로 바로 돌아가요/)).toBeVisible();
+    await expect(page.getByLabel('휴대폰 번호')).toBeVisible();
     await expect(page.getByText(/문자 인증 없이 가입/)).toHaveCount(0);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
     expect(overflow).toBe(false);
   });
 }
+
+test('문자 발송과 인증을 회원가입 화면에서 연속 완료한다', async ({ page }) => {
+  await page.route('**/api/auth/username-availability', (route) => route.fulfill({ json: { status: 'available' } }));
+  await page.route('**/api/auth/signup/phone/send', (route) => route.fulfill({
+    json: { ok: true, challengeId: '11111111-1111-4111-8111-111111111111', maskedPhone: '010-****-5678' },
+  }));
+  await page.route('**/api/auth/signup/phone/verify', (route) => route.fulfill({ json: { ok: true } }));
+  await page.goto('/signup?next=%2Fck');
+  await page.getByLabel('아이디').fill('new_user');
+  await page.getByRole('button', { name: '아이디 중복 확인' }).click();
+  await page.getByLabel('비밀번호', { exact: true }).fill('password-2026');
+  await page.getByLabel('비밀번호 확인').fill('password-2026');
+  await page.getByLabel('이메일').fill('new@example.com');
+  await page.getByLabel('휴대폰 번호').fill('01012345678');
+  await page.getByRole('button', { name: '인증번호 받기' }).click();
+  await page.getByLabel('인증번호').fill('123456');
+  await page.getByRole('button', { name: '인증 확인' }).click();
+  await expect(page.getByText('휴대폰 인증이 완료되었습니다.')).toBeVisible();
+  await page.getByRole('checkbox', { name: '필수 항목 전체 동의' }).check();
+  await expect(page.getByRole('button', { name: '회원가입 완료' })).toBeEnabled();
+});

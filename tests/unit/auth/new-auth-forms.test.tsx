@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/features/auth/actions/login-with-username', () => ({ loginWithUsernameAction: vi.fn() }));
-vi.mock('@/features/auth/actions/register-password-account', () => ({ registerPasswordAccountAction: vi.fn() }));
+vi.mock('@/features/auth/actions/register-verified-password-account', () => ({ registerVerifiedPasswordAccountAction: vi.fn() }));
 vi.mock('@/features/auth/actions/request-account-recovery', () => ({ requestAccountRecoveryAction: vi.fn() }));
 
 import { UsernameLoginForm } from '@/features/auth/components/UsernameLoginForm';
@@ -25,8 +25,9 @@ describe('new auth forms', () => {
 
   it('uses the exact signup button copy', () => {
     render(<PasswordSignupForm />);
-    expect(screen.getByRole('button', { name: /^회원가입$/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '회원가입 완료' })).toBeDisabled();
     expect(screen.getByLabelText('이메일')).toHaveAttribute('type', 'email');
+    expect(screen.getByLabelText('휴대폰 번호')).toHaveAttribute('autocomplete', 'tel');
   });
 
   it('collects recovery email without revealing account state', () => {
