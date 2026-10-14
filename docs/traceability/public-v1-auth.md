@@ -55,6 +55,8 @@
 
 빌드 성공과 Chromium 브라우저 검수는 분리해 기록했다. 이 결과는 Production 배포 또는 실제 문자 수신 성공을 뜻하지 않는다.
 
+독립 최종 재검수는 코드 P0·P1 0건으로 **코드 품질 PASS**다. 다만 Preview migration·Cron 실행, SOLAPI 실문자와 가입 데이터 정합성, WebKit 증거가 없어 **출시 게이트는 PENDING**이다.
+
 ### SUA-AUTH 양방향 추적
 
 | 요구사항·AC | 화면·상태 | 구현 증거 | 테스트·결과 |

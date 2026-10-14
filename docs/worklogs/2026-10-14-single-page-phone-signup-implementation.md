@@ -54,6 +54,12 @@
 - Supabase Cron의 `cron.job`·`cron.job_run_details`에서 예약과 실제 개인정보 삭제 실행 확인
 - 사용자 최종 승인 전 Production 배포 금지
 
+## 독립 품질 판정
+
+- 최종 재검수: 코드 P0 0건, P1 0건, 코드 품질 PASS
+- 출시 판정: PENDING
+- 보류 이유: Preview DB migration·Cron 실행, SOLAPI 실문자 가입 정합성, WebKit 실검수 증거가 아직 없다.
+
 ## 롤백
 
 새 DB와 API는 기존 인증 흐름을 삭제하지 않고 추가했다. 문제가 생기면 이 기능 커밋을 되돌려 신규 비밀번호 가입 진입만 기존 경로로 복구하고 OAuth, 기존 미완료 계정과 저장 데이터는 보존한다.
