@@ -44,3 +44,10 @@
 수정 후 390px 실제 화면에서 첫 이미지가 빈 띠 안의 작은 사진이 아니라 무대를 채우고, 제품 정의·CTA가 한 화면 안에서 읽히는 것을 다시 확인했다.
 
 독립 재검수는 동일한 390×844 화면과 공개 카피·모션·모션 감소·재발 테스트를 다시 확인했다. 최종 판정은 `PASS`, P0 0건·P1 0건·P2 0건이며 사용자 Preview 승인 대기 상태로 전환했다.
+
+## Git·승인 상태
+
+- 기능·테스트·문서 커밋: `b4289c4`
+- 원격 브랜치: `origin/codex/contract-to-expiry-home`
+- 상태: `verified, awaiting Preview verification and user approval`
+- Production은 변경하지 않았다.
