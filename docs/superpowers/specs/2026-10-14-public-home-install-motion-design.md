@@ -1,7 +1,7 @@
 # 공개 홈 웹앱 설치·시네마틱 모션 설계
 
 - 날짜: 2026-10-14
-- 상태: 사용자 재승인 순서·가시성 모션 반영, Vercel Preview 재검증 대기
+- 상태: 사용자 재승인 순서·가시성 모션 반영·Vercel Preview 검증 통과, 사용자 승인 대기
 - 대상: 비로그인 공개 홈 `/`
 - 기준: `docs/superpowers/specs/2026-10-14-public-home-single-viewport-design.md`
 

@@ -1,7 +1,7 @@
 # 공개 홈 스토리 순서·가시성·모션 개선 작업기록
 
 - 날짜: 2026-10-14
-- 상태: 구현·전체 로컬 품질 게이트·독립 재검수 통과, Preview 재검증 대기
+- 상태: 구현·전체 로컬 품질 게이트·독립 재검수·Vercel Preview 검증 통과, 사용자 승인 대기
 - 범위: 공개 `/` 4장 캐러셀
 
 ## 수행 순서
@@ -49,5 +49,14 @@
 
 - 기능·테스트·문서 커밋: `b4289c4`
 - 원격 브랜치: `origin/codex/contract-to-expiry-home`
-- 상태: `verified, awaiting Preview verification and user approval`
+- 상태: `verified, awaiting user approval`
 - Production은 변경하지 않았다.
+
+## Vercel Preview 검증
+
+- 배포: `https://zipsin-r3fn70w9t-zipsin-jung.vercel.app`
+- 고정 브랜치 Preview: `https://zipsin-git-codex-contract-to-expiry-home-zipsin-jung.vercel.app`
+- Vercel target `preview`, 상태 `Ready`, build duration 51초를 확인했다.
+- 실제 Preview에서 첫 장 제목·제품 정의·큰 이미지, 앱 다운로드·로그인·시작 경로를 확인했다.
+- 세 번째 `모은다` 장면의 animation name과 종료 위치 `50% 91%`, 확대된 집 UI를 실제 배포 브라우저에서 확인했다.
+- 상태를 `verified, awaiting user approval`로 갱신한다. Production은 변경하지 않았다.

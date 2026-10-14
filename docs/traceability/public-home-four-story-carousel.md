@@ -1,7 +1,7 @@
 # 공개 메인 4장 스토리 캐러셀 추적표
 
 - 날짜: 2026-10-14
-- 상태: 재승인 순서 구현·로컬 품질 게이트·독립 재검수 통과, Vercel Preview 재검증 대기
+- 상태: 재승인 순서 구현·로컬 품질 게이트·독립 재검수·Vercel Preview 검증 통과, 사용자 승인 대기
 - 대상: 공개 `/`
 
 | 요구사항·수용 기준 | 화면·상태 | 소스 | 대표 테스트·증거 |
@@ -55,6 +55,13 @@
 - P0 0건 / P1 0건 / P2 0건
 - 판정: `PASS — 사용자 승인 대기 가능`
 - 증거: 390×844 실제 화면, 첫 장 cover·제품 정의, 연락 미수집 고지, 관리 기록과 이전 사람 개인정보 분리, `gatherFocusIntoHouse`, reduced-motion과 재발 테스트
+
+## 최신 Preview 증거
+
+- 배포 `zipsin-r3fn70w9t-zipsin-jung.vercel.app`: target `preview`, 상태 `Ready`
+- 고정 주소: `https://zipsin-git-codex-contract-to-expiry-home-zipsin-jung.vercel.app`
+- 실제 브라우저: 첫 장 제목·설명·이미지·CTA·설치 버튼 표시, 세 번째 `gatherFocusIntoHouse` 종료 위치 `50% 91%` 확인
+- Production 미반영
 
 ## 기능 경계
 
