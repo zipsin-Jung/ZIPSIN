@@ -20,6 +20,8 @@ export function HomeStoryCarousel() {
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
   const [visible, setVisible] = useState(true);
+  const [inViewport, setInViewport] = useState(true);
+  const [pointerActive, setPointerActive] = useState(false);
   const [resumeReady, setResumeReady] = useState(true);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [stageHeight, setStageHeight] = useState<number | null>(null);
@@ -28,6 +30,7 @@ export function HomeStoryCarousel() {
   const pointerStart = useRef<{ x: number; y: number } | null>(null);
   const wasInteractionPaused = useRef(false);
   const slideRef = useRef<HTMLDivElement | null>(null);
+  const carouselRef = useRef<HTMLElement | null>(null);
   const lastIndex = publicHomeStories.length - 1;
   const story = publicHomeStories[selectedIndex];
 
@@ -50,7 +53,17 @@ export function HomeStoryCarousel() {
   }, []);
 
   useEffect(() => {
-    const interactionPaused = hovered || focused;
+    const node = carouselRef.current;
+    if (!node || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(([entry]) => {
+      setInViewport(entry.isIntersecting && entry.intersectionRatio >= 0.25);
+    }, { threshold: [0, 0.25] });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const interactionPaused = hovered || focused || pointerActive;
     if (interactionPaused) {
       wasInteractionPaused.current = true;
       setResumeReady(false);
@@ -60,17 +73,17 @@ export function HomeStoryCarousel() {
     wasInteractionPaused.current = false;
     const timer = window.setTimeout(() => setResumeReady(true), HOVER_RESUME_MS);
     return () => window.clearTimeout(timer);
-  }, [focused, hovered]);
+  }, [focused, hovered, pointerActive]);
 
   useEffect(() => {
-    if (!autoplay || manual || hovered || focused || !visible || !resumeReady || reducedMotion || selectedIndex >= lastIndex) return;
+    if (!autoplay || manual || hovered || focused || pointerActive || !visible || !inViewport || !resumeReady || reducedMotion || selectedIndex >= lastIndex) return;
     const timer = window.setTimeout(() => {
       const nextIndex = selectedIndex + 1;
       setSelectedIndex(nextIndex);
       if (nextIndex === lastIndex) setAutoplay(false);
     }, AUTOPLAY_MS);
     return () => window.clearTimeout(timer);
-  }, [autoplay, focused, hovered, lastIndex, manual, reducedMotion, resumeReady, selectedIndex, visible]);
+  }, [autoplay, focused, hovered, inViewport, lastIndex, manual, pointerActive, reducedMotion, resumeReady, selectedIndex, visible]);
 
   useEffect(() => () => {
     if (hoverSelectTimer.current) clearTimeout(hoverSelectTimer.current);
@@ -107,6 +120,8 @@ export function HomeStoryCarousel() {
   }
 
   function handleKeyDown(event: React.KeyboardEvent) {
+    const target = event.target as HTMLElement;
+    if (target.closest('a, input, textarea, select, [contenteditable="true"]')) return;
     if (event.key === 'ArrowRight') {
       event.preventDefault();
       selectManually(selectedIndex + 1);
@@ -139,6 +154,7 @@ export function HomeStoryCarousel() {
   }
 
   function handlePointerUp(event: React.PointerEvent) {
+    setPointerActive(false);
     if (!pointerStart.current) return;
     const deltaX = event.clientX - pointerStart.current.x;
     const deltaY = event.clientY - pointerStart.current.y;
@@ -152,6 +168,7 @@ export function HomeStoryCarousel() {
   }
 
   return <section
+    ref={carouselRef}
     className={styles.storyCarousel}
     role="region"
     aria-roledescription="carousel"
@@ -168,9 +185,15 @@ export function HomeStoryCarousel() {
       className={styles.storyStage}
       data-testid="home-story-stage"
       style={stageHeight ? { height: `${stageHeight}px` } : undefined}
-      onPointerDown={(event) => { pointerStart.current = { x: event.clientX, y: event.clientY }; }}
+      onPointerDown={(event) => {
+        pointerStart.current = { x: event.clientX, y: event.clientY };
+        setPointerActive(true);
+      }}
       onPointerUp={handlePointerUp}
-      onPointerCancel={() => { pointerStart.current = null; }}
+      onPointerCancel={() => {
+        pointerStart.current = null;
+        setPointerActive(false);
+      }}
     >
       <div ref={slideRef} key={story.id} className={styles.storySlide} role="group" aria-roledescription="slide" aria-label={`${selectedIndex + 1} / ${publicHomeStories.length}: ${story.shortTitle}`}>
         <div className={styles.storyCopy}>
@@ -178,11 +201,6 @@ export function HomeStoryCarousel() {
           <h1>{story.headline}</h1>
           <p>{story.description}</p>
           {story.conclusion && <strong className={styles.storyConclusion}>{story.conclusion}</strong>}
-          <div className={styles.heroActions}>
-            <Link className={styles.primary} href="/signup">{selectedIndex === lastIndex ? '내 집 기록 시작하기' : '웹에서 시작하기'} <ArrowRight size={19} aria-hidden="true" /></Link>
-            <Link className={styles.secondary} href="/login">로그인</Link>
-          </div>
-          <span className={styles.safety}><ShieldCheck size={17} aria-hidden="true" /> 주소만 알아서는 어떤 기록도 볼 수 없습니다.</span>
         </div>
 
         <div className={`${styles.storyVisual} ${story.id === 'gather' ? styles.storyVisualPortrait : ''}`}>
@@ -192,6 +210,14 @@ export function HomeStoryCarousel() {
               : <Image key={story.id} src={story.imageSrc} alt={story.imageAlt} fill sizes="(max-width: 980px) 100vw, 54vw" priority={selectedIndex === 0} onError={() => markImageFailed(story.id)} />}
           </div>
           <ProductEvidence story={story} />
+        </div>
+
+        <div className={styles.storyActions}>
+          <div className={styles.heroActions}>
+            <Link className={styles.primary} href="/signup">{selectedIndex === lastIndex ? '내 집 기록 시작하기' : '웹에서 시작하기'} <ArrowRight size={19} aria-hidden="true" /></Link>
+            <Link className={styles.secondary} href="/login">로그인</Link>
+          </div>
+          <span className={styles.safety}><ShieldCheck size={17} aria-hidden="true" /> 주소만 알아서는 어떤 기록도 볼 수 없습니다.</span>
         </div>
       </div>
     </div>

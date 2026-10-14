@@ -93,11 +93,45 @@ test('TEST-RC-HERO-SWIPE-001 mobile uses horizontal swipe but ignores a vertical
   await page.goto('/');
   const stage = page.getByTestId('home-story-stage');
 
-  await stage.dispatchEvent('pointerdown', { clientX: 300, clientY: 200, pointerId: 1 });
-  await stage.dispatchEvent('pointerup', { clientX: 220, clientY: 210, pointerId: 1 });
+  const box = await stage.boundingBox();
+  expect(box).not.toBeNull();
+  const client = await page.context().newCDPSession(page);
+  const startX = (box?.x ?? 0) + (box?.width ?? 0) * 0.75;
+  const endX = startX - 100;
+  const y = (box?.y ?? 0) + Math.min((box?.height ?? 0) * 0.35, 240);
+  await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: startX, y }] });
+  await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: endX, y }] });
+  await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   await expect(page.getByRole('button', { name: '이어진다 장면 보기' })).toHaveAttribute('aria-current', 'true');
 
   await stage.dispatchEvent('pointerdown', { clientX: 220, clientY: 200, pointerId: 2 });
   await stage.dispatchEvent('pointerup', { clientX: 290, clientY: 310, pointerId: 2 });
   await expect(page.getByRole('button', { name: '이어진다 장면 보기' })).toHaveAttribute('aria-current', 'true');
+});
+
+test('TEST-RC-HERO-POINTER-001 real touch contact pauses autoplay', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  const stage = page.getByTestId('home-story-stage');
+  const box = await stage.boundingBox();
+  expect(box).not.toBeNull();
+  const client = await page.context().newCDPSession(page);
+  const x = (box?.x ?? 0) + (box?.width ?? 0) / 2;
+  const y = (box?.y ?? 0) + Math.min((box?.height ?? 0) * 0.35, 240);
+
+  await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+  await page.waitForTimeout(7500);
+  await expect(page.getByRole('button', { name: '모인다 장면 보기' })).toHaveAttribute('aria-current', 'true');
+  await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+});
+
+test('TEST-RC-HERO-VIEWPORT-001 offscreen carousel does not consume its one autoplay', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  const carousel = page.getByRole('region', { name: '집신이 필요한 네 장면' });
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await expect(carousel).not.toBeInViewport();
+  await page.waitForTimeout(7500);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(page.getByRole('button', { name: '모인다 장면 보기' })).toHaveAttribute('aria-current', 'true');
 });

@@ -23,9 +23,47 @@ function setVisibility(value: DocumentVisibilityState) {
   document.dispatchEvent(new Event('visibilitychange'));
 }
 
+let intersectionCallback: IntersectionObserverCallback | null = null;
+let intersectionTarget: Element | null = null;
+
+function installIntersectionObserver() {
+  class MockIntersectionObserver {
+    constructor(callback: IntersectionObserverCallback) {
+      intersectionCallback = callback;
+    }
+
+    observe(target: Element) {
+      intersectionTarget = target;
+      setCarouselInView(true);
+    }
+
+    disconnect() {}
+    unobserve() {}
+    takeRecords() { return []; }
+    root = null;
+    rootMargin = '0px';
+    thresholds = [0, 0.25];
+  }
+
+  Object.defineProperty(globalThis, 'IntersectionObserver', {
+    configurable: true,
+    value: MockIntersectionObserver,
+  });
+}
+
+function setCarouselInView(isIntersecting: boolean) {
+  if (!intersectionCallback || !intersectionTarget) return;
+  intersectionCallback([{
+    target: intersectionTarget,
+    isIntersecting,
+    intersectionRatio: isIntersecting ? 1 : 0,
+  } as IntersectionObserverEntry], {} as IntersectionObserver);
+}
+
 describe('HomeStoryCarousel', () => {
   beforeEach(() => {
     installMatchMedia(false);
+    installIntersectionObserver();
     setVisibility('visible');
   });
 
@@ -64,6 +102,17 @@ describe('HomeStoryCarousel', () => {
     expect(screen.getByText('1 / 4')).toBeInTheDocument();
     fireEvent.keyDown(firstDot, { key: 'ArrowLeft' });
     expect(screen.getByText('1 / 4')).toBeInTheDocument();
+  });
+
+  it('TEST-RC-HERO-FOCUS-002 CTA의 방향키는 장면을 바꾸거나 포커스를 잃게 하지 않는다', () => {
+    render(<HomeStoryCarousel />);
+    const cta = screen.getByRole('link', { name: /웹에서 시작하기/ });
+    cta.focus();
+
+    fireEvent.keyDown(cta, { key: 'ArrowRight' });
+
+    expect(screen.getByText('1 / 4')).toBeInTheDocument();
+    expect(cta).toHaveFocus();
   });
 
   it('TEST-RC-HERO-AUTO-001 7초마다 한 장씩 이동하고 마지막 장에서 멈춘다', () => {
@@ -157,6 +206,21 @@ describe('HomeStoryCarousel', () => {
     expect(screen.getByText('2 / 4')).toBeInTheDocument();
   });
 
+  it('TEST-RC-HERO-VIEWPORT-001 화면 밖에서는 멈추고 다시 보이면 새 7초 주기로 재개한다', () => {
+    vi.useFakeTimers();
+    render(<HomeStoryCarousel />);
+
+    act(() => setCarouselInView(false));
+    act(() => vi.advanceTimersByTime(14000));
+    expect(screen.getByText('1 / 4')).toBeInTheDocument();
+
+    act(() => setCarouselInView(true));
+    act(() => vi.advanceTimersByTime(6999));
+    expect(screen.getByText('1 / 4')).toBeInTheDocument();
+    act(() => vi.advanceTimersByTime(1));
+    expect(screen.getByText('2 / 4')).toBeInTheDocument();
+  });
+
   it('TEST-RC-HERO-MOTION-001 모션 감소 설정에서는 자동재생하지 않고 수동 전환만 허용한다', () => {
     installMatchMedia(true);
     vi.useFakeTimers();
@@ -183,6 +247,21 @@ describe('HomeStoryCarousel', () => {
 
     fireEvent.pointerDown(stage, { clientX: 145, clientY: 100, pointerId: 3 });
     fireEvent.pointerUp(stage, { clientX: 200, clientY: 180, pointerId: 3 });
+    expect(screen.getByText('2 / 4')).toBeInTheDocument();
+  });
+
+  it('TEST-RC-HERO-POINTER-001 누르고 있는 동안 자동재생을 멈춘다', () => {
+    vi.useFakeTimers();
+    render(<HomeStoryCarousel />);
+    const stage = screen.getByTestId('home-story-stage');
+
+    fireEvent.pointerDown(stage, { clientX: 200, clientY: 100, pointerId: 1 });
+    act(() => vi.advanceTimersByTime(8000));
+    expect(screen.getByText('1 / 4')).toBeInTheDocument();
+
+    fireEvent.pointerUp(stage, { clientX: 200, clientY: 100, pointerId: 1 });
+    act(() => vi.advanceTimersByTime(1500));
+    act(() => vi.advanceTimersByTime(7000));
     expect(screen.getByText('2 / 4')).toBeInTheDocument();
   });
 
