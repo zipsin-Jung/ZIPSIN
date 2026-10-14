@@ -165,13 +165,13 @@
 
 /* 2026-10-14 approved cinematic image stage */
 .storyStage{border-color:rgba(194,211,206,.5);background:rgba(255,255,255,.38);box-shadow:0 20px 64px rgba(13,58,56,.08)}
-.storySlide{grid-template-columns:minmax(0,1.42fr) minmax(330px,.88fr);gap:clamp(28px,3.4vw,62px);padding-left:clamp(15px,2.1vw,32px);padding-right:clamp(22px,3.2vw,48px)}
+.storySlide{grid-template-columns:minmax(0,1.38fr) minmax(350px,.92fr);gap:clamp(30px,3.2vw,56px);padding-left:clamp(15px,2.1vw,32px);padding-right:clamp(24px,3.4vw,54px)}
 .storyMotionStage{position:relative;width:100%;height:100%;display:grid;place-items:center;overflow:hidden;border-radius:30px;isolation:isolate;background:#eee9df}
-.storyImageBackdrop{position:absolute;z-index:-2;inset:-9%;background-position:center;background-size:cover;filter:blur(24px) saturate(.78);opacity:.42;transform:scale(1.13)}
-.storyMotionStage::after{content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.18),transparent 42%,rgba(4,46,35,.12));pointer-events:none}
-.storyMotionStage .storyImageFrame{width:calc(100% - 30px);height:calc(100% - 30px);margin:auto;border:1px solid rgba(255,255,255,.72);border-radius:25px;background:#ece7dc;box-shadow:0 22px 58px rgba(17,54,48,.2)}
+.storyImageBackdrop{position:absolute;z-index:0;inset:-9%;background-position:center;background-size:cover;filter:blur(24px) saturate(.78);opacity:.42;transform:scale(1.13)}
+.storyMotionStage::after{content:"";position:absolute;z-index:1;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.18),transparent 42%,rgba(4,46,35,.12));pointer-events:none}
+.storyMotionStage .storyImageFrame{z-index:2;width:calc(100% - 30px);height:calc(100% - 30px);margin:auto;border:1px solid rgba(255,255,255,.72);border-radius:25px;background:rgba(244,240,232,.3);box-shadow:0 22px 58px rgba(17,54,48,.2)}
 .storyMotionStage .storyImageForeground{object-fit:cover;object-position:center;filter:saturate(.98) contrast(1.025);will-change:transform,clip-path,object-position}
-.storyVisualPortrait .storyMotionStage .storyImagePortrait{width:min(76%,580px)}
+.storyVisualPortrait .storyMotionStage .storyImagePortrait{width:min(88%,640px)}
 .storyVisualPortrait .storyMotionStage .storyImageForeground{object-fit:cover;object-position:50% 9%}
 .motionSweep,.motionMarkers{position:absolute;z-index:3;inset:0;pointer-events:none}
 .motionSweep{opacity:0}
@@ -181,9 +181,9 @@
 .motionMarkers i:nth-child(3){left:61%;top:49%}
 .motionMarkers i:nth-child(4){left:70%;top:70%}
 
-.storySlide[data-active=true] .storyMotionStage[data-motion-story=gather] .storyImageForeground{animation:gatherCamera 3.15s cubic-bezier(.2,.76,.22,1) both}
-.storySlide[data-active=true] .storyMotionStage[data-motion-story=gather] .storyImageBackdrop{animation:gatherBackdrop 3.15s cubic-bezier(.2,.76,.22,1) both}
-.storySlide[data-active=true] .storyMotionStage[data-motion-story=gather] .motionSweep{background:linear-gradient(180deg,transparent 0%,rgba(255,247,194,.08) 38%,rgba(255,239,155,.62) 50%,rgba(89,171,140,.14) 62%,transparent 100%);animation:gatherBeam 2.85s ease-out .2s both}
+.storySlide[data-active=true] .storyMotionStage[data-motion-story=gather] .storyImageForeground{animation:gatherFocusIntoHouse 3.35s cubic-bezier(.18,.78,.2,1) both}
+.storySlide[data-active=true] .storyMotionStage[data-motion-story=gather] .storyImageBackdrop{animation:gatherBackdrop 3.35s cubic-bezier(.18,.78,.2,1) both}
+.storySlide[data-active=true] .storyMotionStage[data-motion-story=gather] .motionSweep{background:linear-gradient(180deg,transparent 0%,rgba(255,247,194,.08) 34%,rgba(255,232,126,.78) 49%,rgba(42,153,111,.2) 64%,transparent 100%);animation:gatherBeam 3.05s ease-out .18s both}
 
 .storySlide[data-active=true] .storyMotionStage[data-motion-story=continuity] .storyImageForeground{animation:continuityReveal 2.8s cubic-bezier(.22,.78,.2,1) both}
 .storySlide[data-active=true] .storyMotionStage[data-motion-story=continuity] .motionSweep{inset:auto 5% 9%;height:4px;border-radius:999px;background:linear-gradient(90deg,#185f49,#84c9aa,#f0c36d);transform-origin:left;animation:recordLine 2.6s cubic-bezier(.18,.78,.2,1) .35s both}
@@ -199,9 +199,9 @@
 .storySlide[data-active=true] .storyMotionStage[data-motion-story=history] .motionMarkers i:nth-child(4){animation:historyMarker .62s ease-out 2.22s both}
 .storySlide[data-active=true] .storyMotionStage[data-motion-story=history] .motionSweep{background:radial-gradient(circle at 86% 48%,rgba(255,247,202,.62),transparent 20%);animation:historyPhone 1s ease-out 2.25s both}
 
-@keyframes gatherCamera{0%{object-position:50% 5%;transform:scale(1.08);filter:saturate(.78) contrast(1.04)}36%{object-position:50% 34%;transform:scale(1.055)}72%{object-position:50% 70%;transform:scale(1.025)}100%{object-position:50% 89%;transform:scale(1);filter:saturate(1) contrast(1.025)}}
-@keyframes gatherBackdrop{0%{background-position:50% 8%;transform:scale(1.19);opacity:.34}100%{background-position:50% 92%;transform:scale(1.12);opacity:.44}}
-@keyframes gatherBeam{0%{opacity:0;transform:translateY(-68%)}22%{opacity:.7}78%{opacity:.38}100%{opacity:0;transform:translateY(68%)}}
+@keyframes gatherFocusIntoHouse{0%{object-position:50% 4%;transform:scale(1.18);filter:saturate(.8) contrast(1.05)}28%{object-position:50% 12%;transform:scale(1.15);filter:saturate(.86) contrast(1.045)}62%{object-position:50% 56%;transform:scale(1.08);filter:saturate(.94) contrast(1.035)}82%{object-position:50% 82%;transform:scale(1.08)}100%{object-position:50% 91%;transform:scale(1.14);filter:saturate(1.04) contrast(1.04)}}
+@keyframes gatherBackdrop{0%{background-position:50% 5%;transform:scale(1.23);opacity:.3}62%{background-position:50% 58%;opacity:.4}100%{background-position:50% 94%;transform:scale(1.15);opacity:.5}}
+@keyframes gatherBeam{0%{opacity:0;transform:translateY(-72%) scaleY(.72)}24%{opacity:.82}72%{opacity:.48}100%{opacity:0;transform:translateY(72%) scaleY(1.05)}}
 @keyframes continuityReveal{0%{clip-path:inset(0 100% 0 0);transform:scale(1.035)}28%{clip-path:inset(0 66% 0 0)}58%{clip-path:inset(0 33% 0 0)}88%,100%{clip-path:inset(0 0 0 0);transform:scale(1)}}
 @keyframes recordLine{0%{opacity:0;transform:scaleX(0)}20%{opacity:1}100%{opacity:.9;transform:scaleX(1)}}
 @keyframes communicationSort{0%{transform:scale(1.09) translateX(-3.5%);filter:saturate(.82) contrast(1.04)}45%{transform:scale(1.055) translateX(0)}100%{transform:scale(1) translateX(0);filter:saturate(1) contrast(1.025)}}
@@ -225,7 +225,47 @@
 @media(prefers-reduced-motion:reduce){
   .storySlide[data-active=true] .storyMotionStage .storyImageForeground,.storySlide[data-active=true] .storyMotionStage .storyImageBackdrop,.storySlide[data-active=true] .storyMotionStage .motionSweep,.storySlide[data-active=true] .storyMotionStage .motionMarkers i{animation:none!important}
   .storyMotionStage .storyImageForeground{clip-path:inset(0);transform:none;filter:saturate(1) contrast(1.025)}
-  .storyVisualPortrait .storyMotionStage .storyImageForeground{object-position:50% 89%}
+  .storyVisualPortrait .storyMotionStage .storyImageForeground{object-position:50% 91%;transform:scale(1.08)}
   .storyMotionStage .storyImageBackdrop{transform:scale(1.12);opacity:.42}
   .motionSweep,.motionMarkers{display:none}
+}
+
+/* 2026-10-14 story arc and readability pass */
+.storySlide{grid-template-rows:minmax(0,1fr)}
+.storyVisual{height:100%}
+.storyMotionStage:not([data-motion-story=gather]) .storyImageForeground{object-fit:contain}
+.storyMessage .kicker{display:inline-flex;align-items:center;gap:9px;margin-bottom:18px;padding:7px 12px 7px 7px;border-color:rgba(11,107,93,.22);background:rgba(255,255,255,.9);color:#075b4d;font-size:12px;font-weight:900;letter-spacing:.02em;box-shadow:0 8px 24px rgba(13,58,56,.07)}
+.storyMessage .kicker small{display:grid;width:25px;height:25px;place-items:center;border-radius:50%;background:#d99a36;color:#fff;font-size:10px;font-weight:900;font-variant-numeric:tabular-nums}
+.storyMessage h1{max-width:630px;font-size:clamp(42px,3.65vw,60px);font-weight:900;line-height:1.15;letter-spacing:-.04em;word-break:keep-all;text-wrap:balance}
+.storyMessage .typeLine{width:fit-content;max-width:100%;padding-right:.08em}
+.storyMessage .typeLine:last-child{color:#08715f}
+.storyMessage>p{max-width:580px;margin-top:20px;color:#3f5a63;font-size:clamp(16px,1.12vw,18px);font-weight:560;line-height:1.68;letter-spacing:-.012em;word-break:keep-all}
+.storyConclusion{display:block;max-width:580px;margin-top:17px;padding-left:13px;border-left:3px solid #d99a36;color:#073f37;font-size:15px;font-weight:850;line-height:1.58;word-break:keep-all}
+.storySlide[data-active=true] .typeLine{animation-duration:.62s;animation-timing-function:steps(12,end)}
+.storySlide[data-active=true] .typeLine1,.storySlide[data-active=true] .typeLine1::after{animation-delay:.2s}
+.storySlide[data-active=true] .typeLine2,.storySlide[data-active=true] .typeLine2::after{animation-delay:.72s}
+.storySlide[data-active=true] .typeLine3,.storySlide[data-active=true] .typeLine3::after{animation-delay:1.24s}
+.storyActions .primary{box-shadow:0 12px 28px rgba(8,72,63,.2);transition:transform .2s ease,box-shadow .2s ease,background .2s ease}
+.storyActions .primary:hover{transform:translateY(-2px);background:#063d36;box-shadow:0 17px 34px rgba(8,72,63,.26)}
+.storyDots button[aria-current=true]{border-color:#0b6b5d;box-shadow:0 7px 18px rgba(8,72,63,.19)}
+
+@media(max-width:1100px){
+  .storyMessage h1{font-size:clamp(38px,4.7vw,53px)}
+}
+
+@media(max-width:900px){
+  .storySlide{grid-template-rows:minmax(0,48%) minmax(0,52%)}
+  .storyMessage .kicker{margin-bottom:9px;padding:4px 8px 4px 4px;font-size:10px}
+  .storyMessage .kicker small{width:21px;height:21px;font-size:8px}
+  .storyMessage h1{font-size:clamp(29px,5.7vw,41px);line-height:1.18;letter-spacing:-.034em}
+  .storyMessage>p{margin-top:10px;font-size:13px;line-height:1.55}
+  .storyConclusion{margin-top:9px;padding-left:9px;font-size:12px;line-height:1.45}
+}
+
+@media(max-width:520px){
+  .storyMessage h1{font-size:clamp(27px,7.5vw,32px);line-height:1.2;letter-spacing:-.03em}
+  .storyMessage>p{font-size:12px;line-height:1.5}
+  .storyVisualPortrait .storyMotionStage .storyImagePortrait{width:94%}
+  .storyMotionStage[data-motion-story=history] .storyImageForeground{object-fit:cover;object-position:68% 50%}
+  .storyMotionStage[data-motion-story=history] .motionMarkers{display:none}
 }

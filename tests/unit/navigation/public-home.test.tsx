@@ -20,7 +20,7 @@ describe('PublicHome', () => {
   it('TEST-RC-PUB-001 첫 장에서 집신의 제품 정의와 시작 행동을 설명한다', () => {
     render(<PublicHome />);
 
-    expect(screen.getByRole('heading', { level: 1, name: /계약과 동시에 흩어지는 부동산 정보.*집신 한곳에 모아 관리하고.*하나의 집 이력으로 가치를 키웁니다/ })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: '부동산, 아직도 위치와 서류만 보고 계신가요?' })).toBeInTheDocument();
     expect(screen.queryByText(/사전.?가입|데모|출시 알림/)).not.toBeInTheDocument();
   });
 
@@ -35,11 +35,11 @@ describe('PublicHome', () => {
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
   });
 
-  it('TEST-RC-PUB-IMG-001 승인된 첫 이미지를 우선 노출한다', () => {
+  it('TEST-RC-PUB-IMG-001 서론의 집 관리 이력 이미지를 우선 노출한다', () => {
     render(<PublicHome />);
 
-    const image = screen.getByRole('img', { name: /흩어진 계약서와 사진, 통화와 일정/ });
-    expect(image).toHaveAttribute('src', expect.stringContaining('story-01-gather.png'));
+    const image = screen.getByRole('img', { name: /에어컨과 배관, 난방과 마감의 관리 이력/ });
+    expect(image).toHaveAttribute('src', expect.stringContaining('story-04-home-history.png'));
   });
 
   it('TEST-PUB-INSTALL-CTA-001 설치, 로그인, 웹 시작 순서로 실제 서비스 진입을 제공한다', () => {
@@ -62,7 +62,7 @@ describe('PublicHome', () => {
   it('TEST-RC-PUB-IMG-003 이미지가 실패해도 설명과 실제 CTA를 유지한다', () => {
     render(<PublicHome />);
 
-    fireEvent.error(screen.getByRole('img', { name: /흩어진 계약서와 사진, 통화와 일정/ }));
+    fireEvent.error(screen.getByRole('img', { name: /에어컨과 배관, 난방과 마감의 관리 이력/ }));
 
     expect(screen.getByText('이미지를 불러오지 못했습니다.')).toBeInTheDocument();
     expect(screen.getAllByRole('link', { name: /내 집 기록 시작하기/ })[0]).toHaveAttribute('href', '/signup');

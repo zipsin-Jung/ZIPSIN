@@ -218,9 +218,6 @@ export function HomeStoryCarousel() {
         {publicHomeStories.map((item, index) => {
           const active = selectedIndex === index;
           const motionId = storyMotionIds[item.id];
-          const headlineLines = item.id === 'gather'
-            ? ['계약과 동시에 흩어지는 부동산 정보,', '집신 한곳에 모아 관리하고', '하나의 집 이력으로 가치를 키웁니다.']
-            : [item.headline];
           return <div
             key={item.id}
             className={styles.storySlide}
@@ -256,9 +253,12 @@ export function HomeStoryCarousel() {
             </div>
 
             <div className={styles.storyMessage}>
-              <span className={styles.kicker}>{item.id === 'gather' ? '집에 관한 모든 기록의 시작' : item.shortTitle}</span>
-              <h1 className={item.id === 'gather' ? styles.typeHeadline : undefined}>
-                {headlineLines.map((line, lineIndex) => <span key={line} className={`${styles.typeLine} ${styles[`typeLine${lineIndex + 1}`] ?? ''}`}>{line}</span>)}
+              <span className={styles.kicker} data-story-phase>
+                <small>{String(index + 1).padStart(2, '0')}</small>
+                {item.phase}
+              </span>
+              <h1 className={styles.typeHeadline} aria-label={item.headline}>
+                {item.headlineLines.map((line, lineIndex) => <span aria-hidden="true" key={line} className={`${styles.typeLine} ${styles[`typeLine${lineIndex + 1}`] ?? ''}`}>{line}</span>)}
               </h1>
               <p>{item.description}</p>
               {item.conclusion && <strong className={styles.storyConclusion}>{item.conclusion}</strong>}

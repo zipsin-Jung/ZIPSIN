@@ -4,8 +4,10 @@ export type EvidenceType = HomeStoryId;
 
 export type PublicHomeStory = {
   id: HomeStoryId;
+  phase: '서론' | '본론' | '과정' | '결론';
   shortTitle: string;
   headline: string;
+  headlineLines: readonly string[];
   description: string;
   conclusion?: string;
   evidenceType: EvidenceType;
@@ -15,41 +17,50 @@ export type PublicHomeStory = {
 
 export const publicHomeStories: readonly PublicHomeStory[] = [
   {
+    id: 'home-history',
+    phase: '서론',
+    shortTitle: '살펴본다',
+    headline: '부동산, 아직도 위치와 서류만 보고 계신가요?',
+    headlineLines: ['부동산, 아직도', '위치와 서류만', '보고 계신가요?'],
+    description: '집도 시간이 지나면 노후됩니다. 사진·문서·대화·일정을 집 한 채에 연결해 에어컨·배관·마감의 관리 이력까지 확인하세요.',
+    conclusion: '주거 이력이 가치가 되는 새로운 문화, 집신.',
+    evidenceType: 'home-history',
+    imageSrc: '/images/public-home/story-04-home-history.png',
+    imageAlt: '집 안에서 위치와 계약 서류뿐 아니라 에어컨과 배관, 난방과 마감의 관리 이력을 함께 확인하는 모습',
+  },
+  {
+    id: 'communication',
+    phase: '본론',
+    shortTitle: '정리한다',
+    headline: '어디서 나눈 말인지, 누구의 집인지 헤매지 않도록.',
+    headlineLines: ['어디서 나눈 말인지,', '누구의 집인지', '헤매지 않도록.'],
+    description: '외부 연락 기록을 가져오지 않습니다. 사람을 초대해 집별 연락처와 집신 채팅에서 새 기록을 시작하세요.',
+    evidenceType: 'communication',
+    imageSrc: '/images/public-home/story-03-communication.png',
+    imageAlt: '뒤섞인 연락과 대화가 집신에서 집별 연락처와 전용 채팅으로 정리되는 모습',
+  },
+  {
     id: 'gather',
-    shortTitle: '모인다',
-    headline: '계약과 동시에 흩어지는 부동산 정보, 집신 한곳에 모아 관리하고 하나의 집 이력으로 가치를 키웁니다.',
-    description: '계약서·사진·대화·일정을 집 한 채의 기록으로 이어가세요.',
+    phase: '과정',
+    shortTitle: '모은다',
+    headline: '부동산의 모든 정보를 집 한 채에 모아서.',
+    headlineLines: ['부동산의 모든 정보를', '집 한 채에 모아서.'],
+    description: '계약서·사진·대화·일정을 흩어 두지 않고, 하나의 집 기록으로 이어서 관리하세요.',
     evidenceType: 'gather',
     imageSrc: '/images/public-home/story-01-gather.png',
     imageAlt: '흩어진 계약서와 사진, 통화와 일정이 집신의 한 집 기록으로 모이는 모습',
   },
   {
     id: 'continuity',
-    shortTitle: '이어진다',
-    headline: '사람은 바뀌어도, 집의 기록은 이어집니다.',
-    description: '접근 권한은 끝나도 집에서 있었던 일을 다시 처음부터 시작하지 않도록.',
+    phase: '결론',
+    shortTitle: '이어간다',
+    headline: '사람이 바뀌어도, 집의 기록은 남도록.',
+    headlineLines: ['사람이 바뀌어도,', '집의 기록은 남도록.'],
+    description: '관계가 끝나면 접근 권한도 끝납니다. 집의 관리 기록만 이어지고, 이전 사람의 개인정보와 비공개 대화는 넘어가지 않습니다.',
+    conclusion: '집에 관한 일의 반복·누락·단절을 막는 집신과 함께합니다.',
     evidenceType: 'continuity',
     imageSrc: '/images/public-home/story-02-continuity.png',
     imageAlt: '같은 집에서 계절과 사람이 바뀌어도 집의 관리 기록이 이어지는 모습',
-  },
-  {
-    id: 'communication',
-    shortTitle: '연결된다',
-    headline: '어디서 나눈 말인지, 누구의 집인지 헤매지 않도록.',
-    description: '외부 연락 기록을 가져오지 않고, 사람을 초대해 집별 연락처와 집신 채팅에서 새 기록을 시작하세요.',
-    evidenceType: 'communication',
-    imageSrc: '/images/public-home/story-03-communication.png',
-    imageAlt: '뒤섞인 연락과 대화가 집신에서 집별 연락처와 전용 채팅으로 정리되는 모습',
-  },
-  {
-    id: 'home-history',
-    shortTitle: '가치가 된다',
-    headline: '위치와 서류만 보고 계신가요?',
-    description: '집도 시간이 지나면 노후됩니다. 에어컨·배관·난방·벽지·바닥까지, 지나온 관리 기록을 함께 확인하세요.',
-    conclusion: '잘 관리한 시간은 집의 신뢰가 됩니다. 주거 이력이 가치가 되는 새로운 문화, 집신.',
-    evidenceType: 'home-history',
-    imageSrc: '/images/public-home/story-04-home-history.png',
-    imageAlt: '집 안에서 위치와 계약 서류뿐 아니라 에어컨과 배관, 난방과 마감의 관리 이력을 함께 확인하는 모습',
   },
 ];
 

@@ -51,3 +51,11 @@
 - 사용자의 Production 배포 승인
 
 Production은 변경하지 않았다.
+
+## Git 기록과 승인 상태
+
+- 기능·테스트 커밋: `3adbbc5`부터 `a8c853c`
+- 독립 검수 결함 수정: `f17dc89`
+- 완료 문서: `06ff25e`
+- 원격 브랜치: `origin/codex/contract-to-expiry-home`
+- 현재 상태: `verified, awaiting approval`

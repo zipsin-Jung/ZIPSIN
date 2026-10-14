@@ -26,7 +26,7 @@ for (const width of viewports) {
 
     const carousel = page.getByRole('region', { name: '집신이 필요한 네 장면' });
     await expect(carousel).toBeVisible();
-    await expect(page.getByRole('heading', { level: 1, name: /계약과 동시에 흩어지는 부동산 정보.*하나의 집 이력으로 가치를 키웁니다/ })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: '부동산, 아직도 위치와 서류만 보고 계신가요?' })).toBeVisible();
 
     const headlineLinesFit = await carousel.locator('h1 span').evaluateAll((lines) => (
       lines.every((line) => line.scrollWidth <= line.clientWidth + 1)
@@ -51,7 +51,7 @@ for (const width of viewports) {
     }
 
     const stage = page.getByTestId('home-story-stage');
-    const firstSlide = stage.getByRole('group', { name: /모인다/ });
+    const firstSlide = stage.getByRole('group', { name: /살펴본다/ });
     const foreground = firstSlide.locator('[data-story-foreground]');
     await expect(foreground).toBeVisible();
     const foregroundBox = await foreground.boundingBox();
@@ -61,9 +61,17 @@ for (const width of viewports) {
     expect(foregroundBox!.x).toBeGreaterThanOrEqual(-1);
     expect(foregroundBox!.x + foregroundBox!.width).toBeLessThanOrEqual(width + 1);
     expect(foregroundBox!.width).toBeGreaterThanOrEqual(stageBox!.width * (width <= 900 ? 0.65 : 0.35));
-    expect(foregroundBox!.height).toBeGreaterThanOrEqual(stageBox!.height * (width <= 900 ? 0.3 : 0.55));
+    expect(foregroundBox!.height).toBeGreaterThanOrEqual(stageBox!.height * (width <= 900 ? 0.3 : 0.72));
+    const firstImageFit = await foreground.evaluate((element) => ({
+      fit: getComputedStyle(element).objectFit,
+      position: getComputedStyle(element).objectPosition,
+    }));
+    if (width <= 390) {
+      expect(firstImageFit.fit).toBe('cover');
+      expect(firstImageFit.position).toBe('68% 50%');
+    }
 
-    for (const title of ['모인다', '이어진다', '연결된다', '가치가 된다']) {
+    for (const title of ['살펴본다', '정리한다', '모은다', '이어간다']) {
       await page.getByRole('button', { name: `${title} 장면 보기` }).click();
       const slide = stage.getByRole('group', { name: new RegExp(title) });
       await expect.poll(async () => {
@@ -78,7 +86,7 @@ for (const width of viewports) {
       expect(fitsViewport).toBe(true);
     }
 
-    const focusTarget = page.getByRole('button', { name: '모인다 장면 보기' });
+    const focusTarget = page.getByRole('button', { name: '살펴본다 장면 보기' });
     await focusTarget.focus();
     await page.keyboard.press('Tab');
     await page.keyboard.press('Shift+Tab');
@@ -105,26 +113,27 @@ for (const width of viewports) {
 }
 
 for (const width of viewports) {
-  test(`TEST-PUB-ANIM-CROP-${width} normal motion keeps the approved first story readable from start to finish`, async ({ page }) => {
+  test(`TEST-PUB-ANIM-CROP-${width} gather motion moves from scattered records into the enlarged house UI`, async ({ page }) => {
     const viewportHeight = width <= 390 ? 844 : 900;
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.setViewportSize({ width, height: viewportHeight });
     await page.goto('/');
 
-    const firstSlide = page.locator('[data-story="gather"]');
-    const foreground = firstSlide.locator('[data-story-foreground]');
+    await page.getByRole('button', { name: '모은다 장면 보기' }).click();
+    const gatherSlide = page.locator('[data-story="gather"]');
+    const foreground = gatherSlide.locator('[data-story-foreground]');
     await expect(foreground).toBeVisible();
-    await page.getByRole('button', { name: '이어진다 장면 보기' }).click();
-    await page.getByRole('button', { name: '모인다 장면 보기' }).click();
-    await page.waitForTimeout(900);
+    await page.waitForTimeout(350);
     const startPosition = await foreground.evaluate((element) => getComputedStyle(element).objectPosition);
-    expect(startPosition).not.toBe('50% 89%');
+    const animationName = await foreground.evaluate((element) => getComputedStyle(element).animationName);
+    expect(animationName).toContain('gatherFocusIntoHouse');
+    expect(startPosition).not.toBe('50% 91%');
     await page.screenshot({ path: `test-results/release-motion-start-${width}.png`, fullPage: false });
 
-    await page.waitForTimeout(2500);
+    await page.waitForTimeout(3300);
     const endPosition = await foreground.evaluate((element) => getComputedStyle(element).objectPosition);
-    expect(endPosition).toBe('50% 89%');
-    const frame = firstSlide.locator('[class*="storyImagePortrait"]');
+    expect(endPosition).toBe('50% 91%');
+    const frame = gatherSlide.locator('[class*="storyImagePortrait"]');
     const frameBox = await frame.boundingBox();
     if (width === 768) expect(frameBox?.width ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(521);
     await page.screenshot({ path: `test-results/release-motion-complete-${width}.png`, fullPage: false });
@@ -141,7 +150,7 @@ test('TEST-PUB-IMAGE-LAZY-001 initial load does not fetch inactive raw story bac
   await page.goto('/');
   await page.waitForTimeout(1000);
 
-  expect(new Set(rawStoryRequests)).toEqual(new Set(['/images/public-home/story-01-gather.png']));
+  expect(new Set(rawStoryRequests)).toEqual(new Set(['/images/public-home/story-04-home-history.png']));
 });
 
 test('TEST-PUB-ANIM-REDUCE-001 reduced motion keeps the first slide and every image motion still', async ({ page }) => {
@@ -153,7 +162,7 @@ test('TEST-PUB-ANIM-REDUCE-001 reduced motion keeps the first slide and every im
   expect(animationNames.every((name) => name === 'none')).toBe(true);
   await page.waitForTimeout(8000);
   await expect(page.getByText('1 / 4')).toBeVisible();
-  await expect(page.getByRole('heading', { name: /계약과 동시에 흩어지는 부동산 정보/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '부동산, 아직도 위치와 서류만 보고 계신가요?' })).toBeVisible();
   await page.screenshot({ path: 'test-results/release-reduced-motion.png', fullPage: false });
 });
 
@@ -200,11 +209,11 @@ test('TEST-RC-HERO-SWIPE-001 mobile uses horizontal swipe but ignores a vertical
   await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: startX, y }] });
   await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: endX, y }] });
   await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-  await expect(page.getByRole('button', { name: '이어진다 장면 보기' })).toHaveAttribute('aria-current', 'true');
+  await expect(page.getByRole('button', { name: '정리한다 장면 보기' })).toHaveAttribute('aria-current', 'true');
 
   await stage.dispatchEvent('pointerdown', { clientX: 220, clientY: 200, pointerId: 2 });
   await stage.dispatchEvent('pointerup', { clientX: 290, clientY: 310, pointerId: 2 });
-  await expect(page.getByRole('button', { name: '이어진다 장면 보기' })).toHaveAttribute('aria-current', 'true');
+  await expect(page.getByRole('button', { name: '정리한다 장면 보기' })).toHaveAttribute('aria-current', 'true');
 });
 
 test('TEST-RC-HERO-POINTER-001 real touch contact pauses autoplay', async ({ page }) => {
@@ -219,7 +228,7 @@ test('TEST-RC-HERO-POINTER-001 real touch contact pauses autoplay', async ({ pag
 
   await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
   await page.waitForTimeout(7500);
-  await expect(page.getByRole('button', { name: '모인다 장면 보기' })).toHaveAttribute('aria-current', 'true');
+  await expect(page.getByRole('button', { name: '살펴본다 장면 보기' })).toHaveAttribute('aria-current', 'true');
   await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
 });
 
@@ -229,7 +238,7 @@ test('TEST-PUB-SV-VIEWPORT-001 vertical wheel does not move the single-screen pu
   await page.goto('/');
   await page.mouse.wheel(0, 1200);
   expect(await page.evaluate(() => window.scrollY)).toBe(0);
-  await expect(page.getByRole('button', { name: '모인다 장면 보기' })).toHaveAttribute('aria-current', 'true');
+  await expect(page.getByRole('button', { name: '살펴본다 장면 보기' })).toHaveAttribute('aria-current', 'true');
 });
 
 test('TEST-RC-HERO-POINTER-002 releasing outside the stage restores autoplay', async ({ page }) => {
@@ -245,5 +254,5 @@ test('TEST-RC-HERO-POINTER-002 releasing outside the stage restores autoplay', a
   await page.mouse.up();
   await page.waitForTimeout(9000);
 
-  await expect(page.getByRole('button', { name: '이어진다 장면 보기' })).toHaveAttribute('aria-current', 'true');
+  await expect(page.getByRole('button', { name: '정리한다 장면 보기' })).toHaveAttribute('aria-current', 'true');
 });

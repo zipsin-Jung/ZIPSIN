@@ -1,7 +1,7 @@
 # 공개 홈 웹앱 설치·모션 추적표
 
 - 날짜: 2026-10-14
-- 상태: 로컬·Vercel Preview 검증 완료, 사용자 승인 대기
+- 상태: 재승인 스토리 모션 로컬 검증, Vercel Preview 재검증 대기
 - 범위: 비로그인 공개 `/`
 
 | 요구사항·수용 기준 | 소스 | 대표 테스트·증거 | 상태 |
@@ -14,11 +14,20 @@
 | REQ-PUB-A11Y-001 / AC-A11Y-001~005 모션 감소·lazy·CLS·axe·console | `HomeStoryCarousel.tsx`, `PublicHome.module.css` | TEST-PUB-ANIM-REDUCE-001, TEST-PUB-IMAGE-LAZY-001, TEST-RC-RESP-* | 통과 |
 | AC-SAFE-001 온라인 전용·가짜 스토어·오프라인 보장 금지 | `InstallGuideDialog.tsx`, `manifest.ts` | 설치 안내 단위·E2E | 통과 |
 
+### 재승인 장면 순서
+
+- `살펴본다`: 집 내부 관리 이력의 순차 강조
+- `정리한다`: 뒤엉킨 외부 연락에서 집별 연락처·집신 채팅으로 시선 이동
+- `모은다`: 상단 흩어진 자료를 확대해 보여준 뒤 아래 집 UI까지 카메라 이동·확대
+- `이어간다`: 같은 집의 계절·관계 변화와 끊기지 않는 비개인 기록선
+
+`TEST-PUB-STORY-ORDER-001`과 `TEST-PUB-STORY-GATHER-001`이 데이터 순서와 세 번째 장의 `gatherFocusIntoHouse` 시작·종료 구도를 검사한다.
+
 ## 로컬 검증
 
 - `npm run typecheck`: 오류 0건
-- `npm test -- --run`: 91개 파일 통과·2개 skip, 432개 테스트 통과·2개 skip
-- `npm run test:coverage -- --maxWorkers=2`: Statements 86.26%, Branches 82.53%, Functions 86.80%, Lines 89.41%
+- `npm run test:coverage -- --maxWorkers=2`: 91개 파일 통과·2개 skip, 433개 테스트 통과·2개 skip
+- 최신 커버리지: Statements 86.25%, Branches 82.41%, Functions 86.80%, Lines 89.40%
 - `npm run build`: Next.js 16.4 webpack Production build 성공, `/manifest.webmanifest` 정적 라우트 확인
 - `npm run test:e2e -- --workers=2`: Chromium 37개 통과·11개 skip
 - 4 workers 첫 전체 E2E는 로컬 자원 경합으로 Next dev 서버가 종료되어 실패했고, 동일 스위트를 2 workers로 재실행해 모두 통과했다.

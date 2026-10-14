@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test('signed-out users understand the product and can enter the real login flow', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1, name: /계약과 동시에 흩어지는 부동산 정보.*하나의 집 이력으로 가치를 키웁니다/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: '부동산, 아직도 위치와 서류만 보고 계신가요?' })).toBeVisible();
   await page.getByRole('link', { name: '로그인' }).first().click();
   await expect(page).toHaveURL(/\/login$/);
   await expect(page.getByRole('heading', { name: '집신 시작하기' })).toBeVisible();

@@ -75,8 +75,9 @@ describe('HomeStoryCarousel', () => {
     render(<HomeStoryCarousel />);
 
     expect(screen.getByRole('region', { name: '집신이 필요한 네 장면' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /계약과 동시에 흩어지는 부동산 정보.*하나의 집 이력으로 가치를 키웁니다/ })).toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: '사람은 바뀌어도, 집의 기록은 이어집니다.' })).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '부동산, 아직도 위치와 서류만 보고 계신가요?' })).toBeInTheDocument();
+    expect(screen.getByText('서론')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: '어디서 나눈 말인지, 누구의 집인지 헤매지 않도록.' })).not.toBeInTheDocument();
     expect(screen.getAllByRole('group', { hidden: true })).toHaveLength(4);
     expect(screen.getByTestId('home-story-track')).toHaveStyle({ transform: 'translate3d(0%, 0, 0)' });
     expect(screen.getByText('1 / 4')).toBeInTheDocument();
@@ -98,6 +99,27 @@ describe('HomeStoryCarousel', () => {
     expect(document.querySelector(`[data-motion-story="${motionId}"]`)).toBeInTheDocument();
   });
 
+  it('TEST-PUB-STORY-ORDER-001 서론에서 결론까지 4→3→1→2 이야기 순서를 유지한다', () => {
+    render(<HomeStoryCarousel />);
+
+    expect(screen.getAllByRole('button', { name: /장면 보기/ }).map((button) => button.getAttribute('aria-label'))).toEqual([
+      '살펴본다 장면 보기',
+      '정리한다 장면 보기',
+      '모은다 장면 보기',
+      '이어간다 장면 보기',
+    ]);
+
+    fireEvent.click(screen.getByRole('button', { name: '모은다 장면 보기' }));
+    expect(screen.getByText('과정')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '부동산의 모든 정보를 집 한 채에 모아서.' })).toBeInTheDocument();
+    expect(document.querySelector('[data-active="true"]')).toHaveAttribute('data-story', 'gather');
+
+    fireEvent.click(screen.getByRole('button', { name: '이어간다 장면 보기' }));
+    expect(screen.getByText('결론')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '사람이 바뀌어도, 집의 기록은 남도록.' })).toBeInTheDocument();
+    expect(document.querySelector('[data-active="true"]')).toHaveAttribute('data-story', 'continuity');
+  });
+
   it('활성 장면의 장식 배경만 렌더링하고 승인 이미지의 대체 설명은 장면마8다 하나만 유지한다', () => {
     render(<HomeStoryCarousel />);
 
@@ -113,7 +135,7 @@ describe('HomeStoryCarousel', () => {
   it('TEST-RC-HERO-HOVER-CLICK-001 hover 예약 중 클릭하면 같은 장면의 모션을 두 번 시작하지 않는다', () => {
     vi.useFakeTimers();
     render(<HomeStoryCarousel />);
-    const secondDot = screen.getByRole('button', { name: '이어진다 장면 보기' });
+    const secondDot = screen.getByRole('button', { name: '정리한다 장면 보기' });
 
     fireEvent.pointerEnter(secondDot);
     fireEvent.click(secondDot);
@@ -129,7 +151,7 @@ describe('HomeStoryCarousel', () => {
     const firstRun = document.querySelector('[data-active="true"]')?.getAttribute('data-motion-run');
 
     fireEvent.click(screen.getByRole('button', { name: '다음 장면' }));
-    fireEvent.click(screen.getByRole('button', { name: '모인다 장면 보기' }));
+    fireEvent.click(screen.getByRole('button', { name: '살펴본다 장면 보기' }));
 
     const replayRun = document.querySelector('[data-active="true"]')?.getAttribute('data-motion-run');
     expect(firstRun).toBeTruthy();
@@ -143,20 +165,21 @@ describe('HomeStoryCarousel', () => {
     fireEvent.click(screen.getByRole('button', { name: '다음 장면' }));
 
     expect(screen.getByTestId('home-story-track')).toHaveStyle({ transform: 'translate3d(-100%, 0, 0)' });
-    expect(screen.getByRole('heading', { name: '사람은 바뀌어도, 집의 기록은 이어집니다.' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '어디서 나눈 말인지, 누구의 집인지 헤매지 않도록.' })).toBeInTheDocument();
+    expect(screen.getByText('본론')).toBeInTheDocument();
   });
 
   it('TEST-RC-HERO-MANUAL-001 화살표와 Home·End 키가 경계 안에서 이동하고 포커스를 빼앗지 않는다', () => {
     render(<HomeStoryCarousel />);
-    const firstDot = screen.getByRole('button', { name: '모인다 장면 보기' });
+    const firstDot = screen.getByRole('button', { name: '살펴본다 장면 보기' });
     firstDot.focus();
 
     fireEvent.keyDown(firstDot, { key: 'ArrowRight' });
-    expect(screen.getByRole('heading', { name: '사람은 바뀌어도, 집의 기록은 이어집니다.' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '어디서 나눈 말인지, 누구의 집인지 헤매지 않도록.' })).toBeInTheDocument();
     expect(firstDot).toHaveFocus();
 
     fireEvent.keyDown(firstDot, { key: 'End' });
-    expect(screen.getByRole('heading', { name: '위치와 서류만 보고 계신가요?' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '사람이 바뀌어도, 집의 기록은 남도록.' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '다음 장면' })).toBeDisabled();
 
     fireEvent.keyDown(firstDot, { key: 'Home' });
@@ -192,7 +215,7 @@ describe('HomeStoryCarousel', () => {
   it('TEST-RC-HERO-HOVER-001 점 hover 250ms 뒤 선택하고 이탈 시 예약을 취소한다', () => {
     vi.useFakeTimers();
     render(<HomeStoryCarousel />);
-    const thirdDot = screen.getByRole('button', { name: '연결된다 장면 보기' });
+    const thirdDot = screen.getByRole('button', { name: '모은다 장면 보기' });
 
     fireEvent.pointerEnter(thirdDot);
     act(() => vi.advanceTimersByTime(249));
@@ -342,10 +365,11 @@ describe('HomeStoryCarousel', () => {
   it('TEST-RC-HERO-ERROR-001 이미지 실패 뒤에도 설명과 가입 CTA를 유지한다', () => {
     render(<HomeStoryCarousel />);
 
+    fireEvent.click(screen.getByRole('button', { name: '모은다 장면 보기' }));
     fireEvent.error(screen.getByRole('img', { name: /흩어진 계약서와 사진/ }));
 
     expect(screen.getByText('이미지를 불러오지 못했습니다.')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /계약과 동시에 흩어지는 부동산 정보/ })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '부동산의 모든 정보를 집 한 채에 모아서.' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /내 집 기록 시작하기/ })).toHaveAttribute('href', '/signup');
   });
 });
