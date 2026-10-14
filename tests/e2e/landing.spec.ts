@@ -23,17 +23,21 @@ test('TEST-RC-HERO-JOURNEY-001 네 장의 제품 이야기를 확인하고 실�
   await expect(carousel).toBeVisible();
   await expect(page.getByRole('heading', { level: 1, name: /계약과 동시에 흩어지는 부동산 정보.*하나의 집 이력으로 가치를 키웁니다/ })).toBeVisible();
   await expect(page.getByRole('img', { name: /흩어진 계약서와 사진, 통화와 일정/ })).toBeVisible();
+  await expect(page.locator('[data-active="true"]')).toHaveAttribute('data-motion-story', 'gather');
 
   const next = page.getByRole('button', { name: '다음 장면' });
   await next.click();
   await expect(page.getByRole('heading', { name: '사람은 바뀌어도, 집의 기록은 이어집니다.' })).toBeVisible();
+  await expect(page.locator('[data-active="true"]')).toHaveAttribute('data-motion-story', 'continuity');
   await next.click();
   await expect(page.getByRole('heading', { name: /어디서 나눈 말인지/ })).toBeVisible();
+  await expect(page.locator('[data-active="true"]')).toHaveAttribute('data-motion-story', 'communication');
   await expect(page.getByText(/외부 연락 기록을 가져오지 않고.*집신 채팅/)).toBeVisible();
 
   await next.focus();
   await page.keyboard.press('End');
   await expect(page.getByRole('heading', { name: '위치와 서류만 보고 계신가요?' })).toBeVisible();
+  await expect(page.locator('[data-active="true"]')).toHaveAttribute('data-motion-story', 'history');
   await expect(page.getByRole('button', { name: '다음 장면' })).toBeDisabled();
 
   await page.keyboard.press('Home');

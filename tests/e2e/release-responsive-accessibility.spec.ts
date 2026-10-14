@@ -51,6 +51,18 @@ for (const width of viewports) {
     }
 
     const stage = page.getByTestId('home-story-stage');
+    const firstSlide = stage.getByRole('group', { name: /모인다/ });
+    const foreground = firstSlide.locator('[data-story-foreground]');
+    await expect(foreground).toBeVisible();
+    const foregroundBox = await foreground.boundingBox();
+    const stageBox = await stage.boundingBox();
+    expect(foregroundBox).not.toBeNull();
+    expect(stageBox).not.toBeNull();
+    expect(foregroundBox!.x).toBeGreaterThanOrEqual(-1);
+    expect(foregroundBox!.x + foregroundBox!.width).toBeLessThanOrEqual(width + 1);
+    expect(foregroundBox!.width).toBeGreaterThanOrEqual(stageBox!.width * (width <= 900 ? 0.65 : 0.35));
+    expect(foregroundBox!.height).toBeGreaterThanOrEqual(stageBox!.height * (width <= 900 ? 0.3 : 0.55));
+
     for (const title of ['모인다', '이어진다', '연결된다', '가치가 된다']) {
       await page.getByRole('button', { name: `${title} 장면 보기` }).click();
       const slide = stage.getByRole('group', { name: new RegExp(title) });
@@ -77,6 +89,11 @@ for (const width of viewports) {
     const primaryBox = await primary.boundingBox();
     expect(primaryBox?.height ?? 0).toBeGreaterThanOrEqual(44);
 
+    const installButton = page.getByRole('button', { name: '앱으로 다운로드' });
+    const installBox = await installButton.boundingBox();
+    expect(installBox?.height ?? 0).toBeGreaterThanOrEqual(44);
+    expect((installBox?.x ?? -1) + (installBox?.width ?? 0)).toBeLessThanOrEqual(width + 1);
+
     const accessibility = await new AxeBuilder({ page }).analyze();
     expect(accessibility.violations).toEqual([]);
     await page.waitForTimeout(500);
@@ -87,12 +104,29 @@ for (const width of viewports) {
   });
 }
 
-test('TEST-RC-HERO-MOTION-001 reduced motion keeps the first slide still for eight seconds', async ({ page }) => {
+test('TEST-PUB-ANIM-REDUCE-001 reduced motion keeps the first slide and every image motion still', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
+  const activeSlide = page.locator('[data-active="true"]');
+  const animatedParts = activeSlide.locator('[data-story-foreground], [data-story-backdrop], span');
+  const animationNames = await animatedParts.evaluateAll((elements) => elements.map((element) => getComputedStyle(element).animationName));
+  expect(animationNames.every((name) => name === 'none')).toBe(true);
   await page.waitForTimeout(8000);
   await expect(page.getByText('1 / 4')).toBeVisible();
   await expect(page.getByRole('heading', { name: /계약과 동시에 흩어지는 부동산 정보/ })).toBeVisible();
+  await page.screenshot({ path: 'test-results/release-reduced-motion.png', fullPage: false });
+});
+
+test('200% 확대에 가까운 낮은 화면에서도 문서가 넘치지 않고 CTA에 접근한다', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 720, height: 600 });
+  await page.goto('/');
+
+  const cta = page.getByRole('link', { name: /내 집 기록 시작하기/ }).first();
+  await cta.scrollIntoViewIfNeeded();
+  await expect(cta).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+  expect(await page.evaluate(() => document.documentElement.scrollHeight - innerHeight)).toBeLessThanOrEqual(1);
 });
 
 test('TEST-PUB-SV-KAKAO-001 768px에서 카카오 문의가 캐러셀 제어를 덮지 않는다', async ({ page }) => {

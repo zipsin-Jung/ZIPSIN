@@ -20,6 +20,25 @@ test('public header offers install before login and web signup', async ({ page }
   await expect(actions.nth(0)).toHaveCSS('min-height', '44px');
 });
 
+test('unsupported browser gets an honest install guide and Escape restores focus', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.addEventListener('beforeinstallprompt', (event) => event.stopImmediatePropagation());
+  });
+  await page.goto('/');
+  const install = page.getByRole('button', { name: '앱으로 다운로드' });
+
+  await install.click();
+  const dialog = page.getByRole('dialog', { name: '집신 앱 설치 안내' });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText(/앱스토어 앱이 아닌 웹앱/)).toBeVisible();
+  await expect(dialog.getByText(/인터넷 연결이 필요/)).toBeVisible();
+  await expect(dialog.getByRole('heading', { name: '집신 앱 설치 안내' })).toBeFocused();
+
+  await page.keyboard.press('Escape');
+  await expect(dialog).not.toBeVisible();
+  await expect(install).toBeFocused();
+});
+
 for (const width of [320, 390, 768, 1440]) {
   test(`Kakao inquiry stays reachable without covering the viewport at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });

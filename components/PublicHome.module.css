@@ -214,7 +214,7 @@
   .storySlide{grid-template-columns:1fr;padding-left:14px;padding-right:14px}
   .storyMotionStage{border-radius:21px}
   .storyMotionStage .storyImageFrame{width:calc(100% - 16px);height:calc(100% - 16px);border-radius:17px}
-  .storyVisualPortrait .storyMotionStage .storyImagePortrait{width:min(84%,470px)}
+  .storyVisualPortrait .storyMotionStage .storyImagePortrait{width:min(84%,560px)}
 }
 
 @media(max-width:520px){
