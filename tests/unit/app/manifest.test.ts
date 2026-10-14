@@ -25,7 +25,13 @@ describe('TEST-PWA-MANIFEST-001 집신 웹앱 manifest', () => {
           src: '/icons/zipsin-app-512.png',
           sizes: '512x512',
           type: 'image/png',
-          purpose: 'any maskable',
+          purpose: 'any',
+        }),
+        expect.objectContaining({
+          src: '/icons/zipsin-app-512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'maskable',
         }),
       ]),
     );
