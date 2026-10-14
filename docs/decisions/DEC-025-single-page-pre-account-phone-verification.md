@@ -27,6 +27,6 @@
 
 새 DB·API는 additive로 추가한다. 운영 전 문제가 발견되면 이 기능 커밋을 되돌려 신규 비밀번호 가입 폼만 기존 경로로 복구하며 기존 OAuth·미완료 계정과 사용자 데이터는 삭제하지 않는다. 사용하지 않는 런타임 기능 플래그를 별도로 남기지 않는다.
 
-2026-10-14 후속 검수에서 Preview Supabase에 migration을 적용했고, 15분 주기 개인정보 정리 Cron의 실제 성공 실행과 WebKit 18개 회원가입 시나리오를 확인했다. SOLAPI 인증정보와 발신번호가 없으므로 실문자 발송과 성공 가입 정합성은 아직 출시 차단 조건으로 남는다.
+2026-10-14 후속 검수에서 Preview Supabase에 challenge migration과 선행 문자 발송 제한 객체를 적용했고, 15분 주기 개인정보 정리 Cron의 실제 성공 실행과 WebKit 18개 회원가입 시나리오를 확인했다. Preview 브라우저 요청이 challenge 실패 상태로 안전하게 기록되는 공급자 경계도 확인했다. SOLAPI 인증정보와 등록 발신번호가 없으므로 실문자 발송과 성공 가입 정합성은 아직 출시 차단 조건으로 남는다.
 
 DB 롤백 전에는 `select cron.unschedule('redact-anonymous-signup-phone-challenges');`로 예약 작업을 해제한다. 실제 롤백은 적용 migration과 데이터 존재 여부를 확인한 뒤 수행하며, `pg_cron` 확장 자체는 다른 작업이 사용할 수 있으므로 자동 삭제하지 않는다.

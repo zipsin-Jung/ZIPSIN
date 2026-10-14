@@ -51,8 +51,9 @@
 | 타입·빌드·비밀정보 검사 | 모두 성공 |
 | Chromium 브라우저 | 가입 시나리오 18개 확인; 320·390·768·1280·1440px, 200% 글자 확대·키보드와 실제 Route Handler 쿠키 왕복. 병렬 실행의 2개 시간초과는 1-worker 재실행 통과 |
 | WebKit | 가입 시나리오 18개 모두 통과; Chromium과 합산 36개 통과 |
-| Preview DB·Cron | migration 적용, 테이블·함수·Cron 활성, 2026-10-14 13:30 KST Cron `succeeded` 확인 |
-| Preview 실문자 | SOLAPI key·secret·발신번호 미준비로 대기 |
+| Preview DB·Cron | migration 적용, challenge·가입·문자 발송 제한 함수와 Cron 활성, 2026-10-14 13:30 KST Cron `succeeded` 확인 |
+| Preview 공급자 경계 | 브라우저 요청이 challenge에 `failed`·미인증·미소비로 기록됨을 확인하고 가상 번호 기록 삭제 |
+| Preview 실문자 | SOLAPI key·secret·등록 발신번호 미준비로 대기 |
 
 빌드 성공과 Chromium 브라우저 검수는 분리해 기록했다. 이 결과는 Production 배포 또는 실제 문자 수신 성공을 뜻하지 않는다.
 

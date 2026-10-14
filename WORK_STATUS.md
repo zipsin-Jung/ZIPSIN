@@ -5,6 +5,8 @@
 - Supabase Preview에 익명 가입 휴대폰 challenge migration을 적용했고 테이블·함수·Cron 활성을 재조회했다.
 - 개인정보 정리 Cron이 13:30 KST에 실제 `succeeded`한 것을 확인했다.
 - Vercel Preview 브랜치에 새 `PHONE_OTP_HMAC_SECRET`를 추가했고 원문은 Git과 문서에 남기지 않았다.
+- 선행 문자 발송 제한 함수가 Preview DB에서 누락된 원인을 확인하고 승인된 migration의 해당 객체를 적용했다.
+- Preview 가입 화면에서 가상 번호 인증 요청이 challenge에 `failed`로 기록되는 것을 확인했다. 이는 앱·Vercel·Supabase 연결이 정상이고, SOLAPI 공급자만 비활성 상태임을 뜻한다. 검수용 가상 번호 기록은 확인 뒤 삭제했다.
 - WebKit 회원가입 18개 시나리오와 전체 602개 테스트, 커버리지 4개 지표 80% 이상을 확인했다.
 - 실제 문자 발송은 SOLAPI 키·발신번호가 없어 차단 상태다. 이 세 값이 준비되기 전에는 실문자 가입과 Production 배포를 완료로 판정하지 않는다.
 

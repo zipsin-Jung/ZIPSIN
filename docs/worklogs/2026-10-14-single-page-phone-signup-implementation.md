@@ -57,6 +57,9 @@
 - 가입 challenge 테이블, 최종 가입 함수, 15분 정리 Cron이 활성 상태임을 재조회했다.
 - Cron은 2026-10-14 13:30 KST에 실제로 `succeeded`했고 정리 함수 직접 실행도 성공했다.
 - Vercel Preview 브랜치에 `PHONE_OTP_HMAC_SECRET`를 새 비밀값으로 추가했다. 비밀값 원문은 문서·Git에 저장하지 않았다.
+- Preview DB에서 선행 `reserve_auth_sms_send` 함수가 누락된 것을 재현하고, 승인된 `202610140003_auth_recovery_security.sql` 중 문자 발송 제한 테이블·함수를 적용했다.
+- Preview 가입 화면에서 가상 번호로 인증 요청을 보내 challenge가 `delivery_status=failed`, 미인증·미소비 상태로 저장되는 것을 확인했다. 따라서 브라우저→Vercel Route Handler→Supabase 연결과 실패 격리는 정상이며, SOLAPI 공급자만 비활성 상태다.
+- 확인에 사용한 `010-0000-0000`~`0003` 가상 번호 challenge는 정확한 번호 범위만 삭제해 정리했다.
 - Playwright에 WebKit 프로젝트를 추가하고 회원가입 18개 시나리오를 WebKit에서 모두 통과했다.
 - 첫 실행에서 기존 landing smoke 1개가 병렬 부하로 5초 시간초과했지만 단독 재현은 420ms로 통과했고, worker 50% 전체 재실행은 602개 통과했다.
 - 실제 문자 발송은 SOLAPI API Key, API Secret, 발신번호가 Vercel에 없어 아직 검증할 수 없다. `PHONE_VERIFICATION_PROVIDER=disabled`를 유지해 잘못된 발송은 차단했다.
