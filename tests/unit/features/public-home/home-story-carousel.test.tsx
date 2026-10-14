@@ -265,6 +265,19 @@ describe('HomeStoryCarousel', () => {
     expect(screen.getByText('2 / 4')).toBeInTheDocument();
   });
 
+  it('TEST-RC-HERO-POINTER-002 무대 밖에서 놓아도 누름 상태를 해제한다', () => {
+    vi.useFakeTimers();
+    render(<HomeStoryCarousel />);
+    const stage = screen.getByTestId('home-story-stage');
+
+    fireEvent.pointerDown(stage, { clientX: 200, clientY: 100, pointerId: 1 });
+    fireEvent.pointerUp(window, { clientX: 1, clientY: 100, pointerId: 1 });
+    act(() => vi.advanceTimersByTime(1500));
+    act(() => vi.advanceTimersByTime(7000));
+
+    expect(screen.getByText('2 / 4')).toBeInTheDocument();
+  });
+
   it('TEST-RC-HERO-ERROR-001 이미지 실패 뒤에도 설명과 제품 증거와 가입 CTA를 유지한다', () => {
     render(<HomeStoryCarousel />);
 

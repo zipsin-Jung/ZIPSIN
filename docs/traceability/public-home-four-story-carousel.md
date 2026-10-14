@@ -9,7 +9,7 @@
 | RC-HERO-STORY-001 AC-01~03 네 장·고정 순서·첫 장 가치 | FIRST·네 장 | `features/public-home/scenarios.ts`, `components/PublicHome.tsx` | `home-story-content.test.tsx`, `public-home.test.tsx`, TEST-RC-HERO-JOURNEY-001 |
 | RC-HERO-MOTION-001 AC-04 1회 자동재생·마지막 정지·화면 노출 때만 재생 | PLAYING·LAST·OFFSCREEN | `HomeStoryCarousel.tsx` | TEST-RC-HERO-AUTO-001, TEST-RC-HERO-VIEWPORT-001 단위·E2E |
 | RC-HERO-MOTION-001 AC-05 점·화살표·키보드·실제 touch swipe | HOVER·MANUAL·MOBILE-SWIPE | `HomeStoryCarousel.tsx`, `PublicHome.module.css` | TEST-RC-HERO-HOVER-001, TEST-RC-HERO-MANUAL-001, TEST-RC-HERO-SWIPE-001 CDP touch |
-| RC-HERO-MOTION-001 AC-06 수동 뒤 자동재생 중지 | MANUAL | `HomeStoryCarousel.tsx` | TEST-RC-HERO-MANUAL-002 |
+| RC-HERO-MOTION-001 AC-06 수동 뒤 자동재생 중지·무대 밖 release 복구 | MANUAL·POINTER | `HomeStoryCarousel.tsx` | TEST-RC-HERO-MANUAL-002, TEST-RC-HERO-POINTER-001/002 단위·E2E |
 | RC-HERO-MOTION-001 AC-07 모션 감소 | REDUCED-MOTION | `HomeStoryCarousel.tsx`, `PublicHome.module.css` | TEST-RC-HERO-MOTION-001 단위·E2E |
 | RC-HERO-SAFE-001 AC-08~09 안전한 공개 표현 | 전체 | `scenarios.ts`, 승인 이미지 자산 | TEST-RC-HERO-SAFE-001, 공개 자산 수동 검토 |
 | RC-HERO-SAFE-001 AC-10 이미지 오류에도 설명·CTA 유지 | IMAGE-ERROR | `HomeStoryCarousel.tsx` | TEST-RC-HERO-ERROR-001 |
@@ -21,11 +21,11 @@
 ## 품질 증거
 
 - 타입 오류 0건
-- 단위·통합 416개 통과·외부 환경 전용 2개 skip
-- 커버리지 Statements 85.72% / Branches 81.91% / Functions 86.91% / Lines 89.11%
+- 단위·통합 417개 통과·외부 환경 전용 2개 skip
+- 커버리지 Statements 85.89% / Branches 81.96% / Functions 87.09% / Lines 89.25%
 - Production build 성공
-- Chromium 27개 통과·환경변수와 Preview 데이터가 필요한 11개 skip
-- 공개 홈 집중 Chromium 11개 통과
+- Chromium 28개 통과·환경변수와 Preview 데이터가 필요한 11개 skip
+- 공개 홈 집중 Chromium 12개 통과
 
 ## 기능 경계
 

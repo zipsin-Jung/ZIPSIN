@@ -135,3 +135,19 @@ test('TEST-RC-HERO-VIEWPORT-001 offscreen carousel does not consume its one auto
   await page.evaluate(() => window.scrollTo(0, 0));
   await expect(page.getByRole('button', { name: '모인다 장면 보기' })).toHaveAttribute('aria-current', 'true');
 });
+
+test('TEST-RC-HERO-POINTER-002 releasing outside the stage restores autoplay', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  const stage = page.getByTestId('home-story-stage');
+  const box = await stage.boundingBox();
+  expect(box).not.toBeNull();
+
+  await page.mouse.move((box?.x ?? 0) + 100, (box?.y ?? 0) + 160);
+  await page.mouse.down();
+  await page.mouse.move(1, (box?.y ?? 0) + 160);
+  await page.mouse.up();
+  await page.waitForTimeout(9000);
+
+  await expect(page.getByRole('button', { name: '이어진다 장면 보기' })).toHaveAttribute('aria-current', 'true');
+});

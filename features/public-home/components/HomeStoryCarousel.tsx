@@ -76,6 +76,20 @@ export function HomeStoryCarousel() {
   }, [focused, hovered, pointerActive]);
 
   useEffect(() => {
+    if (!pointerActive) return;
+    const releasePointer = () => {
+      pointerStart.current = null;
+      setPointerActive(false);
+    };
+    window.addEventListener('pointerup', releasePointer);
+    window.addEventListener('pointercancel', releasePointer);
+    return () => {
+      window.removeEventListener('pointerup', releasePointer);
+      window.removeEventListener('pointercancel', releasePointer);
+    };
+  }, [pointerActive]);
+
+  useEffect(() => {
     if (!autoplay || manual || hovered || focused || pointerActive || !visible || !inViewport || !resumeReady || reducedMotion || selectedIndex >= lastIndex) return;
     const timer = window.setTimeout(() => {
       const nextIndex = selectedIndex + 1;

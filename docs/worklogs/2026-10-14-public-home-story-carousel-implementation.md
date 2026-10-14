@@ -22,16 +22,17 @@
 - 기존 내비게이션 E2E의 예전 첫 문장을 새 승인 첫 문장으로 갱신했다.
 - 독립 검수에서 합성 이벤트가 놓친 실제 모바일 swipe, 누름 중 자동재생, 화면 밖 자동재생과 CTA 방향키 포커스 손실을 발견했다.
 - 실제 CDP touch 이벤트와 IntersectionObserver 기반 재발 테스트를 추가하고 네 문제를 수정했다.
+- 재검수에서 무대 밖 pointer release 뒤 누름 상태가 남는 경계를 추가로 발견해 전역 종료 처리와 실제 브라우저 재발 테스트를 보강했다.
 - 모바일 표시 순서를 설명→이미지·제품 증거→CTA로 맞추고 `n / 4` 페이지 숫자를 복원했다.
 
 ## 검증 결과
 
 - `npm run typecheck`: 오류 0건
-- `npm run test:coverage`: 88개 파일 통과·2개 skip, 416개 테스트 통과·2개 skip
-- 커버리지: Statements 85.72%, Branches 81.91%, Functions 86.91%, Lines 89.11%
+- `npm run test:coverage`: 88개 파일 통과·2개 skip, 417개 테스트 통과·2개 skip
+- 커버리지: Statements 85.89%, Branches 81.96%, Functions 87.09%, Lines 89.25%
 - `npm run build`: Next.js 16.4 webpack Production build 성공
-- `npx playwright test --project=chromium`: 27개 통과·외부 환경 전용 11개 skip
-- 공개 홈 집중 E2E: 11개 통과
+- `npx playwright test --project=chromium`: 28개 통과·외부 환경 전용 11개 skip
+- 공개 홈 집중 E2E: 12개 통과
 - 320·390·768·1440px: 가로 넘침 ≤1px, 버튼 44px 이상, axe 위반 0, console/pageerror 0, CLS ≤0.1
 - 390px과 1440px 전체 페이지 스크린샷을 직접 확인했다.
 
