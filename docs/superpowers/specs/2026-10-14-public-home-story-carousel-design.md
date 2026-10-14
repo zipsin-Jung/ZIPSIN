@@ -1,7 +1,7 @@
 # 공개 메인 4장 스토리 캐러셀 설계
 
 - 날짜: 2026-10-14
-- 상태: 사용자 이미지·문구 확정, 구현계획 검토 대기
+- 상태: 구현·로컬 품질 게이트 통과, Vercel Preview 검수 대기
 - 변경 대상: 공개 메인 `/`
 
 ## 1. 목표
@@ -193,4 +193,13 @@
 - 타이머와 입력 처리가 필요한 `HomeStoryCarousel`만 작은 Client Component로 만든다.
 - 기존 `publicHomeScenarios`와 `ProductEvidence`를 새 네 장 구조에 맞게 재사용·확장해 데이터 원천을 하나로 유지한다.
 - 외부 carousel 라이브러리는 추가하지 않는다.
-- 구현계획과 제품 코드 작성은 이 서면 명세의 사용자 승인 뒤 시작한다.
+- 사용자 승인 뒤 구현을 완료했다. Production 반영은 Preview 사용자 승인 뒤 별도로 진행한다.
+
+## 12. 구현 결과
+
+- 공개 `/`에 네 장을 하나의 캐러셀로 통합했고 기존 `ScenarioExplorer` 중복 노출을 제거했다.
+- 승인 원본 네 장은 `public/images/public-home/story-*.png`에 저장했다.
+- 1회 자동재생, 점 hover·click/tap, 이전·다음, 재생·일시정지, 키보드와 모바일 swipe를 구현했다.
+- 활성 장면 높이를 실제 콘텐츠에 맞춰 부드럽게 조절해 모바일의 불필요한 큰 빈 공간을 없앴다.
+- 320·390·768·1440px, 모션 감소, 이미지 실패, JavaScript 비활성 첫 화면, axe·console·가로 넘침·CLS를 자동 검증한다.
+- 로컬 품질 결과는 `docs/traceability/public-home-four-story-carousel.md`와 구현 작업기록에 보존한다.
