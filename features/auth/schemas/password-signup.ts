@@ -21,3 +21,9 @@ export const passwordSignupSchema = z
   });
 
 export type PasswordSignupInput = z.infer<typeof passwordSignupSchema>;
+
+export const verifiedPasswordSignupSchema = passwordSignupSchema.and(z.object({
+  challengeId: z.string().uuid(),
+}));
+
+export type VerifiedPasswordSignupInput = z.infer<typeof verifiedPasswordSignupSchema>;
