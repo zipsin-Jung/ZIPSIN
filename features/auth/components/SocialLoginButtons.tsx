@@ -13,9 +13,22 @@ type Props = {
   onSelect?: (provider: SocialProviderId) => void;
 };
 
+const DISPLAY_ORDER: SocialProviderId[] = ['kakao', 'naver', 'google'];
+
+const STYLE: Record<SocialProviderId, string> = {
+  kakao: 'border-[#F2D600] bg-[#FEE500] text-[#191919]',
+  naver: 'border-[#03A94D] bg-[#03C75A] text-white',
+  google: 'border-[#8A9792] bg-white text-[#16211E]',
+};
+
+/** 실제 환경에 연결된 제공자만 보여준다. 연결 전 제공자는 버튼도 안내 문구도 만들지 않는다. */
 export function SocialLoginButtons({ enabledProviders, next, onSelect }: Props) {
   const [isPending, startTransition] = useTransition();
-  const unavailable = SUPPORTED_PROVIDERS.filter((provider) => !enabledProviders.includes(provider.id));
+  const providers = DISPLAY_ORDER
+    .filter((id) => enabledProviders.includes(id))
+    .map((id) => SUPPORTED_PROVIDERS.find((provider) => provider.id === id)!);
+
+  if (providers.length === 0) return null;
 
   function choose(provider: SocialProviderId) {
     if (onSelect) {
@@ -29,29 +42,19 @@ export function SocialLoginButtons({ enabledProviders, next, onSelect }: Props) 
   }
 
   return (
-    <div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label="간편 로그인 제공자">
-        {SUPPORTED_PROVIDERS.map((provider) => {
-        const enabled = enabledProviders.includes(provider.id);
-        const accessibleName = `${provider.label}로 계속하기${enabled ? '' : ' 준비 중'}`;
-
-        return (
-          <button
-            className={`min-h-13 rounded-xl border px-3 py-3 text-base font-extrabold shadow-sm transition focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#c58c32] disabled:cursor-not-allowed disabled:opacity-60 ${provider.id === 'kakao' ? 'border-[#f5d800] bg-[#fee500] text-[#171717]' : provider.id === 'naver' ? 'border-[#03a94d] bg-[#03c75a] text-white' : 'border-slate-300 bg-white text-slate-900'}`}
-            disabled={!enabled || isPending}
-            key={provider.id}
-            onClick={() => choose(provider.id)}
-            type="button"
-            aria-label={accessibleName}
-          >
-            {provider.label}
-            <span className="sr-only">로 계속하기{!enabled ? ' 준비 중' : ''}</span>
-          </button>
-        );
-        })}
-      </div>
-      {unavailable.map((provider) => <p key={provider.id} className="mt-2 text-xs text-slate-500">{provider.label} 로그인은 연결 설정 후 사용할 수 있습니다.</p>)}
-      {isPending && <p role="status">로그인 화면으로 이동하고 있습니다.</p>}
+    <div role="group" aria-label="간편 로그인" className="flex flex-col gap-2.5">
+      {providers.map((provider) => (
+        <button
+          className={`h-12 rounded-xl border text-base font-semibold transition disabled:cursor-wait disabled:opacity-70 ${STYLE[provider.id]}`}
+          disabled={isPending}
+          key={provider.id}
+          onClick={() => choose(provider.id)}
+          type="button"
+        >
+          {provider.label}로 계속하기
+        </button>
+      ))}
+      {isPending && <p role="status" className="text-sm text-[#5D6A65]">로그인 화면으로 이동하고 있습니다.</p>}
     </div>
   );
 }

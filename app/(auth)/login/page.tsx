@@ -1,93 +1,84 @@
 import Link from 'next/link';
-import { CalendarDays, FileText, ShieldCheck, UserPlus, Wrench } from 'lucide-react';
-import Brand, { Mascot } from '@/components/Brand';
+import { ArrowLeft, CircleAlert, LockKeyhole } from 'lucide-react';
 import { UsernameLoginForm } from '@/features/auth/components/UsernameLoginForm';
 import { SocialLoginButtons } from '@/features/auth/components/SocialLoginButtons';
 import { SUPPORTED_PROVIDERS } from '@/features/auth/domain/providers';
+import { getLoginError, type LoginErrorTone } from '@/features/auth/domain/login-error';
 
 type Props = {
   searchParams: Promise<{ error?: string; next?: string }>;
 };
 
+const ALERT_STYLE: Record<LoginErrorTone, { box: string; ink: string }> = {
+  danger: { box: 'border-[#E8B4AE] bg-[#FDF3F2]', ink: 'text-[#8C1D18]' },
+  warning: { box: 'border-[#E6C78F] bg-[#FDF7EC]', ink: 'text-[#7A4A06]' },
+  info: { box: 'border-[#B9C4CC] bg-[#F1F4F6]', ink: 'text-[#27394A]' },
+};
+
 export default async function LoginPage({ searchParams }: Props) {
   const params = await searchParams;
-  const errorMessage = params.error
-    ? '아이디 또는 비밀번호가 맞지 않습니다. 다시 확인해 주세요.'
-      : null;
+  const error = getLoginError(params.error);
   const enabledProviders = SUPPORTED_PROVIDERS
     .filter((provider) => process.env[`NEXT_PUBLIC_AUTH_${provider.id.toUpperCase()}_ENABLED`] === 'true')
     .map((provider) => provider.id);
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,#f9f3e6_0,transparent_38%),linear-gradient(145deg,#fbfcfa_0%,#f3f7f3_100%)] px-4 py-5 text-[#12362c] sm:px-7 sm:py-7 lg:px-10">
-      <header className="mx-auto flex max-w-[1480px] items-center justify-between px-1 py-1 sm:px-2">
-        <Link aria-label="집신 로그인" href="/login">
-          <Brand />
-        </Link>
-        <Link className="flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-bold text-[#31584a] transition hover:bg-white/70" href="/signup">
-          <UserPlus aria-hidden="true" className="size-4" />
-          <span>회원가입</span>
-        </Link>
-      </header>
-
-      <section className="mx-auto mt-5 grid max-w-[1480px] overflow-hidden rounded-[30px] border border-white/90 bg-white shadow-[0_30px_80px_-42px_rgba(20,61,46,0.35)] lg:min-h-[760px] lg:grid-cols-[1.06fr_0.94fr]">
-        <div className="order-2 relative flex min-h-[570px] flex-col overflow-hidden bg-[#fbf7ec] px-7 py-10 sm:px-12 sm:py-14 lg:order-1 lg:min-h-0 lg:px-16 lg:py-16 xl:px-20">
-          <div className="relative z-10 max-w-[650px]">
-            <p className="mb-5 text-sm font-extrabold tracking-[0.18em] text-[#a87527]">HOME RECORD PLATFORM</p>
-            <h1 className="text-[clamp(2.45rem,4.6vw,4.8rem)] font-black leading-[1.13] tracking-[-0.055em] text-[#0d4938]">
-              집의 모든 기록을<br />
-              <span className="text-[#c18a31]">한곳에서</span> 관리하세요
-            </h1>
-            <p className="mt-6 max-w-[560px] text-base leading-8 text-[#526b61] sm:text-lg">
-              계약부터 수리, 사진, 일정까지<br className="hidden sm:block" /> 집마다 안전하게 이어서 관리합니다.
-            </p>
+    <main className="flex min-h-dvh flex-col items-center bg-white px-5 pb-36 pt-5 text-[#16211E] sm:justify-center sm:gap-5 sm:bg-[#F6F7F5] sm:px-4 sm:py-14">
+      <section
+        aria-labelledby="login-title"
+        className="flex w-full max-w-[460px] flex-1 flex-col gap-7 sm:flex-none sm:rounded-[20px] sm:border sm:border-[#E1E6E3] sm:bg-white sm:px-10 sm:pb-8 sm:pt-10 sm:shadow-[0_1px_2px_rgba(22,33,30,0.04),0_16px_40px_-24px_rgba(22,33,30,0.22)]"
+      >
+        <div className="flex flex-col gap-9 sm:gap-5">
+          <Link aria-label="집신 처음 화면" className="inline-flex min-h-11 items-center gap-2.5 self-start" href="/">
+            <img alt="" className="h-[30px] w-[36px] object-contain sm:h-[34px] sm:w-[40px]" src="/images/zipsin-company-logo.jpg" />
+            <span className="flex flex-col leading-none">
+              <strong className="text-lg font-bold tracking-[-0.4px] sm:text-xl">집신</strong>
+              <span className="mt-1 text-[9px] font-bold tracking-[2px] text-[#5D6A65]">ZIPSIN</span>
+            </span>
+          </Link>
+          <div className="flex flex-col gap-2">
+            <h1 className="text-[26px] font-bold leading-[1.3] tracking-[-0.6px] sm:text-[28px]" id="login-title">집신 로그인</h1>
+            <p className="text-base leading-relaxed text-[#5D6A65]">집과 사무소의 기록을 이어서 확인하세요.</p>
           </div>
-
-          <ul className="relative z-10 mt-9 grid max-w-md gap-3 text-base font-extrabold text-[#174b3b] sm:mt-10">
-            <li className="flex min-h-16 items-center gap-4 rounded-2xl bg-white/85 px-5 shadow-sm"><FileText aria-hidden="true" className="size-7 text-[#0d5b45]" />계약·입주 기록</li>
-            <li className="flex min-h-16 items-center gap-4 rounded-2xl bg-white/85 px-5 shadow-sm"><Wrench aria-hidden="true" className="size-7 text-[#0d5b45]" />수리·사진 보관</li>
-            <li className="flex min-h-16 items-center gap-4 rounded-2xl bg-white/85 px-5 shadow-sm"><CalendarDays aria-hidden="true" className="size-7 text-[#0d5b45]" />일정·비용 관리</li>
-          </ul>
-
-          <div aria-hidden="true" className="pointer-events-none absolute -bottom-16 -right-7 h-64 w-64 rounded-full bg-[#e9efdf] sm:h-80 sm:w-80 lg:-bottom-11 lg:right-2" />
-          <Mascot className="absolute -bottom-7 right-0 z-10 !w-40 sm:!w-52 lg:bottom-0 lg:right-5 xl:!w-64" pose="hello" />
         </div>
 
-        <div className="order-1 flex items-center px-6 py-12 sm:px-12 lg:order-2 lg:px-14 xl:px-20">
-          <div className="mx-auto w-full max-w-[520px]">
-            <p className="text-sm font-extrabold tracking-[0.18em] text-[#b27b25]">ZIPSIN ACCOUNT</p>
-            <h2 className="mt-3 text-4xl font-black tracking-[-0.045em] text-[#0d4938] sm:text-5xl">집신 시작하기</h2>
-            <p className="mb-7 mt-4 text-base leading-7 text-[#60736c]">간편 로그인 또는 아이디로 시작하세요.</p>
-
-            <SocialLoginButtons enabledProviders={enabledProviders} next={params.next} />
-
-            <div className="my-7 flex items-center gap-4 text-sm font-semibold text-[#6c7d76]">
-              <span className="h-px flex-1 bg-[#dce4df]" />
-              또는 아이디로 로그인
-              <span className="h-px flex-1 bg-[#dce4df]" />
-            </div>
-
-            {errorMessage && (
-              <p className="mb-6 rounded-2xl border border-[#eccdc8] bg-[#fff6f4] p-4 text-sm font-semibold leading-6 text-[#9b352d]" role="alert">
-                {errorMessage}
-              </p>
-            )}
-
-            <UsernameLoginForm next={params.next} />
-
-            <div className="mt-4 text-right">
-              <Link className="min-h-11 py-3 text-sm font-bold text-[#0d5b45] underline underline-offset-4" href="/account-recovery">아이디·비밀번호를 잊으셨나요?</Link>
-            </div>
-
-            <Link className="mt-3 flex min-h-14 items-center justify-center rounded-2xl border-2 border-[#0b543f] text-base font-extrabold text-[#0b543f]" href="/signup">회원가입</Link>
-
-            <div className="mt-8 flex items-start gap-3 border-t border-[#e3e9e5] pt-6 text-sm leading-6 text-[#64786f]">
-              <ShieldCheck aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-[#3f8b63]" />
-              <p>집신은 동의 없이 개인정보를 공유하지 않으며, 중요한 정보는 안전하게 보호합니다.</p>
+        {error && (
+          <div className={`flex items-start gap-3 rounded-xl border p-4 ${ALERT_STYLE[error.tone].box}`} id="login-error" role="alert">
+            <CircleAlert aria-hidden="true" className={`mt-0.5 size-5 shrink-0 ${ALERT_STYLE[error.tone].ink}`} />
+            <div className="flex flex-col gap-1">
+              <p className={`text-[15px] font-semibold leading-normal ${ALERT_STYLE[error.tone].ink}`}>{error.title}</p>
+              <p className="text-sm leading-relaxed text-[#3E4B47]">{error.body}</p>
             </div>
           </div>
+        )}
+
+        {enabledProviders.length > 0 && (
+          <div className="flex flex-col gap-5">
+            <SocialLoginButtons enabledProviders={enabledProviders} next={params.next} />
+            <div className="flex items-center gap-3 text-sm text-[#5D6A65]">
+              <span aria-hidden="true" className="h-px flex-1 bg-[#E1E6E3]" />
+              <span>또는 아이디로 로그인</span>
+              <span aria-hidden="true" className="h-px flex-1 bg-[#E1E6E3]" />
+            </div>
+          </div>
+        )}
+
+        <UsernameLoginForm describedBy={error ? 'login-error' : undefined} hasError={Boolean(error)} next={params.next} />
+
+        <p className="text-center text-[15px] text-[#3E4B47]">
+          집신이 처음이신가요?{' '}
+          <Link className="inline-flex min-h-11 items-center font-semibold text-[#0B6655]! underline! underline-offset-[3px]" href="/signup">회원가입</Link>
+        </p>
+
+        <div className="mt-auto flex items-start gap-2.5 rounded-xl bg-[#F6F7F5] p-4 sm:mt-0 sm:rounded-none sm:border-t sm:border-[#E1E6E3] sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-5">
+          <LockKeyhole aria-hidden="true" className="mt-0.5 size-[18px] shrink-0 text-[#0B6655]" />
+          <p className="text-sm leading-relaxed text-[#5D6A65]">집신은 권한 없이 집의 기록을 공개하지 않습니다.</p>
         </div>
       </section>
+      <Link className="hidden min-h-11 items-center gap-1.5 text-sm text-[#3E4B47] sm:inline-flex" href="/">
+        <ArrowLeft aria-hidden="true" className="size-4" />
+        집신 처음 화면으로
+      </Link>
     </main>
   );
 }
