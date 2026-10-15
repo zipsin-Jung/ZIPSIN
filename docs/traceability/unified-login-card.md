@@ -1,7 +1,7 @@
 # REQ-AUTH-LOGIN-001 통합 로그인 카드 추적표
 
 기준 브랜치: `codex/zipsin-shared-auth-integration`
-기준 상태: 미커밋 변경 검수 중, 사용자 승인 대기
+기준 상태: 커밋 `8e4f7a85ab2adf1aafb7f6161b0144016b06b7e9` 원격 반영, 사용자 승인 대기
 
 | REQ/AC | FLOW/SCREEN/STATE | 소스 경로·심볼 | TEST-ID·테스트명 | 실행 결과·증거 |
 |---|---|---|---|---|
@@ -11,7 +11,7 @@
 | AC-004 로그인 유지 분기 | `/login` 체크·미체크 | `features/auth/actions/login-with-username.ts:loginWithUsernameAction`, `lib/supabase/server.ts:createServerSupabaseClient` | TEST-AUTH-LOGIN-004 `uses a session cookie when login maintenance is unchecked`, TEST-AUTH-LOGIN-001 기본 체크 확인 | 단위 통과; 실제 브라우저 종료 후 세션 소멸은 Preview 최종 검수 필요 |
 | AC-005 설정된 소셜 공급자만 원형 표시 | `/login` 공급자 있음·없음·이동 중 | `app/(auth)/login/page.tsx:LoginPage`, `features/auth/components/SocialLoginButtons.tsx:SocialLoginButtons` | `tests/unit/auth/providers.test.tsx` `설정된 제공자만 표시...` | 전체 단일 worker 통과; 실제 OAuth 왕복은 공급자 설정 후 미검증 |
 | AC-006 회원가입·체험 동선 | `/login?next=/ck` | `app/(auth)/login/page.tsx:LoginPage` | TEST-AUTH-LOGIN-001, `tests/e2e/login-responsive.spec.ts` 회원가입·체험 href | Chromium·WebKit 각 4개 뷰포트 통과 |
-| AC-007 반응형·키보드 | 320·390·768·1440px, 키보드 포커스 | `app/(auth)/login/page.tsx:LoginPage`, `features/auth/components/UsernameLoginForm.tsx`, `SocialLoginButtons.tsx` | `tests/e2e/login-responsive.spec.ts` `login card stays usable...` | Chromium·WebKit 합계 8건 통과; Preview 키보드 수동 검수는 남음 |
+| AC-007 반응형·키보드 | 320·390·768·1440px, Tab 포커스·키보드 비밀번호 표시 | `app/(auth)/login/page.tsx:LoginPage`, `features/auth/components/UsernameLoginForm.tsx`, `SocialLoginButtons.tsx` | `tests/e2e/login-responsive.spec.ts` `login card stays usable...`, `keyboard navigation reaches...` | Chromium·WebKit 반응형 8건과 키보드 2건 통과; Preview 수동 검수는 남음 |
 
 ## 실행 명령
 

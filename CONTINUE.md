@@ -11,7 +11,7 @@ Claude와 협업하거나 다른 에이전트에게 인계할 때는 `CLAUDE_HAN
 
 집신과 집신체크는 같은 Next.js 앱·Supabase·사용자 ID를 사용합니다. 별도 체크 로그인 화면을 다시 만들지 마세요. 남은 일은 Preview 관리자 설정과 실제 Google·Kakao 왕복, `zipsin.net`·`ck.zipsin.net` 공유 세션 확인입니다. 사용자 승인 전 Production·DNS는 변경하지 않습니다.
 
-인계 시점에는 `REQ-AUTH-LOGIN-001` 로그인 카드 개편이 미커밋입니다. 기능 집중 테스트 16건, 타입 검사와 Chromium 4개 반응형 시나리오는 통과했습니다. 전체 테스트는 다수 기존 파일의 5초 시간초과로 아직 최종 통과 증거가 없으므로 단일 worker 재실행이 필요합니다. SOLAPI 계정과 발신번호 등록은 완료했으나 API Key·Secret·Vercel 서버 환경변수와 실문자 왕복은 미완료입니다.
+인계 기준은 커밋 `8e4f7a85ab2adf1aafb7f6161b0144016b06b7e9`입니다. `REQ-AUTH-LOGIN-001` 로그인 카드 개편과 인수인계 문서는 원격 브랜치에 반영됐습니다. 전체 테스트는 단일 worker 기준 606건 통과·1건 건너뛰, 커버리지 네 지표 80% 이상, 타입 검사·빌드·Chromium·WebKit 반응형 8건과 키보드 2건이 통과했습니다. SOLAPI 계정과 발신번호 등록은 완료했으나 API Key·Secret·Vercel 서버 환경변수와 실문자 왕복은 미완료입니다.
 
 현재 worktree:
 
