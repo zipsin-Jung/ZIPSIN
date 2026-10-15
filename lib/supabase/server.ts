@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { getServerEnv } from '@/lib/env/server';
 import { getRuntimeAuthCookieOptions } from '@/lib/supabase/cookie-options';
 
-export async function createServerSupabaseClient() {
+export async function createServerSupabaseClient(options: { sessionOnly?: boolean } = {}) {
   const cookieStore = await cookies();
   const env = getServerEnv();
 
@@ -13,8 +13,13 @@ export async function createServerSupabaseClient() {
       getAll: () => cookieStore.getAll(),
       setAll: (cookiesToSet) => {
         try {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options);
+          cookiesToSet.forEach(({ name, value, options: cookieOptions }) => {
+            if (options.sessionOnly) {
+              const { expires: _expires, maxAge: _maxAge, ...sessionOptions } = cookieOptions;
+              cookieStore.set(name, value, sessionOptions);
+              return;
+            }
+            cookieStore.set(name, value, cookieOptions);
           });
         } catch {
           // Server Components cannot write cookies. The proxy refreshes sessions.

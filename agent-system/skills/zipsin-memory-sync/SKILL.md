@@ -18,4 +18,8 @@ description: Preserve a completed ZIPSIN work phase by updating product document
 9. Validate links or formats appropriate to the change, review Git diff, commit with a clear message, push to the intended safe branch, and verify the remote branch contains the commit.
 10. Report local, desktop, installed-skill, and GitHub locations as applicable; include checks, commit, remaining work, and whether status is `approval pending`, `approved`, or `incomplete`.
 
+## External agent handoff
+
+When work will continue in Claude or another agent, also create or update a root entry file and a copy-ready master prompt using `agent-system/templates/external-agent-handoff.md`. Record the exact worktree, branch, HEAD, dirty files, completed and unverified checks, external account boundary, next command, and approval state. Map `REQ/AC → FLOW/SCREEN/STATE → source symbol → TEST-ID/result`. Never embed OTPs, API keys, secrets, complete phone numbers, private account IDs, or original personal documents in the handoff.
+
 Successful synchronization does not override a failed quality gate. Do not merge to production, deploy, delete, or expose data merely because documentation was saved.

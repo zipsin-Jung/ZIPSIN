@@ -26,3 +26,7 @@
 ## 상태
 
 초안 작성, 독립 역할 검토와 사용자 승인을 마쳤으며 집신의 공식 작업 체계로 적용합니다.
+
+## 외부 협업 에이전트 인계
+
+Claude 등 다른 에이전트와 이어서 작업할 때는 `templates/external-agent-handoff.md`를 사용합니다. 인계물은 정확한 worktree·브랜치·HEAD·미커밋 상태와 `REQ/AC → FLOW/SCREEN/STATE → 소스 → TEST-ID → 결과` 추적을 포함해야 합니다. 인계 문서는 실제 파일과 Git 상태를 대체하지 않습니다.

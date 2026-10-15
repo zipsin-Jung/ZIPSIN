@@ -11,13 +11,13 @@ import { PasswordSignupForm } from '@/features/auth/components/PasswordSignupFor
 import { AccountRecoveryForm } from '@/features/auth/components/AccountRecoveryForm';
 
 describe('new auth forms', () => {
-  it('shows only username and password for normal login and toggles visibility', async () => {
+  it('shows one identifier field, remember option, and toggles password visibility', async () => {
     const user = userEvent.setup();
     render(<UsernameLoginForm />);
-    expect(screen.getByLabelText('아이디')).toBeRequired();
+    expect(screen.getByLabelText('아이디 · 이메일 · 전화번호')).toBeRequired();
+    expect(screen.getByLabelText('로그인 유지')).toBeChecked();
     const password = screen.getByLabelText('비밀번호');
     expect(password).toHaveAttribute('type', 'password');
-    expect(screen.queryByLabelText('이메일')).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: '비밀번호 보기' }));
     expect(password).toHaveAttribute('type', 'text');
     expect(screen.getByRole('button', { name: '비밀번호 숨기기' })).toBeInTheDocument();

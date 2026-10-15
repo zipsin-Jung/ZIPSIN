@@ -1,20 +1,25 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { loginWithUsername, rpc } = vi.hoisted(() => ({ loginWithUsername: vi.fn(), rpc: vi.fn() }));
+const { createServerSupabaseClient, loginWithUsername, rpc } = vi.hoisted(() => ({
+  createServerSupabaseClient: vi.fn(async () => ({})),
+  loginWithUsername: vi.fn(),
+  rpc: vi.fn(),
+}));
 
 vi.mock('next/navigation', () => ({
   redirect: (url: string) => { throw new Error(`REDIRECT:${url}`); },
 }));
 vi.mock('@/features/auth/services/login-with-username', () => ({ loginWithUsername }));
 vi.mock('@/lib/supabase/admin', () => ({ createAdminSupabaseClient: () => ({ rpc }) }));
-vi.mock('@/lib/supabase/server', () => ({ createServerSupabaseClient: async () => ({}) }));
+vi.mock('@/lib/supabase/server', () => ({ createServerSupabaseClient }));
 
 import { loginWithUsernameAction } from '@/features/auth/actions/login-with-username';
 
-function form(username = 'home_owner', password = 'password123') {
+function form(username = 'home_owner', password = 'password123', remember = true) {
   const data = new FormData();
   data.set('username', username);
   data.set('password', password);
+  if (remember) data.set('remember', 'on');
   return data;
 }
 
@@ -33,6 +38,19 @@ describe('loginWithUsernameAction', () => {
     });
     await expect(loginWithUsernameAction(form(), '//evil.example')).rejects.toThrow('REDIRECT:/home');
     expect(rpc).toHaveBeenCalledWith('consume_auth_rate_limit', expect.objectContaining({ p_scope: 'username_login', p_limit: 8 }));
+  });
+
+  it('accepts email and phone shaped identifiers before the service', async () => {
+    loginWithUsername.mockResolvedValue({ ok: false, error: 'invalid_credentials' });
+    await expect(loginWithUsernameAction(form('owner@example.com'))).rejects.toThrow('REDIRECT:/login?error=invalid_credentials');
+    await expect(loginWithUsernameAction(form('010-1234-5678'))).rejects.toThrow('REDIRECT:/login?error=invalid_credentials');
+    expect(loginWithUsername).toHaveBeenCalledTimes(2);
+  });
+
+  it('uses a session cookie when login maintenance is unchecked', async () => {
+    loginWithUsername.mockResolvedValue({ ok: false, error: 'invalid_credentials' });
+    await expect(loginWithUsernameAction(form('owner@example.com', 'password123', false))).rejects.toThrow('REDIRECT:/login?error=invalid_credentials');
+    expect(createServerSupabaseClient).toHaveBeenCalledWith({ sessionOnly: true });
   });
 
   it('uses one generic error for invalid credentials', async () => {

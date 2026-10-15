@@ -1,6 +1,7 @@
 'use client';
 
 import { useTransition } from 'react';
+import { MessageCircle } from 'lucide-react';
 import { startOAuth } from '@/features/auth/actions/start-oauth';
 import {
   SUPPORTED_PROVIDERS,
@@ -32,20 +33,20 @@ export function SocialLoginButtons({ enabledProviders, next, onSelect }: Props) 
 
   return (
     <div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label="간편 로그인 제공자">
+      <div className="flex items-center justify-center gap-5" aria-label="간편 로그인 제공자">
         {available.map((provider) => {
         const accessibleName = `${provider.label}로 계속하기`;
 
         return (
           <button
-            className={`min-h-13 rounded-xl border px-3 py-3 text-base font-extrabold shadow-sm transition focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-[#c58c32] disabled:cursor-not-allowed disabled:opacity-60 ${provider.id === 'kakao' ? 'border-[#f5d800] bg-[#fee500] text-[#171717]' : provider.id === 'naver' ? 'border-[#03a94d] bg-[#03c75a] text-white' : 'border-slate-300 bg-white text-slate-900'}`}
+            className={`grid size-16 shrink-0 place-items-center rounded-full border text-xl font-black shadow-sm transition hover:-translate-y-1 focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#c58c32] active:scale-95 motion-reduce:transform-none disabled:cursor-not-allowed disabled:opacity-60 ${provider.id === 'kakao' ? 'border-[#f5d800] bg-[#fee500] text-[#171717]' : provider.id === 'naver' ? 'border-[#03a94d] bg-[#03c75a] text-white' : 'border-slate-300 bg-white text-[#4285f4]'}`}
             disabled={isPending}
             key={provider.id}
             onClick={() => choose(provider.id)}
             type="button"
             aria-label={accessibleName}
           >
-            {provider.label}
+            {provider.id === 'google' ? 'G' : provider.id === 'kakao' ? <MessageCircle aria-hidden="true" className="size-7" fill="currentColor" /> : 'N'}
             <span className="sr-only">로 계속하기</span>
           </button>
         );
