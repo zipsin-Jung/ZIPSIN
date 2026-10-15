@@ -35,7 +35,8 @@
 | `SOLAPI_API_KEY` | 솔라피 API 키 |
 | `SOLAPI_API_SECRET` | 솔라피 API 시크릿 |
 | `SOLAPI_SENDER_NUMBER` | 승인된 발신번호 |
-| `PHONE_OTP_HMAC_SECRET` | 32자 이상 무작위 문자열 |
+| `PHONE_OTP_HMAC_SECRET` | 선택. 없으면 `SUPABASE_SERVICE_ROLE_KEY`에서 용도별 값 파생 |
+| `AUTH_RATE_LIMIT_HMAC_SECRET` | 선택. 없으면 같은 방식으로 파생 (기존에는 미설정 시 로그인·가입이 오류) |
 
 ## 위험과 되돌리는 조건
 

@@ -1,5 +1,5 @@
 import 'server-only';
-import { createRateLimitKey, getRateLimitSecret } from '@/features/auth/domain/rate-limit-key';
+import { createRateLimitKey, getPhoneOtpSecret, getRateLimitSecret } from '@/features/auth/domain/rate-limit-key';
 import { createAdminSupabaseClient } from '@/lib/supabase/admin';
 import { MockPhoneVerificationProvider } from './mock-provider';
 import { createPhoneVerificationProvider } from './provider';
@@ -11,8 +11,8 @@ function createSolapiFromEnv() {
   const apiKey = process.env.SOLAPI_API_KEY;
   const apiSecret = process.env.SOLAPI_API_SECRET;
   const senderNumber = process.env.SOLAPI_SENDER_NUMBER;
-  const codeSecret = process.env.PHONE_OTP_HMAC_SECRET;
-  if (!apiKey || !apiSecret || !senderNumber || !codeSecret) return null;
+  if (!apiKey || !apiSecret || !senderNumber) return null;
+  const codeSecret = getPhoneOtpSecret();
 
   return new SolapiPhoneVerificationProvider(
     { apiKey, apiSecret, senderNumber: senderNumber.replace(/\D/g, ''), codeSecret },
