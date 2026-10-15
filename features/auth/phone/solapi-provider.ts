@@ -81,7 +81,7 @@ export class SolapiPhoneVerificationProvider implements PhoneVerificationProvide
         message: {
           to,
           from: this.config.senderNumber,
-          text: `[집신] 인증번호 ${code} 입니다. 5분 안에 입력해 주세요.`,
+          text: `[집신] 인증번호 ${code} (5분간 유효). 본인이 요청하지 않았다면 무시하세요.`,
         },
       }),
     });

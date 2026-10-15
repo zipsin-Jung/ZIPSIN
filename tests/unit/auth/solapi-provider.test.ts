@@ -49,7 +49,7 @@ describe('SMS-001 솔라피 문자 인증 공급자', () => {
     expect(body.message).toEqual({
       to: '01012345678',
       from: '0212345678',
-      text: '[집신] 인증번호 048213 입니다. 5분 안에 입력해 주세요.',
+      text: '[집신] 인증번호 048213 (5분간 유효). 본인이 요청하지 않았다면 무시하세요.',
     });
     expect(challenge.expiresAt).toBe('2026-10-15T06:05:00.000Z');
     expect(challenge.developmentCode).toBeUndefined();
@@ -105,7 +105,7 @@ describe('SMS-003 기본 동작', () => {
     const provider = new SolapiPhoneVerificationProvider(config, { fetch: fetchMock as unknown as typeof fetch });
     const challenge = await provider.sendCode('+821012345678', 'user-1');
     const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
-    const code = /인증번호 (\d{6}) 입니다/.exec(JSON.parse(String(init.body)).message.text)?.[1];
+    const code = /인증번호 (\d{6}) /.exec(JSON.parse(String(init.body)).message.text)?.[1];
 
     expect(code).toMatch(/^\d{6}$/);
     await expect(provider.verifyCode(challenge.id, code!, 'user-1')).resolves.toMatchObject({ ok: true });
