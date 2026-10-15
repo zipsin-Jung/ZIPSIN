@@ -11,7 +11,7 @@ function createSolapiFromEnv() {
   const apiKey = process.env.SOLAPI_API_KEY;
   const apiSecret = process.env.SOLAPI_API_SECRET;
   const senderNumber = process.env.SOLAPI_SENDER_NUMBER;
-  const codeSecret = process.env.PHONE_CODE_HMAC_SECRET;
+  const codeSecret = process.env.PHONE_OTP_HMAC_SECRET;
   if (!apiKey || !apiSecret || !senderNumber || !codeSecret) return null;
 
   return new SolapiPhoneVerificationProvider(
