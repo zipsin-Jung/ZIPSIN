@@ -1,9 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { signInWithOAuth, createServerSupabaseClient } = vi.hoisted(() => {
+const { signInWithOAuth, createServerSupabaseClient, requestHeaders } = vi.hoisted(() => {
   const signInWithOAuth = vi.fn();
-  return { signInWithOAuth, createServerSupabaseClient: vi.fn(async () => ({ auth: { signInWithOAuth } })) };
+  return {
+    signInWithOAuth,
+    createServerSupabaseClient: vi.fn(async () => ({ auth: { signInWithOAuth } })),
+    requestHeaders: { host: 'zipsin.net' as string | null },
+  };
 });
+
+vi.mock('next/headers', () => ({
+  headers: async () => new Headers(requestHeaders.host ? { host: requestHeaders.host } : {}),
+}));
 
 vi.mock('next/navigation', () => ({
   redirect: (url: string) => {
@@ -20,6 +28,7 @@ import { startOAuth } from '@/features/auth/actions/start-oauth';
 describe('startOAuth', () => {
   beforeEach(() => {
     signInWithOAuth.mockReset();
+    requestHeaders.host = 'zipsin.net';
     vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://zipsin.net');
   });
 
@@ -84,5 +93,16 @@ describe('startOAuth', () => {
     signInWithOAuth.mockResolvedValue({ data: { url: 'https://accounts.example/auth' }, error: null });
     await expect(startOAuth('google')).rejects.toThrow('REDIRECT:https://accounts.example/auth');
     expect(createServerSupabaseClient).toHaveBeenCalledWith({ sessionOnly: false });
+  });
+
+  it('TEST-CK-HOST-003 ck.zipsin.net에서 시작한 간편 로그인은 ck.zipsin.net으로 돌아온다', async () => {
+    vi.stubEnv('NEXT_PUBLIC_AUTH_GOOGLE_ENABLED', 'true');
+    requestHeaders.host = 'ck.zipsin.net';
+    signInWithOAuth.mockResolvedValue({ data: { url: 'https://accounts.example/auth' }, error: null });
+    await expect(startOAuth('google', '/ck')).rejects.toThrow('REDIRECT:https://accounts.example/auth');
+    expect(signInWithOAuth).toHaveBeenCalledWith({
+      provider: 'google',
+      options: { redirectTo: 'https://ck.zipsin.net/auth/callback?next=%2Fck' },
+    });
   });
 });

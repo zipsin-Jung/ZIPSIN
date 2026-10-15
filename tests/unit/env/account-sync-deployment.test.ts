@@ -45,4 +45,11 @@ describe('집신·집신체크 배포 환경 검사', () => {
         'SOLAPI 설정 누락: SOLAPI_API_KEY, SOLAPI_API_SECRET, SOLAPI_SENDER_NUMBER, PHONE_OTP_HMAC_SECRET',
       ]));
   });
+
+  it('TEST-CK-HOST-004 운영 집신체크 주소는 https://ck.zipsin.net만 허용한다', () => {
+    const production = { ...base, NODE_ENV: 'production', NEXT_PUBLIC_SITE_URL: 'https://zipsin.net', NEXT_PUBLIC_AUTH_COOKIE_DOMAIN: '.zipsin.net' };
+    expect(validateAccountSyncEnv({ ...production, NEXT_PUBLIC_CHECK_SITE_URL: 'https://ck.zipsin.net' })).toEqual([]);
+    expect(validateAccountSyncEnv({ ...production, NEXT_PUBLIC_CHECK_SITE_URL: 'http://ck.zipsin.net' }))
+      .toContain('Production NEXT_PUBLIC_CHECK_SITE_URL은 https://ck.zipsin.net이어야 합니다.');
+  });
 });

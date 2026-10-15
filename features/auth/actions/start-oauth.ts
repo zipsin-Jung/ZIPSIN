@@ -1,6 +1,8 @@
 'use server';
 
+import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { resolveAuthSiteOrigin } from '@/lib/site/check-host';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { sanitizeNextPath } from '@/features/auth/domain/redirect';
 import {
@@ -13,8 +15,9 @@ function isProviderEnabled(provider: SocialProviderId): boolean {
   return process.env[`NEXT_PUBLIC_AUTH_${provider.toUpperCase()}_ENABLED`] === 'true';
 }
 
-function getAuthSiteUrl(): string {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+async function getAuthSiteUrl(): Promise<string> {
+  const mainSiteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').origin;
+  const siteUrl = resolveAuthSiteOrigin(mainSiteUrl, (await headers()).get('host'));
   const parsed = new URL(siteUrl);
   const isLoopback = parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1';
   if (process.env.NODE_ENV === 'production' && (parsed.protocol !== 'https:' || isLoopback)) {
@@ -28,7 +31,7 @@ export async function startOAuth(providerValue: string, nextValue?: string) {
     redirect('/login?error=oauth_provider_unavailable');
   }
 
-  const siteUrl = getAuthSiteUrl();
+  const siteUrl = await getAuthSiteUrl();
   const next = sanitizeNextPath(nextValue);
   // Social login has no "로그인 유지" choice, so it keeps the default
   // persistent session and clears any leftover session-only marker.

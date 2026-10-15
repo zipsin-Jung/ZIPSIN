@@ -32,6 +32,15 @@ export function validateAccountSyncEnv(env) {
         errors.push('Production NEXT_PUBLIC_SITE_URL 형식 오류');
       }
     }
+
+    const checkSiteUrl = env.NEXT_PUBLIC_CHECK_SITE_URL;
+    if (checkSiteUrl) {
+      let checkOrigin = '';
+      try { checkOrigin = new URL(checkSiteUrl).origin; } catch { checkOrigin = ''; }
+      if (checkOrigin !== 'https://ck.zipsin.net') {
+        errors.push('Production NEXT_PUBLIC_CHECK_SITE_URL은 https://ck.zipsin.net이어야 합니다.');
+      }
+    }
   }
 
   return errors;

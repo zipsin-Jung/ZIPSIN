@@ -3,11 +3,21 @@
 ## 확정 구조
 
 - `zipsin.net`과 `ck.zipsin.net`은 같은 Next.js 앱, 같은 Supabase 프로젝트, 같은 사용자 ID를 사용한다.
-- 로그인·회원가입·OAuth callback은 `https://zipsin.net`에서 한 번만 운영한다.
+- 로그인·회원가입·OAuth callback은 같은 앱이 처리하되, 집신체크 사용자는 `ck.zipsin.net` 안에서 끝낸다(DEC-026).
 - 집신체크에서 시작한 사용자는 `/login?next=/ck`로 이동하고 인증·역할 선택 뒤 `/ck`로 돌아온다.
 - 운영 세션 쿠키는 `Domain=.zipsin.net`, `Secure`, `SameSite=Lax`, `Path=/` 기준으로 두 호스트가 함께 사용한다.
 - Preview·localhost에는 운영 도메인 쿠키를 강제하지 않는다.
 - 별도 집신체크 회원 DB나 중복 로그인 화면은 만들지 않는다.
+
+## ck.zipsin.net 연결 (DEC-026, 사용자 승인 후 순서대로)
+
+코드는 준비됐다. 아래 외부 설정은 사용자 승인 없이 바꾸지 않는다.
+
+1. Vercel 프로젝트 → Settings → Domains에 `ck.zipsin.net` 추가(Production에 연결).
+2. 가비아 DNS에 `ck` CNAME을 Vercel이 안내한 값으로 추가(`start` 연결과 같은 방식).
+3. Vercel Production 환경값 `NEXT_PUBLIC_CHECK_SITE_URL=https://ck.zipsin.net` 추가.
+4. Supabase Authentication → URL Configuration의 Redirect URL에 `https://ck.zipsin.net/auth/callback` 추가.
+5. 연결 확인: `ck.zipsin.net` → `ck.zipsin.net/ck` 이동, 기록 생성 → 로그인 → 기록 유지, `zipsin.net` 로그인 후 `ck.zipsin.net` 재로그인 없음.
 
 ## Vercel 환경값
 
@@ -17,6 +27,7 @@
 |---|---|---|
 | `NEXT_PUBLIC_SITE_URL` | `https://zipsin.net` | 해당 Preview 공개 HTTPS 주소 |
 | `NEXT_PUBLIC_AUTH_COOKIE_DOMAIN` | `.zipsin.net` | 비움 |
+| `NEXT_PUBLIC_CHECK_SITE_URL` | `https://ck.zipsin.net` | 비움(기본값 사용) |
 | `NEXT_PUBLIC_SUPABASE_URL` | 기존 집신 Supabase URL | 같은 검수용 Supabase URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | 기존 공개 anon key | 같은 검수용 anon key |
 | `SUPABASE_SERVICE_ROLE_KEY` | 서버 비밀 저장소 전용 | 서버 비밀 저장소 전용 |
