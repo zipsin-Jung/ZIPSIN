@@ -67,6 +67,7 @@ export default defineConfig({
         'features/workspace/domain/**/*.{ts,tsx}',
         'lib/env/**/*.{ts,tsx}',
         'lib/supabase/cookie-options.ts',
+      'lib/supabase/{client,proxy,server}.ts',
         'lib/zipsin-check/{catalog,state,storage,photo-store,contact,format}.ts',
         'features/account/domain/profile.ts',
         'features/check-transfer/client/{run-transfer,uploader}.ts',

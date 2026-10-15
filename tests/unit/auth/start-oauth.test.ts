@@ -1,8 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { signInWithOAuth } = vi.hoisted(() => ({
-  signInWithOAuth: vi.fn(),
-}));
+const { signInWithOAuth, createServerSupabaseClient } = vi.hoisted(() => {
+  const signInWithOAuth = vi.fn();
+  return { signInWithOAuth, createServerSupabaseClient: vi.fn(async () => ({ auth: { signInWithOAuth } })) };
+});
 
 vi.mock('next/navigation', () => ({
   redirect: (url: string) => {
@@ -11,7 +12,7 @@ vi.mock('next/navigation', () => ({
 }));
 
 vi.mock('@/lib/supabase/server', () => ({
-  createServerSupabaseClient: async () => ({ auth: { signInWithOAuth } }),
+  createServerSupabaseClient,
 }));
 
 import { startOAuth } from '@/features/auth/actions/start-oauth';
@@ -76,5 +77,12 @@ describe('startOAuth', () => {
       'AUTH_SITE_URL_INVALID',
     );
     expect(signInWithOAuth).not.toHaveBeenCalled();
+  });
+
+  it('TEST-AUTH-LOGIN-005 간편 로그인은 이전 로그인 유지 해제 표시를 남기지 않는다', async () => {
+    vi.stubEnv('NEXT_PUBLIC_AUTH_GOOGLE_ENABLED', 'true');
+    signInWithOAuth.mockResolvedValue({ data: { url: 'https://accounts.example/auth' }, error: null });
+    await expect(startOAuth('google')).rejects.toThrow('REDIRECT:https://accounts.example/auth');
+    expect(createServerSupabaseClient).toHaveBeenCalledWith({ sessionOnly: false });
   });
 });

@@ -30,7 +30,9 @@ export async function startOAuth(providerValue: string, nextValue?: string) {
 
   const siteUrl = getAuthSiteUrl();
   const next = sanitizeNextPath(nextValue);
-  const supabase = await createServerSupabaseClient();
+  // Social login has no "로그인 유지" choice, so it keeps the default
+  // persistent session and clears any leftover session-only marker.
+  const supabase = await createServerSupabaseClient({ sessionOnly: false });
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: toSupabaseProvider(providerValue),
     options: {
