@@ -1,5 +1,6 @@
 # 대화 기록
 
+- [2026-10-15 Claude 협업 인수인계](2026-10-15-claude-collaboration-handoff.md)
 - [2026-10-14 공개 메인 4장 이야기](2026-10-14-public-home-story-carousel.md)
 
 - [2026-10-13 유료 출시 완성 프롬프트](2026-10-13-paid-launch-completion-master-prompt.md)

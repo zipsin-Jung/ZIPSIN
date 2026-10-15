@@ -1,5 +1,6 @@
 # 작업 보고서
 
+- [2026-10-15 Claude 협업 인수인계](2026-10-15-claude-collaboration-handoff.md)
 - [2026-10-14 공개 메인 4장 스토리 캐러셀 기획](2026-10-14-public-home-story-carousel-planning.md)
 
 - [2026-10-13 유료 출시 완성 프롬프트](2026-10-13-paid-launch-completion-master-prompt.md)

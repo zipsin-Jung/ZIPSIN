@@ -4,6 +4,7 @@
 
 ## 주요 문서
 
+- [Claude·Codex 협업 인수인계 마스터 프롬프트](24-claude-collaboration-handoff-2026-10-15.md)
 - [유료 출시 완성 통합 프롬프트](21-zipsin-paid-launch-completion-master-prompt.md)
 - [다른 Codex용 종합 인수인계 프롬프트](13-codex-handoff-master-prompt.md)
 - [작업 운영 규칙](00-working-rules.md)
