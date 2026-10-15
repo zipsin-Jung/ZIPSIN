@@ -1,5 +1,13 @@
 # 집신 작업 현황
 
+## 2026-10-15 저녁 두 개발 브랜치 통합·배포 직전 준비
+
+- 다른 Claude 대화가 `codex/zipsin-shared-auth-integration`에서 같은 날 가입·문자 인증을 별도로 개발하던 것을 발견했고, 사용자 결정으로 `claude/integration-2026-10-15`에 하나로 합쳤습니다. 앞으로는 한 대화에서만 개발합니다.
+- 로그인은 승인 시안, 가입·문자 인증은 shared-auth 구현, 계약 만기 집 홈은 contract-to-expiry 구현을 사용합니다.
+- 통합 결함(만 14세 동의 불일치, migration 번호 중복 2건)을 정방향 migration과 재번호로 해결했습니다.
+- 테스트 741 통과·2 skip, 커버리지 4지표 80% 이상, build 성공. Production은 변경하지 않았습니다.
+- 전환 전 남은 일: `docs/deployment/2026-10-15-zipsin-net-release-checklist.md`
+
 ## 2026-10-15 Claude 협업 전체 인수인계
 
 - 제품기획·UX·UI·설계·개발·검수·비판·시간선·총괄 관점의 최초 회의를 진행했습니다.
