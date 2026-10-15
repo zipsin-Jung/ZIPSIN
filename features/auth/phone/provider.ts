@@ -27,7 +27,13 @@ type ProviderConfig = {
 export function createPhoneVerificationProvider(
   config: ProviderConfig,
   mockProvider?: MockPhoneVerificationProvider,
+  solapiFactory?: () => PhoneVerificationProvider | null,
 ): PhoneVerificationProvider {
+  if (config.provider === 'solapi') {
+    const solapi = solapiFactory?.();
+    if (solapi) return solapi;
+    throw new Error('전화 인증 공급자 설정값이 비어 있습니다.');
+  }
   if (config.provider === 'mock' && config.nodeEnv !== 'production' && mockProvider) {
     return mockProvider;
   }

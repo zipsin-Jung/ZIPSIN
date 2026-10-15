@@ -25,6 +25,7 @@ export default defineConfig({
         'features/auth/services/**/*.{ts,tsx}',
         'features/auth/phone/provider.ts',
         'features/auth/phone/mock-provider.ts',
+        'features/auth/phone/solapi-provider.ts',
         'features/auth/actions/start-oauth.ts',
         'features/auth/actions/login-with-username.ts',
         'features/auth/actions/register-password-account.ts',
