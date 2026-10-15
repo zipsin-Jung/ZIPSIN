@@ -23,10 +23,10 @@ describe('VerificationForm', () => {
       .mockResolvedValueOnce({ ok: true, json: async () => ({ ok: true }) }));
   });
 
-  it('전화 인증과 필수 동의 저장 후 역할 선택으로 이동한다', async () => {
+  it('집신체크 유입은 전화 인증 완료 후 원래 화면으로 돌아간다', async () => {
     completeSignup.mockResolvedValue({ ok: true });
     const user = userEvent.setup();
-    render(<VerificationForm displayName="홍길동" email="test@example.com" />);
+    render(<VerificationForm displayName="홍길동" email="test@example.com" next="/ck" />);
 
     await user.type(screen.getByRole('textbox', { name: '전화번호' }), '01012345678');
     await user.click(screen.getByRole('button', { name: '인증번호 받기' }));
@@ -34,11 +34,11 @@ describe('VerificationForm', () => {
     await user.click(screen.getByRole('button', { name: '인증하기' }));
     await user.click(screen.getByRole('checkbox', { name: /서비스 이용약관/ }));
     await user.click(screen.getByRole('checkbox', { name: /개인정보 수집/ }));
-    await user.click(screen.getByRole('checkbox', { name: /만 14세/ }));
     await user.click(screen.getByRole('button', { name: '가입 완료' }));
 
     expect(completeSignup).toHaveBeenCalled();
-    expect(replace).toHaveBeenCalledWith('/onboarding/role');
+    expect(screen.queryByRole('checkbox', { name: /만 14세/ })).not.toBeInTheDocument();
+    expect(replace).toHaveBeenCalledWith('/ck');
     expect(refresh).toHaveBeenCalled();
   });
 

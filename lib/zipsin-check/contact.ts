@@ -1,0 +1,2 @@
+export function normalizePhone(value?:string){if(!value)return undefined;const trimmed=value.trim();if(!/^[0-9 ()-]+$/.test(trimmed))return undefined;const digits=trimmed.replace(/[ ()-]/g,'');return /^(01[016789]\d{7,8}|0[2-6]\d{7,9})$/.test(digits)?digits:undefined}
+export function safeListingUrl(value?:string){if(!value)return undefined;try{const url=new URL(value);return url.protocol==='http:'||url.protocol==='https:'?url:undefined}catch{return undefined}}

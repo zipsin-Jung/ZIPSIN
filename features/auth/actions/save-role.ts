@@ -3,8 +3,9 @@
 import { redirect } from 'next/navigation';
 import { parsePrimaryRole } from '@/features/auth/domain/roles';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { sanitizeNextPath } from '@/features/auth/domain/redirect';
 
-export async function savePrimaryRole(value: string) {
+export async function savePrimaryRole(value: string, nextValue?: string) {
   const primaryRole = parsePrimaryRole(value);
   const supabase = await createServerSupabaseClient();
   const { data } = await supabase.auth.getUser();
@@ -14,5 +15,5 @@ export async function savePrimaryRole(value: string) {
     p_primary_role: primaryRole,
   });
   if (error) return { ok: false as const, error: 'save_failed' as const };
-  redirect('/home');
+  redirect(sanitizeNextPath(nextValue));
 }

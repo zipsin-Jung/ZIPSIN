@@ -9,10 +9,11 @@ const { resetPasswordForEmail, getUser, updateUser, signOut, rpc } = vi.hoisted(
 }));
 
 vi.mock('next/navigation', () => ({ redirect: (url: string) => { throw new Error(`REDIRECT:${url}`); } }));
+vi.mock('next/headers', () => ({ cookies: async () => ({ get: vi.fn(() => undefined), delete: vi.fn() }), headers: async () => new Headers() }));
 vi.mock('@/lib/supabase/server', () => ({
   createServerSupabaseClient: async () => ({ auth: { resetPasswordForEmail, getUser, updateUser, signOut } }),
 }));
-vi.mock('@/lib/supabase/admin', () => ({ createAdminSupabaseClient: () => ({ rpc }) }));
+vi.mock('@/lib/supabase/admin', () => ({ createAdminSupabaseClient: () => ({ rpc, auth: { admin: { updateUserById: vi.fn() } } }) }));
 
 import { requestAccountRecoveryAction } from '@/features/auth/actions/request-account-recovery';
 import { updatePasswordAction } from '@/features/auth/actions/update-password';
@@ -47,6 +48,11 @@ describe('account recovery actions', () => {
     await expect(updatePasswordAction(passwordForm())).rejects.toThrow('REDIRECT:/login?notice=password_updated');
     expect(updateUser).toHaveBeenCalledWith({ password: 'new-password-2026' });
     expect(signOut).toHaveBeenCalled();
+  });
+
+  it('회원가입과 같은 소문자·숫자·특수문자 규칙을 적용한다', async () => {
+    await expect(updatePasswordAction(passwordForm('onlyletters', 'onlyletters'))).rejects.toThrow('REDIRECT:/reset-password?error=invalid_password');
+    expect(updateUser).not.toHaveBeenCalled();
   });
 
   it('rejects mismatch and expired sessions', async () => {

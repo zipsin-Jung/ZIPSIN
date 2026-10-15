@@ -4,6 +4,7 @@ import { UsernameLoginForm } from '@/features/auth/components/UsernameLoginForm'
 import { SocialLoginButtons } from '@/features/auth/components/SocialLoginButtons';
 import { SUPPORTED_PROVIDERS } from '@/features/auth/domain/providers';
 import { getLoginError, type LoginErrorTone } from '@/features/auth/domain/login-error';
+import { sanitizeNextPath } from '@/features/auth/domain/redirect';
 
 type Props = {
   searchParams: Promise<{ error?: string; next?: string }>;
@@ -18,6 +19,8 @@ const ALERT_STYLE: Record<LoginErrorTone, { box: string; ink: string }> = {
 export default async function LoginPage({ searchParams }: Props) {
   const params = await searchParams;
   const error = getLoginError(params.error);
+  const next = sanitizeNextPath(params.next);
+  const signupHref = params.next ? `/signup?next=${encodeURIComponent(next)}` : '/signup';
   const enabledProviders = SUPPORTED_PROVIDERS
     .filter((provider) => process.env[`NEXT_PUBLIC_AUTH_${provider.id.toUpperCase()}_ENABLED`] === 'true')
     .map((provider) => provider.id);
@@ -54,7 +57,7 @@ export default async function LoginPage({ searchParams }: Props) {
 
         {enabledProviders.length > 0 && (
           <div className="flex flex-col gap-5">
-            <SocialLoginButtons enabledProviders={enabledProviders} next={params.next} />
+            <SocialLoginButtons enabledProviders={enabledProviders} next={next} />
             <div className="flex items-center gap-3 text-sm text-[#5D6A65]">
               <span aria-hidden="true" className="h-px flex-1 bg-[#E1E6E3]" />
               <span>또는 아이디로 로그인</span>
@@ -63,11 +66,11 @@ export default async function LoginPage({ searchParams }: Props) {
           </div>
         )}
 
-        <UsernameLoginForm describedBy={error ? 'login-error' : undefined} hasError={Boolean(error)} next={params.next} />
+        <UsernameLoginForm describedBy={error ? 'login-error' : undefined} hasError={Boolean(error)} next={next} />
 
         <p className="text-center text-[15px] text-[#3E4B47]">
           집신이 처음이신가요?{' '}
-          <Link className="inline-flex min-h-11 items-center font-semibold text-[#0B6655]! underline! underline-offset-[3px]" href="/signup">회원가입</Link>
+          <Link className="inline-flex min-h-11 items-center font-semibold text-[#0B6655]! underline! underline-offset-[3px]" href={signupHref}>회원가입</Link>
         </p>
 
         <div className="mt-auto flex items-start gap-2.5 rounded-xl bg-[#F6F7F5] p-4 sm:mt-0 sm:rounded-none sm:border-t sm:border-[#E1E6E3] sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-5">

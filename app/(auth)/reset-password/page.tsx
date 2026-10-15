@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation';
 import { updatePasswordAction } from '@/features/auth/actions/update-password';
 import { createAdminSupabaseClient } from '@/lib/supabase/admin';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { cookies } from 'next/headers';
+import { RECOVERY_COOKIE } from '@/features/auth/server/recovery-session';
 
 type Props = { searchParams: Promise<{ error?: string }> };
 
@@ -9,13 +11,12 @@ export default async function ResetPasswordPage({ searchParams }: Props) {
   const params = await searchParams;
   const supabase = await createServerSupabaseClient();
   const { data } = await supabase.auth.getUser();
-  if (!data.user) redirect('/login?error=recovery_expired');
+  const hasPhoneRecovery = Boolean((await cookies()).get(RECOVERY_COOKIE)?.value);
+  if (!data.user && !hasPhoneRecovery) redirect('/login?error=recovery_expired');
 
   const admin = createAdminSupabaseClient();
-  const { data: mapping } = await admin.from('account_usernames')
-    .select('username_normalized')
-    .eq('user_id', data.user.id)
-    .maybeSingle();
+  const mapping = data.user ? (await admin.from('account_usernames')
+    .select('username_normalized').eq('user_id', data.user.id).maybeSingle()).data : null;
 
   return (
     <main className="min-h-screen bg-[#f7f8f5] px-5 py-10 text-[#12362c]">

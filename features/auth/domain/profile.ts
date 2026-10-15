@@ -11,7 +11,6 @@ export type OnboardingProfile = {
   phoneVerifiedAt: string | null;
   acceptedTermsVersion: string | null;
   acceptedPrivacyVersion: string | null;
-  confirmedAgeOver14: boolean;
   usagePurpose: UsagePurpose | null;
   primaryRole: PrimaryRole | null;
 };
@@ -21,7 +20,6 @@ export function isOnboardingComplete(profile: OnboardingProfile): boolean {
     profile.phoneVerifiedAt &&
       profile.acceptedTermsVersion &&
       profile.acceptedPrivacyVersion &&
-      profile.confirmedAgeOver14 &&
       profile.usagePurpose &&
       (profile.usagePurpose === 'management_other'
         ? profile.primaryRole === null

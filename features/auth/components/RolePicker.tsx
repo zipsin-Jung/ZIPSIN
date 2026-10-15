@@ -5,9 +5,9 @@ import { savePrimaryRole } from '@/features/auth/actions/save-role';
 import { ROLE_OPTIONS } from '@/features/auth/domain/roles';
 import type { PrimaryRole } from '@/features/auth/domain/profile';
 
-type Props = { onSave?: (role: PrimaryRole) => Promise<unknown> };
+type Props = { onSave?: (role: PrimaryRole, next?: string) => Promise<unknown>; next?: string };
 
-export function RolePicker({ onSave = savePrimaryRole }: Props) {
+export function RolePicker({ onSave = savePrimaryRole, next }: Props) {
   const [selected, setSelected] = useState<PrimaryRole | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -25,7 +25,7 @@ export function RolePicker({ onSave = savePrimaryRole }: Props) {
       <button
         className="mt-6 min-h-12 w-full rounded-xl bg-emerald-900 px-5 py-3 font-semibold text-white disabled:bg-slate-300"
         disabled={!selected || isPending}
-        onClick={() => selected && startTransition(async () => { await onSave(selected); })}
+        onClick={() => selected && startTransition(async () => { await (next ? onSave(selected, next) : onSave(selected)); })}
         type="button"
       >
         이 역할로 시작하기

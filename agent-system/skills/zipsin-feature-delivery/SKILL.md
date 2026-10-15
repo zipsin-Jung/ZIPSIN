@@ -7,7 +7,7 @@ description: Design and implement an approved ZIPSIN requirement with traceable 
 
 ## Entry Gate
 
-Require approved requirement IDs, user flows, screen states, and normal/failure/permission acceptance criteria. If these are missing or contradictory, return to product-spec instead of inventing them.
+Require approved requirement IDs, user flows, screen states, normal/failure/permission acceptance criteria, technical spec, and pre-implementation TEST-IDs. If these are missing or contradictory, return to the owning stage instead of inventing them.
 
 ## Workflow
 
@@ -16,10 +16,12 @@ Require approved requirement IDs, user flows, screen states, and normal/failure/
 3. Design data, API, server-side authorization, failure, retry, deduplication, audit, and recovery behavior.
 4. For schema or retained-data changes, document backup, compatibility, staged migration, validation, and rollback before mutation. Obtain required approval.
 5. Implement only approved scope. Keep contract records, long-term property history, office-internal notes, and personal data separated.
-6. Add tests for normal, denied, ended relationship, staff departure, duplicate request, retry, and partial failure cases relevant to the feature.
-7. Run and report static checks, types, unit/integration tests, build, and browser validation separately. A successful build is not browser validation.
-8. Update requirement-to-code-to-test mapping and affected product, technical, decision, and worklog documents.
-9. Hand off changed files, commands, evidence, unverified items, and residual risks to the quality-critic. Do not self-approve.
+6. Use test-first development: run each new test and confirm the expected failure before implementation, add the smallest implementation, confirm the focused and full suites pass, then refactor while green.
+7. Cover normal, denied, ended relationship, staff departure, duplicate request, retry, and partial failure cases relevant to the feature.
+8. Run and report static checks, types, unit/integration tests, build, and browser validation separately. A successful build is not browser validation.
+9. Update a bidirectional mapping with `REQ-ID | AC-ID | FLOW/SCREEN/STATE | source path:symbol | TEST-ID | test path:name | level | normal/failure/permission | command | result/evidence | coverage | unverified`.
+10. Report lines, statements, functions, and branches separately for the declared measured product-code scope. Do not call a partial include list repository-wide coverage.
+11. Hand off changed files, commands, evidence, unverified items, and residual risks to the quality-critic. Do not self-approve.
 
 ## Security Invariants
 

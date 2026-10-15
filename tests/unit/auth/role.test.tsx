@@ -26,4 +26,15 @@ describe('roles', () => {
     expect(onSave).toHaveBeenCalledWith('landlord');
     expect(onSave).toHaveBeenCalledTimes(1);
   });
+
+  it('집신체크 가입자는 역할 저장 뒤 복귀 경로도 함께 전달한다', async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    const user = userEvent.setup();
+    render(<RolePicker onSave={onSave} next="/ck" />);
+
+    await user.click(screen.getByRole('radio', { name: '임차인' }));
+    await user.click(screen.getByRole('button', { name: '이 역할로 시작하기' }));
+
+    expect(onSave).toHaveBeenCalledWith('tenant', '/ck');
+  });
 });

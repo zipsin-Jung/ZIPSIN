@@ -9,6 +9,24 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      account_recovery_challenges: {
+        Row: { id: string; phone_e164: string; user_id: string | null; code_digest: string; attempts: number; expires_at: string; consumed_at: string | null; provider_message_id: string | null; created_at: string };
+        Insert: { id: string; phone_e164: string; user_id?: string | null; code_digest: string; attempts?: number; expires_at: string; consumed_at?: string | null; provider_message_id?: string | null; created_at?: string };
+        Update: { attempts?: number; consumed_at?: string | null };
+        Relationships: [];
+      };
+      account_recovery_sessions: {
+        Row: { token_digest: string; user_id: string; expires_at: string; consumed_at: string | null; created_at: string };
+        Insert: { token_digest: string; user_id: string; expires_at: string; consumed_at?: string | null; created_at?: string };
+        Update: { consumed_at?: string | null };
+        Relationships: [];
+      };
+      auth_sms_send_events: {
+        Row: { id: number; scope: string; key_digest: string; created_at: string };
+        Insert: { id?: number; scope: string; key_digest: string; created_at?: string };
+        Update: never;
+        Relationships: [];
+      };
       offices: {
         Row: { id: string; name: string; created_by: string; verification_status: 'pending' | 'verified' | 'rejected' | 'suspended'; created_at: string; updated_at: string };
         Insert: { id?: string; name: string; created_by: string; verification_status?: 'pending' | 'verified' | 'rejected' | 'suspended'; created_at?: string; updated_at?: string };
@@ -162,6 +180,12 @@ export type Database = {
         Update: { reason?: string; resolved_at?: string | null };
         Relationships: [];
       };
+      signup_attributions: {
+        Row: { id: string; user_id: string; source: 'zipsin_check'; created_at: string };
+        Insert: { id?: string; user_id: string; source: 'zipsin_check'; created_at?: string };
+        Update: never;
+        Relationships: [];
+      };
       profiles: {
         Row: {
           user_id: string;
@@ -287,6 +311,44 @@ export type Database = {
         Args: { p_scope: string; p_key: string; p_limit: number; p_window_seconds: number };
         Returns: boolean;
       };
+      issue_phone_challenge: {
+        Args: {
+          p_user_id: string;
+          p_challenge_id: string;
+          p_phone_e164: string;
+          p_code_digest: string;
+          p_expires_at: string;
+          p_provider_message_id: string | null;
+          p_purpose: string;
+        };
+        Returns: undefined;
+      };
+      verify_phone_challenge: {
+        Args: {
+          p_user_id: string;
+          p_challenge_id: string;
+          p_code_digest: string;
+          p_purpose: string;
+        };
+        Returns: string;
+      };
+      reserve_auth_sms_send: {
+        Args: { p_scope: string; p_key_digest: string; p_min_interval_seconds: number; p_hour_limit: number; p_day_limit: number };
+        Returns: boolean;
+      };
+      issue_account_recovery_challenge: {
+        Args: { p_id: string; p_phone_e164: string; p_user_id: string | null; p_code_digest: string; p_expires_at: string };
+        Returns: undefined;
+      };
+      verify_account_recovery_challenge: {
+        Args: { p_id: string; p_code_digest: string };
+        Returns: { status: string; user_id: string | null }[];
+      };
+      consume_account_recovery_session: {
+        Args: { p_token_digest: string };
+        Returns: string | null;
+      };
+      account_has_verified_phone: { Args: { p_user_id: string }; Returns: boolean };
       complete_signup: {
         Args: {
           p_display_name: string;

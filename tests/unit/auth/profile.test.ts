@@ -8,7 +8,6 @@ const completeProfile: OnboardingProfile = {
   phoneVerifiedAt: '2026-10-02T09:00:00.000Z',
   acceptedTermsVersion: '2026-10-02',
   acceptedPrivacyVersion: '2026-10-02',
-  confirmedAgeOver14: true,
   usagePurpose: 'landlord',
   primaryRole: 'landlord',
 };
@@ -18,7 +17,6 @@ describe('isOnboardingComplete', () => {
     ['전화 인증', { phoneVerifiedAt: null }],
     ['이용약관', { acceptedTermsVersion: null }],
     ['개인정보 동의', { acceptedPrivacyVersion: null }],
-    ['만 14세 확인', { confirmedAgeOver14: false }],
     ['사용 목적', { usagePurpose: null }],
   ] as const)('%s가 없으면 완료가 아니다', (_label, missing) => {
     expect(isOnboardingComplete({ ...completeProfile, ...missing })).toBe(false);

@@ -6,7 +6,6 @@ const complete = {
   phoneVerifiedAt: '2026-10-02T09:00:00.000Z',
   acceptedTermsVersion: '2026-10-02',
   acceptedPrivacyVersion: '2026-10-02',
-  confirmedAgeOver14: true,
   usagePurpose: 'landlord' as const,
   primaryRole: 'landlord' as const,
 };

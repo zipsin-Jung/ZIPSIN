@@ -2,8 +2,11 @@ import { redirect } from 'next/navigation';
 import { PurposePicker } from '@/features/auth/components/PurposePicker';
 import { isOnboardingComplete } from '@/features/auth/domain/profile';
 import { requireUser } from '@/features/auth/guards/require-onboarding';
+import { sanitizeNextPath } from '@/features/auth/domain/redirect';
 
-export default async function RoleOnboardingPage() {
+export default async function RoleOnboardingPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
+  const params = await searchParams;
+  const next = params.next ? sanitizeNextPath(params.next) : '/home';
   const { supabase, user } = await requireUser();
   const [{ data: profile }, { data: role }] = await Promise.all([
     supabase.from('profiles').select('phone_verified_at, usage_purpose').eq('user_id', user.id).maybeSingle(),
@@ -14,10 +17,9 @@ export default async function RoleOnboardingPage() {
     phoneVerifiedAt: profile?.phone_verified_at ?? null,
     acceptedTermsVersion: 'verified-upstream',
     acceptedPrivacyVersion: 'verified-upstream',
-    confirmedAgeOver14: true,
     usagePurpose: profile?.usage_purpose ?? null,
     primaryRole: role?.primary_role ?? null,
-  })) redirect('/home');
+  })) redirect(next);
 
   return (
     <main className="mx-auto max-w-2xl px-5 py-12">
