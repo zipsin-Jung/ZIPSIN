@@ -1,5 +1,6 @@
 'use client';
 import {useRef, useState} from 'react';
+import {Home, MessageCircleQuestion} from 'lucide-react';
 import {ASK_ITEMS, CHECK_ITEMS, FIELD_ITEM_IDS} from '@/lib/zipsin-check/catalog';
 import {createBrowserPhotoStore, type PhotoStore} from '@/lib/zipsin-check/photo-store';
 import {answerItem, containsSensitiveMemo} from '@/lib/zipsin-check/state';
@@ -91,6 +92,7 @@ type CheckFlowProps = {
   onChange: (candidate: Candidate) => void;
   onFinish: () => void;
   onBack: () => void;
+  onEdit?: () => void;
   photoStore?: PhotoStore;
   canSaveToAccount?: boolean;
   onSaveToAccount?: () => boolean;
@@ -98,8 +100,10 @@ type CheckFlowProps = {
   onDetailSeen?: (itemId: string) => void;
 };
 
-export default function CheckFlow({candidate, onChange, onFinish, onBack, photoStore = DEFAULT_STORE, canSaveToAccount = true, onSaveToAccount = () => true, seenDetailIds, onDetailSeen}: CheckFlowProps) {
+export default function CheckFlow({candidate, onChange, onFinish, onBack, onEdit, photoStore = DEFAULT_STORE, canSaveToAccount = true, onSaveToAccount = () => true, seenDetailIds, onDetailSeen}: CheckFlowProps) {
   const [view, setView] = useState<'checks' | 'questions'>('checks');
+  // 질문 체크는 지나치기 쉬워 한 번 열어볼 때까지 '중개사에게 꼭' 표시를 붙인다.
+  const [questionsVisited, setQuestionsVisited] = useState(false);
   const [localSeenDetailIds, setLocalSeenDetailIds] = useState<ReadonlySet<string>>(new Set());
   const effectiveSeenDetailIds = seenDetailIds ?? localSeenDetailIds;
   const hasSeenDetail = (itemId: string) => effectiveSeenDetailIds.has(itemId) || effectiveSeenDetailIds.has(`${candidate.id}:${itemId}`);
@@ -116,11 +120,11 @@ export default function CheckFlow({candidate, onChange, onFinish, onBack, photoS
   const returnTo = `/ck/transfer?candidate=${candidate.id}`;
 
   return <main className={styles.flow}>
-    <header className={styles.fieldHeader}><button type="button" onClick={onBack}>내가 본 집</button><div><h1>{candidate.alias} 체크</h1><span aria-live="polite">✓ {completed}/{CHECK_ITEMS.length} 확인 · 자동 저장됨</span></div><span /></header>
+    <header className={styles.fieldHeader}><button type="button" onClick={onBack}>내가 본 집</button><div><h1>{candidate.alias} 체크</h1><span aria-live="polite">✓ {completed}/{CHECK_ITEMS.length} 확인 · 자동 저장됨</span></div>{onEdit ? <button type="button" className={styles.editInfo} onClick={onEdit}>이름·위치 수정</button> : <span />}</header>
     <aside className={styles.fieldGuide}><b>★ 먼저 볼 3개부터 확인하세요</b><span>모든 항목을 다 확인하지 못해도 괜찮아요. 상세 체크와 메모·사진도 눌러보세요.</span></aside>
     <nav className={styles.flowTabs} aria-label="체크 종류">
-      <button type="button" aria-pressed={view === 'checks'} onClick={() => setView('checks')}>집 안에서 확인 {CHECK_ITEMS.length}개</button>
-      <button type="button" aria-pressed={view === 'questions'} onClick={() => setView('questions')}>물어볼 것 {ASK_ITEMS.length}개</button>
+      <button type="button" aria-label={`집 체크 ${CHECK_ITEMS.length}개`} aria-pressed={view === 'checks'} onClick={() => setView('checks')}><Home aria-hidden="true" size={17} />집 체크<span className={styles.tabCount}>{CHECK_ITEMS.length}</span></button>
+      <button type="button" className={styles.questionTab} data-visited={questionsVisited ? 'true' : 'false'} aria-label={`질문 체크 ${ASK_ITEMS.length}개`} aria-pressed={view === 'questions'} onClick={() => { setView('questions'); setQuestionsVisited(true); }}><MessageCircleQuestion aria-hidden="true" size={17} />질문 체크<span className={styles.tabCount}>{ASK_ITEMS.length}</span>{questionsVisited ? null : <em className={styles.tabHint} aria-hidden="true">중개사에게 꼭</em>}</button>
     </nav>
     {view === 'checks' ? <>
       <section className={styles.prioritySection} aria-label="먼저 볼 3개"><div className={styles.sectionHeading}><span>PRIORITY</span><h2>먼저 볼 3개</h2><p>시간이 없으면 이 세 가지만 먼저 확인하세요.</p></div><div className={styles.fieldList}>{priorityItems.map(item => <Row key={item.id} item={item} candidate={candidate} onChange={onChange} store={photoStore} detailSeen={hasSeenDetail(item.id)} onDetailSeen={markDetailSeen} />)}</div></section>

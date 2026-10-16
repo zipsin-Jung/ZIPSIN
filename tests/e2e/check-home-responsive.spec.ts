@@ -79,7 +79,7 @@ for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}]) {
   test(`현장 상세 체크 강조와 완료 버튼이 ${viewport.width}px에서 겹치지 않는다`, async ({page}) => {
     await page.setViewportSize(viewport);
     await page.goto('/ck');
-    await page.getByRole('button',{name:'바로 체크'}).click();
+    await page.getByRole('button',{name:'상세 체크 먼저 보기'}).click();
     await page.getByRole('textbox',{name:'집 별명',exact:true}).fill('검수 집');
     await page.getByRole('button',{name:'별명 저장하고 체크 시작'}).click();
 
@@ -99,8 +99,8 @@ for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}]) {
 
     await detail.click();
     await page.getByRole('button',{name:'물·배수 상세 체크 접기'}).click();
-    await page.getByRole('button',{name:'물어볼 것 8개'}).click();
-    await page.getByRole('button',{name:'집 안에서 확인 9개'}).click();
+    await page.getByRole('button',{name:'질문 체크 8개'}).click();
+    await page.getByRole('button',{name:'집 체크 9개'}).click();
     await expect(page.getByRole('button',{name:'물·배수 상세 체크 펼치기'})).toHaveAttribute('data-attention','seen');
   });
 }
@@ -119,7 +119,7 @@ test('전체 목록의 빈 상태와 모션 감소 설정을 지원한다', asyn
 test('데스크톱 별명 등록창은 오른쪽 패널로 열린다',async({page})=>{
   await page.setViewportSize({width:1440,height:900});
   await page.goto('/ck');
-  await page.getByRole('button',{name:'바로 체크'}).click();
+  await page.getByRole('button',{name:'상세 체크 먼저 보기'}).click();
   const dialog=page.getByRole('dialog',{name:'이 집 별명 정하기'}),box=await dialog.boundingBox();
   expect(box).not.toBeNull();
   expect(box!.x+box!.width).toBeGreaterThanOrEqual(1439);
@@ -129,7 +129,7 @@ test('데스크톱 별명 등록창은 오른쪽 패널로 열린다',async({pag
 test('모바일 별명 등록창은 아래 바텀시트로 열린다',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto('/ck');
-  await page.getByRole('button',{name:'바로 체크'}).click();
+  await page.getByRole('button',{name:'상세 체크 먼저 보기'}).click();
   const dialog=page.getByRole('dialog',{name:'이 집 별명 정하기'}),box=await dialog.boundingBox();
   expect(box).not.toBeNull();
   expect(box!.x).toBeLessThanOrEqual(1);

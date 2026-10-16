@@ -18,7 +18,7 @@ test('TEST-CK-HOST-005 집신체크 주소 첫 화면은 같은 주소의 집신
 
 test('TEST-CK-HOST-006 집신체크 주소에서 만든 기록은 로그인 화면을 거쳐도 같은 주소에 남는다', async ({ page }) => {
   await page.goto(`${checkSite}/`);
-  await page.getByRole('button', { name: '바로 체크' }).click();
+  await page.getByRole('button', { name: '상세 체크 먼저 보기' }).click();
   await page.getByRole('textbox', { name: '집 별명', exact: true }).fill('성수역 햇살집');
   await page.getByRole('button', { name: '별명 저장하고 체크 시작' }).click();
   await expect(page.getByRole('heading', { name: '성수역 햇살집 체크' })).toBeVisible();

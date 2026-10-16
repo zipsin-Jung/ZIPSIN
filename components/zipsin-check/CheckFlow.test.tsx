@@ -32,8 +32,8 @@ describe('초보 임차인 현장 체크',()=>{
     fireEvent.click(detail);
     fireEvent.click(screen.getByRole('button',{name:'물·배수 상세 체크 접기'}));
     expect(screen.getByRole('button',{name:'물·배수 상세 체크 펼치기'})).toHaveAttribute('data-attention','seen');
-    fireEvent.click(screen.getByRole('button',{name:'물어볼 것 8개'}));
-    fireEvent.click(screen.getByRole('button',{name:`집 안에서 확인 9개`}));
+    fireEvent.click(screen.getByRole('button',{name:'질문 체크 8개'}));
+    fireEvent.click(screen.getByRole('button',{name:`집 체크 9개`}));
     expect(screen.getByRole('button',{name:'물·배수 상세 체크 펼치기'})).toHaveAttribute('data-attention','seen');
   });
 
@@ -55,7 +55,7 @@ describe('초보 임차인 현장 체크',()=>{
 
   it('물어볼 것을 우선순위대로 열고 답변을 메모할 수 있다',()=>{
     renderFlow();
-    fireEvent.click(screen.getByRole('button',{name:'물어볼 것 8개'}));
+    fireEvent.click(screen.getByRole('button',{name:'질문 체크 8개'}));
     const questions=screen.getByRole('region',{name:'중개사에게 물어볼 것'});
     expect(within(questions).getAllByRole('heading',{level:2}).map(heading=>heading.textContent)).toEqual([
       '1. 관리비','2. 입주 전 수리','3. 수리 책임','4. 공과금','5. 입주 날짜','6. 주차·자전거','7. 쓰레기','8. 생활 제한',
@@ -82,5 +82,16 @@ describe('초보 임차인 현장 체크',()=>{
     fireEvent.click(screen.getByRole('button',{name:'물·배수 상세 체크 펼치기'}));
     fireEvent.click(screen.getByRole('checkbox',{name:/부엌 싱크대와 화장실/}));
     expect(onChange.mock.calls[0][0].answers['water-drain'].status).toBe('unverified');
+  });
+  it('TEST-CK-TAB-001 질문 체크 탭은 처음에 강조 안내를 보이고 한 번 열면 안내를 거둔다',()=>{
+    render(<CheckFlow candidate={createCandidate({id:'tab-test',alias:'탭 집',depth:'quick',now:'2026-10-16T00:00:00.000Z'})} onChange={()=>{}} onFinish={()=>{}} onBack={()=>{}}/>);
+    const tab=screen.getByRole('button',{name:'질문 체크 8개'});
+    expect(tab).toHaveAttribute('data-visited','false');
+    expect(tab).toHaveTextContent('중개사에게 꼭');
+    fireEvent.click(tab);
+    expect(tab).toHaveAttribute('aria-pressed','true');
+    expect(tab).toHaveAttribute('data-visited','true');
+    expect(tab).not.toHaveTextContent('중개사에게 꼭');
+    expect(screen.getByRole('button',{name:'집 체크 9개'})).toHaveAttribute('aria-pressed','false');
   });
 });

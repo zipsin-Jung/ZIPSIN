@@ -51,9 +51,9 @@ export default function CandidateForm({initial, onSubmit, onCancel}: {initial?: 
     <h1 id="candidate-form-title">{initial ? '집 정보 수정' : '새 집 등록'}</h1>
     <fieldset className={styles.modeChoice}><legend>기록할 정보</legend>{(['simple', 'detailed'] as const).map((mode) => <label key={mode}><input type="radio" name="mode" checked={draft.intakeMode === mode} onChange={() => set('intakeMode', mode)}/><span>{mode === 'simple' ? '간단하게' : '상세하게'}</span></label>)}</fieldset>
     <label className={styles.formField}>집 별명 <input value={draft.alias} placeholder="비워두면 자동으로 지어요" onChange={(event) => set('alias', event.target.value)}/></label>
+    <label className={styles.formField}>위치 <input value={draft.location} placeholder="동네 정도만 (예: 성수역 근처)" onChange={(event) => set('location', event.target.value)}/></label>
     <label className={styles.formField}>어디서 보셨나요? <select value={draft.discoverySource} onChange={(event) => set('discoverySource', event.target.value)}>{DISCOVERY.map((value) => <option key={value} value={value}>{value || '선택 안 함'}</option>)}</select></label>
     {draft.intakeMode === 'detailed' && <div className={styles.detailFields}>
-      <label className={styles.formField}>위치 <input value={draft.location} onChange={(event) => set('location', event.target.value)}/></label>
       <label className={styles.formField}>거래 유형 <select value={draft.transactionType} onChange={(event) => set('transactionType', event.target.value)}><option value="">선택 안 함</option><option>월세</option><option>전세</option><option>매매</option></select></label>
       <label className={styles.formField}>보증금 <input type="number" value={draft.depositWon ?? ''} onChange={(event) => set('depositWon', number(event.target.value))}/></label>
       <label className={styles.formField}>월세 <input type="number" value={draft.monthlyRentWon ?? ''} onChange={(event) => set('monthlyRentWon', number(event.target.value))}/></label>
