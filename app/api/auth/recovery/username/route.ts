@@ -37,7 +37,10 @@ export async function POST(request: NextRequest) {
 
     const status = result.status === 'rate_limited' ? 429 : result.status === 'invalid_email' ? 400 : 200;
     return NextResponse.json(result, { status, headers: NO_STORE });
-  } catch {
+  } catch (error) {
+    // 이메일 등 개인정보는 남기지 않고 원인 코드만 남긴다.
+    const detail = error as { code?: string; message?: string };
+    console.error('username_lookup_failed', { code: detail?.code ?? null, message: detail?.message?.slice(0, 160) ?? null });
     return NextResponse.json({ status: 'temporarily_unavailable' }, { status: 503, headers: NO_STORE });
   }
 }
