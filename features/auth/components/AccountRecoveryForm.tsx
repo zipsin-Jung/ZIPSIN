@@ -56,7 +56,7 @@ function UsernameFinder() {
       </div>
       <button className={authPrimaryButtonClass} disabled={state === 'loading'} type="submit">
         {state === 'loading' && <LoaderCircle aria-hidden="true" className="size-[18px] animate-spin" />}
-        {state === 'loading' ? '찾고 있어요…' : '아이디 찾기'}
+        {state === 'loading' ? '찾고 있어요…' : state === 'not_found' ? '다시 찾기' : '아이디 찾기'}
       </button>
       <div aria-live="polite">
         {state === 'found' && (
@@ -69,15 +69,17 @@ function UsernameFinder() {
               </div>
             ))}
             <p className="text-[13px] leading-relaxed text-[#5D6A65]">안전을 위해 일부를 가렸어요.</p>
+            <Link className={authPrimaryButtonClass} href="/login">이 아이디로 로그인하기</Link>
+            <a className="inline-flex min-h-11 items-center justify-center text-sm font-medium text-[#0B6655]! underline! underline-offset-[3px]" href="/account-recovery?tab=password">비밀번호도 기억나지 않아요</a>
           </div>
         )}
         {state === 'not_found' && (
           <div className="flex flex-col gap-3">
             <div className={errorBox} role="alert">
               <CircleAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
-              <p>이 이메일로 가입된 아이디가 없어요. 철자를 다시 확인하거나 새로 가입해 주세요.</p>
+              <p>이 이메일로 가입된 아이디가 없어요. 오타가 없는지 확인하고 다시 찾아 주세요.</p>
             </div>
-            <Link className={authSecondaryButtonClass} href="/signup">회원가입하기</Link>
+            <p className="text-center text-sm text-[#5D6A65]">다른 이메일로 가입했을 수도 있어요. 아직 가입 전이라면 <Link className="font-semibold text-[#0B6655]! underline! underline-offset-[3px]" href="/signup">회원가입</Link></p>
           </div>
         )}
         {state === 'error' && <div className={errorBox} role="alert"><CircleAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0" /><p>{message}</p></div>}
@@ -87,6 +89,7 @@ function UsernameFinder() {
 }
 
 function PasswordReset() {
+  const [username, setUsername] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [challengeId, setChallengeId] = useState('');
@@ -114,7 +117,7 @@ function PasswordReset() {
     setStatus('sending'); setIsError(false); setMessage('인증번호를 보내고 있어요.');
     try {
       const response = await fetch('/api/auth/recovery/phone/send', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, phone }),
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, name, phone }),
       });
       const body = await response.json() as { ok?: boolean; challengeId?: string; maskedPhone?: string; error?: string };
       if (response.ok && body.ok && body.challengeId) {
@@ -123,7 +126,7 @@ function PasswordReset() {
         return;
       }
       setStatus(challengeId ? 'sent' : 'idle'); setIsError(true);
-      setMessage(body.error === 'not_found' ? '이름과 휴대폰 번호가 맞는 계정이 없어요. 가입할 때 적은 이름인지 확인해 주세요.'
+      setMessage(body.error === 'not_found' ? '아이디·이름·휴대폰 번호가 모두 맞는 계정이 없어요. 가입할 때 적은 그대로 넣어 주세요.'
         : response.status === 429 || body.error === 'rate_limited' ? '요청이 많아요. 잠시 후 다시 시도해 주세요.'
           : '지금은 인증문자를 보낼 수 없어요. 잠시 후 다시 시도해 주세요.');
     } catch {
@@ -152,11 +155,17 @@ function PasswordReset() {
     }
   }
 
-  const canSend = name.trim().length >= 2 && /^01[016789]-?\d{3,4}-?\d{4}$/.test(phone) && status !== 'sending' && status !== 'verified' && cooldown <= 0;
+  const canSend = /^[a-z0-9_]{4,20}$/.test(username.trim().toLowerCase()) && name.trim().length >= 2 && /^01[016789]-?\d{3,4}-?\d{4}$/.test(phone) && status !== 'sending' && status !== 'verified' && cooldown <= 0;
 
   return (
     <div className="flex flex-col gap-[18px]">
-      <p className={intro}>가입할 때 적은 이름과 휴대폰 번호로 본인 확인을 하면 새 비밀번호를 만들 수 있어요.</p>
+      <p className={intro}>아이디·이름·휴대폰 번호가 모두 맞으면 문자로 본인 확인을 하고 새 비밀번호를 만들 수 있어요.</p>
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-2">
+        <label className={authLabelClass} htmlFor="reset-username">아이디</label>
+        <div className={`${authFieldClass} px-4`}>
+          <input autoCapitalize="none" autoComplete="username" className={authInputClass} id="reset-username" maxLength={20} onChange={(event) => { setUsername(event.target.value); reset(); }} placeholder="아이디" spellCheck={false} value={username} />
+        </div>
+      </div>
       <div className="grid grid-cols-[minmax(0,1fr)] gap-2">
         <label className={authLabelClass} htmlFor="reset-name">이름</label>
         <div className={`${authFieldClass} px-4`}>
