@@ -6,6 +6,7 @@ const messages = {
   invitation_revoked: '초대가 철회되었습니다.',
   invitation_used: '이미 사용한 초대입니다.',
   invalid_input: '입력한 내용을 확인해 주세요.',
+  last_principal: '마지막 대표 공인중개사는 내보낼 수 없습니다. 다른 대표를 먼저 지정해 주세요.',
   conflict: '이미 처리된 요청입니다. 현재 상태를 확인해 주세요.',
   server_error: '처리하지 못했습니다. 잠시 후 다시 시도해 주세요.',
 } as const;
