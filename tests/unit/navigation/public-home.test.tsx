@@ -40,26 +40,22 @@ describe('PublicHome', () => {
   it('TEST-PUB-SERVICES-001 상단 서비스 메뉴는 집신체크·집신수리·집신클린 순서이고 체크만 링크다', () => {
     render(<PublicHome />);
     const nav = screen.getByRole('navigation', { name: '집신 서비스' });
-    const items = Array.from(nav.querySelectorAll('li > a, li > button')).map((item) => item.textContent);
+    const items = Array.from(nav.querySelectorAll('li > a, li > span')).map((item) => item.firstChild?.textContent);
     expect(items).toEqual(['집신체크', '집신수리', '집신클린']);
     const links = Array.from(nav.querySelectorAll('a'));
     expect(links).toHaveLength(1);
     expect(links[0]).toHaveAttribute('href', '/ck');
   });
 
-  // TEST-PUB-SERVICES-004: 준비 중 서비스는 누르면 가운데에 "준비 중" 안내만 뜬다.
-  it('TEST-PUB-SERVICES-004 집신수리를 누르면 준비 중 안내가 뜨고 확인으로 닫힌다', async () => {
-    HTMLDialogElement.prototype.showModal = function showModal() { this.setAttribute('open', ''); };
-    HTMLDialogElement.prototype.close = function close() { this.removeAttribute('open'); this.dispatchEvent(new Event('close')); };
-    const user = userEvent.setup();
+  // TEST-PUB-SERVICES-004 (D3): 수리·클린은 회색이며 누를 수 없다.
+  it('TEST-PUB-SERVICES-004 집신수리·집신클린은 누를 수 없고 화면읽기에는 준비 중으로 읽힌다', () => {
     render(<PublicHome />);
-    await user.click(screen.getByRole('button', { name: '집신수리' }));
-    const dialog = screen.getByRole('dialog', { name: '준비 중이에요' });
-    expect(dialog).toHaveAttribute('open');
-    expect(dialog).toHaveTextContent('집신수리');
-    await user.click(screen.getByRole('button', { name: '확인' }));
-    expect(dialog).not.toHaveAttribute('open');
-    expect(screen.getByRole('button', { name: '집신수리' })).toHaveFocus();
+    const nav = screen.getByRole('navigation', { name: '집신 서비스' });
+    expect(nav.querySelectorAll('button')).toHaveLength(0);
+    const soon = nav.querySelectorAll('[aria-disabled="true"]');
+    expect(soon).toHaveLength(2);
+    expect(soon[0]).toHaveTextContent('집신수리 (준비 중)');
+    expect(soon[1]).toHaveTextContent('집신클린 (준비 중)');
   });
 
   it('TEST-RC-PUB-IMG-001 서론의 집 관리 이력 이미지를 우선 노출한다', () => {

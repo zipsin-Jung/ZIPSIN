@@ -79,9 +79,9 @@ describe('POST /api/auth/recovery/username', () => {
   });
 });
 
-describe('POST /api/auth/recovery/phone/send (이메일 + 이름 + 휴대폰)', () => {
-  it('TEST-PWRESET-API-001: 이메일·이름·번호가 맞으면 문자를 보낸다', async () => {
-    const response = await sendRecoveryCode(request('/x', { email: 'na@example.com', name: '정민선', phone: '010-1234-5678' }));
+describe('POST /api/auth/recovery/phone/send (이름 + 휴대폰)', () => {
+  it('TEST-PWRESET-API-001: 이름·번호가 맞으면 문자를 보낸다', async () => {
+    const response = await sendRecoveryCode(request('/x', { name: '정민선', phone: '010-1234-5678' }));
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({ ok: true, maskedPhone: '010-****-5678' });
     expect(mocks.sendOtp).toHaveBeenCalledWith(expect.objectContaining({ to: '+821012345678' }));
@@ -89,12 +89,9 @@ describe('POST /api/auth/recovery/phone/send (이메일 + 이름 + 휴대폰)', 
   });
 
   it('TEST-PWRESET-API-002: 이름이 다르면 문자를 보내지 않고 404', async () => {
-    const response = await sendRecoveryCode(request('/x', { email: 'na@example.com', name: '김다름', phone: '010-1234-5678' }));
+    const response = await sendRecoveryCode(request('/x', { name: '김다름', phone: '010-1234-5678' }));
     expect(response.status).toBe(404);
     expect(await response.json()).toEqual({ ok: false, error: 'not_found' });
-    expect(mocks.sendOtp).not.toHaveBeenCalled();
-    const wrongId = await sendRecoveryCode(request('/x', { email: 'other@example.com', name: '정민선', phone: '010-1234-5678' }));
-    expect(wrongId.status).toBe(404);
     expect(mocks.sendOtp).not.toHaveBeenCalled();
   });
 

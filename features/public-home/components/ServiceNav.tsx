@@ -1,10 +1,9 @@
 import { getCheckServiceHref } from '@/lib/site/check-host';
 import { ZIPSIN_SERVICES } from '@/features/public-home/services';
-import { ComingSoonButton } from '@/features/public-home/components/ComingSoonButton';
 import styles from '@/components/PublicHome.module.css';
 
 // 홈 상단 서비스 메뉴: 집신체크(바로 가기) · 집신수리 · 집신클린.
-// 준비 중 서비스는 다른 화면으로 보내지 않고, 누르면 가운데에 "준비 중" 안내만 띄운다.
+// 준비 중 서비스는 회색으로 표시하고 누를 수 없게 한다(2026-10-16 18:40 사용자 결정 D3).
 export function ServiceNav() {
   const checkHref = getCheckServiceHref();
   return (
@@ -14,7 +13,12 @@ export function ServiceNav() {
           <li key={service.id}>
             {service.status === 'live'
               ? <a className={styles.serviceLink} href={checkHref}>{service.name}</a>
-              : <ComingSoonButton name={service.name} />}
+              : (
+                <span aria-disabled="true" className={styles.serviceSoon} title="준비 중">
+                  {service.name}
+                  <span className={styles.srOnly}> (준비 중)</span>
+                </span>
+              )}
           </li>
         ))}
       </ul>
