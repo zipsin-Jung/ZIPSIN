@@ -1,13 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-test('기존 소개 페이지의 핵심 안내와 가입 이동을 유지한다', async ({ page }) => {
+test('예전 소개 페이지 주소는 홈으로 보낸다', async ({ page }) => {
   await page.goto('/about');
-
-  await expect(page.getByRole('heading', { level: 1, name: /사람이 바뀌어도,\s*집의 기록은\s*남습니다/ })).toBeVisible();
-  await page.getByRole('link', { name: '사전 회원 가입 하기' }).first().click();
-  await expect(page.locator('#signup')).toBeInViewport();
-  await page.getByRole('link', { name: '무료로 시작하기' }).click();
-  await expect(page).toHaveURL(/\/login$/);
+  await expect(page).toHaveURL(/\/$/);
 });
 
 test('TEST-RC-HERO-JOURNEY-001 네 장의 제품 이야기를 확인하고 실제 가입으로 이동한다', async ({ page }) => {

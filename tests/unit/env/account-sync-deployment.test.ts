@@ -6,7 +6,26 @@ const base = {
   NEXT_PUBLIC_SUPABASE_ANON_KEY: 'public-anon-key',
 };
 
+const productionServer = {
+  PASSWORD_LOGIN_ENABLED: 'true',
+  SUPABASE_SERVICE_ROLE_KEY: 'service-role-key',
+  PHONE_VERIFICATION_PROVIDER: 'solapi',
+  SOLAPI_API_KEY: 'k',
+  SOLAPI_API_SECRET: 's',
+  SOLAPI_SENDER_NUMBER: '0212345678',
+  PHONE_OTP_HMAC_SECRET: 'x'.repeat(32),
+};
+
 describe('집신·집신체크 배포 환경 검사', () => {
+  it('TEST-ENV-PROD-001 운영에서 로그인 허용·서버 키·실제 문자 발송 설정을 요구한다', () => {
+    const errors = validateAccountSyncEnv({ ...base, NODE_ENV: 'production', NEXT_PUBLIC_SITE_URL: 'https://zipsin.net', NEXT_PUBLIC_AUTH_COOKIE_DOMAIN: '.zipsin.net' });
+    expect(errors).toEqual(expect.arrayContaining([
+      'Production PASSWORD_LOGIN_ENABLED=true 필요(없으면 로그인 전체 불가)',
+      'Production SUPABASE_SERVICE_ROLE_KEY 누락',
+      'Production PHONE_VERIFICATION_PROVIDER=solapi 필요(없으면 가입 문자 발송 불가)',
+    ]));
+  });
+
   it('로컬 개발에서는 공유 도메인 쿠키 없이 통과한다', () => {
     expect(validateAccountSyncEnv({ ...base, NODE_ENV: 'development' })).toEqual([]);
   });
@@ -32,6 +51,7 @@ describe('집신·집신체크 배포 환경 검사', () => {
     expect(validateAccountSyncEnv({
       ...base,
       NODE_ENV: 'production',
+      ...productionServer,
       NEXT_PUBLIC_SITE_URL: 'https://zipsin.net',
       NEXT_PUBLIC_AUTH_COOKIE_DOMAIN: '.zipsin.net',
     })).toEqual([]);
@@ -47,7 +67,7 @@ describe('집신·집신체크 배포 환경 검사', () => {
   });
 
   it('TEST-CK-HOST-004 운영 집신체크 주소는 https://ck.zipsin.net만 허용한다', () => {
-    const production = { ...base, NODE_ENV: 'production', NEXT_PUBLIC_SITE_URL: 'https://zipsin.net', NEXT_PUBLIC_AUTH_COOKIE_DOMAIN: '.zipsin.net' };
+    const production = { ...base, ...productionServer, NODE_ENV: 'production', NEXT_PUBLIC_SITE_URL: 'https://zipsin.net', NEXT_PUBLIC_AUTH_COOKIE_DOMAIN: '.zipsin.net' };
     expect(validateAccountSyncEnv({ ...production, NEXT_PUBLIC_CHECK_SITE_URL: 'https://ck.zipsin.net' })).toEqual([]);
     expect(validateAccountSyncEnv({ ...production, NEXT_PUBLIC_CHECK_SITE_URL: 'http://ck.zipsin.net' }))
       .toContain('Production NEXT_PUBLIC_CHECK_SITE_URL은 https://ck.zipsin.net이어야 합니다.');
