@@ -56,7 +56,7 @@ describe('초보 임차인 현장 체크',()=>{
   it('물어볼 것을 우선순위대로 열고 답변을 메모할 수 있다',()=>{
     renderFlow();
     fireEvent.click(screen.getByRole('button',{name:'질문 체크'}));
-    const questions=screen.getByRole('region',{name:'중개사에게 물어볼 것'});
+    const questions=screen.getByRole('region',{name:'집 보러 가서 물어볼 것'});
     expect(within(questions).getAllByRole('heading',{level:2}).map(heading=>heading.textContent)).toEqual([
       '1. 관리비','2. 입주 전 수리','3. 수리 책임','4. 공과금','5. 입주 날짜','6. 주차·자전거','7. 쓰레기','8. 생활 제한',
     ]);

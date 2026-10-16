@@ -44,16 +44,16 @@ for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}, {w
 }
 
 for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}]) {
-  test(`상세 체크 안내와 시작 버튼이 ${viewport.width}px에서 깨지지 않는다`, async ({page}) => {
+  test(`집 안에서 확인할 것과 시작 버튼이 ${viewport.width}px에서 깨지지 않는다`, async ({page}) => {
     await page.setViewportSize(viewport);
     await page.goto('/ck');
     const preview=page.locator('#check-preview');
-    const detail=preview.getByRole('button',{name:'상세 체크 먼저 보기'});
-    const memo=preview.getByRole('button',{name:'메모·사진으로 시작'});
-    await expect(preview.getByText('각 항목의 상세 체크를 꼭 눌러보세요')).toBeVisible();
+    const detail=preview.getByRole('button',{name:'이름만 정하고 바로 체크'});
+    const first=preview.getByRole('button',{name:'물·배수 체크 시작'});
+    await expect(preview.getByRole('heading',{name:'눈으로 확인할 것 9개'})).toBeVisible();
     await expect(detail).toBeVisible();
-    await expect(memo).toBeVisible();
-    for(const target of [detail,memo]){
+    await expect(first).toBeVisible();
+    for(const target of [detail,first]){
       const box=await target.boundingBox();
       expect(box).not.toBeNull();
       expect(box!.width).toBeGreaterThan(120);
@@ -61,7 +61,7 @@ for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}]) {
       expect(box!.x+box!.width).toBeLessThanOrEqual(viewport.width);
     }
     const previewButtons=preview.getByRole('button',{name:/체크 시작$/});
-    await expect(previewButtons).toHaveCount(3);
+    await expect(previewButtons).toHaveCount(9);
     for(let index=0;index<3;index++){
       const box=await previewButtons.nth(index).boundingBox();
       expect(box).not.toBeNull();
@@ -79,7 +79,7 @@ for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}]) {
   test(`현장 상세 체크 강조와 완료 버튼이 ${viewport.width}px에서 겹치지 않는다`, async ({page}) => {
     await page.setViewportSize(viewport);
     await page.goto('/ck');
-    await page.getByRole('button',{name:'상세 체크 먼저 보기'}).click();
+    await page.getByRole('button',{name:'이름만 정하고 바로 체크'}).click();
     await page.getByRole('textbox',{name:'집 별명',exact:true}).fill('검수 집');
     await page.getByRole('button',{name:'별명 저장하고 체크 시작'}).click();
 
@@ -119,7 +119,7 @@ test('전체 목록의 빈 상태와 모션 감소 설정을 지원한다', asyn
 test('데스크톱 별명 등록창은 오른쪽 패널로 열린다',async({page})=>{
   await page.setViewportSize({width:1440,height:900});
   await page.goto('/ck');
-  await page.getByRole('button',{name:'상세 체크 먼저 보기'}).click();
+  await page.getByRole('button',{name:'이름만 정하고 바로 체크'}).click();
   const dialog=page.getByRole('dialog',{name:'이 집 별명 정하기'}),box=await dialog.boundingBox();
   expect(box).not.toBeNull();
   expect(box!.x+box!.width).toBeGreaterThanOrEqual(1439);
@@ -129,7 +129,7 @@ test('데스크톱 별명 등록창은 오른쪽 패널로 열린다',async({pag
 test('모바일 별명 등록창은 아래 바텀시트로 열린다',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto('/ck');
-  await page.getByRole('button',{name:'상세 체크 먼저 보기'}).click();
+  await page.getByRole('button',{name:'이름만 정하고 바로 체크'}).click();
   const dialog=page.getByRole('dialog',{name:'이 집 별명 정하기'}),box=await dialog.boundingBox();
   expect(box).not.toBeNull();
   expect(box!.x).toBeLessThanOrEqual(1);

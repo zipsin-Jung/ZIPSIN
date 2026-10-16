@@ -12,9 +12,9 @@ import compareStyles from './Compare.module.css';
 
 type PhotoSummary = {count: number; previews: string[]};
 
-export default function CheckCompare({candidates, selectedIds, onToggle, onBack, onEdit, onDelete, photoStore}: {
+export default function CheckCompare({candidates, selectedIds, onToggle, onBack, onEdit, onDelete, onDecide, photoStore}: {
   candidates: CandidateV2[]; selectedIds: string[]; onToggle: (id: string) => void; onBack: () => void;
-  onEdit: (id: string) => void; onDelete: (id: string) => void; photoStore: PhotoStore;
+  onEdit: (id: string) => void; onDelete: (id: string) => void; onDecide?: (id: string) => void; photoStore: PhotoStore;
 }) {
   const [showTable, setShowTable] = useState(false);
   const selected = useMemo(() => selectedIds.map((id) => candidates.find((candidate) => candidate.id === id)).filter((candidate): candidate is CandidateV2 => !!candidate), [candidates, selectedIds]);
@@ -37,11 +37,11 @@ export default function CheckCompare({candidates, selectedIds, onToggle, onBack,
   }, [photoStore, selected]);
 
   return <main className={styles.compare}>
-    <button type="button" className={styles.back} onClick={onBack}>← 목록으로</button>
+    <button type="button" className={styles.back} onClick={onBack}>← 내가 본 집</button>
     <header><p>2~3채를 같은 기준으로</p><h1>집 비교</h1><span>점수나 순위 없이 입력한 사실만 비교해요.</span></header>
     <ComparePicker candidates={candidates} selectedIds={selectedIds} onToggle={(id) => { setShowTable(false); onToggle(id); }} onCompare={() => setShowTable(true)}/>
     {showTable && selected.length >= 2 && <div className={`${styles.tableWrap} ${compareStyles.table}`} style={{maxHeight:'72vh', overflow:'auto'}}><table>
-      <thead><tr><th scope="col">항목</th>{selected.map((candidate) => <th scope="col" key={candidate.id}><strong>{candidate.alias}</strong><small>{candidate.listing.location || '위치 미입력'}</small><button type="button" onClick={() => onEdit(candidate.id)} aria-label={`${candidate.alias} 수정`}>수정</button></th>)}</tr></thead>
+      <thead><tr><th scope="col">항목</th>{selected.map((candidate) => <th scope="col" key={candidate.id}><strong>{candidate.alias}</strong><small>{candidate.listing.location || '위치 미입력'}</small><span className={styles.compareHeadActions}><button type="button" onClick={() => onEdit(candidate.id)} aria-label={`${candidate.alias} 수정`}>수정</button>{onDecide ? <button type="button" className={styles.decideButton} onClick={() => onDecide(candidate.id)} aria-label={`${candidate.alias} 이 집으로 확정`}>이 집으로 확정</button> : null}</span></th>)}</tr></thead>
       <tbody>
         <tr><th scope="row">대표 사진</th>{selected.map((candidate) => <td key={candidate.id}>{photos[candidate.id]?.previews[0] ? <img className={compareStyles.preview} src={photos[candidate.id].previews[0]} alt={`${candidate.alias} 대표 현장 사진`}/> : <span>없음</span>}</td>)}</tr>
         <tr><th scope="row">사진 수</th>{selected.map((candidate) => { const summary = photos[candidate.id]; return <td key={candidate.id}>{summary?.count ?? 0}장{summary?.previews.length ? <details className={compareStyles.photoDetails}><summary aria-label={`${candidate.alias} 사진 ${summary.previews.length}장 모두 보기`}>모두 보기</summary><div className={compareStyles.photoGrid}>{summary.previews.map((preview, index) => <a href={preview} target="_blank" rel="noreferrer" aria-label={`${candidate.alias} 사진 ${index + 1} 크게 보기`} key={preview}><img src={preview} alt=""/></a>)}</div></details> : null}</td>; })}</tr>
