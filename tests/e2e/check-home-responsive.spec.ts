@@ -99,8 +99,8 @@ for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}]) {
 
     await detail.click();
     await page.getByRole('button',{name:'물·배수 상세 체크 접기'}).click();
-    await page.getByRole('button',{name:'질문 체크'}).click();
-    await page.getByRole('button',{name:'집 체크'}).click();
+    await page.getByRole('button',{name:'질문 체크',exact:true}).click();
+    await page.getByRole('button',{name:'집 체크',exact:true}).click();
     await expect(page.getByRole('button',{name:'물·배수 상세 체크 펼치기'})).toHaveAttribute('data-attention','seen');
   });
 }

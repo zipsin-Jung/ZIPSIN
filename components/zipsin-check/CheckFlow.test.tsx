@@ -63,10 +63,17 @@ describe('초보 임차인 현장 체크',()=>{
     expect(within(questions).getByRole('button',{name:'관리비 답변 기록'})).toBeInTheDocument();
   });
 
-  it('체크 중 기록을 유지한 채 로그인 페이지로 갈 수 있다',()=>{
-    renderFlow();
-    expect(screen.getByText('이 기기의 집신체크에 먼저 저장돼요')).toBeInTheDocument();
-    expect(screen.getByRole('link',{name:'집신 저장'})).toHaveAttribute('href','/login?next=%2Fck%2Ftransfer%3Fcandidate%3Da');
+  it('TEST-CK-SAVE-001 집신 저장을 누르면 두 가지 저장 방법을 고른다',()=>{
+    HTMLDialogElement.prototype.showModal=function(){this.setAttribute('open','')};
+    HTMLDialogElement.prototype.close=function(){this.removeAttribute('open');this.dispatchEvent(new Event('close'))};
+    const onFinish=vi.fn();
+    renderFlow({onFinish});
+    expect(screen.getByText('이 휴대폰에 자동 저장됨')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button',{name:'집신 저장'}));
+    const sheet=screen.getByRole('dialog',{name:'어디에 저장할까요?'});
+    expect(within(sheet).getByRole('link',{name:'로그인하고 저장'})).toHaveAttribute('href','/login?next=%2Fck%2Ftransfer%3Fcandidate%3Da');
+    fireEvent.click(within(sheet).getByRole('button',{name:'이대로 두고 내가 본 집으로'}));
+    expect(onFinish).toHaveBeenCalledOnce();
   });
 
   it('TEST-CK-BAR-001 뒤로가기는 이전 기록이 없으면 내가 본 집으로 돌아간다',()=>{

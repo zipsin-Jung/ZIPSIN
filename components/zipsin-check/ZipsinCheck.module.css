@@ -104,3 +104,27 @@
 .rowActions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rowActions button{width:100%;min-height:48px}
 /* PC에서는 '이름·위치 수정'을 한 줄로 */
 @media(min-width:561px){.fieldHeader{grid-template-columns:96px 1fr auto}.fieldHeader .editInfo{white-space:nowrap}}
+/* 아래 바 '집신 저장'과 저장 방법 선택 창 */
+.stickyFinish>div>button.saveOpen{background:#f8e08e;color:#1b2a33;border:1px solid #f8e08e}
+.stickyFinish em strong{color:#fff;font-weight:900}
+.saveSheet{position:fixed;inset:auto 0 0 0;margin:0 auto;width:min(560px,100%);max-width:100%;max-height:92dvh;border:0;padding:0;background:transparent;overflow:auto}
+.saveSheet::backdrop{background:#05120f8c}
+.saveSheetPanel{display:grid;gap:12px;background:#fff;border-radius:26px 26px 0 0;padding:14px 18px calc(22px + env(safe-area-inset-bottom))}
+.saveGrab{justify-self:center;width:44px;height:5px;border-radius:9px;background:#d5dddb}
+.saveSheetPanel h2{font-size:22px;letter-spacing:-.03em;outline:none}.saveLead{margin-top:-6px;font-size:13px;color:#6b7686}
+.saveOption{display:grid;gap:8px;border:1.5px solid #dfe8ec;border-radius:18px;padding:14px}
+.saveRecommended{border:2px solid #22a773;background:#f3fbf7}
+.saveOption h3{display:flex;align-items:center;gap:6px;font-size:17px}.saveOption h3 em{margin-left:auto;font-style:normal;font-size:11px;background:#22a773;color:#fff;border-radius:999px;padding:3px 9px}
+.saveOption ul{list-style:none;display:grid;gap:3px;margin:0;padding:0;font-size:13px;color:#46555d}.saveOption li::before{content:'✓ ';color:#22a773;font-weight:900}.saveOption li.saveWarn::before{content:'! ';color:#c9981f}
+.savePrimary,.saveSecondary{display:grid;place-items:center;min-height:50px;border-radius:13px;font-size:15px;font-weight:900;text-decoration:none}
+.savePrimary{background:#173e31;color:#fff}.savePrimary:disabled{opacity:.5}.saveSecondary{border:1px solid #c6ccca;background:#fff;color:#24354a}
+.saveOption small{text-align:center;font-size:12px;color:#6b7686}
+@media(min-width:561px){.saveSheet{inset:0;margin:auto;height:fit-content}.saveSheetPanel{border-radius:24px}}
+@media(max-width:560px){.stickyFinish>span{display:grid}.stickyFinish>span b{display:none}.stickyFinish>span em{font-size:12px}}
+/* 내가 본 집(이 휴대폰 저장): 안내·카드 숫자·다음에 할 일 */
+.localBanner{display:flex;align-items:center;gap:12px;justify-content:space-between;margin:0 0 18px;padding:13px 16px;border:1.5px solid #e2bd4e;border-radius:16px;background:#fff6d4}.localBanner div{display:grid;gap:2px}.localBanner b{font-size:14px}.localBanner b::before{content:'📱 '}.localBanner span{font-size:12px;color:#5d6e76}.localBanner a{flex:none;padding:10px 13px;border-radius:11px;background:#173e31;color:#fff;font-size:13px;font-weight:900;text-decoration:none}
+.listMeter{display:block;width:100%;height:8px;margin-top:14px;border-radius:9px;background:#e8efed;overflow:hidden}.listMeter i{display:block;height:100%;border-radius:9px;background:#22a773}
+.listOpen{min-height:150px!important}
+.listStats{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:0 22px 22px;padding:0}.listStats div{display:grid;gap:1px;padding:7px 0;border-radius:10px;background:#f6faf9;text-align:center}.listStats dt{order:2;font-size:11px;color:#6b7686}.listStats dd{order:1;margin:0;font-size:16px;font-weight:900;color:#24354a}.listStats .statWarn dd{color:#c4473b}
+.nextSteps{display:grid;gap:9px;margin-top:26px}.nextSteps h2{font-size:18px}.nextSteps button{display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:12px;width:100%;padding:12px 14px;border:1px solid #dfe8ec;border-radius:15px;background:#fff;text-align:left}.nextSteps button>span{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:#dff8ed;color:#14735d}.nextSteps button>span svg{width:18px}.nextSteps b{display:grid;gap:2px;font-size:15px;color:#24354a}.nextSteps small{font-size:12px;font-weight:500;color:#6b7686}.nextSteps button>svg{color:#9aaba5;width:18px}
+@media(max-width:560px){.localBanner{margin-top:6px}.listStats{margin:0 16px 16px}}

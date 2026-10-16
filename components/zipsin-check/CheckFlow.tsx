@@ -6,6 +6,7 @@ import {createBrowserPhotoStore, type PhotoStore} from '@/lib/zipsin-check/photo
 import {answerItem, containsSensitiveMemo} from '@/lib/zipsin-check/state';
 import type {Candidate, CheckAnswer, CheckItem, CheckStatus} from '@/lib/zipsin-check/types';
 import MemoPhotoSheet from './MemoPhotoSheet';
+import SaveChoiceSheet from './SaveChoiceSheet';
 import styles from './ZipsinCheck.module.css';
 
 const DEFAULT_STORE = createBrowserPhotoStore();
@@ -103,6 +104,7 @@ type CheckFlowProps = {
   onFinish: () => void;
   onBack: () => void;
   onEdit?: () => void;
+  initialView?: 'checks' | 'questions';
   photoStore?: PhotoStore;
   canSaveToAccount?: boolean;
   onSaveToAccount?: () => boolean;
@@ -110,10 +112,11 @@ type CheckFlowProps = {
   onDetailSeen?: (itemId: string) => void;
 };
 
-export default function CheckFlow({candidate, onChange, onFinish, onBack, onEdit, photoStore = DEFAULT_STORE, canSaveToAccount = true, onSaveToAccount = () => true, seenDetailIds, onDetailSeen}: CheckFlowProps) {
-  const [view, setView] = useState<'checks' | 'questions'>('checks');
+export default function CheckFlow({candidate, onChange, onFinish, onBack, onEdit, initialView = 'checks', photoStore = DEFAULT_STORE, canSaveToAccount = true, onSaveToAccount = () => true, seenDetailIds, onDetailSeen}: CheckFlowProps) {
+  const [view, setView] = useState<'checks' | 'questions'>(initialView);
   // 질문 체크는 지나치기 쉬워 한 번 열어볼 때까지 노란 강조를 반짝인다.
-  const [questionsVisited, setQuestionsVisited] = useState(false);
+  const [questionsVisited, setQuestionsVisited] = useState(initialView === 'questions');
+  const [saveOpen, setSaveOpen] = useState(false);
   const [localSeenDetailIds, setLocalSeenDetailIds] = useState<ReadonlySet<string>>(new Set());
   const effectiveSeenDetailIds = seenDetailIds ?? localSeenDetailIds;
   const hasSeenDetail = (itemId: string) => effectiveSeenDetailIds.has(itemId) || effectiveSeenDetailIds.has(`${candidate.id}:${itemId}`);
@@ -142,6 +145,7 @@ export default function CheckFlow({candidate, onChange, onFinish, onBack, onEdit
       <section className={styles.prioritySection} aria-label="집 체크"><div className={styles.sectionHeading}><span>PRIORITY</span><h2>집 체크</h2><p>시간이 없으면 이 세 가지만 먼저 확인하세요.</p></div><div className={styles.fieldList}>{priorityItems.map(item => <Row key={item.id} item={item} candidate={candidate} onChange={onChange} store={photoStore} detailSeen={hasSeenDetail(item.id)} onDetailSeen={markDetailSeen} />)}</div></section>
       <section className={styles.otherSection} aria-label="전체 현장 체크"><div className={styles.sectionHeading}><span>MORE CHECKS</span><h2>여유가 있으면 더 보기</h2><p>필요한 것만 골라 확인하고, 못 본 항목은 그대로 두세요.</p></div><div className={styles.fieldList}>{otherItems.map(item => <Row key={item.id} item={item} candidate={candidate} onChange={onChange} store={photoStore} detailSeen={hasSeenDetail(item.id)} onDetailSeen={markDetailSeen} />)}</div></section>
     </> : <section className={styles.questionSection} aria-label="중개사에게 물어볼 것"><div className={styles.sectionHeading}><span>ASK IN ORDER</span><h3>중개사에게 물어볼 것</h3><p>비용과 수리 약속부터 차례로 묻고, 바로 답변을 기록하세요.</p></div><div className={styles.fieldList}>{ASK_ITEMS.map((item, index) => <Row key={item.id} item={item} candidate={candidate} onChange={onChange} store={photoStore} questionIndex={index + 1} detailSeen={hasSeenDetail(item.id)} onDetailSeen={markDetailSeen} />)}</div></section>}
-    <div className={styles.stickyFinish}><span><b>{completed}개 체크됨</b><em>{canSaveToAccount ? '이 기기의 집신체크에 먼저 저장돼요' : '이 화면을 벗어나면 기록이 사라질 수 있어요'}</em></span><div><button type="button" onClick={onGoBack}>뒤로가기</button>{canSaveToAccount ? <a href={`/login?next=${encodeURIComponent(returnTo)}`} onClick={event => {if (!onSaveToAccount()) event.preventDefault();}}>집신 저장</a> : <button type="button" disabled>집신 저장</button>}</div></div>
+    <div className={styles.stickyFinish}><span><b>{completed}개 체크됨</b><em>{canSaveToAccount ? <>📱 <strong>이 휴대폰에 자동 저장됨</strong></> : '이 화면을 벗어나면 기록이 사라질 수 있어요'}</em></span><div><button type="button" onClick={onGoBack}>뒤로가기</button><button type="button" className={styles.saveOpen} onClick={() => setSaveOpen(true)}>집신 저장</button></div></div>
+    {saveOpen && <SaveChoiceSheet accountHref={`/login?next=${encodeURIComponent(returnTo)}`} canSaveToAccount={canSaveToAccount} onAccount={onSaveToAccount} onKeepLocal={() => {setSaveOpen(false); onFinish();}} onClose={() => setSaveOpen(false)} />}
   </main>;
 }
