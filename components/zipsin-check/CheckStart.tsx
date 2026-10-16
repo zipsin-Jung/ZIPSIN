@@ -1,4 +1,5 @@
 'use client';
+import type {ReactNode} from 'react';
 import {BookOpenCheck,Camera,Columns3,Lightbulb,MapPin,MousePointerClick,Plus,Star,Trash2} from 'lucide-react';
 import {getItemsForDepth} from '@/lib/zipsin-check/catalog';
 import type {CandidateV2} from '@/lib/zipsin-check/types';
@@ -7,10 +8,10 @@ import styles from './ZipsinCheck.module.css';
 const HOW_TO=[['01',BookOpenCheck,'미리 읽기','집 보러 가기 전에 읽어 보고 가면 좋아요'],['02',MousePointerClick,'네모만 체크','전부 다 체크하진 않아도 돼요'],['03',Camera,'사진·메모','급하면 기억할 것만 바로 남겨요.'],['04',Columns3,'카드처럼 비교','나온 뒤 2~3채를 같은 기준으로 보세요.']] as const;
 const PREVIEW=getItemsForDepth('quick').map(item=>item.title);
 
-export default function CheckStart({candidates,onNew,onInstant,onResume,onViewAll,onCompare,onDelete}:{candidates:CandidateV2[];onNew:()=>void;onInstant:()=>void;onResume:(id:string)=>void;onViewAll:()=>void;onCompare:()=>void;onDelete:(id:string)=>void}){
+export default function CheckStart({candidates,onNew,onInstant,onResume,onViewAll,onCompare,onDelete,headerActions}:{candidates:CandidateV2[];headerActions?:ReactNode;onNew:()=>void;onInstant:()=>void;onResume:(id:string)=>void;onViewAll:()=>void;onCompare:()=>void;onDelete:(id:string)=>void}){
   const recent=[...candidates].sort((a,b)=>Date.parse(b.createdAt)-Date.parse(a.createdAt)).slice(0,3);
   return <main className={styles.start}>
-    <a className={styles.brand} href="/" aria-label="집신 홈으로"><img src="/images/zipsin-company-logo.jpg" alt="집신 로고"/><span><b>집신</b><small>ZIPSIN CHECK</small></span></a>
+    <div className={styles.startTop}><a className={styles.brand} href="/" aria-label="집신 홈으로"><img src="/images/zipsin-company-logo.jpg" alt="집신 로고"/><span><b>집신</b><small>ZIPSIN CHECK</small></span></a>{headerActions}</div>
     <div className={styles.homeLead}>
       <section className={styles.fieldHero}><div className={styles.heroMascot} role="img" aria-label="집신이 캐릭터"/><div><p className={styles.eyebrow}>로그인 없이 바로</p><h1>내가 본 집,<br/><em>카드처럼 비교해요.</em></h1><p>집 안에서는 빠르게 체크하고, 나온 뒤에는 같은 기준으로 차분히 비교해요.</p><div className={styles.startActions}><button type="button" className={styles.instantStart} data-quick-trigger="hero" onClick={onInstant}>바로 체크</button><button type="button" className={styles.registerButton} onClick={onNew}>집 정보부터 등록</button></div></div></section>
       <section className={styles.recentPreview} aria-label="최근 보러 갈 집"><header><div><p className={styles.sectionKicker}>RECENT</p><h2>보러 갈 집</h2></div>{candidates.length>0?<button type="button" onClick={onViewAll}>전체 {candidates.length}채 보기</button>:<span>최신 3개</span>}</header><div>{[0,1,2].map(index=>{const candidate=recent[index];return candidate?<article className={styles.recentHouseSlot} key={candidate.id}><button type="button" data-testid="recent-house-card" className={styles.recentHouseCard} aria-label={`최근 집 열기: ${candidate.alias}`} onClick={()=>onResume(candidate.id)}><span>{String(index+1).padStart(2,'0')}</span><strong>{candidate.alias}</strong><small><MapPin aria-hidden="true"/>{candidate.listing.location||'위치 미입력'}</small></button><button type="button" className={styles.recentDelete} aria-label={`삭제: ${candidate.alias}`} onClick={()=>onDelete(candidate.id)}><Trash2 aria-hidden="true"/>삭제</button></article>:<button type="button" className={styles.emptyHouseCard} aria-label={`보러 갈 집 ${index+1} 등록하기`} key={`empty-${index}`} onClick={onNew}><Plus aria-hidden="true"/><strong>보러 갈 집 {index+1}</strong><small>눌러서 등록하기</small></button>})}</div></section>

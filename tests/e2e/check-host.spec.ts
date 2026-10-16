@@ -24,7 +24,7 @@ test('TEST-CK-HOST-006 집신체크 주소에서 만든 기록은 로그인 화�
   await expect(page.getByRole('heading', { name: '성수역 햇살집 체크' })).toBeVisible();
 
   await page.goto(`${checkSite}/`);
-  await page.getByRole('link', { name: '간편 로그인·회원가입' }).click();
+  await page.getByRole('link', { name: '로그인 / 회원가입' }).click();
   await expect(page).toHaveURL(`${checkSite}/login?next=%2Fck`);
   await expect(page.getByRole('heading', { name: '집신 시작하기' })).toBeVisible();
 

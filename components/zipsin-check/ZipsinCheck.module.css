@@ -71,3 +71,7 @@
 /* 상세 체크는 처음 한 번만 분명하게 안내하고, 확인 뒤에는 일반 동작으로 돌아간다. */
 .rowActions button[data-attention=required]{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:2px solid #ef5b55;background:#fff0ee;color:#be3d38;box-shadow:0 0 0 3px #ef5b5514}
 .rowActions button[data-attention=seen]{border-color:#3d9d83;background:#e9f8f3;color:#126850}
+
+/* 홈에서는 로고와 같은 줄 오른쪽, '보러 갈 집' 바로 위에 앱 받기·집신 구경가기·로그인을 둔다. */
+.startTop{display:flex;align-items:center;justify-content:space-between;gap:12px 16px;flex-wrap:wrap;margin-bottom:24px}.startTop .brand{margin-bottom:0}.startTop .accountLinks{width:auto;margin:0;padding:0}
+@media(max-width:560px){.startTop{margin-bottom:18px}.startTop .accountLinks{width:100%;justify-content:flex-start}}
