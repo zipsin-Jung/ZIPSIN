@@ -31,9 +31,9 @@ describe('new auth forms', () => {
     expect(screen.getByLabelText('휴대폰 번호')).toHaveAttribute('autocomplete', 'tel');
   });
 
-  it('collects recovery email without revealing account state', () => {
+  it('starts on the username finder with an email field (시안 ⑧)', () => {
     render(<AccountRecoveryForm />);
-    expect(screen.getByLabelText('가입 이메일')).toBeRequired();
-    expect(screen.getByRole('button', { name: '확인 메일 받기' })).toBeInTheDocument();
+    expect(screen.getByLabelText('가입한 이메일')).toBeRequired();
+    expect(screen.getByRole('button', { name: '아이디 찾기' })).toBeInTheDocument();
   });
 });

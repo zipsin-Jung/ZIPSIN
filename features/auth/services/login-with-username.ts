@@ -7,7 +7,9 @@ export type UsernameLoginRepository = {
   allowAttempt(username: string): Promise<boolean>;
   resolveIdentifier(identifier: string): Promise<{ userId?: string; email?: string; status: 'pending' | 'active' } | null>;
   getAuthIdentity(userId: string): Promise<{ email: string; emailConfirmed: boolean } | null>;
-  signInWithPassword(email: string, password: string): Promise<{ accepted: boolean; userId: string | null }>;
+  signInWithPassword(email: string, password: string): Promise<{ accepted: boolean; userId: string | null; reason?: 'email_not_confirmed' | 'invalid_credentials' }>;
+  /** 비밀번호가 맞았는데 Auth가 이메일 미확인으로 막은 경우에만 호출된다. */
+  confirmEmail(userId: string): Promise<boolean>;
   activateUsername(userId: string): Promise<void>;
 };
 
@@ -48,13 +50,18 @@ export async function loginWithUsername(
 
     let loginEmail = mapping.email;
     if (!loginEmail && mapping.userId) {
+      // 2026-10-16 사용자 지시: 이메일 확인은 로그인 조건이 아니다(이메일은 아이디 찾기용).
       const identity = await repository.getAuthIdentity(mapping.userId);
-      if (!identity?.emailConfirmed) return { ok: false, error: 'invalid_credentials' };
+      if (!identity) return { ok: false, error: 'invalid_credentials' };
       loginEmail = identity.email;
     }
     if (!loginEmail) return { ok: false, error: 'invalid_credentials' };
 
-    const auth = await repository.signInWithPassword(loginEmail, credentials.password);
+    let auth = await repository.signInWithPassword(loginEmail, credentials.password);
+    if (!auth.accepted && auth.reason === 'email_not_confirmed' && mapping.userId) {
+      if (!await repository.confirmEmail(mapping.userId)) return { ok: false, error: 'invalid_credentials' };
+      auth = await repository.signInWithPassword(loginEmail, credentials.password);
+    }
     if (!auth.accepted) return { ok: false, error: 'invalid_credentials' };
 
     if (mapping.status === 'pending' && (mapping.userId ?? auth.userId)) {

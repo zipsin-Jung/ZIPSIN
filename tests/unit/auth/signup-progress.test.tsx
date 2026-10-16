@@ -5,15 +5,23 @@ vi.mock('@/features/auth/components/PasswordSignupForm', () => ({ PasswordSignup
 import SignupPage from '@/app/(auth)/signup/page';
 
 describe('signup progress', () => {
-  it('TEST-SP-FLOW-01 explains that signup and phone verification finish on one screen', async () => {
+  it('TEST-SP-FLOW-01 uses the approved central card copy for one-screen signup', async () => {
     render(await SignupPage({ searchParams: Promise.resolve({}) }));
-    expect(screen.queryByRole('list', { name: '회원가입 진행 단계' })).not.toBeInTheDocument();
-    expect(screen.getByText(/휴대폰 인증까지 한 화면에서/)).toBeInTheDocument();
-    expect(screen.getByText(/노트북·PC에서도 같은 집신 계정/)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: '집신 회원가입' })).toBeInTheDocument();
+    expect(screen.getByText('한 번 가입하면 휴대전화와 PC에서 같은 계정으로 이용해요.')).toBeInTheDocument();
+    expect(screen.getAllByRole('link', { name: '로그인' })[0]).toHaveAttribute('href', '/login');
   });
-  it('marks email confirmation as the current step while waiting', async () => {
-    render(await SignupPage({ searchParams: Promise.resolve({ notice: 'check_email' }) }));
-    expect(screen.getByRole('status')).toHaveTextContent('가입 이메일로 보낸 확인 링크');
+
+  // TEST-SP-NOEMAIL-01 (2026-10-16): 이메일 확인 안내를 보여 주지 않는다.
+  it('never asks the user to confirm their email', async () => {
+    render(await SignupPage({ searchParams: Promise.resolve({}) }));
+    expect(screen.queryByText(/확인 링크/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/메일을 확인/)).not.toBeInTheDocument();
+  });
+
+  it('shows a readable error when the signup is rejected', async () => {
+    render(await SignupPage({ searchParams: Promise.resolve({ error: 'service_unavailable' }) }));
+    expect(screen.getByRole('alert')).toHaveTextContent('가입 설정을 확인하고 있습니다.');
   });
 
   it('집신체크 가입도 휴대폰 인증 뒤 돌아감을 안내한다', async () => {

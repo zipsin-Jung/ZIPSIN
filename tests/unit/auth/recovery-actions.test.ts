@@ -45,7 +45,7 @@ describe('account recovery actions', () => {
   });
 
   it('updates a valid recovery session then signs it out', async () => {
-    await expect(updatePasswordAction(passwordForm())).rejects.toThrow('REDIRECT:/login?notice=password_updated');
+    await expect(updatePasswordAction(passwordForm())).rejects.toThrow('REDIRECT:/reset-password/done');
     expect(updateUser).toHaveBeenCalledWith({ password: 'new-password-2026' });
     expect(signOut).toHaveBeenCalled();
   });

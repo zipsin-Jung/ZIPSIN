@@ -1,36 +1,50 @@
 import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
+import { CircleAlert, CircleCheck } from 'lucide-react';
 import { updatePasswordAction } from '@/features/auth/actions/update-password';
+import { AuthCard } from '@/features/auth/components/AuthCard';
+import { NewPasswordFields } from '@/features/auth/components/NewPasswordFields';
+import { digestRecoveryToken, RECOVERY_COOKIE } from '@/features/auth/server/recovery-session';
 import { createAdminSupabaseClient } from '@/lib/supabase/admin';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { cookies } from 'next/headers';
-import { RECOVERY_COOKIE } from '@/features/auth/server/recovery-session';
 
 type Props = { searchParams: Promise<{ error?: string }> };
 
+// 2026-10-16 승인 시안 ⑨-B: 휴대폰 인증을 마친 뒤 새 비밀번호 만들기.
 export default async function ResetPasswordPage({ searchParams }: Props) {
   const params = await searchParams;
   const supabase = await createServerSupabaseClient();
   const { data } = await supabase.auth.getUser();
-  const hasPhoneRecovery = Boolean((await cookies()).get(RECOVERY_COOKIE)?.value);
-  if (!data.user && !hasPhoneRecovery) redirect('/login?error=recovery_expired');
+  const recoveryToken = (await cookies()).get(RECOVERY_COOKIE)?.value;
+  if (!data.user && !recoveryToken) redirect('/login?error=recovery_expired');
 
   const admin = createAdminSupabaseClient();
-  const mapping = data.user ? (await admin.from('account_usernames')
-    .select('username_normalized').eq('user_id', data.user.id).maybeSingle()).data : null;
+  let userId = data.user?.id ?? null;
+  if (!userId && recoveryToken) {
+    const { data: session } = await admin.from('account_recovery_sessions')
+      .select('user_id, expires_at, consumed_at').eq('token_digest', digestRecoveryToken(recoveryToken)).maybeSingle();
+    if (!session || session.consumed_at || new Date(session.expires_at).getTime() <= Date.now()) redirect('/login?error=recovery_expired');
+    userId = session.user_id;
+  }
+  const mapping = userId ? (await admin.from('account_usernames')
+    .select('username_normalized').eq('user_id', userId).maybeSingle()).data : null;
 
   return (
-    <main className="min-h-screen bg-[#f7f8f5] px-5 py-10 text-[#12362c]">
-      <section className="mx-auto max-w-lg rounded-[28px] bg-white p-7 shadow-sm ring-1 ring-slate-200 sm:p-10">
-        <h1 className="text-3xl font-black">계정 확인</h1>
-        {mapping && <p className="mt-4 rounded-xl bg-emerald-50 p-4">회원님의 아이디는 <strong>{mapping.username_normalized}</strong>입니다.</p>}
-        <p className="mt-4 mb-7 text-slate-600">새 비밀번호를 설정하면 기존 복구 세션은 종료됩니다.</p>
-        {params.error && <p className="mb-5 rounded-xl bg-red-50 p-4 text-red-800" role="alert">비밀번호를 확인하거나 새 링크를 요청해 주세요.</p>}
-        <form action={updatePasswordAction} className="grid gap-5">
-          <label className="font-bold">새 비밀번호<input className="mt-2 min-h-13 w-full rounded-xl border border-slate-300 px-4" name="password" type="password" minLength={8} maxLength={128} required /></label>
-          <label className="font-bold">새 비밀번호 확인<input className="mt-2 min-h-13 w-full rounded-xl border border-slate-300 px-4" name="passwordConfirm" type="password" minLength={8} maxLength={128} required /></label>
-          <button className="min-h-13 rounded-xl bg-[#0b543f] px-5 font-extrabold text-white" type="submit">비밀번호 변경</button>
-        </form>
-      </section>
-    </main>
+    <AuthCard notice="10분 안에 바꾸지 않으면 다시 인증해야 해요." title="새 비밀번호 만들기" titleId="reset-title">
+      <div className="-order-1 flex items-center gap-2 rounded-xl bg-[#EAF2EF] px-3.5 py-3 text-[15px] font-semibold text-[#0B6655]" role="status">
+        <CircleCheck aria-hidden="true" className="size-[18px]" />
+        본인 확인이 끝났어요
+      </div>
+      {mapping && <p className="-mt-3 text-[15px] text-[#3E4B47]">아이디 <strong className="text-[#16211E]">{mapping.username_normalized}</strong> 의 비밀번호를 바꿔요.</p>}
+      {params.error && (
+        <div className="flex items-start gap-3 rounded-xl border border-[#E8B4AE] bg-[#FDF3F2] p-4 text-[15px] text-[#8C1D18]" role="alert">
+          <CircleAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
+          <p>{params.error === 'invalid_password' ? '비밀번호 조건과 확인 칸을 다시 확인해 주세요.' : '비밀번호를 바꾸지 못했어요. 잠시 후 다시 시도해 주세요.'}</p>
+        </div>
+      )}
+      <form action={updatePasswordAction} className="flex flex-col gap-[18px]">
+        <NewPasswordFields />
+      </form>
+    </AuthCard>
   );
 }

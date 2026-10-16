@@ -58,7 +58,13 @@ export async function loginWithUsernameAction(formData: FormData, nextValue?: st
     },
     async signInWithPassword(email, password) {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      return { accepted: !error, userId: data.user?.id ?? null };
+      if (!error) return { accepted: true, userId: data.user?.id ?? null };
+      // Supabase Auth는 비밀번호를 먼저 검사한 뒤 이메일 미확인을 알린다.
+      return { accepted: false, userId: null, reason: error.code === 'email_not_confirmed' ? 'email_not_confirmed' as const : 'invalid_credentials' as const };
+    },
+    async confirmEmail(userId) {
+      const { error } = await admin.auth.admin.updateUserById(userId, { email_confirm: true });
+      return !error;
     },
     async activateUsername(userId) {
       await admin.from('account_usernames').update({

@@ -1,10 +1,11 @@
 import Link from 'next/link';
-import Brand from '@/components/Brand';
+import { AuthCard } from '@/features/auth/components/AuthCard';
 import { PasswordSignupForm } from '@/features/auth/components/PasswordSignupForm';
 import { sanitizeNextPath } from '@/features/auth/domain/redirect';
 
-type Props = { searchParams: Promise<{ error?: string; notice?: string; next?: string }> };
+type Props = { searchParams: Promise<{ error?: string; next?: string }> };
 
+// 2026-10-16 승인 시안 ⑤⑥: 로그인과 같은 가운데 카드. 이메일 확인 단계는 없다.
 export default async function SignupPage({ searchParams }: Props) {
   const params = await searchParams;
   const next = sanitizeNextPath(params.next);
@@ -19,22 +20,22 @@ export default async function SignupPage({ searchParams }: Props) {
     : null;
 
   return (
-    <main className="min-h-screen bg-[#f7f8f5] px-5 py-8 text-[#12362c]">
-      <header className="mx-auto flex max-w-2xl items-center justify-between">
-        <Link href="/" aria-label="집신 처음으로"><Brand /></Link>
-        <Link className="font-bold text-[#31584a]" href={loginHref}>로그인</Link>
-      </header>
-      <section className="mx-auto mt-8 max-w-2xl rounded-[28px] bg-white p-7 shadow-sm ring-1 ring-slate-200 sm:p-10">
-        <p className="text-sm font-extrabold tracking-widest text-[#aa772a]">ZIPSIN ACCOUNT</p>
-        <h1 className="mt-2 text-4xl font-black tracking-tight">회원가입</h1>
-        <p className="mt-3 leading-7 text-slate-600">{isCheckSignup ? '휴대폰 인증까지 한 화면에서 가입을 마치면 집신체크로 바로 돌아가요.' : '아이디부터 휴대폰 인증까지 한 화면에서 완료해요.'}</p>
-        <p className="my-7 rounded-2xl bg-emerald-50 p-4 text-sm leading-6 text-emerald-950">
-          휴대폰 인증을 마치면 휴대전화·노트북·PC에서도 같은 집신 계정으로 이용할 수 있습니다. 인증 전에는 계정이 만들어지지 않습니다.
-        </p>
-        {params.notice === 'check_email' && <p className="mb-6 rounded-xl bg-emerald-50 p-4 font-semibold text-emerald-900" role="status">가입 이메일로 보낸 확인 링크를 눌러 주세요.</p>}
-        {error && <p className="mb-6 rounded-xl bg-red-50 p-4 font-semibold text-red-800" role="alert">{error}</p>}
-        <PasswordSignupForm next={params.next ? next : undefined} />
-      </section>
-    </main>
+    <AuthCard
+      headerAside={<Link className="inline-flex min-h-11 items-center text-[15px] font-semibold text-[#0B6655]! sm:hidden" href={loginHref}>로그인</Link>}
+      notice="휴대폰 인증은 본인 계정 확인용이에요. 집이나 계약 기록은 초대·권한이 있어야 보여요."
+      subtitle={isCheckSignup
+        ? '휴대폰 인증까지 한 화면에서 가입을 마치면 집신체크로 바로 돌아가요.'
+        : '한 번 가입하면 휴대전화와 PC에서 같은 계정으로 이용해요.'}
+      title="집신 회원가입"
+      titleId="signup-title"
+      wide
+    >
+      {error && <p className="rounded-xl border border-[#E8B4AE] bg-[#FDF3F2] p-4 text-[15px] font-semibold text-[#8C1D18]" role="alert">{error}</p>}
+      <PasswordSignupForm next={params.next ? next : undefined} />
+      <p className="text-center text-[15px] text-[#3E4B47]">
+        이미 계정이 있나요?{' '}
+        <Link className="inline-flex min-h-11 items-center font-semibold text-[#0B6655]! underline! underline-offset-[3px]" href={loginHref}>로그인</Link>
+      </p>
+    </AuthCard>
   );
 }

@@ -9,8 +9,9 @@ import { reserveSmsSend, type SmsRateLimitAdmin } from '@/features/auth/server/s
 
 export async function POST(request: NextRequest) {
   try {
-    const { phone } = await request.json() as { phone?: string };
+    const { phone, name } = await request.json() as { phone?: string; name?: string };
     const phoneE164 = normalizeKoreanMobile(phone ?? '');
+    const personName = typeof name === 'string' ? name.slice(0, 40) : '';
     const challengeId = randomUUID();
     const code = randomInt(0, 1_000_000).toString().padStart(6, '0');
     const expiresAt = new Date(Date.now() + 5 * 60_000).toISOString();
@@ -20,8 +21,8 @@ export async function POST(request: NextRequest) {
     }
     const result = await startPhoneAccountRecovery({
       async findAccountByPhone(value) {
-        const { data } = await admin.from('profiles').select('user_id').eq('phone_e164', value).not('phone_verified_at', 'is', null).limit(2);
-        return data?.length === 1 ? { userId: data[0].user_id } : null;
+        const { data } = await admin.from('profiles').select('user_id, display_name').eq('phone_e164', value).not('phone_verified_at', 'is', null).limit(2);
+        return data?.length === 1 ? { userId: data[0].user_id, name: data[0].display_name ?? null } : null;
       },
       async sendOtp(input) { return getSolapiSmsTransport().sendOtp(input); },
       async saveChallenge(input) {
@@ -31,7 +32,8 @@ export async function POST(request: NextRequest) {
         });
         if (error) throw error;
       },
-    }, phoneE164, { code, challengeId, expiresAt, digest: createOtpDigest(code, challengeId, getPhoneOtpSecret()) });
+    }, { name: personName, phoneE164 }, { code, challengeId, expiresAt, digest: createOtpDigest(code, challengeId, getPhoneOtpSecret()) });
+    if (!result.ok) return NextResponse.json(result, { status: 404, headers: { 'Cache-Control': 'no-store' } });
     return NextResponse.json(result, { headers: { 'Cache-Control': 'no-store' } });
   } catch {
     return NextResponse.json({ error: 'temporarily_unavailable' }, { status: 503, headers: { 'Cache-Control': 'no-store' } });

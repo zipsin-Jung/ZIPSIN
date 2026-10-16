@@ -13,12 +13,8 @@ import { registerVerifiedPasswordAccount } from '@/features/auth/services/regist
 
 export type VerifiedSignupActionState = {
   error?: string;
-  field?: 'signup-username' | 'signup-password' | 'signup-password-confirm' | 'signup-email' | 'signup-phone' | 'signup-form-error';
+  field?: 'signup-name' | 'signup-username' | 'signup-password' | 'signup-password-confirm' | 'signup-email' | 'signup-phone' | 'signup-form-error';
 };
-
-function signupPath(code: string, next: string, hasNext: boolean) {
-  return `/signup?${code}${hasNext ? `&next=${encodeURIComponent(next)}` : ''}`;
-}
 
 export async function registerVerifiedPasswordAccountAction(
   _previousState: VerifiedSignupActionState,
@@ -28,6 +24,7 @@ export async function registerVerifiedPasswordAccountAction(
   const hasNext = typeof rawNext === 'string' && rawNext.length > 0;
   const next = sanitizeNextPath(hasNext ? rawNext : undefined);
   const parsed = verifiedPasswordSignupSchema.safeParse({
+    name: formData.get('name'),
     username: formData.get('username'),
     password: formData.get('password'),
     passwordConfirm: formData.get('passwordConfirm'),
@@ -38,7 +35,8 @@ export async function registerVerifiedPasswordAccountAction(
   });
   if (!parsed.success) {
     const invalidField = parsed.error.issues[0]?.path[0];
-    const field = invalidField === 'username' ? 'signup-username'
+    const field = invalidField === 'name' ? 'signup-name'
+      : invalidField === 'username' ? 'signup-username'
       : invalidField === 'password' ? 'signup-password'
         : invalidField === 'passwordConfirm' ? 'signup-password-confirm'
           : invalidField === 'email' ? 'signup-email'
@@ -80,7 +78,6 @@ export async function registerVerifiedPasswordAccountAction(
   const claimToken = randomBytes(32).toString('base64url');
   const claimDigest = createRateLimitKey(`signup-claim:${claimToken}`, secret);
   const supabase = await createServerSupabaseClient();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
   const result = await registerVerifiedPasswordAccount({
     async claimPhoneProof(input) {
@@ -96,19 +93,19 @@ export async function registerVerifiedPasswordAccountAction(
       return !error && typeof claimedPhone === 'string' && claimedPhone.length > 0;
     },
     async createAuthUser(input) {
-      const { data, error } = await supabase.auth.signUp({
+      // 2026-10-16 사용자 결정: 이메일 확인 없이 가입 즉시 로그인한다.
+      // 휴대폰 인증을 마친 가입만 이 경로에 오므로 Auth 계정을 확인된 상태로 만든다(확인 메일 없음).
+      const { data, error } = await admin.auth.admin.createUser({
         email: input.email,
         password: input.password,
-        options: {
-          emailRedirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(next)}`,
-          data: { username: input.username },
-        },
+        email_confirm: true,
+        user_metadata: { username: input.username },
       });
-      if (data.user?.identities?.length === 0 || error?.code === 'user_already_exists') {
+      if (error?.code === 'email_exists' || error?.code === 'user_already_exists' || error?.status === 422) {
         return { error: 'account_unavailable' as const };
       }
       if (error || !data.user) return { error: 'service_unavailable' as const };
-      return { userId: data.user.id, sessionCreated: Boolean(data.session) };
+      return { userId: data.user.id, sessionCreated: false };
     },
     async finalizeSignup(input) {
       const { error } = await admin.rpc('finalize_verified_password_signup' as never, {
@@ -161,7 +158,7 @@ export async function registerVerifiedPasswordAccountAction(
     ...parsed.data,
     intentDigest: intent.digest,
     claimDigest,
-    displayName: parsed.data.username,
+    displayName: parsed.data.name,
     next,
   });
 
@@ -173,5 +170,10 @@ export async function registerVerifiedPasswordAccountAction(
     return { error: '지금 가입을 완료할 수 없습니다. 잠시 후 다시 시도해 주세요.', field: 'signup-form-error' };
   }
   await clearSignupIntent();
-  redirect(result.sessionCreated ? next : signupPath('notice=check_email', next, hasNext));
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: parsed.data.email,
+    password: parsed.data.password,
+  });
+  if (signInError) redirect(`/login${hasNext ? `?next=${encodeURIComponent(next)}` : ''}`);
+  redirect(hasNext ? `/signup/complete?next=${encodeURIComponent(next)}` : '/signup/complete');
 }

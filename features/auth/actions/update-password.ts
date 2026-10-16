@@ -33,11 +33,11 @@ export async function updatePasswordAction(formData: FormData) {
     const { error } = await admin.auth.admin.updateUserById(userId, { password: parsed.data.password });
     if (error) redirect('/reset-password?error=update_failed');
     cookieStore.delete(RECOVERY_COOKIE);
-    redirect('/login?notice=password_updated');
+    redirect('/reset-password/done');
   }
 
   const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
   if (error) redirect('/reset-password?error=update_failed');
   await supabase.auth.signOut();
-  redirect('/login?notice=password_updated');
+  redirect('/reset-password/done');
 }

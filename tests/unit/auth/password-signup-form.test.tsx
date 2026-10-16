@@ -12,6 +12,7 @@ describe('PasswordSignupForm', () => {
   it('collects username password confirmation and email with required agreements', () => {
     render(<PasswordSignupForm next="/ck" />);
 
+    expect(screen.getByLabelText('이름')).toBeRequired();
     expect(screen.getByLabelText('아이디')).toBeRequired();
     expect(screen.getByLabelText('비밀번호', { selector: 'input' })).toBeRequired();
     expect(screen.getByLabelText('비밀번호 확인')).toBeRequired();
@@ -86,7 +87,7 @@ describe('PasswordSignupForm', () => {
     const user = userEvent.setup();
     render(<PasswordSignupForm />);
     const password = screen.getByLabelText('비밀번호', { selector: 'input' });
-    expect(screen.getByText('영문 소문자·숫자·특수문자를 포함해 8자 이상')).toBeInTheDocument();
+    expect(screen.getByRole('list', { name: '영문 소문자·숫자·특수문자를 포함해 8자 이상' })).toBeInTheDocument();
     expect(password).toHaveAttribute('type', 'password');
     await user.click(screen.getByRole('button', { name: '비밀번호 보기' }));
     expect(password).toHaveAttribute('type', 'text');
@@ -150,6 +151,43 @@ describe('PasswordSignupForm', () => {
     resolveResponse({ ok: true, json: async () => ({ status: 'available' }) });
     expect(await screen.findByText('아이디 중복 확인이 필요합니다.')).toBeInTheDocument();
     expect(screen.queryByText('사용할 수 있는 아이디입니다.')).not.toBeInTheDocument();
+    vi.unstubAllGlobals();
+  });
+
+  // TEST-SIGNUP-UI-001 (시안 ⑤): 비밀번호 조건을 입력하면서 바로 체크한다.
+  it('checks each password rule live as the user types', async () => {
+    const user = userEvent.setup();
+    render(<PasswordSignupForm />);
+    await user.type(screen.getByLabelText('비밀번호', { selector: 'input' }), 'abc1');
+    expect(screen.getByText('✓ 영문 소문자')).toBeInTheDocument();
+    expect(screen.getByText('✓ 숫자')).toBeInTheDocument();
+    expect(screen.getByText('○ 특수문자')).toBeInTheDocument();
+    expect(screen.getByText('○ 8자 이상')).toBeInTheDocument();
+  });
+
+  // TEST-SIGNUP-UI-002 (시안 ⑤): 1 계정 → 2 휴대폰 인증 → 3 동의 진행 표시.
+  it('shows the three signup steps with the first one current', () => {
+    render(<PasswordSignupForm />);
+    const steps = screen.getByRole('list', { name: '가입 단계' });
+    expect(steps).toHaveTextContent('1 계정');
+    expect(steps).toHaveTextContent('2 휴대폰 인증');
+    expect(steps).toHaveTextContent('3 동의');
+    expect(steps.querySelector('[aria-current="step"]')).toHaveTextContent('1 계정');
+  });
+
+  // TEST-SIGNUP-UI-003: 이메일은 아이디 찾기용이며 로그인·확인 메일에 쓰지 않는다고 알린다.
+  it('explains that email is only for finding the username', () => {
+    render(<PasswordSignupForm />);
+    expect(screen.getByText('아이디 찾기에만 써요. 로그인에는 쓰지 않아요.')).toBeInTheDocument();
+  });
+
+  it('shows the five-minute code timer after sending', async () => {
+    const user = userEvent.setup();
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ ok: true, challengeId: '11111111-1111-4111-8111-111111111111', maskedPhone: '010-****-5678' }) }));
+    render(<PasswordSignupForm />);
+    await user.type(screen.getByLabelText('휴대폰 번호'), '01012345678');
+    await user.click(screen.getByRole('button', { name: '인증번호 받기' }));
+    expect(await screen.findByLabelText(/남은 시간 5분 0초|남은 시간 4분/)).toBeInTheDocument();
     vi.unstubAllGlobals();
   });
 });

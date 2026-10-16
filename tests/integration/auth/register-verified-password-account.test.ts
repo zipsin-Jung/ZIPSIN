@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { registerVerifiedPasswordAccount } from '@/features/auth/services/register-verified-password-account';
 
 const input = {
-  username: 'home_owner', password: 'password-2026', passwordConfirm: 'password-2026', email: 'owner@example.com',
+  name: '정민선', username: 'home_owner', password: 'password-2026', passwordConfirm: 'password-2026', email: 'owner@example.com',
   challengeId: '11111111-1111-4111-8111-111111111111', intentDigest: 'intent', claimDigest: 'claim',
   displayName: '', termsAccepted: true as const, privacyAccepted: true as const,
   next: '/ck',

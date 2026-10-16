@@ -1,16 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { createServerSupabaseClient, loginWithUsername, rpc } = vi.hoisted(() => ({
-  createServerSupabaseClient: vi.fn(async () => ({})),
+const { createServerSupabaseClient, loginWithUsername, rpc, updateUserById, signInWithPassword } = vi.hoisted(() => ({
+  createServerSupabaseClient: vi.fn(async () => ({ auth: { signInWithPassword } })),
   loginWithUsername: vi.fn(),
   rpc: vi.fn(),
+  updateUserById: vi.fn(),
+  signInWithPassword: vi.fn(),
 }));
 
 vi.mock('next/navigation', () => ({
   redirect: (url: string) => { throw new Error(`REDIRECT:${url}`); },
 }));
 vi.mock('@/features/auth/services/login-with-username', () => ({ loginWithUsername }));
-vi.mock('@/lib/supabase/admin', () => ({ createAdminSupabaseClient: () => ({ rpc }) }));
+vi.mock('@/lib/supabase/admin', () => ({ createAdminSupabaseClient: () => ({ rpc, auth: { admin: { updateUserById } } }) }));
 vi.mock('@/lib/supabase/server', () => ({ createServerSupabaseClient }));
 
 import { loginWithUsernameAction } from '@/features/auth/actions/login-with-username';
@@ -69,5 +71,23 @@ describe('loginWithUsernameAction', () => {
   it('rejects invalid input before the service', async () => {
     await expect(loginWithUsernameAction(form('bad id', 'short'))).rejects.toThrow('REDIRECT:/login?error=invalid_credentials');
     expect(loginWithUsername).not.toHaveBeenCalled();
+  });
+
+  // TEST-LOGIN-EMAIL-005: Auth가 이메일 미확인을 알리면 그 이유를 서비스에 넘기고, 확인 처리는 관리자 API로 한다.
+  it('maps Auth email_not_confirmed and confirms through the admin API', async () => {
+    signInWithPassword
+      .mockResolvedValueOnce({ data: { user: null }, error: { code: 'email_not_confirmed' } })
+      .mockResolvedValueOnce({ data: { user: null }, error: { code: 'invalid_credentials' } })
+      .mockResolvedValueOnce({ data: { user: { id: 'user-1' } }, error: null });
+    updateUserById.mockResolvedValue({ error: null });
+    loginWithUsername.mockImplementation(async (repository) => {
+      expect(await repository.signInWithPassword('a@example.com', 'password123')).toEqual({ accepted: false, userId: null, reason: 'email_not_confirmed' });
+      expect(await repository.signInWithPassword('a@example.com', 'password123')).toEqual({ accepted: false, userId: null, reason: 'invalid_credentials' });
+      expect(await repository.signInWithPassword('a@example.com', 'password123')).toEqual({ accepted: true, userId: 'user-1' });
+      expect(await repository.confirmEmail('user-1')).toBe(true);
+      return { ok: true };
+    });
+    await expect(loginWithUsernameAction(form())).rejects.toThrow('REDIRECT:/home');
+    expect(updateUserById).toHaveBeenCalledWith('user-1', { email_confirm: true });
   });
 });
