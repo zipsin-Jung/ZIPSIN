@@ -69,7 +69,7 @@ describe('AccountRecoveryForm — 비밀번호 재설정 (이름 + 휴대폰 인
     return user;
   }
 
-  it('TEST-PWRESET-UI-001: 아이디·이름·휴대폰 번호를 다 넣어야 인증번호를 보낼 수 있다', async () => {
+  it('TEST-PWRESET-UI-001: 이메일·이름·휴대폰 번호를 다 넣어야 인증번호를 보낼 수 있다', async () => {
     const user = await openPasswordTab();
     expect(screen.getByRole('tab', { name: '비밀번호 재설정' })).toHaveAttribute('aria-selected', 'true');
     const send = screen.getByRole('button', { name: '인증번호 받기' });
@@ -77,8 +77,9 @@ describe('AccountRecoveryForm — 비밀번호 재설정 (이름 + 휴대폰 인
     await user.type(screen.getByLabelText('이름'), '정민선');
     await user.type(screen.getByLabelText('휴대폰 번호'), '01012345678');
     expect(send).toBeDisabled();
-    await user.type(screen.getByLabelText('아이디'), 'zipsin_agent');
+    await user.type(screen.getByLabelText('가입한 이메일'), 'na@example.com');
     expect(send).toBeEnabled();
+    expect(screen.queryByLabelText('아이디')).not.toBeInTheDocument();
   });
 
   it('TEST-PWRESET-UI-002: 인증에 성공하면 새 비밀번호 화면으로 이동한다', async () => {
@@ -89,12 +90,12 @@ describe('AccountRecoveryForm — 비밀번호 재설정 (이름 + 휴대폰 인
       .mockResolvedValueOnce(json(200, { ok: true, username: 'zipsin_agent', resetReady: true }));
     vi.stubGlobal('fetch', fetchMock);
     const user = await openPasswordTab();
-    await user.type(screen.getByLabelText('아이디'), 'zipsin_agent');
+    await user.type(screen.getByLabelText('가입한 이메일'), 'na@example.com');
     await user.type(screen.getByLabelText('이름'), '정민선');
     await user.type(screen.getByLabelText('휴대폰 번호'), '010-1234-5678');
     await user.click(screen.getByRole('button', { name: '인증번호 받기' }));
     expect(await screen.findByText('010-****-5678로 인증번호를 보냈어요.')).toBeInTheDocument();
-    expect(fetchMock).toHaveBeenNthCalledWith(1, '/api/auth/recovery/phone/send', expect.objectContaining({ body: JSON.stringify({ username: 'zipsin_agent', name: '정민선', phone: '010-1234-5678' }) }));
+    expect(fetchMock).toHaveBeenNthCalledWith(1, '/api/auth/recovery/phone/send', expect.objectContaining({ body: JSON.stringify({ email: 'na@example.com', name: '정민선', phone: '010-1234-5678' }) }));
     expect(screen.getByLabelText(/남은 시간/)).toBeInTheDocument();
     await user.type(screen.getByLabelText('인증번호 6자리'), '123456');
     await user.click(screen.getByRole('button', { name: '인증번호 확인' }));
@@ -105,11 +106,11 @@ describe('AccountRecoveryForm — 비밀번호 재설정 (이름 + 휴대폰 인
   it('TEST-PWRESET-UI-003: 이름·번호가 맞는 계정이 없으면 그렇게 알려 준다', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json(404, { ok: false, error: 'not_found' })));
     const user = await openPasswordTab();
-    await user.type(screen.getByLabelText('아이디'), 'zipsin_agent');
+    await user.type(screen.getByLabelText('가입한 이메일'), 'na@example.com');
     await user.type(screen.getByLabelText('이름'), '김없음');
     await user.type(screen.getByLabelText('휴대폰 번호'), '01012345678');
     await user.click(screen.getByRole('button', { name: '인증번호 받기' }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('아이디·이름·휴대폰 번호가 모두 맞는 계정이 없어요.');
+    expect(await screen.findByRole('alert')).toHaveTextContent('이메일·이름·휴대폰 번호가 모두 맞는 계정이 없어요.');
     expect(screen.queryByLabelText('인증번호 6자리')).not.toBeInTheDocument();
   });
 
@@ -122,7 +123,7 @@ describe('AccountRecoveryForm — 비밀번호 재설정 (이름 + 휴대폰 인
       .mockResolvedValueOnce(json(200, { ok: true, challengeId: 'c-1', maskedPhone: '010-****-5678' }))
       .mockResolvedValueOnce(json(400, { ok: false, ...body })));
     const user = await openPasswordTab();
-    await user.type(screen.getByLabelText('아이디'), 'zipsin_agent');
+    await user.type(screen.getByLabelText('가입한 이메일'), 'na@example.com');
     await user.type(screen.getByLabelText('이름'), '정민선');
     await user.type(screen.getByLabelText('휴대폰 번호'), '01012345678');
     await user.click(screen.getByRole('button', { name: '인증번호 받기' }));
@@ -136,7 +137,7 @@ describe('AccountRecoveryForm — 비밀번호 재설정 (이름 + 휴대폰 인
       .mockResolvedValueOnce(json(429, { error: 'rate_limited' }))
       .mockRejectedValueOnce(new Error('offline')));
     const user = await openPasswordTab();
-    await user.type(screen.getByLabelText('아이디'), 'zipsin_agent');
+    await user.type(screen.getByLabelText('가입한 이메일'), 'na@example.com');
     await user.type(screen.getByLabelText('이름'), '정민선');
     await user.type(screen.getByLabelText('휴대폰 번호'), '01012345678');
     await user.click(screen.getByRole('button', { name: '인증번호 받기' }));

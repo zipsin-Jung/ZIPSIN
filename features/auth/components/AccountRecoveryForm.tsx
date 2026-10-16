@@ -89,7 +89,7 @@ function UsernameFinder() {
 }
 
 function PasswordReset() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [challengeId, setChallengeId] = useState('');
@@ -117,7 +117,7 @@ function PasswordReset() {
     setStatus('sending'); setIsError(false); setMessage('인증번호를 보내고 있어요.');
     try {
       const response = await fetch('/api/auth/recovery/phone/send', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, name, phone }),
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, name, phone }),
       });
       const body = await response.json() as { ok?: boolean; challengeId?: string; maskedPhone?: string; error?: string };
       if (response.ok && body.ok && body.challengeId) {
@@ -126,7 +126,7 @@ function PasswordReset() {
         return;
       }
       setStatus(challengeId ? 'sent' : 'idle'); setIsError(true);
-      setMessage(body.error === 'not_found' ? '아이디·이름·휴대폰 번호가 모두 맞는 계정이 없어요. 가입할 때 적은 그대로 넣어 주세요.'
+      setMessage(body.error === 'not_found' ? '이메일·이름·휴대폰 번호가 모두 맞는 계정이 없어요. 가입할 때 적은 그대로 넣어 주세요.'
         : response.status === 429 || body.error === 'rate_limited' ? '요청이 많아요. 잠시 후 다시 시도해 주세요.'
           : '지금은 인증문자를 보낼 수 없어요. 잠시 후 다시 시도해 주세요.');
     } catch {
@@ -155,15 +155,15 @@ function PasswordReset() {
     }
   }
 
-  const canSend = /^[a-z0-9_]{4,20}$/.test(username.trim().toLowerCase()) && name.trim().length >= 2 && /^01[016789]-?\d{3,4}-?\d{4}$/.test(phone) && status !== 'sending' && status !== 'verified' && cooldown <= 0;
+  const canSend = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) && name.trim().length >= 2 && /^01[016789]-?\d{3,4}-?\d{4}$/.test(phone) && status !== 'sending' && status !== 'verified' && cooldown <= 0;
 
   return (
     <div className="flex flex-col gap-[18px]">
-      <p className={intro}>아이디·이름·휴대폰 번호가 모두 맞으면 문자로 본인 확인을 하고 새 비밀번호를 만들 수 있어요.</p>
+      <p className={intro}>가입한 이메일·이름·휴대폰 번호가 모두 맞으면 문자로 본인 확인을 하고 새 비밀번호를 다시 정할 수 있어요. 아이디가 기억나지 않아도 괜찮아요.</p>
       <div className="grid grid-cols-[minmax(0,1fr)] gap-2">
-        <label className={authLabelClass} htmlFor="reset-username">아이디</label>
+        <label className={authLabelClass} htmlFor="reset-email">가입한 이메일</label>
         <div className={`${authFieldClass} px-4`}>
-          <input autoCapitalize="none" autoComplete="username" className={authInputClass} id="reset-username" maxLength={20} onChange={(event) => { setUsername(event.target.value); reset(); }} placeholder="아이디" spellCheck={false} value={username} />
+          <input autoCapitalize="none" autoComplete="email" className={authInputClass} id="reset-email" maxLength={254} onChange={(event) => { setEmail(event.target.value); reset(); }} placeholder="name@example.com" spellCheck={false} type="email" value={email} />
         </div>
       </div>
       <div className="grid grid-cols-[minmax(0,1fr)] gap-2">

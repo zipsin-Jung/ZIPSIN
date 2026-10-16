@@ -9,10 +9,10 @@ import { reserveSmsSend, type SmsRateLimitAdmin } from '@/features/auth/server/s
 
 export async function POST(request: NextRequest) {
   try {
-    const { phone, name, username } = await request.json() as { phone?: string; name?: string; username?: string };
+    const { phone, name, email } = await request.json() as { phone?: string; name?: string; email?: string };
     const phoneE164 = normalizeKoreanMobile(phone ?? '');
     const personName = typeof name === 'string' ? name.slice(0, 40) : '';
-    const accountUsername = typeof username === 'string' ? username.slice(0, 40) : '';
+    const accountEmail = typeof email === 'string' ? email.slice(0, 254) : '';
     const challengeId = randomUUID();
     const code = randomInt(0, 1_000_000).toString().padStart(6, '0');
     const expiresAt = new Date(Date.now() + 5 * 60_000).toISOString();
@@ -22,10 +22,10 @@ export async function POST(request: NextRequest) {
     }
     const result = await startPhoneAccountRecovery({
       async findAccountByPhone(value) {
-        const { data } = await admin.from('profiles').select('user_id, display_name').eq('phone_e164', value).not('phone_verified_at', 'is', null).limit(2);
+        const { data, error } = await admin.from('profiles').select('user_id, display_name, email').eq('phone_e164', value).not('phone_verified_at', 'is', null).limit(2);
+        if (error) throw error;
         if (data?.length !== 1) return null;
-        const { data: mapping } = await admin.from('account_usernames').select('username_normalized').eq('user_id', data[0].user_id).maybeSingle();
-        return { userId: data[0].user_id, name: data[0].display_name ?? null, username: mapping?.username_normalized ?? null };
+        return { userId: data[0].user_id, name: data[0].display_name ?? null, email: data[0].email ?? null };
       },
       async sendOtp(input) { return getSolapiSmsTransport().sendOtp(input); },
       async saveChallenge(input) {
@@ -35,10 +35,12 @@ export async function POST(request: NextRequest) {
         });
         if (error) throw error;
       },
-    }, { username: accountUsername, name: personName, phoneE164 }, { code, challengeId, expiresAt, digest: createOtpDigest(code, challengeId, getPhoneOtpSecret()) });
+    }, { email: accountEmail, name: personName, phoneE164 }, { code, challengeId, expiresAt, digest: createOtpDigest(code, challengeId, getPhoneOtpSecret()) });
     if (!result.ok) return NextResponse.json(result, { status: 404, headers: { 'Cache-Control': 'no-store' } });
     return NextResponse.json(result, { headers: { 'Cache-Control': 'no-store' } });
-  } catch {
+  } catch (error) {
+    const detail = error as { code?: string; message?: string };
+    console.error('recovery_sms_failed', { code: detail?.code ?? null, message: detail?.message?.slice(0, 160) ?? null });
     return NextResponse.json({ error: 'temporarily_unavailable' }, { status: 503, headers: { 'Cache-Control': 'no-store' } });
   }
 }

@@ -3,7 +3,7 @@ import { startPhoneAccountRecovery, verifyPhoneAccountRecovery } from '@/feature
 
 const challenge = { code: '123456', challengeId: 'challenge-1', digest: 'digest', expiresAt: '2026-10-14T01:05:00.000Z' };
 
-function repository(account: { userId: string; name: string | null; username: string | null } | null) {
+function repository(account: { userId: string; name: string | null; email: string | null } | null) {
   return {
     findAccountByPhone: vi.fn().mockResolvedValue(account),
     saveChallenge: vi.fn().mockResolvedValue(undefined),
@@ -11,28 +11,28 @@ function repository(account: { userId: string; name: string | null; username: st
   };
 }
 
-const owner = { userId: 'user-1', name: '정민선', username: 'zipsin_agent' };
+const owner = { userId: 'user-1', name: '정민선', email: 'na@example.com' };
 
-describe('phone account recovery (아이디 + 이름 + 휴대폰 인증 → 새 비밀번호)', () => {
-  it('TEST-PWRESET-001: 아이디·이름·번호가 모두 맞으면 문자를 보내고 계정을 묶어 둔다', async () => {
+describe('phone account recovery (이메일 + 이름 + 휴대폰 인증 → 새 비밀번호)', () => {
+  it('TEST-PWRESET-001: 이메일·이름·번호가 모두 맞으면 문자를 보내고 계정을 묶어 둔다', async () => {
     const repo = repository(owner);
-    await expect(startPhoneAccountRecovery(repo, { username: ' ZIPSIN_agent ', name: ' 정 민선', phoneE164: '+821012345678' }, challenge))
+    await expect(startPhoneAccountRecovery(repo, { email: ' NA@Example.com ', name: ' 정 민선', phoneE164: '+821012345678' }, challenge))
       .resolves.toEqual({ ok: true, challengeId: 'challenge-1', maskedPhone: '010-****-5678' });
     expect(repo.sendOtp).toHaveBeenCalledWith({ to: '+821012345678', code: '123456', expiresInMinutes: 5 });
     expect(repo.saveChallenge).toHaveBeenCalledWith(expect.objectContaining({ userId: 'user-1', providerMessageId: 'msg-1' }));
   });
 
   it.each([
-    ['가입되지 않은 번호', null, 'zipsin_agent', '정민선'],
-    ['이름이 다름', owner, 'zipsin_agent', '김집신'],
-    ['아이디가 다름', owner, 'other_user', '정민선'],
-    ['저장된 이름 없음', { ...owner, name: null }, 'zipsin_agent', '정민선'],
-    ['저장된 아이디 없음', { ...owner, username: null }, 'zipsin_agent', '정민선'],
-    ['빈 이름', owner, 'zipsin_agent', '   '],
-    ['빈 아이디', owner, '  ', '정민선'],
-  ])('TEST-PWRESET-002: %s이면 문자를 보내지 않는다', async (_label, account, username, name) => {
+    ['가입되지 않은 번호', null, 'na@example.com', '정민선'],
+    ['이름이 다름', owner, 'na@example.com', '김집신'],
+    ['이메일이 다름', owner, 'other@example.com', '정민선'],
+    ['저장된 이름 없음', { ...owner, name: null }, 'na@example.com', '정민선'],
+    ['저장된 이메일 없음', { ...owner, email: null }, 'na@example.com', '정민선'],
+    ['빈 이름', owner, 'na@example.com', '   '],
+    ['이메일 형식 아님', owner, 'zipsin_agent', '정민선'],
+  ])('TEST-PWRESET-002: %s이면 문자를 보내지 않는다', async (_label, account, email, name) => {
     const repo = repository(account);
-    await expect(startPhoneAccountRecovery(repo, { username, name, phoneE164: '+821012345678' }, challenge))
+    await expect(startPhoneAccountRecovery(repo, { email, name, phoneE164: '+821012345678' }, challenge))
       .resolves.toEqual({ ok: false, error: 'not_found' });
     expect(repo.sendOtp).not.toHaveBeenCalled();
     expect(repo.saveChallenge).not.toHaveBeenCalled();
