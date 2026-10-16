@@ -59,3 +59,15 @@
 - 새 비밀번호 화면에 "아이디 · 이름 · 가린 번호 확인됨" 표시.
 - 서버의 profiles 읽기 권한 migration `202610160001`은 작성만 함. **실제 DB 적용은 사용자 승인 대기.**
 - 테스트 798 통과·2 skip.
+
+## 11:36~ Preview 점검 (사용자: "배포 직전까지 판단에 맡김")
+
+- 비밀번호 재설정을 이메일 + 이름 + 휴대폰으로 변경(사용자 제안 채택). 테스트 312 auth 통과.
+- Preview 공개 화면 10개 200, 로그인 필요 화면 11개는 로그인으로 이동(정상).
+- **발견:** Preview DB에 일부 migration이 없다.
+  - `verify_account_recovery_challenge` 없음(PGRST202) → `202610140002`·`202610140003` 미적용 추정.
+  - `202610140003`에 문자 발송 제한 `reserve_auth_sms_send`가 있어 **가입 문자도 실패할 가능성** 높음.
+  - `profiles`에 service_role 읽기 권한 없음(42501) → `202610160001` 필요.
+  - `202610140004`(가입 전 휴대폰 인증)는 있음.
+- 읽기 전용 점검 SQL: `docs/deployment/sql/2026-10-16-check-applied-migrations.sql`
+- 다음: 사용자 Supabase 로그인 → 점검 SQL 실행 → Preview·Production 같은 DB인지 확인 → 빠진 migration 순서대로 적용.
