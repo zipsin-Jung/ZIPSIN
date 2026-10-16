@@ -67,7 +67,7 @@ describe('PublicHome', () => {
     expect(actions[0]).toHaveAccessibleName('앱으로 다운로드');
     expect(actions[1]).toHaveAccessibleName('로그인');
     expect(actions[1]).toHaveAttribute('href', '/login');
-    expect(actions[2]).toHaveAccessibleName('웹에서 시작하기');
+    expect(actions[2]).toHaveAccessibleName('회원가입');
     expect(actions[2]).toHaveAttribute('href', '/signup');
     expect(screen.queryByRole('link', { name: /App Store|Google Play/ })).not.toBeInTheDocument();
   });

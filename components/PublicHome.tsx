@@ -14,7 +14,7 @@ export default function PublicHome() {
       <div className={styles.headerActions} data-header-actions>
         <InstallAppButton />
         <Link className={styles.login} href="/login">로그인</Link>
-        <Link className={styles.primarySmall} href="/signup">웹에서 시작하기</Link>
+        <Link className={styles.primarySmall} href="/signup">회원가입</Link>
       </div>
     </header>
 

@@ -93,7 +93,7 @@ for (const width of viewports) {
     const focusOutline = await focusTarget.evaluate((element) => getComputedStyle(element).outlineStyle);
     expect(focusOutline).not.toBe('none');
 
-    const primary = page.getByRole('link', { name: /내 집 기록 시작하기|웹에서 시작하기/ }).first();
+    const primary = page.getByRole('link', { name: /내 집 기록 시작하기|회원가입/ }).first();
     const primaryBox = await primary.boundingBox();
     expect(primaryBox?.height ?? 0).toBeGreaterThanOrEqual(44);
 

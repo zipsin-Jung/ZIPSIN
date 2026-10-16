@@ -16,7 +16,7 @@ test('public header offers install before login and web signup', async ({ page }
   await expect(actions).toHaveCount(3);
   await expect(actions.nth(0)).toHaveAccessibleName('앱으로 다운로드');
   await expect(actions.nth(1)).toHaveAccessibleName('로그인');
-  await expect(actions.nth(2)).toHaveAccessibleName('웹에서 시작하기');
+  await expect(actions.nth(2)).toHaveAccessibleName('회원가입');
   await expect(actions.nth(0)).toHaveCSS('min-height', '44px');
 });
 
