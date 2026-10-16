@@ -5,6 +5,6 @@ export type ZipsinService =
 
 export const ZIPSIN_SERVICES: readonly ZipsinService[] = [
   { id: 'check', name: '집신체크', status: 'live' },
-  { id: 'clean', name: '집신클린', status: 'soon' },
   { id: 'repair', name: '집신수리', status: 'soon' },
+  { id: 'clean', name: '집신클린', status: 'soon' },
 ];

@@ -1,3 +1,4 @@
+import userEvent from '@testing-library/user-event';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import PublicHome from '@/components/PublicHome';
@@ -35,17 +36,30 @@ describe('PublicHome', () => {
     expect(screen.getAllByRole('navigation')).toHaveLength(1);
   });
 
-  // TEST-PUB-SERVICES-001 (2026-10-16): 상단에 집신체크·집신클린·집신수리. 준비 중은 링크가 아니다.
-  it('TEST-PUB-SERVICES-001 상단 서비스 메뉴는 집신체크만 링크이고 클린·수리는 준비 중으로 표시한다', () => {
+  // TEST-PUB-SERVICES-001 (2026-10-16): 상단 순서는 집신체크 · 집신수리 · 집신클린. 체크만 다른 주소로 간다.
+  it('TEST-PUB-SERVICES-001 상단 서비스 메뉴는 집신체크·집신수리·집신클린 순서이고 체크만 링크다', () => {
     render(<PublicHome />);
     const nav = screen.getByRole('navigation', { name: '집신 서비스' });
+    const items = Array.from(nav.querySelectorAll('li > a, li > button')).map((item) => item.textContent);
+    expect(items).toEqual(['집신체크', '집신수리', '집신클린']);
     const links = Array.from(nav.querySelectorAll('a'));
     expect(links).toHaveLength(1);
-    expect(links[0]).toHaveTextContent('집신체크');
     expect(links[0]).toHaveAttribute('href', '/ck');
-    expect(nav).toHaveTextContent('집신클린준비 중');
-    expect(nav).toHaveTextContent('집신수리준비 중');
-    expect(nav.querySelectorAll('[aria-disabled="true"]')).toHaveLength(2);
+  });
+
+  // TEST-PUB-SERVICES-004: 준비 중 서비스는 누르면 가운데에 "준비 중" 안내만 뜬다.
+  it('TEST-PUB-SERVICES-004 집신수리를 누르면 준비 중 안내가 뜨고 확인으로 닫힌다', async () => {
+    HTMLDialogElement.prototype.showModal = function showModal() { this.setAttribute('open', ''); };
+    HTMLDialogElement.prototype.close = function close() { this.removeAttribute('open'); this.dispatchEvent(new Event('close')); };
+    const user = userEvent.setup();
+    render(<PublicHome />);
+    await user.click(screen.getByRole('button', { name: '집신수리' }));
+    const dialog = screen.getByRole('dialog', { name: '준비 중이에요' });
+    expect(dialog).toHaveAttribute('open');
+    expect(dialog).toHaveTextContent('집신수리');
+    await user.click(screen.getByRole('button', { name: '확인' }));
+    expect(dialog).not.toHaveAttribute('open');
+    expect(screen.getByRole('button', { name: '집신수리' })).toHaveFocus();
   });
 
   it('TEST-RC-PUB-IMG-001 서론의 집 관리 이력 이미지를 우선 노출한다', () => {
