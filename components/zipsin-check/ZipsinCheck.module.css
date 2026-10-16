@@ -94,3 +94,13 @@
 /* 체크 화면 오른쪽 '이름·위치 수정'이 좁은 화면에서 잘리지 않도록 두 줄 허용 */
 .fieldHeader .editInfo{justify-self:end;max-width:100%;min-height:40px;padding:6px 10px;white-space:normal;line-height:1.25;text-align:center;font-size:12px}
 @media(max-width:560px){.fieldHeader .editInfo{font-size:11px;padding:5px 8px;word-break:keep-all}}
+
+/* 펼친 상세·질문 맨 아래 접기 */
+.detailCollapse{display:block;width:100%;min-height:44px;margin-top:12px;border:1px solid #c9dcdf;border-radius:10px;background:#fff;color:#315e6a;font-size:13px;font-weight:900}
+/* 아래 고정 바: 뒤로가기·집신 저장 버튼 크기를 같게 */
+.stickyFinish>div{display:grid;grid-template-columns:1fr 1fr;gap:8px;min-width:min(360px,100%)}.stickyFinish>div>:is(a,button){display:inline-flex;align-items:center;justify-content:center;width:100%;min-height:52px;padding:10px 14px;border-radius:12px;font-size:15px;font-weight:900;white-space:nowrap}
+.stickyFinish>div>a{background:#f8e08e;color:#1b2a33;border:1px solid #f8e08e}.stickyFinish>div>button:first-child{background:transparent;color:#fff;border:1px solid #d7e7e2}
+/* 메모·사진 / 상세 체크(답변 기록 / 질문 펼치기) 두 네모를 같은 크기로 */
+.rowActions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rowActions button{width:100%;min-height:48px}
+/* PC에서는 '이름·위치 수정'을 한 줄로 */
+@media(min-width:561px){.fieldHeader{grid-template-columns:96px 1fr auto}.fieldHeader .editInfo{white-space:nowrap}}

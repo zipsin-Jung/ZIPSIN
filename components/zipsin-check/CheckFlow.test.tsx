@@ -13,7 +13,7 @@ const renderFlow=(props:Partial<React.ComponentProps<typeof CheckFlow>>={})=>ren
 describe('초보 임차인 현장 체크',()=>{
   it('중요 3개를 상단에 두고 나머지 현장 체크도 모두 제공한다',()=>{
     renderFlow();
-    const priority=screen.getByRole('region',{name:'먼저 볼 3개'});
+    const priority=screen.getByRole('region',{name:'집 체크'});
     expect(within(priority).getByRole('heading',{name:'물·배수'})).toBeInTheDocument();
     expect(within(priority).getByRole('heading',{name:'곰팡이·누수'})).toBeInTheDocument();
     expect(within(priority).getByRole('heading',{name:'온수·난방'})).toBeInTheDocument();
@@ -32,8 +32,8 @@ describe('초보 임차인 현장 체크',()=>{
     fireEvent.click(detail);
     fireEvent.click(screen.getByRole('button',{name:'물·배수 상세 체크 접기'}));
     expect(screen.getByRole('button',{name:'물·배수 상세 체크 펼치기'})).toHaveAttribute('data-attention','seen');
-    fireEvent.click(screen.getByRole('button',{name:'질문 체크 8개'}));
-    fireEvent.click(screen.getByRole('button',{name:`집 체크 9개`}));
+    fireEvent.click(screen.getByRole('button',{name:'질문 체크'}));
+    fireEvent.click(screen.getByRole('button',{name:'집 체크'}));
     expect(screen.getByRole('button',{name:'물·배수 상세 체크 펼치기'})).toHaveAttribute('data-attention','seen');
   });
 
@@ -55,7 +55,7 @@ describe('초보 임차인 현장 체크',()=>{
 
   it('물어볼 것을 우선순위대로 열고 답변을 메모할 수 있다',()=>{
     renderFlow();
-    fireEvent.click(screen.getByRole('button',{name:'질문 체크 8개'}));
+    fireEvent.click(screen.getByRole('button',{name:'질문 체크'}));
     const questions=screen.getByRole('region',{name:'중개사에게 물어볼 것'});
     expect(within(questions).getAllByRole('heading',{level:2}).map(heading=>heading.textContent)).toEqual([
       '1. 관리비','2. 입주 전 수리','3. 수리 책임','4. 공과금','5. 입주 날짜','6. 주차·자전거','7. 쓰레기','8. 생활 제한',
@@ -66,13 +66,14 @@ describe('초보 임차인 현장 체크',()=>{
   it('체크 중 기록을 유지한 채 로그인 페이지로 갈 수 있다',()=>{
     renderFlow();
     expect(screen.getByText('이 기기의 집신체크에 먼저 저장돼요')).toBeInTheDocument();
-    expect(screen.getByRole('link',{name:'집신에 저장'})).toHaveAttribute('href','/login?next=%2Fck%2Ftransfer%3Fcandidate%3Da');
+    expect(screen.getByRole('link',{name:'집신 저장'})).toHaveAttribute('href','/login?next=%2Fck%2Ftransfer%3Fcandidate%3Da');
   });
 
-  it('완료 버튼은 별도 요약 없이 내가 본 집으로 돌아간다',()=>{
+  it('TEST-CK-BAR-001 뒤로가기는 이전 기록이 없으면 내가 본 집으로 돌아간다',()=>{
     const onFinish=vi.fn();
+    window.history.replaceState(null,'','/ck');
     renderFlow({onFinish});
-    fireEvent.click(screen.getByRole('button',{name:'저장하고 내가 본 집으로'}));
+    fireEvent.click(screen.getByRole('button',{name:'뒤로가기'}));
     expect(onFinish).toHaveBeenCalledOnce();
     expect(screen.queryByRole('button',{name:'체크 결과 보기'})).not.toBeInTheDocument();
   });
@@ -83,15 +84,26 @@ describe('초보 임차인 현장 체크',()=>{
     fireEvent.click(screen.getByRole('checkbox',{name:/부엌 싱크대와 화장실/}));
     expect(onChange.mock.calls[0][0].answers['water-drain'].status).toBe('unverified');
   });
-  it('TEST-CK-TAB-001 질문 체크 탭은 처음에 강조 안내를 보이고 한 번 열면 안내를 거둔다',()=>{
+  it('TEST-CK-TAB-001 질문 체크 탭은 숫자 없이 한 번 열 때까지 강조된다',()=>{
     render(<CheckFlow candidate={createCandidate({id:'tab-test',alias:'탭 집',depth:'quick',now:'2026-10-16T00:00:00.000Z'})} onChange={()=>{}} onFinish={()=>{}} onBack={()=>{}}/>);
-    const tab=screen.getByRole('button',{name:'질문 체크 8개'});
+    const tab=screen.getByRole('button',{name:'질문 체크'});
     expect(tab).toHaveAttribute('data-visited','false');
-    expect(tab).toHaveTextContent('중개사에게 꼭');
+    expect(tab).not.toHaveTextContent(/[0-9]/);
+    expect(screen.queryByText('중개사에게 꼭')).toBeNull();
     fireEvent.click(tab);
-    expect(tab).toHaveAttribute('aria-pressed','true');
     expect(tab).toHaveAttribute('data-visited','true');
-    expect(tab).not.toHaveTextContent('중개사에게 꼭');
-    expect(screen.getByRole('button',{name:'집 체크 9개'})).toHaveAttribute('aria-pressed','false');
+    expect(screen.getByRole('button',{name:'집 체크'})).toHaveAttribute('aria-pressed','false');
+  });
+
+  it('TEST-CK-DETAIL-001 질문도 상세 체크처럼 처음엔 빨간 강조, 펼치면 아래 접기로 닫는다',()=>{
+    renderFlow();
+    fireEvent.click(screen.getByRole('button',{name:'질문 체크'}));
+    const toggle=screen.getByRole('button',{name:'관리비 상세 체크 펼치기'});
+    expect(toggle).toHaveAttribute('data-attention','required');
+    fireEvent.click(toggle);
+    expect(screen.getByRole('button',{name:'관리비 상세 체크 접기'})).toHaveAttribute('data-attention','seen');
+    fireEvent.click(screen.getByRole('button',{name:'관리비 질문 닫기'}));
+    expect(screen.queryByRole('region',{name:'관리비 상세 체크'})).toBeNull();
+    expect(screen.queryByText('먼저 볼 3개부터 확인하세요')).toBeNull();
   });
 });

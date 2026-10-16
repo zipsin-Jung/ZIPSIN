@@ -84,7 +84,7 @@ for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}]) {
     await page.getByRole('button',{name:'별명 저장하고 체크 시작'}).click();
 
     const detail=page.getByRole('button',{name:'물·배수 상세 체크 펼치기'});
-    const finish=page.getByRole('button',{name:'저장하고 내가 본 집으로'});
+    const finish=page.getByRole('button',{name:'뒤로가기'});
     await expect(detail).toHaveAttribute('data-attention','required');
     await expect(detail).toHaveText('상세 체크');
     await expect(finish).toBeVisible();
@@ -99,8 +99,8 @@ for (const viewport of [{width: 320, height: 800}, {width: 390, height: 844}]) {
 
     await detail.click();
     await page.getByRole('button',{name:'물·배수 상세 체크 접기'}).click();
-    await page.getByRole('button',{name:'질문 체크 8개'}).click();
-    await page.getByRole('button',{name:'집 체크 9개'}).click();
+    await page.getByRole('button',{name:'질문 체크'}).click();
+    await page.getByRole('button',{name:'집 체크'}).click();
     await expect(page.getByRole('button',{name:'물·배수 상세 체크 펼치기'})).toHaveAttribute('data-attention','seen');
   });
 }
