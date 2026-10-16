@@ -269,3 +269,21 @@
   .storyMotionStage[data-motion-story=history] .storyImageForeground{object-fit:cover;object-position:68% 50%}
   .storyMotionStage[data-motion-story=history] .motionMarkers{display:none}
 }
+
+
+/* 2026-10-16 홈 상단 서비스 메뉴: 집신체크 · 집신클린(준비 중) · 집신수리(준비 중) */
+.header .serviceNav{display:flex;margin:0 auto;min-width:0}
+.serviceNav ul{display:flex;align-items:center;gap:6px;margin:0;padding:0;list-style:none}
+.serviceLink,.serviceSoon{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:12px;font-size:15px;font-weight:800;white-space:nowrap}
+.serviceLink{color:var(--green-dark)}
+.serviceLink:hover{background:#eaf3f0}
+.serviceLink:focus-visible{outline:3px solid #da9b36;outline-offset:2px}
+.serviceSoon{color:#7d8f95;cursor:default}
+.serviceSoon small{padding:2px 7px;border-radius:999px;background:#eef2f1;color:#5c7076;font-size:11px;font-weight:700}
+@media(max-width:980px){
+  .page{grid-template-rows:auto minmax(0,1fr)}
+  .header{flex-wrap:wrap;height:auto;min-height:68px;row-gap:0}
+  .header .serviceNav{order:3;flex-basis:100%;margin:0 -6px;overflow-x:auto;scrollbar-width:none}
+  .serviceNav ul{gap:2px;padding-bottom:4px}
+  .serviceLink,.serviceSoon{padding:0 10px;font-size:14px}
+}

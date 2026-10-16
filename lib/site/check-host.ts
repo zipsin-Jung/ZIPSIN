@@ -21,3 +21,12 @@ export function isCheckHost(host: string | null | undefined): boolean {
 export function resolveAuthSiteOrigin(mainSiteOrigin: string, requestHost: string | null | undefined): string {
   return isCheckHost(requestHost) ? checkSiteUrl().origin : mainSiteOrigin;
 }
+
+/**
+ * 홈 상단 "집신체크" 링크 주소(2026-10-16 사용자 요청).
+ * 실서비스에서는 ck.zipsin.net으로 보내고, Preview·로컬에서는 같은 앱의 /ck로 보낸다
+ * (ck.zipsin.net은 아직 배포 전이라 Preview에서 누르면 실서비스로 새지 않게 한다).
+ */
+export function getCheckServiceHref(vercelEnv: string | undefined = process.env.VERCEL_ENV): string {
+  return vercelEnv === 'production' ? `${checkSiteUrl().origin}/` : '/ck';
+}

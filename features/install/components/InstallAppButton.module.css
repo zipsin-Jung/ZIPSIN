@@ -46,6 +46,9 @@
 .dialog {
   width: min(440px, calc(100vw - 32px));
   max-width: none;
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  overflow: auto;
   border: 0;
   border-radius: 26px;
   padding: 0;
@@ -126,6 +129,72 @@
   font: inherit;
   font-weight: 800;
   cursor: pointer;
+}
+
+/* 2026-10-16 시안 ⑩: PC에서 휴대폰으로 찍는 QR */
+.lead {
+  margin: 0.9rem 0 0;
+  color: #3e4b47;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.qrBox {
+  display: grid;
+  place-items: center;
+  margin: 1.2rem auto 0;
+  width: fit-content;
+  padding: 14px;
+  border: 1px solid rgba(15, 92, 69, 0.14);
+  border-radius: 18px;
+  background: #fff;
+}
+
+.qrImage,
+.qrPlaceholder {
+  display: block;
+  width: 200px;
+  height: 200px;
+}
+
+.qrPlaceholder {
+  border-radius: 8px;
+  background: repeating-linear-gradient(45deg, #eef3f1 0 8px, #f7faf9 8px 16px);
+}
+
+.qrUrl {
+  margin: 0.7rem 0 0;
+  color: #5f6f69;
+  font-size: 0.85rem;
+  text-align: center;
+  word-break: break-all;
+}
+
+.dialogActions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+}
+
+.dialogActions .closeButton {
+  margin-top: 0;
+}
+
+.secondaryButton {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid #8a9792;
+  border-radius: 14px;
+  background: #fff;
+  color: #10231d;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.secondaryButton:focus-visible {
+  outline: 3px solid #da9b36;
+  outline-offset: 3px;
 }
 
 @media (max-width: 600px) {
