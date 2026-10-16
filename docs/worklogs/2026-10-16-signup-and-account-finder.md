@@ -71,3 +71,12 @@
   - `202610140004`(가입 전 휴대폰 인증)는 있음.
 - 읽기 전용 점검 SQL: `docs/deployment/sql/2026-10-16-check-applied-migrations.sql`
 - 다음: 사용자 Supabase 로그인 → 점검 SQL 실행 → Preview·Production 같은 DB인지 확인 → 빠진 migration 순서대로 적용.
+
+## 14:00~ Supabase 확인과 남은 차단
+
+- 사용자 로그인으로 확인: Supabase 프로젝트는 `ZIPSIN Preview`(활성, 서울)와 `ZIPSIN`(일시 중단) 두 개. Preview가 쓰는 DB는 `ZIPSIN Preview`.
+- 읽기 전용 점검 결과 빠진 migration 7개: 202610130011, 202610130102, 202610140001, 202610140002, 202610140003, 202610150001, 202610160001.
+- 일괄 적용 SQL(begin/commit, 전부 성공 또는 전부 취소): `docs/deployment/sql/2026-10-16-apply-missing-migrations-preview.sql`
+- Claude가 Supabase 대시보드에서 직접 실행하려 했으나 안전 정책이 실서비스 DB 변경으로 판단해 차단. 우회하지 않음. **사용자가 직접 붙여넣어 실행해야 함.**
+- 사용자용 눌러보기 체크리스트를 Artifact로 발행(0번 DB 적용 → 1~5번 흐름 → 남은 일).
+- 전체 테스트 통과 유지.
