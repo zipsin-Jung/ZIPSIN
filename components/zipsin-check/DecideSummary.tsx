@@ -5,6 +5,7 @@ import {ASK_ITEMS, CHECK_ITEMS} from '@/lib/zipsin-check/catalog';
 import {formatRentalPrice, formatWon} from '@/lib/zipsin-check/format';
 import type {CandidateV2} from '@/lib/zipsin-check/types';
 import styles from './ZipsinCheck.module.css';
+import {isAccountOpen} from '@/lib/site/account-launch';
 
 /** 확정 요약에 넣을 내용만 뽑습니다. 점수·순위 없이 사용자가 직접 남긴 사실만 씁니다. */
 export function buildDecision(candidate: CandidateV2) {
@@ -57,8 +58,11 @@ export default function DecideSummary({candidate, onBack, onStart}: {candidate: 
     </div>
 
     <div className={styles.decideActions}>
-      <a className={styles.instantStart} href={href} onClick={event => { if (!onStart()) event.preventDefault(); }}>집신 시작</a>
-      <p>집신에 이 집을 저장하고, 계약·입주 뒤 기록도 이어서 관리해요. 처음이면 1분 회원가입이 필요해요.</p>
+      {isAccountOpen()
+        ? <><a className={styles.instantStart} href={href} onClick={event => { if (!onStart()) event.preventDefault(); }}>집신 시작</a>
+          <p>집신에 이 집을 저장하고, 계약·입주 뒤 기록도 이어서 관리해요. 처음이면 1분 회원가입이 필요해요.</p></>
+        : <><button type="button" className={styles.instantStart} disabled>집신 시작 · 준비 중</button>
+          <p>집신 연결은 곧 열려요. 이 집 기록은 이 휴대폰에 그대로 남아 있어요.</p></>}
     </div>
   </main>;
 }

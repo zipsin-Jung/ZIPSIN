@@ -4,6 +4,7 @@ import {ArrowLeftRight,ChevronRight,MapPin,MessageCircleQuestion,Plus,Trash2} fr
 import type {PhotoStore} from '@/lib/zipsin-check/photo-store';
 import {summarizeAnswers} from '@/lib/zipsin-check/summary';
 import type {CandidateV2} from '@/lib/zipsin-check/types';
+import {isAccountOpen} from '@/lib/site/account-launch';
 import styles from './ZipsinCheck.module.css';
 
 type ListProps={candidates:CandidateV2[];onNew:()=>void;onResume:(id:string,view?:'questions')=>void;onDelete:(id:string)=>void;onCompare?:()=>void;onDecide?:(id:string)=>void;photoStore?:Pick<PhotoStore,'count'>};
@@ -25,7 +26,7 @@ export default function CandidateList({candidates,onNew,onResume,onDelete,onComp
   const remainingQuestions=latestSummary?latestSummary.askTotal-latestSummary.asked:0;
 
   return <main className={styles.candidateList}>
-    {sorted.length>0&&<section className={styles.localBanner} aria-labelledby="local-banner-title"><div><b id="local-banner-title">이 휴대폰에만 저장돼 있어요</b><span>다른 기기에서도 보려면 집신에 저장하세요</span></div><a href={`/login?next=${encodeURIComponent('/ck/transfer')}`}>집신 저장</a></section>}
+    {sorted.length>0&&<section className={styles.localBanner} aria-labelledby="local-banner-title"><div><b id="local-banner-title">이 휴대폰에만 저장돼 있어요</b><span>{isAccountOpen()?'다른 기기에서도 보려면 집신에 저장하세요':'집신 계정 저장은 곧 열려요'}</span></div>{isAccountOpen()?<a href={`/login?next=${encodeURIComponent('/ck/transfer')}`}>집신 저장</a>:<span className={styles.preparing}>집신 저장 준비 중</span>}</section>}
     <header className={styles.listHeader}><div><p className={styles.sectionKicker}>저장한 집</p><h1>내가 본 집 {sorted.length}채</h1><p>저장한 집을 다시 열어 수정하거나 비교할 수 있어요.</p></div><button type="button" onClick={onNew}><Plus aria-hidden="true"/>새 집 추가</button></header>
     {sorted.length===0?<section className={styles.listEmpty}><strong>아직 등록한 집이 없어요</strong><p>첫 집을 등록하고 현장에서 바로 체크해 보세요.</p><button type="button" onClick={onNew}>첫 집 등록하기</button></section>:<>
     <section className={styles.listGrid} aria-label="저장한 집 전체 목록">{sorted.map((candidate,index)=>{const s=summarizeAnswers(candidate.answers);const photos=photoCounts[candidate.id];return <article className={styles.listCard} key={candidate.id} aria-label={candidate.alias}>

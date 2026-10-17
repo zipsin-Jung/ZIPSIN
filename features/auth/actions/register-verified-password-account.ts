@@ -1,5 +1,6 @@
 'use server';
 
+import { isAccountOpen } from '@/lib/site/account-launch';
 import { randomBytes } from 'node:crypto';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -20,6 +21,8 @@ export async function registerVerifiedPasswordAccountAction(
   _previousState: VerifiedSignupActionState,
   formData: FormData,
 ): Promise<VerifiedSignupActionState> {
+  // 회원가입 준비 중에는 화면을 우회한 직접 요청도 받지 않는다.
+  if (!isAccountOpen()) return { error: '회원가입은 준비 중이에요.', field: 'signup-form-error' };
   const rawNext = formData.get('next');
   const hasNext = typeof rawNext === 'string' && rawNext.length > 0;
   const next = sanitizeNextPath(hasNext ? rawNext : undefined);

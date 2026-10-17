@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { AuthCard } from '@/features/auth/components/AuthCard';
 import { PasswordSignupForm } from '@/features/auth/components/PasswordSignupForm';
 import { sanitizeNextPath } from '@/features/auth/domain/redirect';
+import { SUPPORTED_PROVIDERS } from '@/features/auth/domain/providers';
+import { isAccountOpen } from '@/lib/site/account-launch';
 
 type Props = { searchParams: Promise<{ error?: string; next?: string }> };
 
@@ -18,6 +20,23 @@ export default async function SignupPage({ searchParams }: Props) {
         ? '가입 설정을 확인하고 있습니다. 잠시 후 다시 시도해 주세요.'
         : '이미 사용 중인 계정 정보이거나 지금 가입할 수 없습니다.'
     : null;
+
+  if (!isAccountOpen()) {
+    // 간편 로그인 안내는 실제로 켜진 제공자가 있을 때만 보여준다(막다른 안내 방지).
+    const socialOn = SUPPORTED_PROVIDERS.some((provider) => process.env[`NEXT_PUBLIC_AUTH_${provider.id.toUpperCase()}_ENABLED`] === 'true');
+    return (
+      <AuthCard title="회원가입 준비 중" titleId="signup-title" subtitle={socialOn ? '회원가입은 곧 열려요. 지금은 간편 로그인으로 시작해 주세요.' : '회원가입은 곧 열려요. 집신체크는 로그인 없이 지금 바로 쓸 수 있어요.'}>
+        <div className="flex flex-col gap-3">
+          {socialOn && <Link className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#0B6655] px-5 text-[16px] font-bold text-white!" href={loginHref}>간편 로그인으로 시작</Link>}
+          <Link className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#BFD3CD] px-5 text-[16px] font-bold text-[#0B6655]!" href="/ck">집신체크 바로 쓰기</Link>
+          <p className="text-center text-[15px] text-[#3E4B47]">
+            이미 계정이 있나요?{' '}
+            <Link className="inline-flex min-h-11 items-center font-semibold text-[#0B6655]! underline! underline-offset-[3px]" href={loginHref}>로그인</Link>
+          </p>
+        </div>
+      </AuthCard>
+    );
+  }
 
   return (
     <AuthCard

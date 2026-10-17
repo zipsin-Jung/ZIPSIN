@@ -8,6 +8,7 @@ import {buildHomeComparison} from '@/lib/zipsin-check/state';
 import type {CandidateV2} from '@/lib/zipsin-check/types';
 import ComparePicker from './ComparePicker';
 import styles from './ZipsinCheck.module.css';
+import {isAccountOpen} from '@/lib/site/account-launch';
 import compareStyles from './Compare.module.css';
 
 type PhotoSummary = {count: number; previews: string[]};
@@ -52,6 +53,7 @@ export default function CheckCompare({candidates, selectedIds, onToggle, onBack,
         <tr><th scope="row">관리</th>{selected.map((candidate) => <td key={candidate.id}><button type="button" className={compareStyles.delete} onClick={() => onDelete(candidate.id)}>{candidate.alias} 영구 삭제</button></td>)}</tr>
       </tbody>
     </table></div>}
-    {showTable && <a className={styles.signupCta} href={`/ck/transfer?candidates=${encodeURIComponent(selectedIds.join(','))}`}><strong>집신에 저장하기</strong><span>선택한 집과 사진을 확인한 뒤 내 계정에 옮길 수 있어요.</span></a>}
+    {showTable && !isAccountOpen() && <div className={`${styles.signupCta} ${styles.preparingCta}`} aria-disabled="true"><strong>집신에 저장하기 · 준비 중</strong><span>곧 열려요. 비교한 집은 이 휴대폰에 그대로 남아요.</span></div>}
+    {showTable && isAccountOpen() && <a className={styles.signupCta} href={`/ck/transfer?candidates=${encodeURIComponent(selectedIds.join(','))}`}><strong>집신에 저장하기</strong><span>선택한 집과 사진을 확인한 뒤 내 계정에 옮길 수 있어요.</span></a>}
   </main>;
 }

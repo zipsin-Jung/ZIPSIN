@@ -186,3 +186,7 @@
 @media(max-width:560px){.askGrid{gap:8px}.askGrid li{grid-template-columns:28px 1fr;grid-template-rows:auto auto;gap:2px 10px;padding:12px 14px}.askGrid li>span{grid-row:span 2}.insideGrid{gap:8px}.insideGrid li>button{min-height:56px}}
 /* 휴대폰: 아래 고정 메뉴 위에 저장 막대를 띄우고, 문의 버튼이 저장 막대를 가리지 않게 한다 */
 @media(max-width:560px){.stickyFinish{bottom:calc(76px + env(safe-area-inset-bottom));z-index:45}.flow{padding-bottom:calc(120px + env(safe-area-inset-bottom))}.app[data-screen=check] .kakaoHelp{display:none}}
+/* 회원가입·집신 연결 준비 중 표시 */
+.preparing{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border-radius:12px;background:#eef2f1;color:#5d6e76;font-size:13px;font-weight:850}
+.preparingCta{background:#eef2f1!important;color:#5d6e76!important;cursor:default}
+.instantStart:disabled{background:#c9d6d2;color:#4a5a55;box-shadow:none;cursor:default}

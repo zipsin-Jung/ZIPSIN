@@ -44,6 +44,7 @@
 | `SOLAPI_API_KEY`, `SOLAPI_API_SECRET`, `SOLAPI_SENDER_NUMBER` | 솔라피 값(Secret은 재생성 후) | 가입 문자 발송 불가 |
 | `PHONE_OTP_HMAC_SECRET` | 32자 이상 임의 문자열 | 문자 인증 실패 |
 | `AUTH_RATE_LIMIT_HMAC_SECRET` | 32자 이상 임의 문자열(선택) | 서버 키에서 따로 만들어 씀 |
+| `NEXT_PUBLIC_ACCOUNT_OPEN` | 지금은 비워 둠(=준비 중). 약관·개인정보처리방침 게시 후 `true` | 회원가입·집신 저장이 '준비 중'으로 보임 |
 | `NEXT_PUBLIC_AUTH_GOOGLE/KAKAO/NAVER_ENABLED` | `false` (연결 전까지) | — |
 
 ## 되돌리는 방법
