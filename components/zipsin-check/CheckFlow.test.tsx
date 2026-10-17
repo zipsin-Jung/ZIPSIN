@@ -37,6 +37,10 @@ describe('초보 임차인 현장 체크',()=>{
     expect(screen.getByRole('button',{name:'물·배수 상세 체크 펼치기'})).toHaveAttribute('data-attention','seen');
   });
 
+  it('TEST-CK-STATUS-001 아직 누르지 않은 항목은 세 상태 모두 눌리지 않은 상태로 시작한다',()=>{
+    renderFlow();
+    for(const name of ['물·배수 문제없음','물·배수 문제 있음','물·배수 못 봤음'])expect(screen.getByRole('button',{name})).toHaveAttribute('aria-pressed','false');
+  });
   it('상태 이름을 문제없음·문제 있음·못 봤음으로 명확하게 표시한다',()=>{
     renderFlow();
     expect(screen.getByRole('button',{name:'물·배수 문제없음'})).toBeInTheDocument();

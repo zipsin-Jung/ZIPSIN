@@ -112,4 +112,12 @@ describe('v2 후보 수명주기', () => {
     expect(rows.find(row=>row.key==='options-damage')?.values.a).toBe('전문가 확인');
     expect(rows.find(row=>row.key==='follow-up-count')?.values.a).toBe('1개');
   });
+
+  it('TEST-CK-STATUS-002 비교표는 누르지 않은 항목을 못 봤음이 아니라 체크 안 함으로 보여준다', () => {
+    const a={...createCandidateV2({id:'a',alias:'A',index:1,now}),answers:{'water-drain':{status:'unverified' as const,source:'observed' as const}}};
+    const b=createCandidateV2({id:'b',alias:'B',index:2,now});
+    const row=buildHomeComparison([a,b],['a','b']).find(item=>item.key==='water-drain');
+    expect(row?.values).toEqual({a:'못 봤음',b:'체크 안 함'});
+    expect(row?.statuses?.b).toBe('unanswered');
+  });
 });

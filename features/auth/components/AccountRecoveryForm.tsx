@@ -47,7 +47,7 @@ function UsernameFinder() {
 
   return (
     <form className="flex flex-col gap-[18px]" onSubmit={submit}>
-      <p className={intro}>가입할 때 적은 이메일을 넣으면 아이디를 바로 보여 드려요.</p>
+      <p className={intro}>가입할 때 적은 이메일을 넣으면 아이디를 일부 가려서 보여 드려요.</p>
       <div className="grid grid-cols-[minmax(0,1fr)] gap-2">
         <label className={authLabelClass} htmlFor="find-email">가입한 이메일</label>
         <div className={`${authFieldClass} px-4 ${state === 'not_found' ? 'border-2 border-[#B3261E]!' : ''}`}>

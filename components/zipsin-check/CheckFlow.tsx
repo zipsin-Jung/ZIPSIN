@@ -63,9 +63,9 @@ function Row({item, candidate, onChange, store, questionIndex, detailSeen, onDet
       <p>{item.prompt}</p>
     </div>
     {!isQuestion && <div className={styles.fieldStatuses}>
-      <button type="button" aria-label={`${item.title} 문제없음`} aria-pressed={answer?.status === 'confirmed'} onClick={() => status('confirmed')}>□ 문제없음</button>
-      <button type="button" aria-label={`${item.title} 문제 있음`} aria-pressed={answer?.status === 'caution'} onClick={() => status('caution')}>□ 문제 있음</button>
-      <button type="button" aria-label={`${item.title} 못 봤음`} aria-pressed={!answer || answer.status === 'unverified'} onClick={() => status('unverified')}>□ 못 봤음</button>
+      <button type="button" aria-label={`${item.title} 문제없음`} aria-pressed={answer?.status === 'confirmed'} onClick={() => status('confirmed')}>{answer?.status === 'confirmed' ? '✓' : '□'} 문제없음</button>
+      <button type="button" aria-label={`${item.title} 문제 있음`} aria-pressed={answer?.status === 'caution'} onClick={() => status('caution')}>{answer?.status === 'caution' ? '✓' : '□'} 문제 있음</button>
+      <button type="button" aria-label={`${item.title} 못 봤음`} aria-pressed={answer?.status === 'unverified'} onClick={() => status('unverified')}>{answer?.status === 'unverified' ? '✓' : '□'} 못 봤음</button>
     </div>}
     <div className={styles.rowActions}>
       <button ref={memoButton} type="button" aria-label={isQuestion ? `${item.title} 답변 기록` : `${item.title} ${answer?.memo ? '메모·사진 있음' : '메모·사진'}`} onClick={() => setMemoOpen(true)}>
