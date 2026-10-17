@@ -8,11 +8,14 @@ import { digestRecoveryToken, RECOVERY_COOKIE } from '@/features/auth/server/rec
 import { maskPhone } from '@/features/auth/schemas/verification';
 import { createAdminSupabaseClient } from '@/lib/supabase/admin';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { isAccountOpen } from '@/lib/site/account-launch';
 
 type Props = { searchParams: Promise<{ error?: string }> };
 
 // 2026-10-16 승인 시안 ⑨-B: 휴대폰 인증을 마친 뒤 새 비밀번호 만들기.
 export default async function ResetPasswordPage({ searchParams }: Props) {
+  // 준비 중이면 레이아웃이 안내 카드를 보여주므로 DB를 부르지 않는다.
+  if (!isAccountOpen()) return null;
   const params = await searchParams;
   const supabase = await createServerSupabaseClient();
   const { data } = await supabase.auth.getUser();

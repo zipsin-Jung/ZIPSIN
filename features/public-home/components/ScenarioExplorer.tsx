@@ -7,6 +7,7 @@ import { ArrowRight } from 'lucide-react';
 import { publicHomeScenarios } from '../scenarios';
 import { ProductEvidence } from './ProductEvidence';
 import styles from '@/components/PublicHome.module.css';
+import { isAccountOpen } from '@/lib/site/account-launch';
 
 export function ScenarioExplorer() {
   const [selectedId, setSelectedId] = useState(publicHomeScenarios[0].id);
@@ -37,7 +38,7 @@ export function ScenarioExplorer() {
             ? <div className={styles.imageFallback} role="status">이미지를 불러오지 못했습니다.</div>
             : <Image key={selected.id} src={selected.imageSrc} alt={selected.imageAlt} fill sizes="(max-width: 980px) 100vw, 50vw" priority={selected.id === publicHomeScenarios[0].id} onError={() => setFailedImageId(selected.id)} />}
         </div>
-        <Link className={styles.scenarioCta} href="/signup">이 집 기록 시작하기 <ArrowRight size={17} aria-hidden="true" /></Link>
+        <Link className={styles.scenarioCta} href={isAccountOpen() ? '/signup' : '/ck'}>{isAccountOpen() ? '이 집 기록 시작하기' : '집신체크 바로 쓰기'} <ArrowRight size={17} aria-hidden="true" /></Link>
       </div>
       <ProductEvidence scenario={selected} />
     </div>

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Pause, Play, ShieldCheck } from 'lucide-react';
 import { publicHomeStories, type HomeStoryId } from '../scenarios';
 import styles from '@/components/PublicHome.module.css';
+import { isAccountOpen } from '@/lib/site/account-launch';
 
 const AUTOPLAY_MS = 7000;
 const HOVER_SELECT_MS = 250;
@@ -265,8 +266,13 @@ export function HomeStoryCarousel() {
 
               <div className={styles.storyActions}>
                 <div className={styles.heroActions}>
-                  <Link className={styles.primary} href="/signup">내 집 기록 시작하기 <ArrowRight size={19} aria-hidden="true" /></Link>
-                  <Link className={styles.secondary} href="/login">로그인</Link>
+                  {isAccountOpen() ? <>
+                    <Link className={styles.primary} href="/signup">내 집 기록 시작하기 <ArrowRight size={19} aria-hidden="true" /></Link>
+                    <Link className={styles.secondary} href="/login">로그인</Link>
+                  </> : <>
+                    <Link className={styles.primary} href="/ck">집신체크 바로 쓰기 <ArrowRight size={19} aria-hidden="true" /></Link>
+                    <span className={styles.authSoon} aria-disabled="true">로그인 · 회원가입 <small>준비 중</small></span>
+                  </>}
                 </div>
                 <span className={styles.safety}><ShieldCheck size={17} aria-hidden="true" /> 주소만 알아서는 어떤 기록도 볼 수 없습니다.</span>
               </div>

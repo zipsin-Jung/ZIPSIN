@@ -297,3 +297,9 @@
 .soonTitle{margin:0;font-size:24px;letter-spacing:-.04em}
 .soonClose{width:100%;min-height:48px;margin-top:18px;border:0;border-radius:14px;background:var(--green-dark);color:#fff;font:inherit;font-weight:800;cursor:pointer}
 .soonClose:focus-visible{outline:3px solid #da9b36;outline-offset:3px}
+
+/* 2026-10-17: 로그인·회원가입 준비 중(회색, 누를 수 없음) */
+.authSoon{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border-radius:12px;font-size:15px;font-weight:800;color:#a3b1b5;cursor:not-allowed;user-select:none;white-space:nowrap}
+.authSoon small{padding:2px 7px;border-radius:999px;background:#eef2f1;color:#5c7076;font-size:11px;font-weight:700}
+@media(max-width:600px){.authSoon{display:none}}
+.storyActions .primary{white-space:nowrap}

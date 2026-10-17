@@ -1,8 +1,11 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { isAccountOpen } from '@/lib/site/account-launch';
 import { requireUser } from '@/features/auth/guards/require-onboarding';
 import { AppNavigation } from '@/features/navigation/components/AppNavigation';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  if (!isAccountOpen()) redirect('/');
   await requireUser();
   return (
     <div className="app-shell min-h-screen text-[#102a43]">

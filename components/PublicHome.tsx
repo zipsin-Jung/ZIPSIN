@@ -3,6 +3,7 @@ import Brand from '@/components/Brand';
 import { InstallAppButton } from '@/features/install/components/InstallAppButton';
 import { HomeStoryCarousel } from '@/features/public-home/components/HomeStoryCarousel';
 import { ServiceNav } from '@/features/public-home/components/ServiceNav';
+import { isAccountOpen } from '@/lib/site/account-launch';
 import styles from './PublicHome.module.css';
 
 export default function PublicHome() {
@@ -13,8 +14,10 @@ export default function PublicHome() {
       <ServiceNav />
       <div className={styles.headerActions} data-header-actions>
         <InstallAppButton />
-        <Link className={styles.login} href="/login">로그인</Link>
-        <Link className={styles.primarySmall} href="/signup">회원가입</Link>
+        {isAccountOpen() ? <>
+          <Link className={styles.login} href="/login">로그인</Link>
+          <Link className={styles.primarySmall} href="/signup">회원가입</Link>
+        </> : <span className={styles.authSoon} aria-disabled="true" title="준비 중">로그인 · 회원가입 <small>준비 중</small></span>}
       </div>
     </header>
 

@@ -7,6 +7,7 @@ import { createRateLimitKey, getRateLimitSecret } from '@/features/auth/domain/r
 import { loginWithUsername } from '@/features/auth/services/login-with-username';
 import { createAdminSupabaseClient } from '@/lib/supabase/admin';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { isAccountOpen } from '@/lib/site/account-launch';
 
 const inputSchema = z.object({
   username: z.string().trim().min(4).max(254),
@@ -15,6 +16,7 @@ const inputSchema = z.object({
 });
 
 export async function loginWithUsernameAction(formData: FormData, nextValue?: string) {
+  if (!isAccountOpen()) redirect('/login');
   const parsed = inputSchema.safeParse({
     username: formData.get('username'),
     password: formData.get('password'),

@@ -2,8 +2,11 @@ import { redirect } from 'next/navigation';
 import { VerificationForm } from '@/features/auth/components/VerificationForm';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { sanitizeNextPath } from '@/features/auth/domain/redirect';
+import { isAccountOpen } from '@/lib/site/account-launch';
 
 export default async function VerifySignupPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
+  // 준비 중이면 레이아웃이 안내 카드를 보여주므로 DB를 부르지 않는다.
+  if (!isAccountOpen()) return null;
   const params = await searchParams;
   const next = sanitizeNextPath(params.next);
   const supabase = await createServerSupabaseClient();

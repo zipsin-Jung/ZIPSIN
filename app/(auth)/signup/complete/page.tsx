@@ -6,11 +6,14 @@ import { maskEmail } from '@/features/auth/domain/mask';
 import { sanitizeNextPath } from '@/features/auth/domain/redirect';
 import { createAdminSupabaseClient } from '@/lib/supabase/admin';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { isAccountOpen } from '@/lib/site/account-launch';
 
 type Props = { searchParams: Promise<{ next?: string }> };
 
 // 2026-10-16 승인 시안 ⑦: 가입 완료 → 바로 시작(이메일 확인 없음).
 export default async function SignupCompletePage({ searchParams }: Props) {
+  // 준비 중이면 레이아웃이 안내 카드를 보여주므로 DB를 부르지 않는다.
+  if (!isAccountOpen()) return null;
   const params = await searchParams;
   const next = sanitizeNextPath(params.next);
   const supabase = await createServerSupabaseClient();
