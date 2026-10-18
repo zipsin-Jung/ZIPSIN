@@ -2,11 +2,21 @@
 
 이 폴더는 집신의 기획, 결정, 대화와 작업 결과를 지속해서 정리하는 문서함입니다.
 
-## 주요 문서
+## 지금 먼저 볼 문서 (2026-10-18)
 
-- [Claude·Codex 협업 인수인계 마스터 프롬프트](24-claude-collaboration-handoff-2026-10-15.md)
+- [인수인계(하나로 통합)](HANDOFF.md)
+- [작업 현황](../WORK_STATUS.md)
+- [제품 재기획 회의 2026-10-16](meetings/2026-10-16-product-replan.md)
+- [로그인 후 화면 재구성 개발 계획](plans/2026-10-17-app-rebuild-dev-plan.md)
+- [DEC-030 집신이 대표 브랜드](decisions/DEC-030-zipsin-parent-brand.md)
+- [DEC-029 임대인 승인과 기록 열람 범위](decisions/DEC-029-landlord-approval-and-record-access.md)
+- [DB 설계: 동영상·수리 5단계·임대인 승인](design/2026-10-18-db-video-repair-approval.md)
+- [반성과 작업 규칙 2026-10-18](worklogs/2026-10-18-retrospective-and-rules.md)
+- [보관함(예전 인수인계·현황)](archive/README.md)
+
+## 기본 문서
+
 - [유료 출시 완성 통합 프롬프트](21-zipsin-paid-launch-completion-master-prompt.md)
-- [다른 Codex용 종합 인수인계 프롬프트](13-codex-handoff-master-prompt.md)
 - [작업 운영 규칙](00-working-rules.md)
 - [제품 개요](01-product-brief.md)
 - [기능 정의](02-feature-definition.md)
@@ -50,4 +60,5 @@
 - 한 페이지 이상 길어진 제품 대화는 `conversations/`에 저장합니다.
 - 매 작업의 순서와 결과는 `worklogs/`에 저장합니다.
 - 같은 문서는 바탕화면의 `코덱스랑/집신` 문서함에도 함께 반영합니다.
+- 예전 문서는 지우지 않고 `archive/`로 옮기며, 원래 자리에는 옮긴 위치를 적은 안내 파일을 남깁니다.
 - 개인정보, 실제 연락처, 계좌번호와 원본 계약서는 저장하지 않습니다.
