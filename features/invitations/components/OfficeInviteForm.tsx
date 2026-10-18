@@ -24,18 +24,18 @@ export function OfficeInviteForm({ officeId }: { officeId: string }) {
   return (
     <form onSubmit={submit} className="app-panel rounded-[28px] p-6 sm:p-8">
       <input type="hidden" name="officeId" value={officeId} />
-      <label htmlFor="role" className="font-bold text-[#102a43]">
+      <label htmlFor="role" className="font-bold text-[#16211E]">
         초대할 역할
       </label>
       <select
         id="role"
         name="role"
-        className="mt-3 min-h-14 w-full rounded-2xl border border-[#cbd9dc] bg-white px-4 text-[#102a43]"
+        className="mt-3 min-h-14 w-full rounded-2xl border border-[#E1E6E3] bg-white px-4 text-[#16211E]"
       >
         <option value="associate_broker">소속공인중개사</option>
         <option value="assistant">중개보조원</option>
       </select>
-      <p className="mt-3 text-sm leading-6 text-[#607785]">
+      <p className="mt-3 text-sm leading-6 text-[#5D6A65]">
         초대는 48시간 동안 한 번만 사용할 수 있습니다. 비밀번호를 공유하지
         않습니다.
       </p>
@@ -51,11 +51,11 @@ export function OfficeInviteForm({ officeId }: { officeId: string }) {
         </p>
       )}
       {state.invitePath && (
-        <div className="mt-5 rounded-2xl border border-[#b9ded5] bg-[#eff9f6] p-4">
-          <p className="text-sm font-bold text-[#164b50]">
+        <div className="mt-5 rounded-2xl border border-[#b9ded5] bg-[#E3F0EC] p-4">
+          <p className="text-sm font-bold text-[#3E4B47]">
             초대 링크가 만들어졌습니다
           </p>
-          <code className="mt-2 block break-all text-xs text-[#496273]">
+          <code className="mt-2 block break-all text-xs text-[#5D6A65]">
             {state.invitePath}
           </code>
           {state.invitationId && (

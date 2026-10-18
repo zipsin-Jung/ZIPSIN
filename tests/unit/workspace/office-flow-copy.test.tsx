@@ -91,8 +91,8 @@ describe('assignment-free office flow copy', () => {
 
     const desktop = screen.getByRole('navigation', { name: '주요 메뉴' });
     expect(within(desktop).getByRole('link', { name: /^홈$/ })).toHaveAttribute('href', '/home');
-    expect(within(desktop).getByRole('link', { name: /^집$/ })).toHaveAttribute('href', '/homes');
-    expect(within(desktop).getByRole('link', { name: /^할 일$/ })).toHaveAttribute('href', '/tasks');
+    expect(within(desktop).getByRole('link', { name: /^기록$/ })).toHaveAttribute('href', '/homes');
+    expect(within(desktop).getByRole('link', { name: /^채팅$/ })).toHaveAttribute('href', '/chats');
     expect(within(desktop).getByRole('link', { name: /^마이$/ })).toHaveAttribute('href', '/my');
   });
 
@@ -107,5 +107,8 @@ describe('assignment-free office flow copy', () => {
 
     expect(screen.getByRole('heading', { name: '김집신님의 집신' })).toBeInTheDocument();
     expect(screen.getByText('임차인')).toBeInTheDocument();
+    // 위 메뉴에서 빠진 할 일·고객지원은 마이에서 계속 들어갈 수 있어야 한다 (TEST-APP-NAV-003).
+    expect(screen.getByRole('link', { name: /할 일/ })).toHaveAttribute('href', '/tasks');
+    expect(screen.getByRole('link', { name: /고객지원 채팅/ })).toHaveAttribute('href', '/support');
   });
 });

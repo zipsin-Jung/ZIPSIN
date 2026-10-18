@@ -18,10 +18,10 @@ export default async function NewHomePage({ searchParams }: { searchParams: Prom
   if (!membership || membership.office_role !== 'principal_broker') return <Unavailable permission />;
   return (
     <main className="mx-auto max-w-3xl px-5 py-10 sm:py-16">
-      <Link href="/home" className="text-sm font-bold text-[#0b695c]">← 홈으로</Link>
+      <Link href="/home" className="text-sm font-bold text-[#0B6655]">← 홈으로</Link>
       <div className="mb-8 mt-8">
-        <p className="text-sm font-bold text-[#0b695c]">집 기록 시작</p>
-        <h1 className="mt-3 text-4xl font-extrabold tracking-[-0.05em] text-[#102a43] sm:text-5xl">집 등록하기</h1>
+        <p className="text-sm font-bold text-[#0B6655]">집 기록 시작</p>
+        <h1 className="mt-3 text-4xl font-extrabold tracking-[-0.05em] text-[#16211E] sm:text-5xl">집 등록하기</h1>
         <p className="mt-4 max-w-2xl text-base leading-7 text-[#526b7a]">주소는 집을 구분하는 기준입니다. 등록한 즉시 사진·문서·일정을 이어갈 비공개 공간이 생깁니다.</p>
       </div>
       <HomeForm officeId={membership.office_id} idempotencyKey={randomUUID()} action={createHomeAction} />

@@ -15,7 +15,7 @@ type Props = {
 export function ConfirmEndForm({ action, fields, label, confirmText, confirmLabel }: Props) {
   const [state, formAction, pending] = useActionState(action, {});
   const [asking, setAsking] = useState(false);
-  const buttonClass = 'rounded-xl border border-[#cbd9dc] px-4 py-2 text-sm font-bold text-red-700 disabled:opacity-60';
+  const buttonClass = 'rounded-xl border border-[#E1E6E3] px-4 py-2 text-sm font-bold text-red-700 disabled:opacity-60';
 
   return (
     <div className="grid justify-items-end gap-2">
@@ -24,9 +24,9 @@ export function ConfirmEndForm({ action, fields, label, confirmText, confirmLabe
       ) : (
         <form action={formAction} className="grid justify-items-end gap-2" role="group" aria-label={label}>
           {Object.entries(fields).map(([name, value]) => <input key={name} type="hidden" name={name} value={value} />)}
-          <p className="max-w-xs text-right text-sm text-[#102a43]">{confirmText}</p>
+          <p className="max-w-xs text-right text-sm text-[#16211E]">{confirmText}</p>
           <div className="flex gap-2">
-            <button type="button" className="rounded-xl border border-[#cbd9dc] px-4 py-2 text-sm font-bold text-[#102a43]" onClick={() => setAsking(false)}>취소</button>
+            <button type="button" className="rounded-xl border border-[#E1E6E3] px-4 py-2 text-sm font-bold text-[#16211E]" onClick={() => setAsking(false)}>취소</button>
             <button type="submit" disabled={pending} className="rounded-xl bg-red-700 px-4 py-2 text-sm font-bold text-white disabled:opacity-60">{pending ? '처리 중…' : confirmLabel}</button>
           </div>
         </form>
