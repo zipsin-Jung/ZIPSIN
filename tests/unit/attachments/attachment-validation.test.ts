@@ -16,3 +16,15 @@ describe('attachment selection', () => {
     expect(validateAttachmentSelection([{ name: 'bad\u0000.png', type: 'image/png', size: 100 }]).ok).toBe(false);
   });
 });
+
+describe('video attachments (30초 동영상)', () => {
+  it('TEST-VIDEO-001 accepts MP4/MOV up to 50MB and 30 seconds', () => {
+    expect(validateAttachmentSelection([{ name: '누수.mov', type: 'video/quicktime', size: 40 * 1024 * 1024, durationSeconds: 29.8 }])).toEqual({ ok: true });
+    expect(validateAttachmentSelection([{ name: 'a.mp4', type: 'video/mp4', size: 1000, durationSeconds: 30.4 }]).ok).toBe(true);
+  });
+  it('TEST-VIDEO-002 rejects long, unmeasured, or oversized videos', () => {
+    expect(validateAttachmentSelection([{ name: 'a.mp4', type: 'video/mp4', size: 1000, durationSeconds: 31 }])).toMatchObject({ ok: false, error: '동영상은 30초까지 올릴 수 있어요.' });
+    expect(validateAttachmentSelection([{ name: 'a.mp4', type: 'video/mp4', size: 1000, durationSeconds: null }]).ok).toBe(false);
+    expect(validateAttachmentSelection([{ name: 'a.mp4', type: 'video/mp4', size: 50 * 1024 * 1024 + 1, durationSeconds: 10 }])).toMatchObject({ ok: false, error: '동영상은 개당 50MB 이하여야 합니다.' });
+  });
+});

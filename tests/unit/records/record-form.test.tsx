@@ -10,6 +10,7 @@ vi.mock('@/features/attachments/actions/upload', () => ({ prepareAttachmentUploa
 vi.mock('@/lib/supabase/client', () => ({ createBrowserSupabaseClient: () => ({ storage: { from: () => ({ upload: storageUpload }) } }) }));
 vi.mock('@/lib/media/prepare-photo', () => ({ preparePhoto: async (file: File) => ({ file, converted: false, locationRemoved: true }) }));
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push }) }));
+vi.mock('@/lib/media/video-duration', () => ({ measureVideoDuration: async (file: File) => (file.name.includes('long') ? 45 : 12) }));
 
 import { RecordForm } from '@/features/records/components/RecordForm';
 
@@ -83,6 +84,24 @@ describe('RecordForm', () => {
     await user.click(screen.getByRole('button', { name: '집 기록에 남기기' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('사진을 1장 이상 골라 주세요.');
     expect(createRecord).not.toHaveBeenCalled();
+  });
+
+  it('TEST-VIDEO-003 blocks a video longer than 30 seconds before saving and sends the measured length for a short one', async () => {
+    createRecord.mockResolvedValueOnce({ recordId });
+    prepare.mockResolvedValue({ ok: true, attachmentId: '00000000-0000-4000-8000-00000000000b', storagePath: 'v' });
+    storageUpload.mockResolvedValue({ error: null });
+    complete.mockResolvedValue({ ok: true });
+    const user = userEvent.setup();
+    const { container } = render(<RecordForm {...props} />);
+    const input = container.querySelector('input[type=file]') as HTMLInputElement;
+    await user.upload(input, new File([new Uint8Array(10)], 'long.mp4', { type: 'video/mp4' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('동영상은 30초까지 올릴 수 있어요. (45초)');
+    await user.upload(input, new File([new Uint8Array(10)], 'short.mov', { type: 'video/quicktime' }));
+    expect(await screen.findByText('동영상 12초')).toBeInTheDocument();
+    await user.type(screen.getByLabelText('제목'), '보일러 소리');
+    await user.click(screen.getByRole('button', { name: '집 기록에 남기기' }));
+    await waitFor(() => expect(push).toHaveBeenCalled());
+    expect(prepare).toHaveBeenCalledWith(expect.objectContaining({ type: 'video/quicktime', durationSeconds: 12 }));
   });
 
   it('TEST-RC-REC-002 keeps the written record and explains a temporary failure', async () => {
