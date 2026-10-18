@@ -8,7 +8,7 @@
 |---|---|
 | zipsin.net | 운영 중. 공개 홈만 열림. `집신 시작하기`·`로그인 · 회원가입`은 준비 중 |
 | ck.zipsin.net | 운영 중. 집신체크(로그인 없이 사용) |
-| 실서비스 코드 | `main` = 6d98238 |
+| 실서비스 코드 | `main` = 3f3606b (cl.zipsin.net 준비 중 추가, 14:35) |
 | 개발 중 | `claude/app-rebuild-2026-10-18`: 로그인한 뒤 화면 전체 재구성. Preview: zipsin-git-claude-app-rebuild-2026-10-18-zipsin-jung.vercel.app |
 | 출시 방식 | 회원가입 법률 자문 회신 뒤 **한 번에 배포**하고 가입을 연다 |
 | DB | Preview와 운영이 같은 Supabase 프로젝트를 씀 → 출시 때 서울 새 운영 DB(D2) 추천, **대표 결정 대기** |
