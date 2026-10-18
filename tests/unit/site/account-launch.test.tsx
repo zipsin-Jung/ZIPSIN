@@ -8,10 +8,17 @@ describe('회원가입·집신 연결 준비 중 스위치', () => {
   beforeEach(() => { process.env.NEXT_PUBLIC_ACCOUNT_OPEN = 'false'; });
   afterEach(() => { process.env.NEXT_PUBLIC_ACCOUNT_OPEN = 'true'; });
 
-  it('TEST-LAUNCH-001 값이 없거나 true가 아니면 닫힌 상태가 기본이다', () => {
+  it('TEST-LAUNCH-001 실서비스는 값이 없거나 true가 아니면 닫힌 상태가 기본이다', () => {
     expect(isAccountOpen({})).toBe(false);
-    expect(isAccountOpen({ NEXT_PUBLIC_ACCOUNT_OPEN: 'false' })).toBe(false);
-    expect(isAccountOpen({ NEXT_PUBLIC_ACCOUNT_OPEN: 'true' })).toBe(true);
+    expect(isAccountOpen({ NEXT_PUBLIC_VERCEL_ENV: 'production' })).toBe(false);
+    expect(isAccountOpen({ NEXT_PUBLIC_VERCEL_ENV: 'production', NEXT_PUBLIC_ACCOUNT_OPEN: 'false' })).toBe(false);
+    expect(isAccountOpen({ NEXT_PUBLIC_VERCEL_ENV: 'production', NEXT_PUBLIC_ACCOUNT_OPEN: 'true' })).toBe(true);
+  });
+
+  it('TEST-LAUNCH-003 Preview는 값이 없으면 열려 있고, false를 넣으면 닫힌다 (2026-10-18)', () => {
+    expect(isAccountOpen({ NEXT_PUBLIC_VERCEL_ENV: 'preview' })).toBe(true);
+    expect(isAccountOpen({ NEXT_PUBLIC_VERCEL_ENV: 'preview', NEXT_PUBLIC_ACCOUNT_OPEN: '' })).toBe(true);
+    expect(isAccountOpen({ NEXT_PUBLIC_VERCEL_ENV: 'preview', NEXT_PUBLIC_ACCOUNT_OPEN: 'false' })).toBe(false);
   });
 
   it('TEST-LAUNCH-002 닫혀 있으면 집신 시작은 누를 수 없는 준비 중 버튼이다', () => {

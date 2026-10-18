@@ -14,7 +14,11 @@ describe('로그인·회원가입 준비 중 (2026-10-17)', () => {
     render(<PublicHome />);
     expect(screen.queryByRole('link', { name: '로그인' })).toBeNull();
     expect(screen.queryByRole('link', { name: '회원가입' })).toBeNull();
-    expect(screen.getByText(/로그인 · 회원가입/)).toHaveAttribute('aria-disabled', 'true');
+    const chip = screen.getByText('로그인 · 회원가입').closest('[aria-disabled]');
+    expect(chip).toHaveAttribute('aria-disabled', 'true');
+    // 휴대폰용 짧은 문구도 함께 있다(2026-10-18, CSS로 화면 폭에 따라 하나만 보임)
+    expect(chip).toHaveTextContent('로그인');
+    expect(chip?.textContent).toContain('준비 중');
   });
 
   it('TEST-PREP-002 열려 있으면 로그인·회원가입 링크를 보여준다', async () => {
