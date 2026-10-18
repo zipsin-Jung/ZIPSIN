@@ -6,6 +6,7 @@
 
 ## 최신 (2026-10-16 이후)
 
+- [DEC-031 집신클린 방향: 고객은 판단하지 않고, 가격은 예약할 때 확정](DEC-031-zipsin-clean-direction.md)
 - [DEC-030 집신이 대표 브랜드, 하위 서비스는 메뉴로만 연결](DEC-030-zipsin-parent-brand.md)
 - [DEC-029 집신체크 앱 받기(웹앱 설치)](DEC-029-zipsin-check-web-app-install.md)
 - [DEC-029 임대인 승인과 기록 열람 범위](DEC-029-landlord-approval-and-record-access.md)

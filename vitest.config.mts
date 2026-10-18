@@ -68,6 +68,12 @@ export default defineConfig({
         'features/homes/services/create-home.ts',
         'features/records/components/RecordForm.tsx',
         'features/records/schemas/record.ts',
+        // 2026-10-18 사진 한꺼번에 올리기(⑤-나)
+        'features/records/components/BulkPhotoUploader.tsx',
+        'features/records/domain/photo-groups.ts',
+        'features/records/client/upload-record-files.ts',
+        'lib/media/photo-meta.ts',
+        'app/(app)/records/bulk/page.tsx',
         'features/attachments/components/AttachmentUploader.tsx',
         'features/attachments/domain/validation.ts',
         'features/invitations/schemas/invitation.ts',

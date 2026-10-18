@@ -17,7 +17,9 @@ describe('HomeForm', () => {
     await fill();
     await userEvent.click(screen.getByRole('button', { name: '집 등록하기' }));
     expect(await screen.findByRole('heading', { name: '첫 관리 집 등록 끝' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '사진 올리기' })).toHaveAttribute('href', '/homes/new-home/records/new');
+    // 승인 시안 ⑤-가: 등록 끝 → 앨범에서 사진 한꺼번에 올리기(⑤-나)로, 방금 등록한 집을 미리 골라 둔다.
+    expect(screen.getByText('사진은 휴대폰 앨범에서 한꺼번에 골라 올리면 돼요.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '앨범에서 사진 한꺼번에 올리기' })).toHaveAttribute('href', '/records/bulk?homeId=new-home');
     expect(screen.getByRole('link', { name: '집 화면 보기' })).toHaveAttribute('href', '/homes/new-home');
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });

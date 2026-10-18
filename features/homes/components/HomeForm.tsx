@@ -70,9 +70,9 @@ export function HomeForm({ officeId, idempotencyKey, action }: {
       <section aria-live="polite" className="rounded-[20px] border border-[#E1E6E3] bg-white p-6 text-center sm:p-10">
         <Mascot className="mx-auto !mb-3 !w-[110px]" pose="happy" />
         <h2 className="text-[22px] font-bold tracking-[-0.02em] text-[#16211E]">{saved.name} 등록 끝</h2>
-        <p className="mt-2 text-base text-[#3E4B47]">이제 사진을 올리면 이 집 기록에 쌓여요.</p>
+        <p className="mt-2 text-base text-[#3E4B47]">사진은 휴대폰 앨범에서 한꺼번에 골라 올리면 돼요.</p>
         <div className="mt-6 grid gap-2">
-          <Link className="app-primary flex min-h-14 items-center justify-center rounded-xl text-[17px] font-bold text-white" href={`/homes/${saved.homeId}/records/new`}>사진 올리기</Link>
+          <Link className="app-primary flex min-h-14 items-center justify-center rounded-xl text-[17px] font-bold text-white" href={`/records/bulk?homeId=${encodeURIComponent(saved.homeId)}`}>앨범에서 사진 한꺼번에 올리기</Link>
           <Link className="flex min-h-12 items-center justify-center rounded-xl border border-[#C9D1CD] bg-white text-base font-semibold text-[#16211E]" href={`/homes/${saved.homeId}`}>집 화면 보기</Link>
           <button className="min-h-12 text-base font-semibold text-[#0B6655]" onClick={() => { setSaved(null); setValues({ addressLine1: '', addressDetail: '', homeLabel: '' }); }} type="button">다른 집 등록하기</button>
         </div>
