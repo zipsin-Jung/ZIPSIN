@@ -303,6 +303,10 @@
 .authSoon small{padding:2px 7px;border-radius:999px;background:#eef2f1;color:#5c7076;font-size:11px;font-weight:700}
 @media(max-width:600px){.authSoon{display:none}}
 .storyActions .primary{white-space:nowrap}
+/* 2026-10-18 집신 시작하기는 회원가입 열릴 때까지 준비 중(집신체크로 대신 보내지 않음) */
+.startSoon{display:inline-flex;align-items:center;gap:8px;min-height:56px;padding:0 24px;border-radius:14px;background:#e6ebe9;color:#5c7076;font-size:17px;font-weight:800;cursor:not-allowed;user-select:none;white-space:nowrap}
+.startSoon small,.ctaSoon small{padding:2px 8px;border-radius:999px;background:#fff;color:#5c7076;font-size:12px;font-weight:700}
+.ctaSoon{background:#e6ebe9!important;color:#5c7076!important;cursor:not-allowed;box-shadow:none!important}
 
 /* 2026-10-18 휴대폰 글자 하한(본문 14px 안팎·작은 표시 12px)과 장면 점 표시 정리 */
 @media(max-width:700px){

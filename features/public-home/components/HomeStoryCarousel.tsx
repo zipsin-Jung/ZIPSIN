@@ -276,7 +276,7 @@ export function HomeStoryCarousel() {
                     <Link className={styles.primary} href="/signup">내 집 기록 시작하기 <ArrowRight size={19} aria-hidden="true" /></Link>
                     <Link className={styles.secondary} href="/login">로그인</Link>
                   </> : <>
-                    <Link className={styles.primary} href="/ck">집신체크 바로 쓰기 <ArrowRight size={19} aria-hidden="true" /></Link>
+                    <span className={styles.startSoon} aria-disabled="true">내 집 기록 시작하기 <small>준비 중</small></span>
                     <span className={styles.authSoon} aria-disabled="true">로그인 · 회원가입 <small>준비 중</small></span>
                   </>}
                 </div>

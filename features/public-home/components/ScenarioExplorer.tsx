@@ -38,7 +38,9 @@ export function ScenarioExplorer() {
             ? <div className={styles.imageFallback} role="status">이미지를 불러오지 못했습니다.</div>
             : <Image key={selected.id} src={selected.imageSrc} alt={selected.imageAlt} fill sizes="(max-width: 980px) 100vw, 50vw" priority={selected.id === publicHomeScenarios[0].id} onError={() => setFailedImageId(selected.id)} />}
         </div>
-        <Link className={styles.scenarioCta} href={isAccountOpen() ? '/signup' : '/ck'}>{isAccountOpen() ? '이 집 기록 시작하기' : '집신체크 바로 쓰기'} <ArrowRight size={17} aria-hidden="true" /></Link>
+        {isAccountOpen()
+          ? <Link className={styles.scenarioCta} href="/signup">이 집 기록 시작하기 <ArrowRight size={17} aria-hidden="true" /></Link>
+          : <span className={`${styles.scenarioCta} ${styles.ctaSoon}`} aria-disabled="true">이 집 기록 시작하기 <small>준비 중</small></span>}
       </div>
       <ProductEvidence scenario={selected} />
     </div>
