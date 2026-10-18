@@ -79,6 +79,7 @@ export default defineConfig({
         'features/workspace/services/**/*.{ts,tsx}',
         'lib/env/**/*.{ts,tsx}',
         'lib/supabase/cookie-options.ts',
+        'features/zipsin-clean/**/*.{ts,tsx}',
       'lib/supabase/{client,proxy,server}.ts',
       'lib/site/**/*.ts',
       'proxy.ts',
