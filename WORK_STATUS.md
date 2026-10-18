@@ -1,5 +1,14 @@
 # 집신 작업 현황
 
+## 2026-10-18 운영 공개(zipsin.net · ck.zipsin.net)
+
+- 사용자 "진행시켜" 승인으로 공개. Vercel 도메인 ck.zipsin.net 추가, 가비아 CNAME `ck → a2f76b8d8b13b534.vercel-dns-017.com.`(TTL 600) 추가(사용자).
+- Vercel Production 환경값: 공개 접속 키(NEXT_PUBLIC_SUPABASE_ANON_KEY)를 Production에도 적용, `NEXT_PUBLIC_CHECK_SITE_URL=https://ck.zipsin.net` 추가. `NEXT_PUBLIC_ACCOUNT_OPEN`은 넣지 않음(=준비 중).
+- 확인: Production과 Preview가 같은 Supabase 프로젝트(gczjjbqgdhtmdhcdgttp)를 씀. 따라서 그동안 Preview에 적용한 DB 변경은 운영 DB에도 이미 있음.
+- `main`을 `38ed959`로 fast-forward(301커밋) → Production 배포 성공. 확인: ck.zipsin.net = 집신체크(로그인 · 준비 중), zipsin.net = 새 공개 홈(로그인 · 회원가입 준비 중, 상단 집신체크 → https://ck.zipsin.net/).
+- 남은 일: migration `202610170001`(계약 종료·구성원 내보내기) 운영 DB 적용은 회원가입을 열기 전에(브라우저 Supabase 접근이 이번에는 막힘). 약관·개인정보처리방침 게시 후 `NEXT_PUBLIC_ACCOUNT_OPEN=true`.
+- 참고: 본문 "집신체크 바로 쓰기" 버튼은 zipsin.net/ck로 감(같은 화면, 동작 정상).
+
 ## 2026-10-17 보안 종료 기능 · 집신체크 홈 정리 · 이 집으로 확정
 
 - 보안: `end_active_contract`(계약 종료 시 관계·남은 초대 함께 종료), `end_office_membership`(대표만, 마지막 대표 보호) migration `202610170001` 추가. 정적 테스트 TEST-RC-END-001~004. **운영 DB 미적용 — 사용자 승인 필요.**
