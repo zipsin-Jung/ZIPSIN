@@ -70,6 +70,6 @@ describe('첫 화면 이야기 버튼 (준비 중)', () => {
     const { HomeStoryCarousel } = await import('@/features/public-home/components/HomeStoryCarousel');
     render(<HomeStoryCarousel />);
     expect(screen.queryAllByRole('link', { name: /로그인|내 집 기록 시작하기|집신체크 바로 쓰기/ })).toHaveLength(0);
-    expect(screen.getAllByText('내 집 기록 시작하기')[0].closest('[aria-disabled]')).toHaveTextContent('준비 중');
+    expect(screen.getAllByText('집신 시작하기')[0].closest('[aria-disabled]')).toHaveTextContent('준비 중');
   });
 });
