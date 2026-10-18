@@ -1,8 +1,8 @@
 // 집신 아래 서비스 주소 (DEC-030·DEC-036, 2026-10-18 대표 확정)
 //   집신체크 ck.zipsin.net · 집신청소 cl.zipsin.net · 집신수리 rp.zipsin.net
 // 집신청소·집신수리는 같은 앱이 '준비 중' 화면만 보여 준다.
-// 주소(도메인)가 연결되기 전에는 zipsin.net/cl, zipsin.net/rp 로 보낸다(깨진 링크 방지).
-// 도메인을 연결한 뒤 Vercel 운영 환경값 NEXT_PUBLIC_CLEAN_SITE_URL / NEXT_PUBLIC_REPAIR_SITE_URL 을 넣으면 메뉴가 그 주소로 바뀐다.
+// zipsin.net/cl, zipsin.net/rp 도 같은 준비 중 화면을 보여 준다(Preview·예전 링크용).
+// 주소를 바꿔야 하면 Vercel 환경값 NEXT_PUBLIC_CLEAN_SITE_URL / NEXT_PUBLIC_REPAIR_SITE_URL 로 덮어쓴다.
 
 export type SubSiteId = 'clean' | 'repair';
 
@@ -32,12 +32,16 @@ export function subSiteForHost(host: string | null | undefined): SubSiteId | nul
   return null;
 }
 
-/** 집신 위쪽 메뉴의 링크 주소. 운영에서 주소 환경값이 있을 때만 그 도메인, 아니면 같은 앱 경로. */
+/**
+ * 집신 위쪽 메뉴의 링크 주소.
+ * 운영(zipsin.net)에서는 각 서비스 주소(cl.zipsin.net·rp.zipsin.net, 2026-10-18 도메인 연결)로,
+ * Preview·로컬에서는 실서비스로 새지 않게 같은 앱 경로(/cl·/rp)로 보낸다.
+ */
 export function getSubSiteHref(
   id: SubSiteId,
   vercelEnv: string | undefined = process.env.VERCEL_ENV,
   configured: string | undefined = configuredUrl(id),
 ): string {
-  if (vercelEnv !== 'production' || !configured) return SUB_SITES[id].path;
-  return `${new URL(configured).origin}/`;
+  if (vercelEnv !== 'production') return SUB_SITES[id].path;
+  return `${new URL(configured || SUB_SITES[id].defaultUrl).origin}/`;
 }
