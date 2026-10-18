@@ -1,5 +1,6 @@
 # 결정 기록
 
+- [DEC-023: 초기 영업·마케팅 채널 검증 순서](DEC-023-sales-channel-validation-order.md) — 제안·사용자 승인 대기
 - [DEC-022: 수리 접수·진행 관리와 집 이력 결합](DEC-022-repair-case-management-direction.md) — 제안·사용자 승인 대기
 - [DEC-015: 여섯 역할 에이전트 체계와 품질 게이트](DEC-015-six-role-agent-system-and-quality-gates.md) — 제안·사용자 승인 대기
 - [DEC-014: 집신체크 서브서비스 방향](DEC-014-zipsin-check-subservice-direction.md) — 확정·사용자 승인

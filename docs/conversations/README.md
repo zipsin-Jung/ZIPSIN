@@ -1,5 +1,6 @@
 # 대화 기록
 
+- [2026-10-18 집신 영업·마케팅 방향 논의](2026-10-18-sales-marketing-direction.md)
 - [2026-10-18 집신 수리 방향 대화](2026-10-18-zipsin-repair-direction.md)
 - [2026-10-13 에이전트 시스템 확장 대화](2026-10-13-agent-system-expansion.md)
 - [2026-10-13 집신체크 제품 대화](2026-10-13-zipsin-check-idea.md)
