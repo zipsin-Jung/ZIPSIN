@@ -271,7 +271,7 @@
 }
 
 
-/* 2026-10-16 홈 상단 서비스 메뉴: 집신체크 · 집신클린(준비 중) · 집신수리(준비 중) */
+/* 2026-10-16 홈 상단 서비스 메뉴: 집신체크 · 집신청소(준비 중) · 집신수리(준비 중) */
 .header .serviceNav{display:flex;margin:0 auto;min-width:0}
 .serviceNav ul{display:flex;align-items:center;gap:6px;margin:0;padding:0;list-style:none}
 .serviceLink{border:0;background:transparent;font-family:inherit;cursor:pointer}

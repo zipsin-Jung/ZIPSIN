@@ -2,7 +2,7 @@ import { getCheckServiceHref } from '@/lib/site/check-host';
 import { ZIPSIN_SERVICES } from '@/features/public-home/services';
 import styles from '@/components/PublicHome.module.css';
 
-// 홈 상단 서비스 메뉴: 집신체크(바로 가기) · 집신수리 · 집신클린.
+// 홈 상단 서비스 메뉴: 집신체크(바로 가기) · 집신수리 · 집신청소.
 // 준비 중 서비스는 회색으로 표시하고 누를 수 없게 한다(2026-10-16 18:40 사용자 결정 D3).
 export function ServiceNav() {
   const checkHref = getCheckServiceHref();
