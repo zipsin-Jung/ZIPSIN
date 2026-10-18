@@ -301,7 +301,9 @@
 /* 2026-10-17: 로그인·회원가입 준비 중(회색, 누를 수 없음) */
 .authSoon{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border-radius:12px;font-size:15px;font-weight:800;color:#a3b1b5;cursor:not-allowed;user-select:none;white-space:nowrap}
 .authSoon small{padding:2px 7px;border-radius:999px;background:#eef2f1;color:#5c7076;font-size:11px;font-weight:700}
-@media(max-width:600px){.authSoon{display:none}}
+.authShort{display:none}
+/* 2026-10-18: 휴대폰에서도 머리말에 '로그인 준비 중'을 짧게 보여준다(숨겨서 안 보이던 문제 수정). 첫 화면 이야기 안의 표시는 휴대폰에서 숨긴다. */
+@media(max-width:600px){.storyActions .authSoon{display:none}[data-header-actions] .authSoon{min-height:36px;padding:0 6px;font-size:13px;gap:4px}[data-header-actions] .authLong{display:none}[data-header-actions] .authShort{display:inline}[data-header-actions] .authSoon small{font-size:11px;padding:2px 6px}}
 .storyActions .primary{white-space:nowrap}
 /* 2026-10-18 집신 시작하기는 회원가입 열릴 때까지 준비 중(집신체크로 대신 보내지 않음) */
 .startSoon{display:inline-flex;align-items:center;gap:8px;min-height:56px;padding:0 24px;border-radius:14px;background:#e6ebe9;color:#5c7076;font-size:17px;font-weight:800;cursor:not-allowed;user-select:none;white-space:nowrap}
