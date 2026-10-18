@@ -34,10 +34,20 @@ describe('TEST-CK-HOST-001 ck.zipsin.net 주소 구분', () => {
 });
 
 describe('TEST-CK-HOST-002 집신체크 첫 화면 연결', () => {
-  it('ck.zipsin.net 첫 화면은 같은 주소의 집신체크로 이동한다', async () => {
+  it('ck.zipsin.net 첫 화면은 주소를 바꾸지 않고 그대로 연다(2026-10-18)', async () => {
     const response = await proxy(new NextRequest('https://ck.zipsin.net/?ref=qr', { headers: { host: 'ck.zipsin.net' } }));
-    expect(response.status).toBe(307);
-    expect(response.headers.get('location')).toBe('https://ck.zipsin.net/ck?ref=qr');
+    expect(response.headers.get('location')).toBeNull();
+  });
+
+  it('TEST-CK-HOST-ROOT-001 예전 주소 ck.zipsin.net/ck 는 ck.zipsin.net 으로 옮긴다', async () => {
+    const response = await proxy(new NextRequest('https://ck.zipsin.net/ck?install=1', { headers: { host: 'ck.zipsin.net' } }));
+    expect(response.status).toBe(308);
+    expect(response.headers.get('location')).toBe('https://ck.zipsin.net/?install=1');
+  });
+
+  it('TEST-CK-HOST-ROOT-002 zipsin.net/ck 는 그대로 둔다', async () => {
+    const response = await proxy(new NextRequest('https://zipsin.net/ck', { headers: { host: 'zipsin.net' } }));
+    expect(response.headers.get('location')).toBeNull();
   });
 
   it('zipsin.net 첫 화면은 기존 집신 첫 화면을 그대로 둔다', async () => {

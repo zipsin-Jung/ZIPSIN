@@ -305,3 +305,22 @@
 /* 2026-10-18: 휴대폰에서도 머리말에 '로그인 준비 중'을 짧게 보여준다(숨겨서 안 보이던 문제 수정). 첫 화면 이야기 안의 표시는 휴대폰에서 숨긴다. */
 @media(max-width:600px){.storyActions .authSoon{display:none}[data-header-actions] .authSoon{min-height:36px;padding:0 6px;font-size:13px;gap:4px}[data-header-actions] .authLong{display:none}[data-header-actions] .authShort{display:inline}[data-header-actions] .authSoon small{font-size:11px;padding:2px 6px}}
 .storyActions .primary{white-space:nowrap}
+
+/* 2026-10-18 휴대폰 글자 하한(본문 14px 안팎·작은 표시 12px)과 장면 점 표시 정리 */
+@media(max-width:700px){
+  .storyMessage .kicker{font-size:12px}
+  .storyMessage>p{font-size:15px;line-height:1.55}
+  .storyConclusion{font-size:14px}
+  .storyActions .primary,.storyActions .secondary{font-size:15px;min-height:48px}
+  .storyActions .safety{font-size:13px}
+  .storyDots{gap:0;padding:0 2px}
+  .storyDots button{position:relative;min-width:44px!important;width:44px!important;background:transparent!important;border-color:transparent!important;color:transparent}
+  .storyDots button>span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .storyDots button::before{content:'';width:10px;height:10px;border-radius:999px;background:#c9d6d2}
+  .storyDots button[aria-current=true]::before{width:22px;background:var(--green-dark)}
+}
+@media(max-width:380px){
+  .storySlide{grid-template-rows:minmax(0,36%) minmax(0,64%)!important}
+  .storyMessage>p{font-size:14px}
+}
+.storyMessage .kicker small{background:#8a5a12!important;font-size:11px!important}

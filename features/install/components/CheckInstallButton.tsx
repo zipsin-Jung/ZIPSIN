@@ -1,4 +1,5 @@
 'use client';
+import { isCheckHost } from '@/lib/site/check-host';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Check, Download } from 'lucide-react';
@@ -20,7 +21,9 @@ export function CheckInstallButton() {
   useEffect(() => {
     if (!ready || handledQrRef.current) return;
     handledQrRef.current = true;
-    setInstallUrl(buildInstallUrl(window.location.origin, APP_PATH));
+    let onCheckHost = false;
+    try { onCheckHost = isCheckHost(window.location.host); } catch { onCheckHost = false; }
+    setInstallUrl(buildInstallUrl(window.location.origin, onCheckHost ? '/' : APP_PATH));
     if (!readInstallRequest(window.location.search)) return;
     // Drop ?install=1 so a refresh or shared link does not reopen the guide. Keep 집신체크's own
     // history state, but not Next's internal "__NA" flag: without it Next syncs its router to the new URL.

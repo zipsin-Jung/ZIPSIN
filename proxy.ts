@@ -4,17 +4,15 @@ import { isAccountOpen } from '@/lib/site/account-launch';
 import { updateSupabaseSession } from '@/lib/supabase/proxy';
 
 export async function proxy(request: NextRequest) {
-  if (request.nextUrl.pathname === '/') {
-    // ck.zipsin.net opens 집신체크 on its own address (ck.zipsin.net/ck).
-    // A redirect, not a rewrite: serving /ck under "/" caused a React
-    // hydration mismatch in the production build.
-    if (isCheckHost(request.headers.get('host'))) {
-      const target = request.nextUrl.clone();
-      target.pathname = '/ck';
-      return NextResponse.redirect(target, 307);
-    }
-    return NextResponse.next();
+  const onCheckHost = isCheckHost(request.headers.get('host'));
+  // ck.zipsin.net은 주소 끝 '/ck' 없이 첫 화면에서 바로 집신체크를 보여준다(app/page.tsx).
+  // 예전 주소 ck.zipsin.net/ck 로 들어오면 ck.zipsin.net 으로 옮긴다(질문 기호 뒤 값은 유지).
+  if (onCheckHost && request.nextUrl.pathname === '/ck') {
+    const target = request.nextUrl.clone();
+    target.pathname = '/';
+    return NextResponse.redirect(target, 308);
   }
+  if (request.nextUrl.pathname === '/' || request.nextUrl.pathname === '/ck') return NextResponse.next();
   if (!isAccountOpen()) return closedAccountResponse(request);
   return updateSupabaseSession(request);
 }
@@ -43,6 +41,7 @@ export function closedAccountResponse(request: NextRequest) {
 export const config = {
   matcher: [
     '/',
+    '/ck',
     '/home/:path*',
     '/onboarding/:path*',
     '/homes/:path*',

@@ -36,8 +36,14 @@ test('TEST-RC-HERO-JOURNEY-001 네 장의 제품 이야기를 확인하고 실�
   await expect(page.getByRole('button', { name: '다음 장면' })).toBeDisabled();
 
   await page.keyboard.press('Home');
-  await page.getByRole('link', { name: /내 집 기록 시작하기/ }).first().click();
-  await expect(page).toHaveURL(/\/signup$/);
+  if (process.env.NEXT_PUBLIC_ACCOUNT_OPEN === 'true') {
+    await page.getByRole('link', { name: /내 집 기록 시작하기/ }).first().click();
+    await expect(page).toHaveURL(/\/signup$/);
+  } else {
+    // 회원가입 준비 중(2026-10-17): 첫 장의 시작 버튼은 집신체크로 간다.
+    await page.getByRole('link', { name: /집신체크 바로 쓰기/ }).first().click();
+    await expect(page).toHaveURL(/\/ck$/);
+  }
   expect(browserErrors).toEqual([]);
 });
 
@@ -47,7 +53,8 @@ test('TEST-RC-HERO-SSR-001 JavaScript가 없어도 첫 장과 가입 경로를 �
   await page.goto(`${baseURL}/`);
 
   await expect(page.getByRole('heading', { level: 1, name: '부동산, 아직도 위치와 서류만 보고 계신가요?' })).toBeVisible();
-  await expect(page.getByRole('link', { name: /내 집 기록 시작하기/ }).first()).toHaveAttribute('href', '/signup');
+  if (process.env.NEXT_PUBLIC_ACCOUNT_OPEN === 'true') await expect(page.getByRole('link', { name: /내 집 기록 시작하기/ }).first()).toHaveAttribute('href', '/signup');
+  else await expect(page.getByRole('link', { name: /집신체크 바로 쓰기/ }).first()).toHaveAttribute('href', /\/ck/);
 
   await context.close();
 });
