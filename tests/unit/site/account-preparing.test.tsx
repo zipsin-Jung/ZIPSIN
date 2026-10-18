@@ -66,14 +66,14 @@ describe('로그인·회원가입 준비 중 (2026-10-17)', () => {
 
 describe('첫 화면 이야기 버튼 (준비 중)', () => {
   afterEach(() => { process.env.NEXT_PUBLIC_ACCOUNT_OPEN = 'true'; });
-  it('TEST-PREP-009 닫혀 있으면 회원가입 대신 집신체크로 보내고 로그인은 준비 중으로 보여준다', async () => {
+  it('TEST-PREP-009 닫혀 있으면 내 집 기록 시작하기·로그인을 준비 중으로 보여주고 집신체크로 대신 보내지 않는다', async () => {
     process.env.NEXT_PUBLIC_ACCOUNT_OPEN = '';
     Object.defineProperty(window, 'matchMedia', { configurable: true, value: () => ({ matches: true, addEventListener() {}, removeEventListener() {} }) });
     vi.resetModules();
     vi.doUnmock('@/features/public-home/components/HomeStoryCarousel');
     const { HomeStoryCarousel } = await import('@/features/public-home/components/HomeStoryCarousel');
     render(<HomeStoryCarousel />);
-    expect(screen.queryAllByRole('link', { name: /로그인|내 집 기록 시작하기/ })).toHaveLength(0);
-    expect(screen.getAllByRole('link', { name: /집신체크 바로 쓰기/ })[0]).toHaveAttribute('href', '/ck');
+    expect(screen.queryAllByRole('link', { name: /로그인|내 집 기록 시작하기|집신체크 바로 쓰기/ })).toHaveLength(0);
+    expect(screen.getAllByText('집신 시작하기')[0].closest('[aria-disabled]')).toHaveTextContent('준비 중');
   });
 });
