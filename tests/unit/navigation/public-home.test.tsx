@@ -36,26 +36,28 @@ describe('PublicHome', () => {
     expect(screen.getAllByRole('navigation')).toHaveLength(1);
   });
 
-  // TEST-PUB-SERVICES-001 (2026-10-16): 상단 순서는 집신체크 · 집신수리 · 집신클린. 체크만 다른 주소로 간다.
-  it('TEST-PUB-SERVICES-001 상단 서비스 메뉴는 집신체크·집신수리·집신클린 순서이고 체크만 링크다', () => {
+  // TEST-PUB-SERVICES-001 (2026-10-16, 2026-10-18 변경): 상단 순서는 집신체크 · 집신수리 · 집신클린.
+  // 체크는 집신체크로, 수리는 준비 중 화면으로 간다.
+  it('TEST-PUB-SERVICES-001 상단 서비스 메뉴는 집신체크·집신수리·집신클린 순서이고 체크·수리가 링크다', () => {
     render(<PublicHome />);
     const nav = screen.getByRole('navigation', { name: '집신 서비스' });
     const items = Array.from(nav.querySelectorAll('li > a, li > span')).map((item) => item.firstChild?.textContent);
     expect(items).toEqual(['집신체크', '집신수리', '집신클린']);
     const links = Array.from(nav.querySelectorAll('a'));
-    expect(links).toHaveLength(1);
+    expect(links).toHaveLength(2);
     expect(links[0]).toHaveAttribute('href', '/ck');
+    expect(links[1]).toHaveAttribute('href', '/rp');
+    expect(links[1]).toHaveTextContent('집신수리 (준비 중)');
   });
 
-  // TEST-PUB-SERVICES-004 (D3): 수리·클린은 회색이며 누를 수 없다.
-  it('TEST-PUB-SERVICES-004 집신수리·집신클린은 누를 수 없고 화면읽기에는 준비 중으로 읽힌다', () => {
+  // TEST-PUB-SERVICES-004 (D3, 2026-10-18 변경): 클린만 회색이며 누를 수 없다.
+  it('TEST-PUB-SERVICES-004 집신클린은 누를 수 없고 화면읽기에는 준비 중으로 읽힌다', () => {
     render(<PublicHome />);
     const nav = screen.getByRole('navigation', { name: '집신 서비스' });
     expect(nav.querySelectorAll('button')).toHaveLength(0);
     const soon = nav.querySelectorAll('[aria-disabled="true"]');
-    expect(soon).toHaveLength(2);
-    expect(soon[0]).toHaveTextContent('집신수리 (준비 중)');
-    expect(soon[1]).toHaveTextContent('집신클린 (준비 중)');
+    expect(soon).toHaveLength(1);
+    expect(soon[0]).toHaveTextContent('집신클린 (준비 중)');
   });
 
   it('TEST-RC-PUB-IMG-001 서론의 집 관리 이력 이미지를 우선 노출한다', () => {
