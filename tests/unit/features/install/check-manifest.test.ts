@@ -16,8 +16,13 @@ describe('TEST-CK-INSTALL-005 집신체크 앱 정보', () => {
   });
 
   it('웹앱 설치 형식으로 내려준다', async () => {
-    const response = GET();
+    const response = GET(new Request('https://zipsin.net/ck/manifest.webmanifest'));
     expect(response.headers.get('content-type')).toContain('application/manifest+json');
-    expect(await response.json()).toMatchObject({ short_name: '집신체크' });
+    expect(await response.json()).toMatchObject({ short_name: '집신체크', start_url: '/ck' });
+  });
+
+  it('TEST-CK-HOST-ROOT-003 ck.zipsin.net에서 설치하면 시작 화면이 주소 끝 /ck 없는 첫 화면이다', async () => {
+    const response = GET(new Request('https://ck.zipsin.net/ck/manifest.webmanifest', { headers: { host: 'ck.zipsin.net' } }));
+    expect(await response.json()).toMatchObject({ start_url: '/' });
   });
 });
