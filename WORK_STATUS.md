@@ -1,5 +1,13 @@
 # 집신 작업 현황
 
+## 2026-10-18 집신수리(rp.zipsin.net) 준비 중 화면 · 체험판 (가지 `claude/repair-preparing`, main 미반영)
+
+- 대표 결정: 집신수리는 집신체크처럼 같은 계정·같은 앱의 별도 서비스, 주소 `rp.zipsin.net`(repair), 호칭 '기술자님'.
+- 준비 중 화면: 승인 시안 B(예시 기록형). rp 주소 첫 화면 + `zipsin.net/rp`. 홈 상단 '집신수리'는 이 화면으로 연결(D3에서 수리만 변경, 클린은 그대로 회색). `NEXT_PUBLIC_REPAIR_SITE_URL`을 실서비스에 넣으면 rp.zipsin.net으로 감.
+- 체험판 `/rp/try`: 홈(나/팀 전환) → 새 일(그날 함께한 사람) → 수리 전(전 사진·견적) → 수리 중(추가 요청·손님 동의·사후 청구) → 수리 후(후 사진) → 완료(손님 확인) · 기록 한 장 · 내 이력서. 손님 화면도 체험으로 열어 봄. 실제 문자·서버 저장 없음, 이 휴대폰(localStorage)에만 저장. DB 변경 없음.
+- 검사: 타입 0, 단위 884 통과·2 skip, 빌드 성공, 390px 전체 흐름 클릭·새로고침 유지·콘솔 오류 0, 1440px 넘침 없음.
+- 남은 일(승인 필요): main 반영(Production 배포), Vercel에 rp.zipsin.net 추가·가비아 CNAME, 실서비스 환경값 `NEXT_PUBLIC_REPAIR_SITE_URL=https://rp.zipsin.net`. 체험판은 rp 주소에서는 열리지 않음(준비 중 화면만).
+
 ## 2026-10-18 공개 후 전체 점검
 
 - ck.zipsin.net은 주소 끝 '/ck' 없이 첫 화면에서 집신체크(app/page.tsx가 주소별로 분기), 예전 /ck는 308로 '/'.
