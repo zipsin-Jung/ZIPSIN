@@ -1,12 +1,12 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { isCheckHost } from '@/lib/site/check-host';
-import { isCleanHost } from '@/lib/site/clean-host';
+import { subSiteForHost } from '@/lib/site/sub-sites';
 import { isAccountOpen } from '@/lib/site/account-launch';
 import { updateSupabaseSession } from '@/lib/supabase/proxy';
 
 export async function proxy(request: NextRequest) {
-  // cl.zipsin.net(집신클린)은 준비 중: 첫 화면만 열고, 다른 주소는 첫 화면으로 보낸다. 계정·DB는 부르지 않는다.
-  if (isCleanHost(request.headers.get('host'))) {
+  // cl.zipsin.net(집신청소)·rp.zipsin.net(집신수리)은 준비 중: 첫 화면만 열고, 다른 주소는 첫 화면으로 보낸다. 계정·DB는 부르지 않는다.
+  if (subSiteForHost(request.headers.get('host'))) {
     if (request.nextUrl.pathname === '/') return NextResponse.next();
     const target = request.nextUrl.clone();
     target.pathname = '/';
