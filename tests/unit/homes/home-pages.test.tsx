@@ -28,7 +28,7 @@ describe('home route server boundaries', () => {
     guard.mockResolvedValue({ supabase: db, user: { id: 'user-1' } });
     render(await NewHomePage({ searchParams: Promise.resolve({ office: officeId }) }));
     expect(screen.getByRole('heading', { name: '집 등록하기' })).toBeInTheDocument();
-    expect(screen.getByLabelText('도로명 주소')).toBeInTheDocument();
+    expect(screen.getByLabelText('주소')).toBeInTheDocument();
     expect(db.chains.office_memberships.eq).toHaveBeenCalledWith('user_id', 'user-1');
     expect(db.chains.office_memberships.eq).toHaveBeenCalledWith('office_id', officeId);
     expect(db.chains.office_memberships.eq).toHaveBeenCalledWith('status', 'active');
@@ -39,7 +39,7 @@ describe('home route server boundaries', () => {
     const db = database({ office_memberships: { data: membership, error: null } });
     guard.mockResolvedValue({ supabase: db, user: { id: 'user-1' } });
     render(await NewHomePage({ searchParams: Promise.resolve({ office: officeId }) }));
-    expect(screen.queryByLabelText('도로명 주소')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('주소')).not.toBeInTheDocument();
     expect(screen.getByRole('alert')).toHaveTextContent('이 계정으로는 집을 등록할 수 없습니다. 사무소 대표에게 권한을 확인해 주세요.');
     expect(screen.getByRole('link', { name: '업무 홈으로' })).toHaveAttribute('href', '/home');
   });

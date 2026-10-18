@@ -17,5 +17,5 @@ export async function createHomeAction(formData: FormData): Promise<HomeFormStat
   }, parsed.data);
   if (!result.ok) return { error: workspaceErrorMessage(result.error) };
   revalidatePath('/home'); revalidatePath('/homes');
-  return { redirectTo: `/homes/${result.homeId}` };
+  return { homeId: result.homeId, redirectTo: `/homes/${result.homeId}` };
 }

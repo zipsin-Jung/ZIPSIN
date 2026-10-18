@@ -7,7 +7,8 @@ describe('HomeStart', () => {
     render(<HomeStart primaryRole="principal_broker" offices={[]} />);
 
     expect(screen.queryByText('집의 모든 기록과 대화를')).not.toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: '사무소 공간을 먼저 만드세요' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '두 단계만 하면 시작돼요' })).toBeInTheDocument();
+    expect(screen.getByText('직원으로 들어오셨나요?')).toBeInTheDocument();
     expect(screen.getByLabelText('사무소 이름')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '사무소 만들기' })).toBeInTheDocument();
   });
@@ -36,7 +37,7 @@ describe('HomeStart', () => {
 
     expect(screen.getByRole('heading', { name: '성수동 집' })).toBeInTheDocument();
     expect(screen.getByText('D-112')).toBeInTheDocument();
-    expect(screen.getByText('입주 사진 확인')).toBeInTheDocument();
+    expect(screen.getByText('지금 할 일 · 입주 사진 확인')).toBeInTheDocument();
     expect(screen.getByText('아직 등록된 사진이 없습니다')).toBeInTheDocument();
     expect(screen.getByText('최근 사진과 문서')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '성수동 집 열기' })).toHaveAttribute('href', '/homes/home-1');
@@ -82,6 +83,40 @@ describe('HomeStart', () => {
     expect(screen.getByText('아직 연결된 집이 없습니다')).toBeInTheDocument();
     expect(screen.getByText('새 메시지가 없습니다')).toBeInTheDocument();
     expect(screen.queryByText(/0건|0개/)).not.toBeInTheDocument();
+  });
+
+  it('TEST-ZH-HOME-008 shows the created-office next step (first home 2/2, invite staff)', () => {
+    render(<HomeStart primaryRole="principal_broker" offices={[{ id: 'office-1', name: '공릉공인중개사사무소', canRegisterHome: true }]} recentHomes={[]} justCreatedOffice />);
+    expect(screen.getByRole('heading', { name: '사무소를 만들었어요' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '첫 집 등록하기 (2/2)' })).toHaveAttribute('href', '/homes/new?office=office-1');
+    expect(screen.getByRole('link', { name: '직원 먼저 초대하기' })).toHaveAttribute('href', '/office/members');
+  });
+
+  it('TEST-ZH-HOME-009 uses real counts and gold only for the one current task', () => {
+    render(<HomeStart
+      primaryRole="principal_broker"
+      offices={[{ id: 'office-1', name: '공릉공인중개사사무소', canRegisterHome: true }]}
+      recentHomes={[{ id: 'home-1', label: '201호', address: '공릉동', contractDay: { label: 'D-40', days: 40 }, openTask: { id: 't1', title: '누수 확인', dueAt: null } }]}
+      counts={{ totalHomes: 12, expiringSoon: 3, openTasks: 2 }}
+      nextTask={{ id: 't1', homeId: 'home-1', title: '누수 확인', dueAt: null }}
+    />);
+    expect(screen.getByRole('link', { name: /연결된 집\s*12채/ })).toHaveAttribute('href', '/homes?office=office-1');
+    expect(screen.getByRole('link', { name: /90일 내 만기\s*3채/ })).toHaveAttribute('href', '/homes?office=office-1&filter=expiring');
+    expect(screen.getAllByText(/지금 할 일/)).toHaveLength(1);
+  });
+
+  it('TEST-ZH-HOME-010 shows the new-staff brief with office notes only right after joining', () => {
+    const props = {
+      primaryRole: 'assistant' as const,
+      offices: [{ id: 'office-1', name: '공릉공인중개사사무소' }],
+      recentHomes: [{ id: 'home-1', label: '201호', address: '공릉동', contractDay: null, openTask: null }],
+      counts: { totalHomes: 12, expiringSoon: 3, openTasks: 2 },
+    };
+    const { rerender } = render(<HomeStart {...props} staffNotes={[{ id: 'n1', homeId: 'home-1', title: '201호 임대인은 오전에만 통화 가능' }]} />);
+    expect(screen.getByRole('heading', { name: '5분이면 이 사무소 일을 이어받을 수 있어요' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '201호 임대인은 오전에만 통화 가능' })).toHaveAttribute('href', '/homes/home-1');
+    rerender(<HomeStart {...props} />);
+    expect(screen.queryByRole('heading', { name: '5분이면 이 사무소 일을 이어받을 수 있어요' })).not.toBeInTheDocument();
   });
 
   it('TEST-ZH-HOME-MEDIA-001 실제 집 카드에 공개 교육 이미지를 사용하지 않는다', () => {

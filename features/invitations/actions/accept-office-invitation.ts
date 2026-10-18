@@ -10,5 +10,5 @@ export async function acceptOfficeInvitationAction(formData: FormData): Promise<
   if (!parsed.success) redirect('/home');
   const { error } = await supabase.rpc('accept_office_invitation', { p_token: parsed.data.token });
   if (error) redirect(`/invitations/${parsed.data.token}?error=${toWorkspaceErrorCode(error)}`);
-  redirect('/home');
+  redirect('/home?joined=office');
 }

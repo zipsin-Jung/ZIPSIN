@@ -23,14 +23,14 @@ describe('home page data boundary', () => {
       unreadChatCount: 2,
       notificationCount: 3,
     });
-    render(await HomePage());
+    render(await HomePage({ searchParams: Promise.resolve({}) }));
     expect(screen.getByText('집신아파트 1401호')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /읽지 않은 메시지 2개/ })).toBeInTheDocument();
   });
 
   it('shows an error instead of an empty home when loading fails', async () => {
     loadDashboard.mockResolvedValue({ ok: false, error: 'load_failed' });
-    render(await HomePage());
+    render(await HomePage({ searchParams: Promise.resolve({}) }));
     expect(screen.getByRole('alert')).toHaveTextContent('처리하지 못했습니다');
     expect(screen.queryByText('아직 연결된 집이 없습니다')).not.toBeInTheDocument();
   });

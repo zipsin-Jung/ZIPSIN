@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import Link from 'next/link';
+import { ChevronLeft } from 'lucide-react';
 import { z } from 'zod';
 import { requireOnboardingComplete } from '@/features/auth/guards/require-onboarding';
 import { createHomeAction } from '@/features/homes/actions/create-home';
@@ -17,12 +18,10 @@ export default async function NewHomePage({ searchParams }: { searchParams: Prom
   if (error) return <Unavailable failed />;
   if (!membership || membership.office_role !== 'principal_broker') return <Unavailable permission />;
   return (
-    <main className="mx-auto max-w-3xl px-5 py-10 sm:py-16">
-      <Link href="/home" className="text-sm font-bold text-[#0B6655]">← 홈으로</Link>
-      <div className="mb-8 mt-8">
-        <p className="text-sm font-bold text-[#0B6655]">집 기록 시작</p>
-        <h1 className="mt-3 text-4xl font-extrabold tracking-[-0.05em] text-[#16211E] sm:text-5xl">집 등록하기</h1>
-        <p className="mt-4 max-w-2xl text-base leading-7 text-[#526b7a]">주소는 집을 구분하는 기준입니다. 등록한 즉시 사진·문서·일정을 이어갈 비공개 공간이 생깁니다.</p>
+    <main className="mx-auto max-w-xl px-4 py-4 sm:py-8">
+      <div className="mb-4 flex items-center gap-1">
+        <Link aria-label="홈으로" className="-ml-2 grid size-11 place-items-center rounded-xl text-[#16211E]" href="/home"><ChevronLeft aria-hidden="true" className="size-6" /></Link>
+        <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#16211E]">집 등록하기</h1>
       </div>
       <HomeForm officeId={membership.office_id} idempotencyKey={randomUUID()} action={createHomeAction} />
     </main>
@@ -33,5 +32,5 @@ function Unavailable({ failed = false, permission = false }: { failed?: boolean;
   const message = permission
     ? '이 계정으로는 집을 등록할 수 없습니다. 사무소 대표에게 권한을 확인해 주세요.'
     : workspaceErrorMessage(failed ? 'server_error' : 'permission_denied');
-  return <main className="mx-auto max-w-2xl px-5 py-16"><p role="alert">{message}</p><Link href="/home" className="mt-5 inline-block font-semibold text-emerald-900">업무 홈으로</Link></main>;
+  return <main className="mx-auto max-w-2xl px-5 py-16"><p role="alert">{message}</p><Link href="/home" className="mt-5 inline-block font-semibold text-[#0B6655]">업무 홈으로</Link></main>;
 }
