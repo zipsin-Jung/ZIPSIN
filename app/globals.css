@@ -17,3 +17,6 @@ linear-gradient(180deg,#f7fbfa 0,#f4f8fb 48%,#fbfcfd 100%)}
 .app-primary{background:linear-gradient(135deg,#0b6b5a 0%,#075064 100%);box-shadow:0 14px 30px rgba(7,80,100,.2)}
 .app-primary:hover{filter:brightness(1.06);transform:translateY(-1px)}
 .hero-mascot{width:138px;left:calc(50% - 310px);bottom:28px;z-index:1}@media(max-width:1100px){.hero-mascot{width:120px;left:calc(50% - 285px);bottom:30px}}@media(max-width:850px){.hero-mascot{width:105px;left:calc(50% - 270px);bottom:32px}}@media(max-width:600px){.hero-visual{padding-bottom:142px}.hero-mascot{width:105px;left:50%;bottom:30px;transform:translateX(-50%);z-index:1}.demo-label{bottom:8px}}@media(max-width:360px){.hero-visual{padding-bottom:135px}.hero-mascot{width:96px;left:50%;bottom:28px;transform:translateX(-50%)}}
+
+/* ck.zipsin.net 첫 화면(주소 '/')에서는 집신체크 자체 문의 버튼만 보이게 한다(겹침 방지, 2026-10-18). */
+body:has([data-zipsin-check-app]) [data-global-kakao] { display: none; }

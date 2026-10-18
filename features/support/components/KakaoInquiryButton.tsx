@@ -11,7 +11,7 @@ export function KakaoInquiryButton() {
   if (pathname === '/ck' || pathname.startsWith('/ck/')) return null;
 
   return (
-    <aside aria-label="빠른 고객지원">
+    <aside aria-label="빠른 고객지원" data-global-kakao="">
       <a
         aria-label="카카오톡으로 집신 대표에게 문의하기 (새 창)"
         className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-[60] inline-flex min-h-14 min-w-14 items-center justify-center gap-2 rounded-full border border-black/10 bg-[#FEE500] px-4 font-extrabold text-[#191919] shadow-[0_14px_36px_rgba(25,25,25,0.22)] transition hover:-translate-y-0.5 hover:brightness-[0.98] motion-reduce:transition-none md:bottom-24 md:right-6 md:px-5 lg:bottom-6"

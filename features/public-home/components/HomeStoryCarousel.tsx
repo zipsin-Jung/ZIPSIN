@@ -207,8 +207,14 @@ export function HomeStoryCarousel() {
       }}
       onPointerUp={handlePointerUp}
       onPointerCancel={() => {
-        pointerStart.current = null;
+        // 휴대폰 브라우저는 손가락으로 밀 때 pointercancel을 보내고 pointerup을 생략하기도 한다.
+        // 시작 지점은 남겨 두고 touchend에서 밀기 방향을 판단한다(2026-10-18, HERO-SWIPE-001).
         setPointerActive(false);
+      }}
+      onTouchEnd={(event) => {
+        const touch = event.changedTouches[0];
+        if (!touch || !pointerStart.current) return;
+        handlePointerUp({ clientX: touch.clientX, clientY: touch.clientY } as React.PointerEvent);
       }}
     >
       <div

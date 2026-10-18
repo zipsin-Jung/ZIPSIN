@@ -93,7 +93,7 @@ for (const width of viewports) {
     const focusOutline = await focusTarget.evaluate((element) => getComputedStyle(element).outlineStyle);
     expect(focusOutline).not.toBe('none');
 
-    const primary = page.getByRole('link', { name: /내 집 기록 시작하기|회원가입/ }).first();
+    const primary = page.getByRole('link', { name: /내 집 기록 시작하기|회원가입|집신체크 바로 쓰기/ }).first();
     const primaryBox = await primary.boundingBox();
     expect(primaryBox?.height ?? 0).toBeGreaterThanOrEqual(44);
 
@@ -171,7 +171,7 @@ test('200% 확대에 가까운 낮은 화면에서도 문서가 넘치지 않고
   await page.setViewportSize({ width: 720, height: 600 });
   await page.goto('/');
 
-  const cta = page.getByRole('link', { name: /내 집 기록 시작하기/ }).first();
+  const cta = page.getByRole('link', { name: /내 집 기록 시작하기|집신체크 바로 쓰기/ }).first();
   await cta.scrollIntoViewIfNeeded();
   await expect(cta).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
