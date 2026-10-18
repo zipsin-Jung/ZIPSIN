@@ -13,6 +13,13 @@
 | 출시 방식 | 회원가입 법률 자문 회신 뒤 **한 번에 배포**하고 가입을 연다 |
 | DB | Preview와 운영이 같은 Supabase 프로젝트를 씀 → 출시 때 서울 새 운영 DB(D2) 추천, **대표 결정 대기** |
 
+## 2026-10-18 17:00 · cl·rp 도메인 연결, 메뉴 실제 주소로 (main 4dc8358)
+
+- 대표가 가비아 CNAME(cl·rp → ck와 같은 Vercel 값)과 Vercel 도메인 추가를 직접 함. Vercel 화면 Valid Configuration 확인.
+- 메뉴: 집신체크 → https://ck.zipsin.net/ · 집신수리 → https://rp.zipsin.net/ · 집신청소 → https://cl.zipsin.net/ (운영). Preview·로컬은 /cl·/rp.
+- **실서비스 브라우저 확인(대표 컴퓨터, 17:00 무렵)**: zipsin.net에서 메뉴 세 개를 차례로 눌러 각각 ck·rp·cl이 열리고, 청소·수리는 승인 시안 문구 그대로 보임. 뒤로 가기로 zipsin.net 복귀 확인.
+- 아래 16:20 기록의 "/cl·/rp 임시"는 이것으로 대체됨.
+
 ## 2026-10-18 16:20 · 실서비스 반영: 집신청소 · 메뉴 3개 연결 · 청소·수리 준비 중 화면
 
 - 대표 지시로 main = **bb5401c** 배포(Vercel 성공). 개발 브랜치에 합침.
