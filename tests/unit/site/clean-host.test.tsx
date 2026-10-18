@@ -33,15 +33,17 @@ describe('TEST-CL-HOST-001 cl·rp 주소 구분 (집신청소·집신수리)', (
   });
 });
 
-describe('TEST-SUB-SITE-HREF 메뉴 링크 주소', () => {
-  it('주소 환경값이 없거나 운영이 아니면 같은 앱 경로(깨진 링크 방지)', () => {
-    expect(getSubSiteHref('clean', 'production', undefined)).toBe('/cl');
-    expect(getSubSiteHref('repair', 'production', '')).toBe('/rp');
-    expect(getSubSiteHref('clean', 'preview', 'https://cl.zipsin.net')).toBe('/cl');
+describe('TEST-SUB-SITE-HREF 메뉴 링크 주소 (대표 결정: 청소 cl.zipsin.net · 수리 rp.zipsin.net)', () => {
+  it('운영에서는 각 서비스 주소로 간다(환경값이 없어도)', () => {
+    expect(getSubSiteHref('clean', 'production', undefined)).toBe('https://cl.zipsin.net/');
+    expect(getSubSiteHref('repair', 'production', '')).toBe('https://rp.zipsin.net/');
   });
-  it('운영 + 주소 환경값이 있으면 그 도메인', () => {
-    expect(getSubSiteHref('clean', 'production', 'https://cl.zipsin.net')).toBe('https://cl.zipsin.net/');
-    expect(getSubSiteHref('repair', 'production', 'https://rp.zipsin.net')).toBe('https://rp.zipsin.net/');
+  it('환경값이 있으면 그 주소', () => {
+    expect(getSubSiteHref('clean', 'production', 'https://cl.example.test')).toBe('https://cl.example.test/');
+  });
+  it('Preview·로컬은 실서비스로 새지 않게 같은 앱 경로', () => {
+    expect(getSubSiteHref('clean', 'preview', 'https://cl.zipsin.net')).toBe('/cl');
+    expect(getSubSiteHref('repair', undefined, undefined)).toBe('/rp');
   });
 });
 
