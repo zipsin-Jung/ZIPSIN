@@ -1,9 +1,10 @@
 import { requireOnboardingComplete } from '@/features/auth/guards/require-onboarding';
+import { isOfficeMember } from '@/features/workspace/services/principal-office';
 import { RecordsFeed, type FeedRecord } from '@/features/records/components/RecordsFeed';
 
 /** 기록 탭: 내가 볼 수 있는 모든 집의 최근 기록 (승인 시안 ⑬). 무엇이 보이는지는 RLS가 정한다. */
 export default async function RecordsPage() {
-  const { supabase } = await requireOnboardingComplete();
+  const { supabase, user } = await requireOnboardingComplete();
   const { data: records, error } = await supabase
     .from('records')
     .select('id, home_id, record_space, record_kind, title, occurred_at')
@@ -30,5 +31,6 @@ export default async function RecordsPage() {
     occurredAt: record.occurred_at,
     files: fileCount.get(record.id) ?? 0,
   }));
-  return <RecordsFeed records={feed} />;
+  // 사무소 구성원이 아니면 '사무소 내부' 고르기는 볼 일이 없으니 숨긴다(2026-10-18 Preview 검수).
+  return <RecordsFeed records={feed} showOfficeSpace={await isOfficeMember(supabase, user.id)} />;
 }

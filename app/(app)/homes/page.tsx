@@ -60,7 +60,7 @@ export default async function HomesPage({ searchParams }: Props) {
       ) : (
         <section className="mt-6 rounded-[20px] border border-[#E1E6E3] bg-white p-8 text-center sm:p-12">
           <p className="text-lg font-bold text-[#16211E]">아직 연결된 집이 없습니다.</p>
-          <p className="mt-2 text-[15px] text-[#5D6A65]">첫 집을 등록하면 그 집의 사진과 업무를 한곳에서 이어갈 수 있습니다.</p>
+          <p className="mt-2 text-[15px] text-[#5D6A65]">{registrationOffice ? '첫 집을 등록하면 그 집의 사진과 업무를 한곳에서 이어갈 수 있습니다.' : '받은 초대 링크를 수락하면 그 집이 여기에 보입니다.'}</p>
           {registrationOffice && <Link href={`/homes/new?office=${registrationOffice}`} className="app-primary mt-5 inline-flex min-h-14 items-center rounded-xl px-6 text-[17px] font-bold text-white">첫 집 등록하기</Link>}
         </section>
       )}

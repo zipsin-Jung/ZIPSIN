@@ -29,9 +29,9 @@ export function dayLabel(iso: string, now = new Date()): string {
   return new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', month: 'long', day: 'numeric' }).format(new Date(iso));
 }
 
-export function RecordsFeed({ records, now }: { records: FeedRecord[]; now?: Date }) {
+export function RecordsFeed({ records, now, showOfficeSpace = true }: { records: FeedRecord[]; now?: Date; showOfficeSpace?: boolean }) {
   const [filter, setFilter] = useState<'all' | FeedRecord['space']>('all');
-  const chips: Array<{ id: 'all' | FeedRecord['space']; label: string }> = [{ id: 'all', label: '전체' }, ...(Object.keys(spaceLabels) as FeedRecord['space'][]).map((id) => ({ id, label: spaceLabels[id] }))];
+  const chips: Array<{ id: 'all' | FeedRecord['space']; label: string }> = [{ id: 'all', label: '전체' }, ...(Object.keys(spaceLabels) as FeedRecord['space'][]).filter((id) => showOfficeSpace || id !== 'office_internal').map((id) => ({ id, label: spaceLabels[id] }))];
   const visible = filter === 'all' ? records : records.filter((record) => record.space === filter);
   const days: Array<{ day: string; items: FeedRecord[] }> = [];
   for (const record of visible) {

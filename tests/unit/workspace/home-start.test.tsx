@@ -81,8 +81,14 @@ describe('HomeStart', () => {
     render(<HomeStart primaryRole="landlord" offices={[]} recentHomes={[]} unreadChatCount={0} nextTask={null} />);
 
     expect(screen.getByText('아직 연결된 집이 없습니다')).toBeInTheDocument();
-    expect(screen.getByText('새 메시지가 없습니다')).toBeInTheDocument();
+    // 2026-10-18 Preview 검수: 홀로 떠 있던 '새 메시지가 없습니다' 줄은 새 대화가 있을 때만 보인다.
+    expect(screen.queryByText('새 메시지가 없습니다')).not.toBeInTheDocument();
     expect(screen.queryByText(/0건|0개/)).not.toBeInTheDocument();
+  });
+
+  it('TEST-ZH-HOME-004b 집이 없어도 새 대화가 있으면 대화로 가는 길을 보여 준다', () => {
+    render(<HomeStart primaryRole="tenant" offices={[]} recentHomes={[]} unreadChatCount={2} nextTask={null} />);
+    expect(screen.getByRole('link', { name: '새 대화 2개 보기' })).toHaveAttribute('href', '/chats');
   });
 
   it('TEST-ZH-HOME-008 shows the created-office next step (first home 2/2, invite staff)', () => {

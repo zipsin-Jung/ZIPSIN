@@ -268,7 +268,7 @@ export function HomeStart({
         <div className="mt-3 grid gap-2">
           {canRegisterHome && <Link className="app-primary flex min-h-14 items-center justify-center rounded-xl text-[17px] font-bold text-white" href={`/homes/new?office=${office.id}`}>집 등록하기</Link>}
           {canRegisterHome && <Link className="flex min-h-12 items-center justify-center rounded-xl border border-[#C9D1CD] bg-white text-base font-semibold" href="/office/members">직원 초대하기</Link>}
-          <Link className="flex min-h-12 items-center justify-center text-base font-semibold text-[#0B6655]" href="/chats">새 메시지가 없습니다</Link>
+          {unreadChatCount > 0 && <Link className="flex min-h-12 items-center justify-center text-base font-semibold text-[#0B6655]" href="/chats">새 대화 {unreadChatCount}개 보기</Link>}
         </div>
       </main>
     );
@@ -282,7 +282,7 @@ export function HomeStart({
           <p>역할을 선택한 것만으로 사무소나 집 기록이 열리지는 않습니다. 받은 초대 링크를 열어 수락하면 허용된 집과 대화가 이 홈에 나타납니다.</p>
           {!officeMember && <p className="mt-2 text-[15px] text-[#5D6A65]">주소를 검색해 다른 사람의 기록에 연결할 수 없습니다.</p>}
         </EmptyCard>
-        <Link className="mt-3 flex min-h-12 items-center justify-center text-base font-semibold text-[#0B6655]" href="/chats">새 메시지가 없습니다</Link>
+        {unreadChatCount > 0 && <Link className="mt-3 flex min-h-12 items-center justify-center text-base font-semibold text-[#0B6655]" href="/chats">새 대화 {unreadChatCount}개 보기</Link>}
       </main>
     );
   }
