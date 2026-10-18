@@ -73,6 +73,8 @@ export default defineConfig({
         'features/records/domain/photo-groups.ts',
         'features/records/client/upload-record-files.ts',
         'lib/media/photo-meta.ts',
+        // 2026-10-18 집신클린 가격 바로 보기(DEC-031)
+        'features/zipsin-clean/**/*.{ts,tsx}',
         'app/(app)/records/bulk/page.tsx',
         'features/attachments/components/AttachmentUploader.tsx',
         'features/attachments/domain/validation.ts',
