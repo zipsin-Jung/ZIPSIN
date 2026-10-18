@@ -44,9 +44,12 @@ describe('TEST-CL-HOST-002 cl.zipsin.net은 준비 중 화면만 연다', () => 
     expect(updateSupabaseSession).not.toHaveBeenCalled();
   });
 
-  it('준비 중 화면은 서비스 이름과 준비 중을 알리고, 신청을 받는 척하지 않는다', () => {
+  it('준비 중 화면은 서비스 이름과 준비 중을 알리고, 예시 기록을 보여 주되 신청을 받는 척하지 않는다', () => {
     render(<CleanPreparing />);
-    expect(screen.getByRole('heading', { name: '집신클린 서비스 준비 중이에요' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: '집신클린 서비스 준비 중이에요' })).toBeInTheDocument();
+    const example = screen.getByRole('region', { name: '예시 · 이런 기록이 남아요' });
+    expect(example).toHaveTextContent('입주 청소 · 24평');
+    expect(example).toHaveTextContent('+ 추가요금 작업 시작 뒤0원');
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: '집신 둘러보기' })).toHaveAttribute('href', 'https://zipsin.net/');
