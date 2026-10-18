@@ -185,7 +185,7 @@ function OfficeHome({ homes, office, primaryRole, counts, unreadChatCount, nextT
       </section>
 
       <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
-        <Link className="flex min-h-[72px] items-center gap-3 rounded-2xl bg-[#0B6655] px-5 text-white hover:bg-[#083E37]" href="/homes">
+        <Link className="flex min-h-[72px] items-center gap-3 rounded-2xl bg-[#0B6655] px-5 text-white hover:bg-[#083E37]" href="/records/new">
           <Camera aria-hidden="true" className="size-7 shrink-0" />
           <span><strong className="block text-lg">사진 찍어 기록하기</strong><span className="text-[15px] text-white/90">집을 고르고 사진·메모를 남겨요</span></span>
         </Link>

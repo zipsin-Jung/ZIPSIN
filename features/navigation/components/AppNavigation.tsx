@@ -6,11 +6,10 @@ import { usePathname } from 'next/navigation';
 
 /**
  * 로그인 후 주 메뉴 (2026-10-18 승인 시안: 홈 · 기록 · + · 채팅 · 마이).
- * '기록' 전체 피드는 3단계에서 만든다. 그 전까지는 집 목록(/homes)에서 집을 골라 기록을 본다.
- * '+'(기록하기)도 집을 먼저 고르는 /homes 로 보낸다.
+ * '+'(기록하기)는 집을 먼저 고르는 /records/new 로 보낸다(집이 하나면 바로 그 집).
  */
-export const RECORDS_HREF = '/homes';
-export const ADD_RECORD_HREF = '/homes';
+export const RECORDS_HREF = '/records';
+export const ADD_RECORD_HREF = '/records/new';
 
 const items = [
   { href: '/home', label: '홈', icon: Home },
@@ -22,7 +21,7 @@ const items = [
 
 export function AppNavigation() {
   const pathname = usePathname();
-  const isCurrent = (href: string) => pathname === href || (href !== '/home' && Boolean(pathname?.startsWith(`${href}/`)));
+  const isCurrent = (href: string) => pathname === href || (href !== '/home' && Boolean(pathname?.startsWith(`${href}/`)) && !items.some((other) => other.href !== href && other.href.startsWith(`${href}/`) && pathname?.startsWith(other.href)));
   return (
     <>
       <div className="hidden items-center gap-2 md:flex">

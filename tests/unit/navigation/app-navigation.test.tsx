@@ -12,8 +12,8 @@ describe('AppNavigation', () => {
     expect(names).toEqual(['홈', '기록', '기록하기', '채팅', '마이']);
     expect(within(mobile).getByRole('link', { name: '홈' })).toHaveAttribute('href', '/home');
     expect(within(mobile).getByRole('link', { name: '홈' })).toHaveAttribute('aria-current', 'page');
-    expect(within(mobile).getByRole('link', { name: '기록' })).toHaveAttribute('href', '/homes');
-    expect(within(mobile).getByRole('link', { name: '기록하기' })).toHaveAttribute('href', '/homes');
+    expect(within(mobile).getByRole('link', { name: '기록' })).toHaveAttribute('href', '/records');
+    expect(within(mobile).getByRole('link', { name: '기록하기' })).toHaveAttribute('href', '/records/new');
     expect(within(mobile).getByRole('link', { name: '채팅' })).toHaveAttribute('href', '/chats');
     expect(within(mobile).getByRole('link', { name: '마이' })).toHaveAttribute('href', '/my');
   });

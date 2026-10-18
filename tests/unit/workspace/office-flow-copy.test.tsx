@@ -91,7 +91,7 @@ describe('assignment-free office flow copy', () => {
 
     const desktop = screen.getByRole('navigation', { name: '주요 메뉴' });
     expect(within(desktop).getByRole('link', { name: /^홈$/ })).toHaveAttribute('href', '/home');
-    expect(within(desktop).getByRole('link', { name: /^기록$/ })).toHaveAttribute('href', '/homes');
+    expect(within(desktop).getByRole('link', { name: /^기록$/ })).toHaveAttribute('href', '/records');
     expect(within(desktop).getByRole('link', { name: /^채팅$/ })).toHaveAttribute('href', '/chats');
     expect(within(desktop).getByRole('link', { name: /^마이$/ })).toHaveAttribute('href', '/my');
   });

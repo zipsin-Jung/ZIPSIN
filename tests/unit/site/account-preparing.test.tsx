@@ -38,7 +38,7 @@ describe('로그인·회원가입 준비 중 (2026-10-17)', () => {
 
   it('TEST-PREP-004 로그인 뒤 화면과 인증 콜백은 처음 화면으로 보낸다', async () => {
     const { closedAccountResponse } = await import('@/proxy');
-    for (const path of ['/home', '/home/x', '/homes', '/homes/1', '/my', '/chats/2', '/office/members', '/tasks', '/support', '/invitations/t', '/onboarding/role', '/auth/callback?code=1']) {
+    for (const path of ['/home', '/home/x', '/homes', '/homes/1', '/records', '/records/new', '/my', '/chats/2', '/office/members', '/tasks', '/support', '/invitations/t', '/onboarding/role', '/auth/callback?code=1']) {
       const res = closedAccountResponse(new NextRequest(`https://zipsin.net${path}`));
       expect(res.status).toBe(307);
       expect(res.headers.get('location')).toBe('https://zipsin.net/');

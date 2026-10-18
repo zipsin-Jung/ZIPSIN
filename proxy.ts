@@ -22,7 +22,7 @@ export async function proxy(request: NextRequest) {
  * 공개 홈과 집신체크는 DB 없이 열린다.
  */
 // 로그인 뒤에만 쓰는 화면(app/(app)). 닫힌 상태에서는 페이지가 DB를 부르기 전에 처음 화면으로 보낸다.
-const APP_PREFIXES = ['/home', '/homes', '/onboarding', '/my', '/chats', '/office', '/tasks', '/support', '/invitations'];
+const APP_PREFIXES = ['/home', '/homes', '/records', '/onboarding', '/my', '/chats', '/office', '/tasks', '/support', '/invitations'];
 
 export function closedAccountResponse(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -45,6 +45,7 @@ export const config = {
     '/home/:path*',
     '/onboarding/:path*',
     '/homes/:path*',
+    '/records/:path*',
     '/my/:path*',
     '/chats/:path*',
     '/office/:path*',
