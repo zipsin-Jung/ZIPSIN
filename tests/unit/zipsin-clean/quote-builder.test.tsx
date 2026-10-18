@@ -10,7 +10,7 @@ describe('QuoteBuilder — 우리 집 청소 가격 바로 보기', () => {
     await user.clear(screen.getByLabelText('평수 (공급면적)'));
     await user.type(screen.getByLabelText('평수 (공급면적)'), '24');
     await user.click(screen.getByRole('button', { name: '가격 보기' }));
-    const result = await screen.findByRole('region', { name: '확정 가격' });
+    const result = await screen.findByRole('region', { name: '예상 가격' });
     expect(within(result).getByText('325,000원')).toBeInTheDocument();
     expect(within(result).getByText('2명 · 약 7시간')).toBeInTheDocument();
     expect(within(result).getByText('작업을 시작한 뒤에는 가격이 바뀌지 않아요.')).toBeInTheDocument();
@@ -24,7 +24,7 @@ describe('QuoteBuilder — 우리 집 청소 가격 바로 보기', () => {
     await user.click(screen.getByRole('radio', { name: /통베란다/ }));
     await user.click(within(screen.getByRole('radiogroup', { name: '담배를 피운 집인가요?' })).getByRole('radio', { name: '모름' }));
     await user.click(screen.getByRole('button', { name: '가격 보기' }));
-    const result = await screen.findByRole('region', { name: '확정 가격' });
+    const result = await screen.findByRole('region', { name: '예상 가격' });
     expect(within(result).getByText('모른다고 고른 1가지는 조금 넉넉하게 계산했어요. 현장에서 더 받지 않아요.')).toBeInTheDocument();
     expect(within(result).getByText('베란다 물청소')).toBeInTheDocument();
   });
@@ -36,7 +36,7 @@ describe('QuoteBuilder — 우리 집 청소 가격 바로 보기', () => {
     expect(screen.queryByRole('radiogroup', { name: '베란다는 어떻게 생겼나요?' })).not.toBeInTheDocument();
     await user.click(screen.getByRole('radio', { name: '4시간' }));
     await user.click(screen.getByRole('button', { name: '가격 보기' }));
-    const result = await screen.findByRole('region', { name: '확정 가격' });
+    const result = await screen.findByRole('region', { name: '예상 가격' });
     expect(within(result).getByText('70,000원')).toBeInTheDocument();
     expect(within(result).getByText('1명 · 4시간')).toBeInTheDocument();
   });
@@ -45,10 +45,10 @@ describe('QuoteBuilder — 우리 집 청소 가격 바로 보기', () => {
     const user = userEvent.setup();
     render(<QuoteBuilder />);
     await user.click(screen.getByRole('button', { name: '가격 보기' }));
-    expect(await screen.findByRole('region', { name: '확정 가격' })).toBeInTheDocument();
+    expect(await screen.findByRole('region', { name: '예상 가격' })).toBeInTheDocument();
     await user.clear(screen.getByLabelText('평수 (공급면적)'));
     await user.type(screen.getByLabelText('평수 (공급면적)'), '3');
-    expect(screen.queryByRole('region', { name: '확정 가격' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: '예상 가격' })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: '가격 보기' }));
     expect(screen.getByRole('alert')).toHaveTextContent('평수는 5~80평 사이로 적어 주세요.');
   });

@@ -81,7 +81,7 @@ export function CleanApp({ today = new Date() }: { today?: Date }) {
         <button aria-label="이전 단계" className="grid size-11 place-items-center rounded-xl text-[#16211E]" onClick={back} type="button"><ChevronLeft aria-hidden="true" className="size-6" /></button>
         <h1 className="!text-[22px] font-bold !leading-8 tracking-[-0.02em]">{STEP_TITLES[step]}</h1>
       </div>
-      <p className="rounded-xl bg-white px-4 py-3 text-[15px] text-[#3E4B47]">확정 가격 <strong className="text-[#16211E]">{won(result.priceWon)}</strong> · {result.people}명 · 약 {result.hours}시간</p>
+      <p className="rounded-xl bg-white px-4 py-3 text-[15px] text-[#3E4B47]">예상 가격 <strong className="text-[#16211E]">{won(result.priceWon)}</strong> · {result.people}명 · 약 {result.hours}시간</p>
     </div>
   );
 
@@ -186,7 +186,7 @@ export function CleanApp({ today = new Date() }: { today?: Date }) {
           {arrival !== null && <Row label="이삿짐 도착" value={formatHour(arrival)} />}
           <Row label="업체" value={partner?.name ?? ''} />
           <Row label="주소" value={info.area} />
-          <Row label="확정 가격" strong value={won(result.priceWon)} />
+          <Row label="예상 가격 (수락하면 확정)" strong value={won(result.priceWon)} />
         </dl>
         <div className="grid gap-2 rounded-2xl bg-white p-4 text-[15px] leading-6 text-[#3E4B47]">
           <p className="flex gap-2"><Check aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-[#0B6655]" />작업을 시작한 뒤에는 가격이 바뀌지 않아요.</p>
@@ -226,7 +226,8 @@ export function CleanApp({ today = new Date() }: { today?: Date }) {
       {stage === 'booked' && (
         <div className="grid gap-4 rounded-2xl border border-[#E1E6E3] bg-white p-4">
           <p className="flex items-center gap-2 text-[17px] font-bold"><CalendarClock aria-hidden="true" className="size-5 text-[#0B6655]" />{day?.label} {formatHour(start as number)} · {partner?.name}</p>
-          <p className="text-[15px] text-[#3E4B47]">확정 가격 {won(result.priceWon)}. 작업 하루 전부터 업체에 상세 주소가 보여요.</p>
+          <p className="rounded-xl bg-[#E3F0EC] p-3 text-[15px] font-semibold text-[#083E37]" role="status">업체가 수락해서 가격이 확정됐어요 · {won(result.priceWon)}</p>
+          <p className="text-[15px] text-[#3E4B47]">이제부터 가격은 바뀌지 않아요. 수락한 업체에게만 상세 주소와 연락처가 보여요.</p>
           <Primary onClick={() => setStage('precheck')}>작업 날 미리 보기</Primary>
         </div>
       )}

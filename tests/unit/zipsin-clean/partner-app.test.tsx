@@ -1,0 +1,78 @@
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import CleanPartnerPage from '@/app/cl/partner/page';
+import { PartnerApp } from '@/features/zipsin-clean/components/PartnerApp';
+
+const today = new Date(2026, 9, 18);
+afterEach(() => vi.unstubAllEnvs());
+
+async function openFirstJob() {
+  const user = userEvent.setup();
+  render(<PartnerApp today={today} />);
+  expect(screen.getByRole('heading', { level: 1, name: '집신이 초대한 업체만 들어와요' })).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: '초대 수락하고 시작하기 (체험)' }));
+  await user.click(screen.getByRole('button', { name: /마포구 공덕동/ }));
+  return user;
+}
+
+describe('PartnerApp — 업체 화면 (체험)', () => {
+  it('TEST-CL-PARTNER-001 hides address and contact until accepted, and hides them again after payment', async () => {
+    const user = await openFirstJob();
+    const contact = () => screen.getByRole('region', { name: '주소와 연락처' });
+    expect(contact()).toHaveTextContent('마포구 공덕동');
+    expect(contact()).not.toHaveTextContent('1203호');
+    expect(contact()).not.toHaveTextContent('010-');
+    expect(screen.getByText('가격 (수락하면 확정)')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '이 가격으로 수락하기' }));
+    expect(contact()).toHaveTextContent('예시아파트 101동 1203호 (예시)');
+    expect(screen.getByText('확정 가격')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '예약과 같아요 · 작업 시작' }));
+    expect(screen.getByText(/추가요금 버튼은 없어요/)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /추가요금/ })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: '작업 끝 · 완료 사진 올리기 (체험)' }));
+    await user.click(screen.getByRole('button', { name: '손님 검수 완료 보기 (체험)' }));
+
+    expect(screen.getByRole('region', { name: '정산' })).toHaveTextContent('+ 추가요금0원');
+    expect(contact()).not.toHaveTextContent('1203호');
+    expect(contact()).toHaveTextContent('다시 가렸어요');
+    await user.click(screen.getByRole('button', { name: '요청 목록으로' }));
+    expect(screen.getByRole('button', { name: /마포구 공덕동/ })).toHaveTextContent('정산 완료');
+  });
+
+  it('TEST-CL-PARTNER-002 sends pre-start issues to 집신 instead of charging more', async () => {
+    const user = await openFirstJob();
+    await user.click(screen.getByRole('button', { name: '이 가격으로 수락하기' }));
+    await user.click(screen.getByRole('button', { name: '평수·방·욕실이 예약과 달라요' }));
+    expect(screen.getByRole('status')).toHaveTextContent('손님에게 먼저 물어봐요');
+    await user.click(screen.getByRole('button', { name: '쓰레기 더미·화재·누수 집이에요' }));
+    expect(screen.getByRole('status')).toHaveTextContent('위약금 없이 취소');
+  });
+
+  it('TEST-CL-PARTNER-003 lets a partner decline a request', async () => {
+    const user = await openFirstJob();
+    await user.click(screen.getByRole('button', { name: '이번엔 못 해요' }));
+    expect(screen.queryByRole('button', { name: /마포구 공덕동/ })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /서대문구 북아현동/ }));
+    await user.click(screen.getByRole('button', { name: '이번엔 못 해요' }));
+    await user.click(screen.getByRole('button', { name: /마포구 망원동/ }));
+    await user.click(screen.getByRole('button', { name: '이번엔 못 해요' }));
+    expect(screen.getByText('지금은 들어온 요청이 없어요.')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: '뒤로' }));
+    expect(screen.getByRole('heading', { level: 1, name: '집신이 초대한 업체만 들어와요' })).toBeInTheDocument();
+  });
+
+  it('TEST-CL-PARTNER-004 shows only the preparing screen on the live site', () => {
+    vi.stubEnv('VERCEL_ENV', 'production');
+    render(<CleanPartnerPage />);
+    expect(screen.getByRole('heading', { level: 1, name: '집신클린 서비스 준비 중이에요' })).toBeInTheDocument();
+  });
+
+  it('TEST-CL-PARTNER-005 opens the partner demo on Preview with a link back to the customer view', () => {
+    vi.stubEnv('VERCEL_ENV', 'preview');
+    render(<CleanPartnerPage />);
+    expect(screen.getByRole('link', { name: '손님 화면' })).toHaveAttribute('href', '/cl');
+  });
+});

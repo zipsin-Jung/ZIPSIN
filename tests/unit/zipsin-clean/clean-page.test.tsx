@@ -16,6 +16,7 @@ describe('/cl 페이지 — 실서비스에서는 준비 중만', () => {
     vi.stubEnv('VERCEL_ENV', 'preview');
     render(<CleanPage />);
     expect(screen.getByText('체험용')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '업체 화면' })).toHaveAttribute('href', '/cl/partner');
     expect(screen.getByRole('button', { name: '가격 보기' })).toBeInTheDocument();
   });
 });

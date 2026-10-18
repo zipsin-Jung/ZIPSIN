@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { CleanApp } from '@/features/zipsin-clean/components/CleanApp';
+import { CleanDemoShell } from '@/features/zipsin-clean/components/CleanDemoShell';
 import { CleanPreparing } from '@/features/zipsin-clean/components/CleanPreparing';
 import { isCleanDemoOpen } from '@/features/zipsin-clean/domain/demo';
 
@@ -17,18 +18,8 @@ export const metadata: Metadata = {
 export default function CleanPage() {
   if (!isCleanDemoOpen()) return <CleanPreparing />;
   return (
-    <main className="min-h-screen bg-[#F7F7F3] text-[#16211E]">
-      <header className="border-b border-[#E1E6E3] bg-white">
-        <div className="mx-auto flex min-h-14 max-w-xl items-center gap-2 px-4">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt="" aria-hidden="true" className="h-8 w-9 object-contain" src="/images/zipsin-company-logo.jpg" />
-          <strong className="text-[19px] font-bold tracking-[-0.02em] text-[#083E37]">집신클린</strong>
-          <span className="ml-auto rounded-full bg-[#F6EBD8] px-3 py-1 text-sm font-semibold text-[#7A4E12]">체험용</span>
-        </div>
-      </header>
-      <div className="mx-auto grid max-w-xl gap-6 px-4 py-6 pb-24">
-        <CleanApp />
-      </div>
-    </main>
+    <CleanDemoShell switchHref="/cl/partner" switchLabel="업체 화면">
+      <CleanApp />
+    </CleanDemoShell>
   );
 }

@@ -107,9 +107,9 @@ export function QuoteBuilder({ onBook }: { onBook?: (input: QuoteInput, result: 
       <button className="min-h-14 rounded-xl bg-[#0B6655] text-[17px] font-bold text-white" onClick={show} type="button">가격 보기</button>
 
       {result && (
-        <section aria-label="확정 가격" className="grid gap-4 rounded-[20px] border-2 border-[#0B6655] bg-white p-5">
+        <section aria-label="예상 가격" className="grid gap-4 rounded-[20px] border-2 border-[#0B6655] bg-white p-5">
           <div>
-            <p className="text-sm font-semibold text-[#0B6655]">예약하면 이 가격으로 확정</p>
+            <p className="text-sm font-semibold text-[#0B6655]">예상 가격 · 업체가 수락하면 이 가격으로 확정돼요</p>
             <p className="mt-1 text-[32px] font-bold tracking-[-0.02em] text-[#16211E]">{won(result.priceWon)}</p>
             <p className="text-base text-[#3E4B47]">{tidy ? `${result.people}명 · ${result.hours}시간` : `${result.people}명 · 약 ${result.hours}시간`}</p>
           </div>
