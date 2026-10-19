@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Check, ChevronRight, Image as ImageIcon, MessageCircle } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import { MyHome, type MyHomeEvent, type RecordCounts } from '@/features/workspace/components/MyHome';
 import { Mascot } from '@/components/Brand';
 
 /**
@@ -40,17 +41,6 @@ function StaffBrief({ officeName, counts, notes, listHref }: { officeName: strin
 }
 
 const EXPIRING_DAYS = 90;
-
-function EmptyCard({ eyebrow, title, children }: { eyebrow?: string; title: string; children: React.ReactNode }) {
-  return (
-    <section className="rounded-[20px] border border-[#EAEBEE] bg-white p-6 text-center sm:p-10">
-      <Mascot className="mx-auto !mb-3 !w-[120px]" pose="hello" />
-      {eyebrow && <p className="text-[15px] font-semibold text-[#0B6655]">{eyebrow}</p>}
-      <h1 className="mt-1 text-[24px] font-bold leading-snug tracking-[-0.02em] text-[#212124]">{title}</h1>
-      <div className="mx-auto mt-3 max-w-md text-base leading-7 text-[#4D5159]">{children}</div>
-    </section>
-  );
-}
 
 function StartBroker({ createOfficeAction, error }: { createOfficeAction?: (formData: FormData) => void | Promise<void>; error?: string }) {
   return (
@@ -102,123 +92,6 @@ function OfficeCreated({ office }: { office: OfficeSummary }) {
   );
 }
 
-function HomeThumb({ home }: { home: RecentHome }) {
-  if (home.photoUrl) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img alt={`${home.label} 최근 사진`} className="size-[76px] shrink-0 rounded-xl object-cover" src={home.photoUrl} />;
-  }
-  return (
-    <span className="grid size-[76px] shrink-0 place-items-center rounded-xl bg-[#F2F3F6] text-[#6B7079]">
-      <span className="flex flex-col items-center gap-0.5"><ImageIcon aria-hidden="true" className="size-5" /><span className="text-sm">사진 없음</span></span>
-    </span>
-  );
-}
-
-/**
- * 모두 같은 홈 (v2 시안 V2Home, DEC-038). 개인·사무소 모두 이 화면이고 위쪽 '이름 ▾'로 공간만 바꾼다.
- * - 금색은 '지금 할 일' 카드 하나에만.
- * - 숫자는 실제 집 목록에서만 센다.
- */
-function CommonHome({ homes, office, spaceKind, counts, unreadChatCount, nextTask, staffNotes }: {
-  staffNotes?: StaffBriefNote[] | null;
-  homes: RecentHome[];
-  office?: OfficeSummary;
-  spaceKind: 'me' | 'office';
-  counts: HomeSummaryCounts;
-  unreadChatCount: number;
-  nextTask?: NextTask | null;
-}) {
-  const inOffice = spaceKind === 'office' && office;
-  const canRegisterHome = inOffice ? office.canRegisterHome ?? false : false;
-  const listHref = inOffice ? `/homes?office=${office.id}` : '/homes';
-  const nextHome = nextTask ? homes.find((home) => home.id === nextTask.homeId) : undefined;
-  const stats = inOffice ? [
-    { label: '사무소 집', value: `${counts.totalHomes}채`, href: listHref },
-    { label: `${EXPIRING_DAYS}일 내 만기`, value: `${counts.expiringSoon}채`, href: `${listHref}&filter=expiring` },
-    { label: '할 일 있는 집', value: `${counts.openTasks}채`, href: '/tasks' },
-  ] : [];
-  return (
-    <main className="mx-auto max-w-xl px-4 pb-6 pt-4 md:max-w-3xl md:py-8">
-      {staffNotes && office && <StaffBrief counts={counts} listHref={listHref} notes={staffNotes} officeName={office.name} />}
-
-      {nextTask && (
-        <Link className="flex min-h-[84px] items-center gap-3 rounded-2xl bg-[#FBF3E6] px-4 py-3 text-[#5B3A00]" href={`/homes/${nextTask.homeId}`}>
-          <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-full bg-[#C98A2E] text-white"><Check className="size-6" strokeWidth={2.4} /></span>
-          <span className="min-w-0 flex-1">
-            <strong className="block text-[15px] text-[#8A5A10]">지금 할 일</strong>
-            <span className="block text-[17px] font-bold leading-snug text-[#212124]">{nextTask.title}</span>
-            {nextHome && <span className="block truncate text-sm text-[#6B5530]">{nextHome.label}</span>}
-          </span>
-          <ChevronRight aria-hidden="true" className="size-5 shrink-0" />
-        </Link>
-      )}
-
-      {stats.length > 0 && (
-        <div className="mt-3 grid grid-cols-3 gap-2" aria-label="요약">
-          {stats.map((stat) => (
-            <Link className="flex min-h-[68px] flex-col justify-center rounded-xl bg-[#F2F3F6] px-3" href={stat.href} key={stat.label}>
-              <span className="text-sm text-[#4D5159]">{stat.label}</span>
-              <strong className="text-[20px] font-bold text-[#212124]">{stat.value}</strong>
-            </Link>
-          ))}
-        </div>
-      )}
-
-      <section aria-labelledby="home-list-title" className="mt-6">
-        <div className="flex items-center justify-between gap-3">
-          <h1 className="text-[20px] font-bold tracking-[-0.02em] text-[#212124]" id="home-list-title">
-            {inOffice ? '사무소 집' : '내 집'} <span className="text-[17px] font-semibold text-[#6B7079]">{counts.totalHomes}채</span>
-          </h1>
-          <div className="flex items-center gap-4">
-            {canRegisterHome && office && <Link className="text-[15px] font-semibold text-[#0B6655]" href={`/homes/new?office=${office.id}`}>집 등록하기</Link>}
-            {counts.totalHomes > homes.length && <Link className="text-[15px] font-semibold text-[#4D5159]" href={listHref}>전체 보기</Link>}
-          </div>
-        </div>
-        <ul className="mt-1">
-          {homes.map((home) => (
-            <li className="border-b border-[#EAEBEE] last:border-b-0" key={home.id}>
-              <Link className="flex min-h-[100px] items-center gap-3 py-3" href={`/homes/${home.id}`}>
-                <HomeThumb home={home} />
-                <span className="min-w-0 flex-1">
-                  <strong className="block truncate text-[17px] text-[#212124]">{home.label}</strong>
-                  <span className="block truncate text-[15px] text-[#6B7079]">{home.relation ? `${home.relation} · ${home.address}` : home.address}</span>
-                  <span className="mt-1 flex flex-wrap gap-1.5">
-                    {home.contractDay && <span className={`rounded-md px-2 py-0.5 text-sm font-semibold ${home.contractDay.days >= 0 && home.contractDay.days <= EXPIRING_DAYS ? 'bg-[#E3F0EC] text-[#083E37]' : 'bg-[#F2F3F6] text-[#4D5159]'}`}>만기 {home.contractDay.label}</span>}
-                    {home.openTask && <span className="max-w-full truncate rounded-md bg-[#F2F3F6] px-2 py-0.5 text-sm font-semibold text-[#4D5159]">{home.openTask.title}</span>}
-                  </span>
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {unreadChatCount > 0 && (
-        <Link aria-label={`읽지 않은 메시지 ${unreadChatCount}개 확인`} className="mt-3 flex min-h-14 items-center gap-3 rounded-xl border border-[#EAEBEE] px-4" href="/chats">
-          <MessageCircle aria-hidden="true" className="size-6 text-[#0B6655]" />
-          <span className="flex-1 text-base font-semibold text-[#212124]">새 대화 {unreadChatCount}개</span>
-          <ChevronRight aria-hidden="true" className="size-5 text-[#6B7079]" />
-        </Link>
-      )}
-
-      {!inOffice && <PartnerEntry />}
-    </main>
-  );
-}
-
-/** 홈 맨 아래: 일로도 쓰는 사람은 여기서 파트너 등록(DEC-038). */
-function PartnerEntry() {
-  return (
-    <Link className="mt-6 flex min-h-[72px] items-center gap-3 rounded-2xl bg-[#F2F3F6] px-4" href="/partners/new">
-      <span className="min-w-0 flex-1">
-        <strong className="block text-base text-[#212124]">일로도 쓰고 있나요?</strong>
-        <span className="block text-[15px] text-[#4D5159]">공인중개사 · 수리 · 청소 — 집신 파트너 등록</span>
-      </span>
-      <ChevronRight aria-hidden="true" className="size-5 text-[#6B7079]" />
-    </Link>
-  );
-}
-
 export function HomeStart({
   primaryRole,
   offices,
@@ -231,8 +104,10 @@ export function HomeStart({
   officeError,
   staffNotes = null,
   spaceKind,
+  events = [],
+  recordCounts = { photo: 0, document: 0, receipt: 0, note: 0, repair: 0 },
 }: {
-  /** 위쪽 '이름 ▾'에서 고른 공간. 없으면 사무소가 있을 때 사무소로 본다(이전 동작). */
+  /** 위쪽 '우리집 ▾'에서 고른 공간. 없으면 사무소가 있을 때 사무소로 본다. */
   spaceKind?: 'me' | 'office';
   staffNotes?: StaffBriefNote[] | null;
   primaryRole: PrimaryRole | null;
@@ -244,62 +119,41 @@ export function HomeStart({
   counts?: HomeSummaryCounts;
   justCreatedOffice?: boolean;
   officeError?: string;
+  events?: MyHomeEvent[];
+  recordCounts?: RecordCounts;
 }) {
   const office = offices[0];
-  const isOfficeRole = primaryRole === 'principal_broker' || primaryRole === 'associate_broker' || primaryRole === 'assistant';
+  const kind = spaceKind ?? (office ? 'office' : 'me');
   const summary = counts ?? {
     totalHomes: recentHomes.length,
     expiringSoon: recentHomes.filter((home) => home.contractDay && home.contractDay.days >= 0 && home.contractDay.days <= EXPIRING_DAYS).length,
     openTasks: recentHomes.filter((home) => home.openTask).length,
   };
 
-  const kind = spaceKind ?? (office ? 'office' : 'me');
-  if (recentHomes.length >= 1) return <CommonHome staffNotes={staffNotes} counts={summary} homes={recentHomes} nextTask={nextTask} office={office} spaceKind={kind} unreadChatCount={unreadChatCount} />;
-
-  // 개인 공간인데 직접 연결된 집이 없고 사무소에는 속해 있으면: 사무소로 바꾸는 길만 보여 준다.
-  if (kind === 'me' && office) {
-    return (
-      <main className="mx-auto max-w-xl px-4 py-8 sm:py-12">
-        <EmptyCard title="직접 연결된 집이 아직 없어요">
-          <p>임대인·임차인으로 초대받은 집이 여기에 보여요. 사무소 집은 위쪽 이름을 눌러 사무소로 바꾸면 보여요.</p>
-        </EmptyCard>
-        <a className="app-primary mt-3 flex min-h-14 items-center justify-center rounded-xl text-[17px] font-bold text-white" href={`/space?to=${office.id}`}>{office.name}로 바꾸기</a>
-        <PartnerEntry />
-      </main>
-    );
-  }
-
+  // 사무소를 아직 만들지 않은 대표 공인중개사: 집을 추가하려면 사무소부터 (실제로 되는 유일한 길).
+  if (!office && primaryRole === 'principal_broker' && !recentHomes.length) return <StartBroker createOfficeAction={createOfficeAction} error={officeError} />;
   if (office && justCreatedOffice) return <OfficeCreated office={office} />;
 
-  if (office) {
-    const canRegisterHome = office.canRegisterHome ?? primaryRole === 'principal_broker';
-    return (
-      <main className="mx-auto max-w-xl px-4 py-8 sm:py-12">
-        <EmptyCard eyebrow={office.name} title="아직 등록된 집이 없습니다">
-          <p>집이 등록되거나 초대가 연결되면 만기와 할 일을 여기서 바로 볼 수 있어요.</p>
-        </EmptyCard>
-        <div className="mt-3 grid gap-2">
-          {canRegisterHome && <Link className="app-primary flex min-h-14 items-center justify-center rounded-xl text-[17px] font-bold text-white" href={`/homes/new?office=${office.id}`}>집 등록하기</Link>}
-          {canRegisterHome && <Link className="flex min-h-12 items-center justify-center rounded-xl border border-[#DCDEE3] bg-white text-base font-semibold" href="/office/members">직원 초대하기</Link>}
-          {unreadChatCount > 0 && <Link className="flex min-h-12 items-center justify-center text-base font-semibold text-[#0B6655]" href="/chats">새 대화 {unreadChatCount}개 보기</Link>}
-        </div>
-      </main>
-    );
-  }
-
-  if (primaryRole !== 'principal_broker') {
-    const officeMember = isOfficeRole;
-    return (
-      <main className="mx-auto max-w-xl px-4 py-8 sm:py-12">
-        <EmptyCard eyebrow="아직 연결된 집이 없습니다" title={officeMember ? '사무소 초대 링크를 확인해 주세요' : '집 초대 링크를 확인해 주세요'}>
-          <p>역할을 선택한 것만으로 사무소나 집 기록이 열리지는 않습니다. 받은 초대 링크를 열어 수락하면 허용된 집과 대화가 이 홈에 나타납니다.</p>
-          {!officeMember && <p className="mt-2 text-[15px] text-[#6B7079]">주소를 검색해 다른 사람의 기록에 연결할 수 없습니다.</p>}
-        </EmptyCard>
-        {unreadChatCount > 0 && <Link className="mt-3 flex min-h-12 items-center justify-center text-base font-semibold text-[#0B6655]" href="/chats">새 대화 {unreadChatCount}개 보기</Link>}
-        <PartnerEntry />
-      </main>
-    );
-  }
-
-  return <StartBroker createOfficeAction={createOfficeAction} error={officeError} />;
+  const inOffice = kind === 'office' && office;
+  const nextHome = nextTask ? recentHomes.find((home) => home.id === nextTask.homeId) : undefined;
+  return (
+    <MyHome
+      addHomeOfficeId={inOffice && office.canRegisterHome ? office.id : null}
+      counts={recordCounts}
+      events={events}
+      homes={recentHomes}
+      listHref={inOffice ? `/homes?office=${office.id}` : '/homes'}
+      nextTask={nextTask ? { homeId: nextTask.homeId, title: nextTask.title, homeLabel: nextHome?.label } : null}
+      title={inOffice ? office.name : '우리집'}
+      totalHomes={summary.totalHomes}
+    >
+      {staffNotes && inOffice && <StaffBrief counts={summary} listHref={`/homes?office=${office.id}`} notes={staffNotes} officeName={office.name} />}
+      {kind === 'me' && office && !recentHomes.length && (
+        <p className="mb-4 rounded-xl bg-[#F2F3F6] px-4 py-3 text-[15px] text-[#4D5159]">사무소 집은 위쪽 <strong>우리집 ▾</strong>을 눌러 <a className="font-semibold text-[#0B6655] underline underline-offset-2" href={`/space?to=${office.id}`}>{office.name}</a>(으)로 바꾸면 보여요.</p>
+      )}
+      {unreadChatCount > 0 && (
+        <Link className="mb-4 flex min-h-12 items-center gap-2 rounded-xl border border-[#EAEBEE] px-4 text-[15px] font-semibold text-[#212124]" href="/chats">새 대화 {unreadChatCount}개<ChevronRight aria-hidden="true" className="ml-auto size-5 text-[#6B7079]" /></Link>
+      )}
+    </MyHome>
+  );
 }

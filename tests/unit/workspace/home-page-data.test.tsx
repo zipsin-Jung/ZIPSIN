@@ -17,7 +17,7 @@ import HomePage from '@/app/(app)/home/page';
 describe('home page data boundary', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    guard.mockResolvedValue({ supabase: {}, user: { id: 'user-1' }, usagePurpose: 'broker', primaryRole: 'principal_broker' });
+    guard.mockResolvedValue({ supabase: { from: () => ({ select: () => ({ in: () => ({ limit: async () => ({ data: [{ id: 'r1', home_id: 'home-1', record_kind: 'photo', repair_stage: null, title: '입주 사진', task_status: null, task_due_at: null }] }) }) }) }) }, user: { id: 'user-1' }, usagePurpose: 'broker', primaryRole: 'principal_broker' });
   });
 
   it('passes real dashboard counts and priority homes to the workspace', async () => {
@@ -30,7 +30,8 @@ describe('home page data boundary', () => {
     });
     render(await HomePage({ searchParams: Promise.resolve({}) }));
     expect(screen.getByText('집신아파트 1401호')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /읽지 않은 메시지 2개/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /새 대화 2개/ })).toHaveAttribute('href', '/chats');
+    expect(screen.getByRole('link', { name: /사진\s*1장/ })).toBeInTheDocument();
   });
 
   it('shows an error instead of an empty home when loading fails', async () => {

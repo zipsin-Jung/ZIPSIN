@@ -40,6 +40,28 @@ export default async function HomePage({ searchParams }: Props) {
     };
   });
   const nextHome = spaceHomes.find((home) => home.openTask);
+  // 최근 기록 칸 숫자와 이번 달 일정: 이 공간 집의 실제 기록에서만 센다(RLS가 허락한 것만).
+  const spaceHomeIds = spaceHomes.map((home) => home.id);
+  const { data: recordRows } = spaceHomeIds.length
+    ? await supabase.from('records').select('id, home_id, record_kind, repair_stage, title, task_status, task_due_at').in('home_id', spaceHomeIds).limit(1000)
+    : { data: [] as Array<{ id: string; home_id: string; record_kind: string; repair_stage: string | null; title: string; task_status: string | null; task_due_at: string | null }> };
+  const rows = recordRows ?? [];
+  const recordCounts = {
+    photo: rows.filter((row) => row.record_kind === 'photo').length,
+    document: rows.filter((row) => row.record_kind === 'document').length,
+    receipt: rows.filter((row) => row.record_kind === 'repair' && row.repair_stage === 'receipt_attached').length,
+    note: rows.filter((row) => row.record_kind === 'note').length,
+    repair: rows.filter((row) => row.record_kind === 'repair').length,
+  };
+  const month = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' }).slice(0, 7);
+  const monthOf = (iso: string) => new Date(iso).toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' }).slice(0, 7);
+  const labelOf = new Map(spaceHomes.map((home) => [home.id, home.label]));
+  const events = [
+    ...rows.filter((row) => row.task_due_at && row.task_status !== 'done' && monthOf(row.task_due_at) === month)
+      .map((row) => ({ id: row.id, homeId: row.home_id, date: row.task_due_at as string, title: row.title, homeLabel: labelOf.get(row.home_id) ?? '' })),
+    ...spaceHomes.filter((home) => home.endsOn && home.endsOn.slice(0, 7) === month)
+      .map((home) => ({ id: `end-${home.id}`, homeId: home.id, date: `${home.endsOn}T00:00:00+09:00`, title: '계약 만기', homeLabel: home.label })),
+  ].sort((a, b) => a.date.localeCompare(b.date));
   // 새 직원 첫 화면: 초대를 막 수락했을 때만 사무소 메모 5개를 불러온다(RLS가 볼 수 있는 기록만).
   let staffNotes: Array<{ id: string; homeId: string; title: string }> | null = null;
   if (params.joined === 'office' && space.kind === 'office') {
@@ -51,6 +73,8 @@ export default async function HomePage({ searchParams }: Props) {
     createOfficeAction={createOffice}
     offices={space.kind === 'office' ? [space.office, ...dashboard.offices.filter((office) => office.id !== space.office.id)] : dashboard.offices}
     spaceKind={space.kind}
+    events={events}
+    recordCounts={recordCounts}
     primaryRole={primaryRole}
     recentHomes={recentHomes}
     unreadChatCount={dashboard.unreadChatCount}
