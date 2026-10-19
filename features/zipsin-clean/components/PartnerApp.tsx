@@ -8,7 +8,7 @@ import { quote, won } from '@/features/zipsin-clean/domain/pricing';
 import { formatHour, nextDays } from '@/features/zipsin-clean/domain/schedule';
 
 /**
- * 집신클린 업체 화면 체험(배포 전 눌러 보기).
+ * 집신청소 업체 화면 체험(배포 전 눌러 보기).
  * 초대 → 작업 요청(구·동만) → 수락(상세 주소·연락처 공개) → 시작 전 확인 → 작업 → 손님 검수 → 정산(다시 가림).
  * 실제 로그인·저장·전송·정산은 없다. 주소·연락처는 모두 예시 값이다.
  */

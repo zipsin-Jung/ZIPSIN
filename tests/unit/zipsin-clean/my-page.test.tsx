@@ -117,7 +117,7 @@ describe('마이페이지 (체험)', () => {
   it('TEST-CL-MY-005 is the preparing screen on the live site and the my page on Preview', () => {
     vi.stubEnv('VERCEL_ENV', 'production');
     const { unmount } = render(<CleanMyPageRoute />);
-    expect(screen.getByRole('heading', { level: 1, name: '집신클린 서비스 준비 중이에요' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: /집 청소는 집신청소에서/ })).toBeInTheDocument();
     unmount();
     vi.stubEnv('VERCEL_ENV', 'preview');
     render(<CleanMyPageRoute />);

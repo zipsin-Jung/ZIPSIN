@@ -86,7 +86,7 @@ describe('PartnerApp — 업체 화면 (체험)', () => {
   it('TEST-CL-PARTNER-004 shows only the preparing screen on the live site', () => {
     vi.stubEnv('VERCEL_ENV', 'production');
     render(<CleanPartnerPage />);
-    expect(screen.getByRole('heading', { level: 1, name: '집신클린 서비스 준비 중이에요' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: /집 청소는 집신청소에서/ })).toBeInTheDocument();
   });
 
   it('TEST-CL-PARTNER-005 opens the partner demo on Preview with a link back to the customer view', () => {

@@ -8,7 +8,7 @@ import { won, type Quote, type QuoteInput } from '@/features/zipsin-clean/domain
 import { checkSchedule, formatHour, nextDays, START_HOURS, type StartHour } from '@/features/zipsin-clean/domain/schedule';
 
 /**
- * 집신클린 체험(배포 전 눌러 보기). 가격 → 날짜·시간 → 업체 → 주소·연락처 → 확인 → 작업 진행까지.
+ * 집신청소 체험(배포 전 눌러 보기). 가격 → 날짜·시간 → 업체 → 주소·연락처 → 확인 → 작업 진행까지.
  * 실제 예약·저장·전송은 없다. 입력한 주소·연락처는 화면 메모리에만 있고 어디에도 저장하지 않는다.
  */
 type Step = 'quote' | 'date' | 'partner' | 'info' | 'confirm' | 'progress' | 'visit' | 'visitSent';

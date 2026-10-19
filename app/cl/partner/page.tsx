@@ -4,14 +4,14 @@ import { CleanPreparing } from '@/features/zipsin-clean/components/CleanPreparin
 import { PartnerApp } from '@/features/zipsin-clean/components/PartnerApp';
 import { isCleanDemoOpen } from '@/features/zipsin-clean/domain/demo';
 
-/** 집신클린 업체 화면 체험. 실서비스에서는 준비 중 화면만 보인다. */
+/** 집신청소 업체 화면 체험. 실서비스에서는 준비 중 화면만 보인다. */
 export const metadata: Metadata = {
-  title: '집신클린 · 업체 화면 (체험)',
+  title: '집신청소 · 업체 화면 (체험)',
   robots: { index: false },
 };
 
 export default function CleanPartnerPage() {
-  if (!isCleanDemoOpen()) return <CleanPreparing />;
+  if (!isCleanDemoOpen()) return <CleanPreparing homeHref="/" />;
   return (
     <CleanDemoShell links={[{ href: '/cl', label: '손님 화면' }]}>
       <PartnerApp />

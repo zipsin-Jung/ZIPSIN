@@ -8,7 +8,7 @@ describe('/cl 페이지 — 실서비스에서는 준비 중만', () => {
   it('TEST-CL-PAGE-001 shows only the preparing screen on the live site', () => {
     vi.stubEnv('VERCEL_ENV', 'production');
     render(<CleanPage />);
-    expect(screen.getByRole('heading', { level: 1, name: '집신클린 서비스 준비 중이에요' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: /집 청소는 집신청소에서/ })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '가격 보기' })).not.toBeInTheDocument();
   });
 

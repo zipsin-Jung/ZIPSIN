@@ -13,7 +13,7 @@ async function toDateStep() {
   return user;
 }
 
-describe('CleanApp — 배포 전 눌러 보는 집신클린 (체험)', () => {
+describe('CleanApp — 배포 전 눌러 보는 집신청소 (체험)', () => {
   it('TEST-CL-FLOW-001 goes from price to a finished house record without any extra charge', async () => {
     const user = await toDateStep();
     expect(screen.getByRole('heading', { name: '언제 할까요?' })).toBeInTheDocument();

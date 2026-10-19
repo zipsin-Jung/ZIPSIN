@@ -36,26 +36,25 @@ describe('PublicHome', () => {
     expect(screen.getAllByRole('navigation')).toHaveLength(1);
   });
 
-  // TEST-PUB-SERVICES-001 (2026-10-16): 상단 순서는 집신체크 · 집신수리 · 집신클린. 체크만 다른 주소로 간다.
-  it('TEST-PUB-SERVICES-001 상단 서비스 메뉴는 집신체크·집신수리·집신클린 순서이고 체크만 링크다', () => {
+  // TEST-PUB-SERVICES-001 (2026-10-18 대표 결정): 상단 순서 집신체크 · 집신수리 · 집신청소, 셋 다 누르면 각 사이트로 간다.
+  it('TEST-PUB-SERVICES-001 상단 서비스 메뉴는 집신체크·집신수리·집신청소 순서이고 셋 다 링크다', () => {
     render(<PublicHome />);
     const nav = screen.getByRole('navigation', { name: '집신 서비스' });
-    const items = Array.from(nav.querySelectorAll('li > a, li > span')).map((item) => item.firstChild?.textContent);
-    expect(items).toEqual(['집신체크', '집신수리', '집신클린']);
     const links = Array.from(nav.querySelectorAll('a'));
-    expect(links).toHaveLength(1);
-    expect(links[0]).toHaveAttribute('href', '/ck');
+    expect(links.map((link) => link.firstChild?.textContent)).toEqual(['집신체크', '집신수리', '집신청소']);
+    // 검사 환경(운영 아님)에서는 같은 앱 경로로 간다. 운영 주소는 TEST-SUB-SITE-HREF에서 본다.
+    expect(links.map((link) => link.getAttribute('href'))).toEqual(['/ck', '/rp', '/cl']);
   });
 
-  // TEST-PUB-SERVICES-004 (D3): 수리·클린은 회색이며 누를 수 없다.
-  it('TEST-PUB-SERVICES-004 집신수리·집신클린은 누를 수 없고 화면읽기에는 준비 중으로 읽힌다', () => {
+  // TEST-PUB-SERVICES-004: 수리·청소는 누를 수 있고, 화면읽기에는 준비 중이라고 함께 읽힌다.
+  it('TEST-PUB-SERVICES-004 집신수리·집신청소는 화면읽기에 준비 중으로 읽힌다', () => {
     render(<PublicHome />);
     const nav = screen.getByRole('navigation', { name: '집신 서비스' });
     expect(nav.querySelectorAll('button')).toHaveLength(0);
-    const soon = nav.querySelectorAll('[aria-disabled="true"]');
-    expect(soon).toHaveLength(2);
-    expect(soon[0]).toHaveTextContent('집신수리 (준비 중)');
-    expect(soon[1]).toHaveTextContent('집신클린 (준비 중)');
+    expect(nav.querySelectorAll('[aria-disabled="true"]')).toHaveLength(0);
+    expect(screen.getByRole('link', { name: /^집신수리\s?\(준비 중\)$/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /^집신청소\s?\(준비 중\)$/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '집신체크' })).toBeInTheDocument();
   });
 
   it('TEST-RC-PUB-IMG-001 서론의 집 관리 이력 이미지를 우선 노출한다', () => {
