@@ -299,8 +299,23 @@ export function PasswordSignupForm({ next }: { next?: string }) {
       <fieldset className="flex min-w-0 flex-col gap-1 border-t border-[#EAEBEE] pt-6">
         <legend className={`${sectionTitle} float-left mb-2.5 w-full`}>3. 약관 동의</legend>
         <label className="flex min-h-12 items-center gap-3 rounded-xl bg-[#F6F7F5] px-3.5 text-base font-bold"><input checked={allRequired} className="size-5 accent-[#0B6655]" onChange={(event) => { setTermsAccepted(event.target.checked); setPrivacyAccepted(event.target.checked); refreshValidity(); }} type="checkbox" /> 필수 항목 전체 동의</label>
-        <label className="flex min-h-12 items-center gap-3 px-3.5 text-[15px]"><input checked={termsAccepted} className="size-5 accent-[#0B6655]" name="termsAccepted" onChange={(event) => setTermsAccepted(event.target.checked)} required type="checkbox" /> [필수] 서비스 이용약관에 동의합니다.</label>
-        <label className="flex min-h-12 items-center gap-3 px-3.5 text-[15px]"><input checked={privacyAccepted} className="size-5 accent-[#0B6655]" name="privacyAccepted" onChange={(event) => setPrivacyAccepted(event.target.checked)} required type="checkbox" /> [필수] 개인정보 수집·이용에 동의합니다.</label>
+        <div className="flex min-h-12 items-center gap-3 px-3.5 text-[15px]">
+          <label className="flex flex-1 items-center gap-3"><input checked={termsAccepted} className="size-5 accent-[#0B6655]" name="termsAccepted" onChange={(event) => setTermsAccepted(event.target.checked)} required type="checkbox" /> [필수] 서비스 이용약관에 동의합니다.</label>
+          <a className="shrink-0 text-sm font-semibold text-[#0B6655] underline underline-offset-4" href="/terms" rel="noopener" target="_blank">보기</a>
+        </div>
+        <div className="flex min-h-12 items-center gap-3 px-3.5 text-[15px]">
+          <label className="flex flex-1 items-center gap-3"><input checked={privacyAccepted} className="size-5 accent-[#0B6655]" name="privacyAccepted" onChange={(event) => setPrivacyAccepted(event.target.checked)} required type="checkbox" /> [필수] 개인정보 수집·이용에 동의합니다.</label>
+          <a className="shrink-0 text-sm font-semibold text-[#0B6655] underline underline-offset-4" href="/privacy" rel="noopener" target="_blank">전문</a>
+        </div>
+        <details className="mx-3.5 rounded-xl border border-[#EAEBEE] px-3.5 py-2 text-sm leading-6 text-[#4D5159]">
+          <summary className="min-h-10 cursor-pointer py-2 font-semibold text-[#212124]">개인정보 수집·이용 내용 보기</summary>
+          <ul className="grid gap-1 pb-2">
+            <li><strong>수집 항목</strong>: 이름, 아이디, 비밀번호(암호화), 이메일, 휴대폰 번호</li>
+            <li><strong>목적</strong>: 회원 식별, 본인 확인, 아이디·비밀번호 찾기, 서비스 제공</li>
+            <li><strong>보유 기간</strong>: 회원 탈퇴 시까지(법령에 따라 보존할 정보는 그 기간)</li>
+            <li><strong>거부할 권리</strong>: 동의를 거부할 수 있으나, 이 정보 없이는 가입할 수 없어요.</li>
+          </ul>
+        </details>
       </fieldset>
 
       <div className="flex flex-col gap-2.5">
