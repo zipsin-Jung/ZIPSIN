@@ -106,6 +106,7 @@ describe('assignment-free office flow copy', () => {
 
     render(await MyPage({ searchParams: Promise.resolve({}) }));
 
+    expect(screen.getByRole('heading', { name: '마이' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '김집신님의 집신' })).toBeInTheDocument();
     expect(screen.getByText('임차인')).toBeInTheDocument();
     // 위 메뉴에서 빠진 할 일·고객지원은 마이에서 계속 들어갈 수 있어야 한다 (TEST-APP-NAV-003).
