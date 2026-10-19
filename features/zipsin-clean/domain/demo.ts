@@ -41,13 +41,19 @@ export type DemoJob = {
   input: QuoteInput;
   detailAddress: string;
   contact: string;
+  requests: string[];
+  memo: string;
 };
 
 export const DEMO_JOBS: DemoJob[] = [
-  { id: 'j1', area: '마포구 공덕동', dayOffset: 1, start: 9, arrival: 17, detailAddress: '예시아파트 101동 1203호', contact: '010-0000-0000',
+  { id: 'j1', area: '마포구 공덕동', dayOffset: 1, start: 9, arrival: 17, detailAddress: '예시아파트 101동 1203호', contact: '010-0000-0000', requests: ['아이가 살고 있어요', '화학약품은 삼가 주세요'], memo: '락스처럼 냄새가 독한 세제는 빼고 해 주세요.',
     input: { service: 'move_in', areaPyeong: 24, rooms: 3, baths: 2, balcony: 'expanded', builtAge: 'mid', occupancy: 'just_left', pets: 'no', smoking: 'no' } },
-  { id: 'j2', area: '서대문구 북아현동', dayOffset: 3, start: 8, arrival: null, detailAddress: '예시빌라 302호', contact: '010-0000-0000',
+  { id: 'j2', area: '서대문구 북아현동', dayOffset: 3, start: 8, arrival: null, detailAddress: '예시빌라 302호', contact: '010-0000-0000', requests: ['엘리베이터가 없어요'], memo: '',
     input: { service: 'move_in', areaPyeong: 15, rooms: 2, baths: 1, balcony: 'full', builtAge: 'old', occupancy: 'vacant_long', pets: 'unknown', smoking: 'no' } },
-  { id: 'j3', area: '마포구 망원동', dayOffset: 5, start: 13, arrival: null, detailAddress: '예시오피스텔 805호', contact: '010-0000-0000',
+  { id: 'j3', area: '마포구 망원동', dayOffset: 5, start: 13, arrival: null, detailAddress: '예시오피스텔 805호', contact: '010-0000-0000', requests: [], memo: '냉장고 안은 안 하셔도 돼요.',
     input: { service: 'tidy', areaPyeong: 10, rooms: 1, baths: 1, balcony: 'unknown', builtAge: 'unknown', occupancy: 'unknown', pets: 'no', smoking: 'no', tidyHours: 3 } },
 ];
+
+/** 손님이 업체에 남기는 요청(빠른 선택). 가격을 바꾸지 않는다. 업체는 이 요청을 보고 수락한다. */
+export const REQUEST_CHIPS = ['아이가 살고 있어요', '화학약품은 삼가 주세요', '반려동물이 있어요', '엘리베이터가 없어요', '주차가 어려워요', '신발을 벗고 들어와 주세요'] as const;
+export const MEMO_MAX = 200;

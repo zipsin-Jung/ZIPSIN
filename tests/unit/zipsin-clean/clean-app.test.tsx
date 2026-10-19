@@ -33,9 +33,14 @@ describe('CleanApp — 배포 전 눌러 보는 집신클린 (체험)', () => {
     await user.type(screen.getByLabelText('상세 주소'), '101동 1203호');
     await user.type(screen.getByLabelText('연락처'), '010-1234-5678');
     expect(screen.getByText(/고른 업체에게만/)).toBeInTheDocument();
+    await user.click(screen.getByRole('checkbox', { name: '아이가 살고 있어요' }));
+    await user.click(screen.getByRole('checkbox', { name: '화학약품은 삼가 주세요' }));
+    await user.type(screen.getByLabelText('메모'), '락스는 빼 주세요');
+    expect(screen.getByText(/요청으로 가격이 바뀌지 않아요/)).toHaveTextContent('(9/200)');
     await user.click(screen.getByRole('button', { name: '다음' }));
 
     expect(screen.getByRole('heading', { name: '예약 내용을 확인해 주세요' })).toBeInTheDocument();
+    expect(screen.getByText('아이가 살고 있어요 · 화학약품은 삼가 주세요 · 락스는 빼 주세요')).toBeInTheDocument();
     expect(screen.getByText('오전 9시 ~ 오후 4시')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: '예약하기 (체험)' }));
 
@@ -44,6 +49,7 @@ describe('CleanApp — 배포 전 눌러 보는 집신클린 (체험)', () => {
     expect(screen.getByText(/가격은 그대로 325,000원/)).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: '작업 시작 (업체가 누름)' }));
     await user.click(screen.getByRole('button', { name: '작업 끝 (업체가 누름)' }));
+    expect(screen.getByRole('region', { name: '업체가 남긴 말' })).toHaveTextContent('순한 세제만 썼어요');
     await user.click(screen.getByRole('button', { name: '직접 확인하기' }));
     expect(screen.getByRole('button', { name: '검수 완료' })).toBeDisabled();
     for (const group of screen.getAllByRole('group')) await user.click(within(group).getByRole('radio', { name: '아니요' }));
@@ -54,6 +60,8 @@ describe('CleanApp — 배포 전 눌러 보는 집신클린 (체험)', () => {
     expect(record).toHaveTextContent('마포구 공덕동');
     expect(record).not.toHaveTextContent('1203호');
     expect(record).not.toHaveTextContent('010-1234-5678');
+    expect(record).not.toHaveTextContent('아이가 살고 있어요');
+    expect(record).not.toHaveTextContent('락스');
   });
 
   it('TEST-CL-FLOW-002 sends a redo request without charge when the customer finds a problem', async () => {

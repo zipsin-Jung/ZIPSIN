@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { BadgeCheck, CalendarClock, Check, ChevronLeft, Home, Lock, Sparkles, Truck } from 'lucide-react';
 import { QuoteBuilder } from '@/features/zipsin-clean/components/QuoteBuilder';
-import { availablePartners, type DemoPartner } from '@/features/zipsin-clean/domain/demo';
+import { availablePartners, MEMO_MAX, REQUEST_CHIPS, type DemoPartner } from '@/features/zipsin-clean/domain/demo';
 import { won, type Quote, type QuoteInput } from '@/features/zipsin-clean/domain/pricing';
 import { checkSchedule, formatHour, nextDays, START_HOURS, type StartHour } from '@/features/zipsin-clean/domain/schedule';
 
@@ -50,6 +50,8 @@ export function CleanApp({ today = new Date() }: { today?: Date }) {
   const [start, setStart] = useState<StartHour | null>(null);
   const [partner, setPartner] = useState<DemoPartner | null>(null);
   const [info, setInfo] = useState({ area: '', detail: '', phone: '' });
+  const [requests, setRequests] = useState<string[]>([]);
+  const [memo, setMemo] = useState('');
   const [infoError, setInfoError] = useState('');
   const [stage, setStage] = useState<Stage>('booked');
   const [answers, setAnswers] = useState<Record<string, 'yes' | 'no' | undefined>>({});
@@ -276,6 +278,23 @@ export function CleanApp({ today = new Date() }: { today?: Date }) {
         <div className="grid gap-2"><label className="text-base font-bold" htmlFor="area">주소 (구·동까지)</label><input className={field} id="area" onChange={(event) => setInfo({ ...info, area: event.target.value })} placeholder="예: 마포구 공덕동" value={info.area} /></div>
         <div className="grid gap-2"><label className="text-base font-bold" htmlFor="detail">상세 주소</label><input className={field} id="detail" onChange={(event) => setInfo({ ...info, detail: event.target.value })} placeholder="예: ○○아파트 101동 1203호" value={info.detail} /></div>
         <div className="grid gap-2"><label className="text-base font-bold" htmlFor="phone">연락처</label><input className={field} id="phone" inputMode="tel" onChange={(event) => setInfo({ ...info, phone: event.target.value })} placeholder="010-0000-0000" value={info.phone} /></div>
+        <fieldset className="grid gap-2">
+          <legend className="mb-1 text-base font-bold">업체에 하고 싶은 말 (선택)</legend>
+          <div className="grid grid-cols-2 gap-2">
+            {REQUEST_CHIPS.map((chip) => {
+              const on = requests.includes(chip);
+              return (
+                <label className={`flex min-h-12 cursor-pointer items-center justify-center break-keep rounded-xl px-2 text-center text-[15px] font-semibold ${on ? 'border-2 border-[#0B6655] bg-[#E3F0EC] text-[#083E37]' : 'border border-[#C9D1CD] bg-white'}`} key={chip}>
+                  <input checked={on} className="sr-only" onChange={() => setRequests(on ? requests.filter((item) => item !== chip) : [...requests, chip])} type="checkbox" value={chip} />
+                  {chip}
+                </label>
+              );
+            })}
+          </div>
+          <label className="mt-1 text-[15px] font-bold" htmlFor="memo">메모</label>
+          <textarea className="min-h-24 w-full rounded-xl border border-[#C9D1CD] bg-white p-3 text-base" id="memo" maxLength={MEMO_MAX} onChange={(event) => setMemo(event.target.value)} placeholder="예: 락스처럼 냄새가 독한 세제는 빼고 해 주세요." value={memo} />
+          <p className="text-sm leading-6 text-[#5D6A65]">업체는 이 요청을 보고 수락해요. 요청으로 가격이 바뀌지 않아요. 현관 비밀번호·주소는 여기에 적지 마세요. ({memo.length}/{MEMO_MAX})</p>
+        </fieldset>
         <div className="flex gap-2 rounded-xl bg-[#E3F0EC] p-4 text-[15px] leading-6 text-[#083E37]"><Lock aria-hidden="true" className="mt-0.5 size-5 shrink-0" /><p>상세 주소와 연락처는 <strong>고른 업체에게만</strong>, 작업 하루 전부터 보여요. 작업이 끝나면 다시 가려져요.</p></div>
         <p className="text-sm text-[#5D6A65]">체험용이라 입력한 내용은 저장되지 않아요. 실제 주소·번호를 넣지 않아도 돼요.</p>
         {infoError && <p className="text-[15px] font-bold text-red-700" role="alert">{infoError}</p>}
@@ -295,6 +314,7 @@ export function CleanApp({ today = new Date() }: { today?: Date }) {
           {arrival !== null && <Row label="이삿짐 도착" value={formatHour(arrival)} />}
           <Row label="업체" value={partner?.name ?? ''} />
           <Row label="주소" value={info.area} />
+          {(requests.length > 0 || memo.trim()) && <Row label="업체에 하는 말" value={[...requests, memo.trim()].filter(Boolean).join(' · ')} />}
           <Row label="예상 가격 (수락하면 확정)" strong value={won(result.priceWon)} />
         </dl>
         <div className="grid gap-2 rounded-2xl bg-white p-4 text-[15px] leading-6 text-[#3E4B47]">
@@ -364,6 +384,7 @@ export function CleanApp({ today = new Date() }: { today?: Date }) {
         <div className="grid gap-4 rounded-2xl border border-[#E1E6E3] bg-white p-4">
           <p className="text-[17px] font-bold">완료 사진이 올라왔어요</p>
           <div className="grid grid-cols-2 gap-2">{photo('left', '청소 전')}{photo('right', '청소 후')}</div>
+          <section aria-label="업체가 남긴 말" className="rounded-xl bg-[#F7F7F3] p-3 text-[15px] leading-6 text-[#3E4B47]"><b className="block text-[#16211E]">업체가 남긴 말 (예시)</b>{requests.includes('화학약품은 삼가 주세요') || requests.includes('아이가 살고 있어요') ? '요청하신 대로 순한 세제만 썼어요. ' : ''}베란다 배수구 물 빠짐이 느려요. 관리사무소에 알려 두시면 좋아요.</section>
           <p className="text-sm text-[#5D6A65]">예시 사진이에요. 사진 속 위치정보는 올릴 때 지워요.</p>
           <Primary onClick={() => setStage('inspect')}>직접 확인하기</Primary>
         </div>
@@ -403,8 +424,8 @@ export function CleanApp({ today = new Date() }: { today?: Date }) {
               <div className="flex justify-between border-t border-[#E1E6E3] pt-2"><dt className="font-bold">= 최종 <span className="font-normal text-[#0B6655]">손님 확인됨</span></dt><dd className="font-bold">{won(result.priceWon)}</dd></div>
             </dl>
           </section>
-          <p className="text-[15px] text-[#3E4B47]">다음에 이 집에 사는 사람은 작업 종류·날짜·업체만 보고, 이름·연락처·금액은 보지 못해요.</p>
-          <Primary onClick={() => { setStep('quote'); setInput(null); setResult(null); setDayIndex(null); setStart(null); setArrival(null); setPartner(null); setInfo({ area: '', detail: '', phone: '' }); setAnswers({}); setRedoSent(false); }}>처음부터 다시 해 보기</Primary>
+          <p className="text-[15px] text-[#3E4B47]">다음에 이 집에 사는 사람은 작업 종류·날짜·업체만 보고, 이름·연락처·금액·업체에 한 말은 보지 못해요.</p>
+          <Primary onClick={() => { setStep('quote'); setInput(null); setResult(null); setDayIndex(null); setStart(null); setArrival(null); setPartner(null); setInfo({ area: '', detail: '', phone: '' }); setRequests([]); setMemo(''); setAnswers({}); setRedoSent(false); }}>처음부터 다시 해 보기</Primary>
         </div>
       )}
     </div>

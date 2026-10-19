@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from 'react';
 import { BadgeCheck, ChevronLeft, EyeOff, Lock, MapPin, Truck } from 'lucide-react';
-import { DEMO_JOBS, DEMO_PARTNERS, type DemoJob } from '@/features/zipsin-clean/domain/demo';
+import { DEMO_JOBS, DEMO_PARTNERS, MEMO_MAX, type DemoJob } from '@/features/zipsin-clean/domain/demo';
 import { quote, won } from '@/features/zipsin-clean/domain/pricing';
 import { formatHour, nextDays } from '@/features/zipsin-clean/domain/schedule';
 
@@ -48,6 +48,7 @@ export function PartnerApp({ today = new Date() }: { today?: Date }) {
   const [blockReason, setBlockReason] = useState<BlockReason | null>(null);
   const [blockNote, setBlockNote] = useState('');
   const [blockSent, setBlockSent] = useState(false);
+  const [notes, setNotes] = useState<Record<string, string>>({});
   const resetBlock = () => { setBlockOpen(false); setBlockReason(null); setBlockNote(''); setBlockSent(false); };
 
   const quotes = useMemo(() => Object.fromEntries(DEMO_JOBS.map((job) => [job.id, quote(job.input)])), []);
@@ -149,6 +150,21 @@ export function PartnerApp({ today = new Date() }: { today?: Date }) {
         )}
       </section>
 
+      <section aria-label="손님 요청" className="grid gap-2 rounded-2xl border border-[#E1E6E3] bg-white p-4">
+        <p className="text-[15px] font-bold">손님이 업체에 하는 말</p>
+        {stage === 'paid' ? (
+          <p className="flex items-center gap-2 text-[15px] text-[#5D6A65]"><EyeOff aria-hidden="true" className="size-5" />작업이 끝나서 손님 요청도 다시 가렸어요.</p>
+        ) : job.requests.length === 0 && !job.memo ? (
+          <p className="text-[15px] text-[#5D6A65]">따로 남긴 말이 없어요.</p>
+        ) : (
+          <>
+            {job.requests.length > 0 && <p className="flex flex-wrap gap-1.5">{job.requests.map((item) => <span className="rounded-full bg-[#F6EBD8] px-3 py-1 text-[15px] font-semibold text-[#7A4E12]" key={item}>{item}</span>)}</p>}
+            {job.memo && <p className="rounded-xl bg-[#F7F7F3] p-3 text-[15px] leading-6 text-[#16211E]">{job.memo}</p>}
+            {stage === 'offer' && <p className="text-sm text-[#5D6A65]">수락하면 이 요청도 지키기로 한 거예요. 지키기 어렵다면 수락하지 말아 주세요.</p>}
+          </>
+        )}
+      </section>
+
       {stage === 'offer' && (
         <>
           <div className="grid gap-2">
@@ -198,6 +214,11 @@ export function PartnerApp({ today = new Date() }: { today?: Date }) {
           <p className="text-[17px] font-bold">작업 중 · {formatHour(endsAt)}까지</p>
           <p className="flex items-center gap-2 rounded-xl bg-[#E3F0EC] p-3 text-[15px] font-semibold text-[#083E37]"><Lock aria-hidden="true" className="size-5" />가격 잠김 · 추가요금 버튼은 없어요</p>
           <p className="text-[15px] leading-6 text-[#3E4B47]">끝나면 완료 사진을 올려 주세요. 사진 속 위치정보는 올릴 때 지워요.</p>
+          <div className="grid gap-1">
+            <label className="text-[15px] font-bold" htmlFor="partner-note">손님에게 남길 말 (선택)</label>
+            <textarea className="min-h-24 w-full rounded-xl border border-[#C9D1CD] bg-white p-3 text-base" id="partner-note" maxLength={MEMO_MAX} onChange={(event) => setNotes({ ...notes, [job.id]: event.target.value })} placeholder="예: 베란다 배수구 물 빠짐이 느려요. 관리사무소에 알려 주세요." value={notes[job.id] ?? ''} />
+            <p className="text-sm text-[#5D6A65]">추가요금이나 다른 유료 작업을 권하는 말은 남기지 말아 주세요.</p>
+          </div>
           <Primary onClick={() => setStage(job.id, 'waiting')}>작업 끝 · 완료 사진 올리기 (체험)</Primary>
         </div>
       )}
@@ -205,6 +226,7 @@ export function PartnerApp({ today = new Date() }: { today?: Date }) {
       {stage === 'waiting' && (
         <div className="grid gap-4 rounded-2xl border border-[#E1E6E3] bg-white p-4">
           <p className="text-[17px] font-bold">손님이 검수하고 있어요</p>
+          {notes[job.id]?.trim() && <p className="rounded-xl bg-[#F7F7F3] p-3 text-[15px] leading-6 text-[#3E4B47]"><b className="block text-[#16211E]">손님에게 남긴 말</b>{notes[job.id]}</p>}
           <p className="text-[15px] leading-6 text-[#3E4B47]">손님이 다시 해 달라고 하면 추가요금 없이 다시 가요. 검수가 끝나면 정산돼요.</p>
           <Primary onClick={() => setStage(job.id, 'paid')}>손님 검수 완료 보기 (체험)</Primary>
         </div>
