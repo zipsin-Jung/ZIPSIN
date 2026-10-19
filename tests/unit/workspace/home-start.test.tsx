@@ -90,6 +90,8 @@ describe('HomeStart', () => {
 
     expect(screen.getByRole('heading', { name: heading })).toBeInTheDocument();
     expect(screen.getByText(/주소를 검색해 다른 사람의 기록에 연결할 수 없습니다/)).toBeInTheDocument();
+    // DEC-038: 집이 없어도 같은 홈 맨 아래에서 파트너 등록으로 갈 수 있다.
+    expect(screen.getByRole('link', { name: /집신 파트너 등록/ })).toHaveAttribute('href', '/partners/new');
   });
 
   it('TEST-ZH-HOME-004 uses confirmed empty copy instead of invented counts', () => {

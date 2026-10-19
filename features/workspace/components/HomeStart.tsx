@@ -296,6 +296,7 @@ export function HomeStart({
           {!officeMember && <p className="mt-2 text-[15px] text-[#6B7079]">주소를 검색해 다른 사람의 기록에 연결할 수 없습니다.</p>}
         </EmptyCard>
         {unreadChatCount > 0 && <Link className="mt-3 flex min-h-12 items-center justify-center text-base font-semibold text-[#0B6655]" href="/chats">새 대화 {unreadChatCount}개 보기</Link>}
+        <PartnerEntry />
       </main>
     );
   }
