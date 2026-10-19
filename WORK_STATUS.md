@@ -1,5 +1,12 @@
 # 집신 작업 현황
 
+## 2026-10-19 집신청소 v1 — 실제 저장 (운영 DB 미적용)
+
+- 사용자 결정: 체험판이 아니라 배포용. 앱 결제 없음, 손님이 업체 직접 선택, 이름 집신청소. main의 집신청소 준비 중 화면(다른 대화창)을 합쳐 그대로 사용.
+- `/cl` 예약(가격은 서버 재계산) · `/cl/my` 마이페이지 · `/cl/partner` 업체(초대 코드) · `/cl/admin` 운영자. migration `202610190101_zipsin_cleaning_v1`.
+- 검사: 단위 930 통과, 빌드 통과, 로컬 Postgres 스텁 권한 검사 55 통과. 실제 Supabase·Preview 다계정·운영: 확인 안 함.
+- 출시는 `docs/deployment/zipsin-cleaning-launch.md` 순서(운영 DB 적용·운영자 지정·`NEXT_PUBLIC_CLEAN_OPEN`)로, 각 단계 대표 승인 필요. 작업 브랜치 `claude/clean-flow-2026-10-18`.
+
 ## 2026-10-18 공개 후 전체 점검
 
 - ck.zipsin.net은 주소 끝 '/ck' 없이 첫 화면에서 집신체크(app/page.tsx가 주소별로 분기), 예전 /ck는 308로 '/'.

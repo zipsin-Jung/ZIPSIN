@@ -123,11 +123,13 @@ reset role;
 select pg_temp.as_user('10000000-0000-0000-0000-000000000002');
 select pg_temp.check((select count(*) from public.clean_photos) = 1, 'RLS-011 consented completed photo visible to other customer');
 select pg_temp.check((select count(*) from storage.objects where bucket_id = 'clean-photos') = 1, 'RLS-011 storage object readable when consented');
+select pg_temp.check((select count(*) from public.clean_partner_samples()) = 1, 'RLS-011 consented photo listed as partner sample');
 reset role;
 update public.clean_bookings set portfolio_consent = false where id = (select v::uuid from t_ctx where k = 'b1');
 select pg_temp.as_user('10000000-0000-0000-0000-000000000002');
 select pg_temp.check((select count(*) from public.clean_photos) = 0, 'RLS-011 without consent photo hidden from other customer');
 select pg_temp.check((select count(*) from storage.objects where bucket_id = 'clean-photos') = 0, 'RLS-011 storage object hidden without consent');
+select pg_temp.check((select count(*) from public.clean_partner_samples()) = 0, 'RLS-011 unconsented photo not a sample');
 reset role;
 
 -- TEST-CL-RLS-012 시작 불가 신고 → 운영자만 취소 확정

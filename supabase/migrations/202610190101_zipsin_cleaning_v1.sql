@@ -365,6 +365,21 @@ $$;
 revoke all on function public.clean_partner_stats() from public, anon;
 grant execute on function public.clean_partner_stats() to authenticated;
 
+-- 업체를 고를 때 보이는 사진: 손님이 공개에 동의한 완료 예약의 전/후 사진만(업체당 최근 4장)
+create or replace function public.clean_partner_samples()
+returns table (photo_id uuid, partner_id uuid, kind text, storage_path text)
+language sql stable security definer set search_path = public as $$
+  select x.id, x.partner_id, x.kind, x.storage_path from (
+    select ph.id, b.partner_id, ph.kind, ph.storage_path,
+      row_number() over (partition by b.partner_id order by ph.created_at desc) as n
+    from public.clean_photos ph join public.clean_bookings b on b.id = ph.booking_id
+    join public.clean_partners p on p.id = b.partner_id
+    where ph.status = 'ready' and ph.kind in ('before', 'after') and b.status = 'completed' and b.portfolio_consent and p.status = 'active'
+  ) x where x.n <= 4 and auth.uid() is not null
+$$;
+revoke all on function public.clean_partner_samples() from public, anon;
+grant execute on function public.clean_partner_samples() to authenticated;
+
 -- ── 업체 초대 ────────────────────────────────────────────────────────
 create or replace function public.create_clean_partner(p_name text, p_kind text, p_area text, p_team text, p_checks text[])
 returns uuid language plpgsql security definer set search_path = public as $$

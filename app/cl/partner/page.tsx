@@ -1,20 +1,31 @@
 import type { Metadata } from 'next';
-import { CleanDemoShell } from '@/features/zipsin-clean/components/CleanDemoShell';
+import { redirect } from 'next/navigation';
+import { CleanShell } from '@/features/zipsin-clean/components/CleanShell';
 import { CleanPreparing } from '@/features/zipsin-clean/components/CleanPreparing';
-import { PartnerApp } from '@/features/zipsin-clean/components/PartnerApp';
-import { isCleanDemoOpen } from '@/features/zipsin-clean/domain/demo';
+import { ConnectedPartner } from '@/features/zipsin-clean/components/connected';
+import { listPartnerJobs } from '@/features/zipsin-clean/server/data';
+import { cleanSessionDb } from '@/features/zipsin-clean/server/db';
+import { cleanLinks } from '@/features/zipsin-clean/server/nav';
+import { cleanOpenNow } from '@/features/zipsin-clean/server/open';
+import { getCleanViewer } from '@/features/zipsin-clean/server/viewer';
 
-/** 집신청소 업체 화면 체험. 실서비스에서는 준비 중 화면만 보인다. */
-export const metadata: Metadata = {
-  title: '집신청소 · 업체 화면 (체험)',
-  robots: { index: false },
-};
+export const metadata: Metadata = { title: '집신청소 · 업체', robots: { index: false } };
+export const dynamic = 'force-dynamic';
 
-export default function CleanPartnerPage() {
-  if (!isCleanDemoOpen()) return <CleanPreparing homeHref="/" />;
+export default async function CleanPartnerRoute() {
+  if (!cleanOpenNow()) return <CleanPreparing homeHref="/" />;
+  const viewer = await getCleanViewer();
+  if (!viewer) redirect('/login?next=%2Fcl%2Fpartner');
+  const db = await cleanSessionDb();
+  let partnerName: string | null = null;
+  if (viewer.partnerIds.length > 0) {
+    const { data } = await db.from('clean_partners').select('name').in('id', viewer.partnerIds).eq('status', 'active').limit(1).maybeSingle();
+    partnerName = (data?.name as string | undefined) ?? null;
+  }
+  const jobs = partnerName ? await listPartnerJobs(db) : [];
   return (
-    <CleanDemoShell links={[{ href: '/cl', label: '손님 화면' }]}>
-      <PartnerApp />
-    </CleanDemoShell>
+    <CleanShell links={cleanLinks(viewer, '/cl/partner')}>
+      <ConnectedPartner jobs={jobs} partnerName={partnerName} />
+    </CleanShell>
   );
 }

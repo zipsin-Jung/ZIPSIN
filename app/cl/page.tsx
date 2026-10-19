@@ -1,25 +1,27 @@
 import type { Metadata } from 'next';
-import { CleanApp } from '@/features/zipsin-clean/components/CleanApp';
-import { CleanDemoShell } from '@/features/zipsin-clean/components/CleanDemoShell';
+import { CleanShell } from '@/features/zipsin-clean/components/CleanShell';
 import { CleanPreparing } from '@/features/zipsin-clean/components/CleanPreparing';
-import { isCleanDemoOpen } from '@/features/zipsin-clean/domain/demo';
+import { ConnectedBooking } from '@/features/zipsin-clean/components/connected';
+import { listPartnerOptions } from '@/features/zipsin-clean/server/data';
+import { cleanSessionDb } from '@/features/zipsin-clean/server/db';
+import { cleanLinks } from '@/features/zipsin-clean/server/nav';
+import { cleanOpenNow } from '@/features/zipsin-clean/server/open';
+import { getCleanViewer } from '@/features/zipsin-clean/server/viewer';
 
-/**
- * 집신청소 (DEC-031). 집신체크처럼 같은 앱 안의 별도 서비스.
- * 배포 전에는 Preview에서만 처음부터 끝까지 눌러 볼 수 있는 체험 화면을 연다.
- * 실서비스(VERCEL_ENV=production)에서는 준비 중 화면만 보인다.
- */
+/** 집신청소 (cl.zipsin.net · 앱 경로 /cl). 닫혀 있으면 준비 중 화면만(공용 승인 시안). */
 export const metadata: Metadata = {
   title: '집신청소 · 청소 가격 바로 보기',
   description: '사실만 고르면 가격이 하나로 나와요. 작업을 시작한 뒤에는 가격이 바뀌지 않아요.',
-  robots: { index: false },
 };
+export const dynamic = 'force-dynamic';
 
-export default function CleanPage() {
-  if (!isCleanDemoOpen()) return <CleanPreparing homeHref="/" />;
+export default async function CleanPage() {
+  if (!cleanOpenNow()) return <CleanPreparing homeHref="/" />;
+  const viewer = await getCleanViewer();
+  const partners = viewer ? await listPartnerOptions(await cleanSessionDb()) : [];
   return (
-    <CleanDemoShell links={[{ href: '/cl/my', label: '마이페이지' }, { href: '/cl/partner', label: '업체 화면' }]}>
-      <CleanApp />
-    </CleanDemoShell>
+    <CleanShell links={cleanLinks(viewer, '/cl')}>
+      <ConnectedBooking partners={partners} phoneVerified={Boolean(viewer?.phoneVerified)} signedIn={Boolean(viewer)} />
+    </CleanShell>
   );
 }

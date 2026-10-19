@@ -1,20 +1,26 @@
 import type { Metadata } from 'next';
-import { CleanDemoShell } from '@/features/zipsin-clean/components/CleanDemoShell';
-import { CleanMyPage } from '@/features/zipsin-clean/components/CleanMyPage';
+import { redirect } from 'next/navigation';
+import { CleanShell } from '@/features/zipsin-clean/components/CleanShell';
 import { CleanPreparing } from '@/features/zipsin-clean/components/CleanPreparing';
-import { isCleanDemoOpen } from '@/features/zipsin-clean/domain/demo';
+import { ConnectedMyPage } from '@/features/zipsin-clean/components/connected';
+import { listCustomerBookings, listMyRecords, listMyVisitRequests } from '@/features/zipsin-clean/server/data';
+import { cleanSessionDb } from '@/features/zipsin-clean/server/db';
+import { cleanLinks } from '@/features/zipsin-clean/server/nav';
+import { cleanOpenNow } from '@/features/zipsin-clean/server/open';
+import { getCleanViewer } from '@/features/zipsin-clean/server/viewer';
 
-/** 집신청소 손님 마이페이지 체험. 실서비스에서는 준비 중 화면만 보인다. */
-export const metadata: Metadata = {
-  title: '집신청소 · 마이페이지 (체험)',
-  robots: { index: false },
-};
+export const metadata: Metadata = { title: '집신청소 · 마이페이지', robots: { index: false } };
+export const dynamic = 'force-dynamic';
 
-export default function CleanMyPageRoute() {
-  if (!isCleanDemoOpen()) return <CleanPreparing homeHref="/" />;
+export default async function CleanMyRoute() {
+  if (!cleanOpenNow()) return <CleanPreparing homeHref="/" />;
+  const viewer = await getCleanViewer();
+  if (!viewer) redirect('/login?next=%2Fcl%2Fmy');
+  const db = await cleanSessionDb();
+  const [bookings, records, visits] = await Promise.all([listCustomerBookings(db, viewer.userId), listMyRecords(db, viewer.userId), listMyVisitRequests(db, viewer.userId)]);
   return (
-    <CleanDemoShell links={[{ href: '/cl', label: '가격 보기' }, { href: '/cl/partner', label: '업체 화면' }]}>
-      <CleanMyPage />
-    </CleanDemoShell>
+    <CleanShell links={cleanLinks(viewer, '/cl/my')}>
+      <ConnectedMyPage bookings={bookings} records={records} visits={visits} />
+    </CleanShell>
   );
 }

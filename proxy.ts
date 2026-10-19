@@ -3,10 +3,25 @@ import { isCheckHost } from '@/lib/site/check-host';
 import { subSiteForHost } from '@/lib/site/sub-sites';
 import { isAccountOpen } from '@/lib/site/account-launch';
 import { updateSupabaseSession } from '@/lib/supabase/proxy';
+import { cleanOpenNow } from '@/features/zipsin-clean/server/open';
 
 export async function proxy(request: NextRequest) {
   // cl.zipsin.net(집신청소)·rp.zipsin.net(집신수리)은 준비 중: 첫 화면만 열고, 다른 주소는 첫 화면으로 보낸다. 계정·DB는 부르지 않는다.
-  if (subSiteForHost(request.headers.get('host'))) {
+  const subSite = subSiteForHost(request.headers.get('host'));
+  // 대표 승인 뒤 NEXT_PUBLIC_CLEAN_OPEN=true 이고 로그인이 열려 있을 때만 cl.zipsin.net이 /cl 화면을 연다(실제 주소라 환경과 상관없이 스위치 필수).
+  // 로그인·회원가입 같은 다른 주소는 zipsin.net으로 보낸다(로그인 쿠키는 .zipsin.net으로 공유).
+  if (subSite === 'clean' && process.env.NEXT_PUBLIC_CLEAN_OPEN === 'true' && cleanOpenNow()) {
+    const { pathname } = request.nextUrl;
+    if (pathname === '/cl' || pathname.startsWith('/cl/')) return updateSupabaseSession(request);
+    if (pathname === '/') {
+      const target = request.nextUrl.clone();
+      target.pathname = '/cl';
+      return NextResponse.redirect(target, 307);
+    }
+    const main = new URL(`${pathname}${request.nextUrl.search}`, process.env.NEXT_PUBLIC_SITE_URL || 'https://zipsin.net');
+    return NextResponse.redirect(main, 307);
+  }
+  if (subSite) {
     if (request.nextUrl.pathname === '/') return NextResponse.next();
     const target = request.nextUrl.clone();
     target.pathname = '/';
@@ -51,6 +66,8 @@ export const config = {
   matcher: [
     '/',
     '/ck',
+    '/cl',
+    '/cl/:path*',
     '/home/:path*',
     '/onboarding/:path*',
     '/homes/:path*',

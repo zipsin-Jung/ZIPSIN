@@ -46,3 +46,9 @@ export function nextDays(today: Date, count = 14): DayOption[] {
     };
   });
 }
+
+/** 한국 시간 기준 오늘(서버가 UTC여도 같은 날짜가 나오게). */
+export function seoulToday(now: Date = new Date()): Date {
+  const [year, month, day] = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now).split('-').map(Number);
+  return new Date(year, month - 1, day);
+}

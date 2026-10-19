@@ -1,7 +1,7 @@
 const DEFAULT_NEXT_PATH = '/home';
 const ALLOWED_PATHS = [
   '/home', '/ck', '/my', '/homes', '/chats', '/tasks', '/support',
-  '/office', '/invitations', '/onboarding', '/signup/verify', '/reset-password',
+  '/office', '/invitations', '/onboarding', '/signup/verify', '/reset-password', '/cl',
 ];
 
 export function sanitizeNextPath(value: string | null | undefined): string {
