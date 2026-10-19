@@ -9,6 +9,8 @@ export function KakaoInquiryButton() {
   const pathname = usePathname();
 
   if (pathname === '/ck' || pathname.startsWith('/ck/')) return null;
+  // 집신수리 체험판은 아래에 큰 버튼이 붙어 있어 문의 버튼이 가린다(2026-10-18).
+  if (pathname === '/rp/try' || pathname.startsWith('/rp/try/')) return null;
 
   return (
     <aside aria-label="빠른 고객지원" data-global-kakao="">
