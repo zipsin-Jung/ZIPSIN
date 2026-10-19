@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>거실</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #0B6655;outline-offset:2px}
+input::placeholder,textarea::placeholder{color:#868B94}
+</style>
+</helmet>
+<div style="width: 390px; height: 900px; box-sizing: border-box; position: relative; overflow: hidden; display: flex; flex-direction: column; background: #FFFFFF; font-family: Pretendard, 'Pretendard Variable', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif; color: #212124; -webkit-font-smoothing: antialiased; word-break: keep-all;">
+<header style="height: 56px; flex: none; box-sizing: border-box; padding: 0 12px 0 6px; display: flex; align-items: center; gap: 2px; border-bottom: 1px solid #EAEBEE;"><a href="V2MoveIn.dc.html" aria-label="뒤로" style="width: 44px; height: 44px; display: grid; place-items: center;"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></a><h1 style="margin: 0; flex: 1; font-size: 18px; font-weight: 700;">거실 · 입주 상태</h1><span style="font-size: 14px; color: #6B7079;">2024.12.01</span></header>
+  <main style="flex: 1; overflow: hidden; padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 14px;">
+    <div role="group" aria-label="무엇을 기록하나요" style="display: grid; grid-template-columns: 1fr 1fr; background: #F2F3F6; border-radius: 8px; padding: 3px;">
+      <button type="button" onClick="{{toDamage}}" aria-pressed="{{dmgStr}}" style="{{dmgStyle}}">파손 상태</button>
+      <button type="button" onClick="{{toClean}}" aria-pressed="{{clnStr}}" style="{{clnStyle}}">청소 상태</button>
+    </div>
+    <sc-for list="{{items}}" as="it" hint-placeholder-count="4">
+      <div style="display: flex; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid #EAEBEE;">
+        <img src="{{it.img}}" alt="{{it.alt}}" style="width: 84px; height: 84px; border-radius: 8px; object-fit: cover; flex: none;">
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px;">
+          <strong style="font-size: 16px; font-weight: 600;">{{it.name}}</strong>
+          <span style="font-size: 14px; color: #4D5159;">{{it.note}}</span>
+          <div style="display: flex; gap: 6px;">
+            <button type="button" onClick="{{it.ok}}" aria-pressed="{{it.okStr}}" style="{{it.okStyle}}">확인함</button>
+            <button type="button" onClick="{{it.na}}" aria-pressed="{{it.naStr}}" style="{{it.naStyle}}">확인 못 함</button>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+    <p style="margin: 0; font-size: 14px; color: #6B7079;">"이상 없음" 한 번에 체크는 없어요. 항목마다 봤는지 남겨요.</p>
+    <a href="V2Add.dc.html" style="height: 48px; border: 1px dashed #B0B3BA; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 15px; font-weight: 600;"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>사진 · 항목 더하기</a>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":900}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { mode: 'damage', st: { 0: 'ok', 1: 'ok', 2: 'na' } }; }
+  renderVals() {
+    const { mode, st } = this.state;
+    const seg = (on) => 'height:40px;border:0;border-radius:6px;font:inherit;font-size:15px;cursor:pointer;' + (on ? 'background:#FFFFFF;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.12);color:#212124;' : 'background:transparent;color:#6B7079;');
+    const data = mode === 'damage'
+      ? [['벽지', '창문 옆 30cm 긁힘 1곳', '/_blob/2ec67eff6ee53ed2f05f8214a92c0d81'], ['바닥', '소파 자리 눌림 자국', '/_blob/af22ec8ccb40b1c19d9c4a9293a52a25'], ['천장 · 조명', '등 1개 깜빡임', '/_blob/7e36aac7086ac2a14ccd102796fd7d38'], ['에어컨', '리모컨 있음 · 작동함', '/_blob/7d72f3c925be8178514fa7241c7261d6']]
+      : [['바닥', '물걸레 청소됨', '/_blob/af22ec8ccb40b1c19d9c4a9293a52a25'], ['창틀', '먼지 조금', '/_blob/2ec67eff6ee53ed2f05f8214a92c0d81'], ['에어컨 필터', '청소 안 됨', '/_blob/7d72f3c925be8178514fa7241c7261d6']];
+    const b = (on, color) => 'height:36px;padding:0 12px;border-radius:18px;font:inherit;font-size:14px;cursor:pointer;' + (on ? 'border:0;background:' + color + ';color:#FFFFFF;font-weight:700;' : 'border:1px solid #DCDEE3;background:#FFFFFF;color:#212124;');
+    const set = (i, v) => this.setState({ st: { ...st, [i]: st[i] === v ? undefined : v } });
+    const items = data.map(([name, note, img], i) => ({ name, note, img, alt: name + ' 사진', ok: () => set(i, 'ok'), na: () => set(i, 'na'), okStr: String(st[i] === 'ok'), naStr: String(st[i] === 'na'), okStyle: b(st[i] === 'ok', '#0B6655'), naStyle: b(st[i] === 'na', '#4D5159') }));
+    return { items, dmgStr: String(mode === 'damage'), clnStr: String(mode === 'clean'), dmgStyle: seg(mode === 'damage'), clnStyle: seg(mode === 'clean'), toDamage: () => this.setState({ mode: 'damage', st: {} }), toClean: () => this.setState({ mode: 'clean', st: {} }) };
+  }
+}
+</script>
+</body>
+</html>

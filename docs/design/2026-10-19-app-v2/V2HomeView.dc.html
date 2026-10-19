@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>집 화면</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #0B6655;outline-offset:2px}
+input::placeholder,textarea::placeholder{color:#868B94}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; overflow: hidden; display: flex; flex-direction: column; background: #FFFFFF; font-family: Pretendard, 'Pretendard Variable', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif; color: #212124; -webkit-font-smoothing: antialiased; word-break: keep-all;">
+<header style="height: 56px; flex: none; box-sizing: border-box; padding: 0 12px 0 6px; display: flex; align-items: center; gap: 2px; border-bottom: 1px solid #EAEBEE;"><a href="V2Home.dc.html" aria-label="뒤로" style="width: 44px; height: 44px; display: grid; place-items: center;"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></a><h1 style="margin: 0; flex: 1; font-size: 18px; font-weight: 700;">□□빌라 102호</h1></header>
+  <main style="flex: 1; overflow: hidden; padding-bottom: 90px; display: flex; flex-direction: column;">
+    <img src="/_blob/197e97cd5dc3e25e84af0c61c9f2a06d" alt="□□빌라 102호 거실" style="width: 390px; height: 170px; object-fit: cover;">
+    <section style="padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; border-bottom: 8px solid #F2F3F6;">
+      <span style="display: flex; gap: 6px;"><span style="align-self: flex-start; padding: 2px 8px; border-radius: 4px; background: #F2F3F6; color: #4D5159; font-size: 13px; font-weight: 700;">이번 계약 · 2024.12.01 ~ 2026.12.01</span><span style="align-self: flex-start; padding: 2px 8px; border-radius: 4px; background: #FDF0DF; color: #7A4A00; font-size: 13px; font-weight: 700;">D-43</span></span>
+      <span style="font-size: 15px; color: #4D5159;">임대인 김○○ · 임차인 정민선 · 공릉공인중개사</span>
+    </section>
+    <nav aria-label="집 메뉴" style="display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid #EAEBEE;">
+      <a href="V2MoveIn.dc.html" aria-current="page" style="height: 48px; display: grid; place-items: center; font-size: 15px; font-weight: 700; border-bottom: 2px solid #212124;">입주 상태</a>
+      <a href="V2Records.dc.html" style="height: 48px; display: grid; place-items: center; font-size: 15px; color: #6B7079;">기록</a>
+      <a href="V2Repair.dc.html" style="height: 48px; display: grid; place-items: center; font-size: 15px; color: #6B7079;">수리 1</a>
+      <a href="V2History.dc.html" style="height: 48px; display: grid; place-items: center; font-size: 15px; color: #6B7079;">집 이력</a>
+    </nav>
+    <a href="V2MoveIn.dc.html" style="margin: 16px; padding: 16px; border: 1px solid #EAEBEE; border-radius: 12px; display: flex; flex-direction: column; gap: 10px;">
+      <span style="display: flex; justify-content: space-between; align-items: center;"><strong style="font-size: 16px;">입주 상태 기록</strong><span style="align-self: flex-start; padding: 2px 8px; border-radius: 4px; background: #F2F3F6; color: #4D5159; font-size: 13px; font-weight: 700;">임차인 확인 중</span></span>
+      <span style="height: 8px; border-radius: 4px; background: #F2F3F6; overflow: hidden;"><span style="display: block; width: 75%; height: 100%; background: #0B6655;"></span></span>
+      <span style="font-size: 14px; color: #6B7079;">방 6곳 중 4곳 사진 완료 · 항목 24개 · 2024.12.01 기록</span>
+    </a>
+    <div style="margin: 0 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+      <a href="V2Meters.dc.html" style="padding: 14px; border-radius: 12px; background: #F2F3F6; display: flex; flex-direction: column; gap: 4px;"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7"></circle><path d="M12 13l3-3M9 3h6"></path></svg><strong style="font-size: 15px;">계량기 · 열쇠</strong><span style="font-size: 14px; color: #6B7079;">전기·수도·가스 3 · 열쇠 2</span></a>
+      <a href="V2MoveOut.dc.html" style="padding: 14px; border-radius: 12px; background: #F2F3F6; display: flex; flex-direction: column; gap: 4px;"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg><strong style="font-size: 15px;">퇴거 비교</strong><span style="font-size: 14px; color: #6B7079;">나갈 때 같은 자리 찍기</span></a>
+    </div>
+  </main>
+  <nav aria-label="아래 메뉴" style="position: absolute; left: 0; right: 0; bottom: 0; height: 72px; box-sizing: border-box; padding-bottom: 10px; display: grid; grid-template-columns: repeat(5, 1fr); background: #FFFFFF; border-top: 1px solid #EAEBEE;"><a href="V2Home.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #212124; font-size: 13px; font-weight: 700;"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9H4z"></path><path d="M10 20v-6h4v6"></path></svg>홈</a><a href="V2Records.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #868B94; font-size: 13px; font-weight: 500;"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7z"></path><path d="M14 3v4h4"></path><path d="M10 12h5M10 16h5"></path></svg>기록</a><span style="display: grid; place-items: center;"><a href="V2Add.dc.html" aria-label="기록하기" style="width: 46px; height: 46px; border-radius: 23px; background: #0B6655; color: #FFFFFF; display: grid; place-items: center;"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></a></span><a href="V2Chats.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #868B94; font-size: 13px; font-weight: 500;"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"></path></svg>채팅</a><a href="V2My.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #868B94; font-size: 13px; font-weight: 500;"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"></path></svg>마이</a></nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>
