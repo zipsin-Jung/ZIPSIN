@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function CleanPartnerPage() {
   if (!isCleanDemoOpen()) return <CleanPreparing />;
   return (
-    <CleanDemoShell switchHref="/cl" switchLabel="손님 화면">
+    <CleanDemoShell links={[{ href: '/cl', label: '손님 화면' }]}>
       <PartnerApp />
     </CleanDemoShell>
   );

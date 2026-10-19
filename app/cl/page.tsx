@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default function CleanPage() {
   if (!isCleanDemoOpen()) return <CleanPreparing />;
   return (
-    <CleanDemoShell switchHref="/cl/partner" switchLabel="업체 화면">
+    <CleanDemoShell links={[{ href: '/cl/my', label: '마이페이지' }, { href: '/cl/partner', label: '업체 화면' }]}>
       <CleanApp />
     </CleanDemoShell>
   );

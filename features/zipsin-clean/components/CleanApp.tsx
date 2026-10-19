@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { BadgeCheck, CalendarClock, Check, ChevronLeft, Home, Lock, Sparkles, Truck } from 'lucide-react';
 import { QuoteBuilder } from '@/features/zipsin-clean/components/QuoteBuilder';
-import { availablePartners, MEMO_MAX, REQUEST_CHIPS, type DemoPartner } from '@/features/zipsin-clean/domain/demo';
+import { availablePartners, DEMO_PHOTO, MEMO_MAX, REQUEST_CHIPS, type CleanRecord, type DemoPartner } from '@/features/zipsin-clean/domain/demo';
 import { won, type Quote, type QuoteInput } from '@/features/zipsin-clean/domain/pricing';
 import { checkSchedule, formatHour, nextDays, START_HOURS, type StartHour } from '@/features/zipsin-clean/domain/schedule';
 
@@ -40,7 +40,7 @@ function Row({ label, value, strong }: { label: string; value: string; strong?: 
   return <div className="flex items-baseline justify-between gap-3 py-1.5"><dt className="text-[15px] text-[#3E4B47]">{label}</dt><dd className={`text-right text-[15px] ${strong ? 'font-bold text-[#16211E]' : 'text-[#16211E]'}`}>{value}</dd></div>;
 }
 
-export function CleanApp({ today = new Date() }: { today?: Date }) {
+export function CleanApp({ today = new Date(), onSaved }: { today?: Date; onSaved?: (record: CleanRecord) => void }) {
   const [step, setStep] = useState<Step>('quote');
   const [input, setInput] = useState<QuoteInput | null>(null);
   const [result, setResult] = useState<Quote | null>(null);
@@ -409,7 +409,10 @@ export function CleanApp({ today = new Date() }: { today?: Date }) {
             redoSent
               ? <p className="rounded-xl bg-[#E3F0EC] p-3 text-[15px] text-[#083E37]" role="status">업체에 다시 와 달라고 보냈어요(체험). 추가요금 없이 다시 해요.</p>
               : <Primary onClick={() => setRedoSent(true)}>{problems.length}곳 다시 해 달라고 하기</Primary>
-          ) : <Primary disabled={!allAnswered} onClick={() => setStage('saved')}>검수 완료</Primary>}
+          ) : <Primary disabled={!allAnswered} onClick={() => {
+            setStage('saved');
+            onSaved?.({ id: `saved-${Date.now()}`, sortKey: day?.iso ?? '', date: day ? `${day.label}` : '', service: input.service === 'tidy' ? `생활 정리 청소 · ${result.hours}시간` : `입주 청소 · ${input.areaPyeong}평`, area: info.area, partner: partner?.name ?? '', priceWon: result.priceWon, viaZipsin: true, photos: [{ id: 'sb', src: DEMO_PHOTO, label: '청소 전 (예시)', pos: '0% 50%' }, { id: 'sa', src: DEMO_PHOTO, label: '청소 후 (예시)', pos: '100% 50%' }] });
+          }}>검수 완료</Primary>}
         </div>
       )}
       {stage === 'saved' && (

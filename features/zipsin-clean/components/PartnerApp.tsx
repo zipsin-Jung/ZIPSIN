@@ -2,7 +2,8 @@
 
 import { useMemo, useState, type ReactNode } from 'react';
 import { BadgeCheck, ChevronLeft, EyeOff, Lock, MapPin, Truck } from 'lucide-react';
-import { DEMO_JOBS, DEMO_PARTNERS, MEMO_MAX, type DemoJob } from '@/features/zipsin-clean/domain/demo';
+import { PhotoStrip } from '@/features/zipsin-clean/components/PhotoStrip';
+import { DEMO_JOBS, DEMO_PARTNER_WORKS, DEMO_PARTNERS, MEMO_MAX, type CleanPhoto, type DemoJob, type PartnerWork } from '@/features/zipsin-clean/domain/demo';
 import { quote, won } from '@/features/zipsin-clean/domain/pricing';
 import { formatHour, nextDays } from '@/features/zipsin-clean/domain/schedule';
 
@@ -49,6 +50,8 @@ export function PartnerApp({ today = new Date() }: { today?: Date }) {
   const [blockNote, setBlockNote] = useState('');
   const [blockSent, setBlockSent] = useState(false);
   const [notes, setNotes] = useState<Record<string, string>>({});
+  const [tab, setTab] = useState<'requests' | 'works'>('requests');
+  const [workPhotos, setWorkPhotos] = useState<Record<string, CleanPhoto[]>>({});
   const resetBlock = () => { setBlockOpen(false); setBlockReason(null); setBlockNote(''); setBlockSent(false); };
 
   const quotes = useMemo(() => Object.fromEntries(DEMO_JOBS.map((job) => [job.id, quote(job.input)])), []);
@@ -93,7 +96,37 @@ export function PartnerApp({ today = new Date() }: { today?: Date }) {
     const open = DEMO_JOBS.filter((job) => !declined.includes(job.id));
     return (
       <div className="grid gap-5">
-        {header('작업 요청', () => setScreen('invite'))}
+        {header(tab === 'requests' ? '작업 요청' : '내 작업 기록', () => setScreen('invite'))}
+        <div aria-label="업체 메뉴" className="grid grid-cols-2 gap-1 rounded-xl bg-[#E1E6E3] p-1" role="tablist">
+          {(['requests', 'works'] as const).map((value) => <button aria-selected={tab === value} className={`min-h-11 rounded-lg text-[15px] font-semibold ${tab === value ? 'bg-white text-[#083E37] shadow-sm' : 'text-[#3E4B47]'}`} key={value} onClick={() => setTab(value)} role="tab" type="button">{value === 'requests' ? '작업 요청' : '내 작업 기록'}</button>)}
+        </div>
+        {tab === 'works' ? (() => {
+          const done: PartnerWork[] = DEMO_JOBS.filter((job) => stages[job.id] === 'paid').map((job) => ({ id: `done-${job.id}`, date: dayLabel(job), service: serviceLabel(job, quotes[job.id].hours), area: job.area, consent: false, photos: [] }));
+          const works = [...done, ...DEMO_PARTNER_WORKS];
+          return (
+            <>
+              <dl className="grid grid-cols-3 gap-2 text-center">
+                <div className="rounded-xl bg-white py-2"><dt className="text-sm text-[#5D6A65]">집신 완료</dt><dd className="text-[17px] font-bold">{PARTNER.completed + done.length}건</dd></div>
+                <div className="rounded-xl bg-white py-2"><dt className="text-sm text-[#5D6A65]">시간 지킴</dt><dd className="text-[17px] font-bold">{PARTNER.onTimeRate}%</dd></div>
+                <div className="rounded-xl bg-white py-2"><dt className="text-sm text-[#5D6A65]">시작 뒤 추가요금</dt><dd className="text-[17px] font-bold">0건</dd></div>
+              </dl>
+              <ul className="grid gap-4">
+                {works.map((work) => (
+                  <li key={work.id}>
+                    <article aria-label={`${work.date} ${work.area}`} className="grid gap-3 rounded-2xl border border-[#E1E6E3] bg-white p-4">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <div className="min-w-0"><p className="text-sm text-[#5D6A65]">{work.date}</p><h3 className="!text-[17px] font-bold !leading-7">{work.area}</h3><p className="text-[15px] text-[#3E4B47]">{work.service}</p></div>
+                        <span className={`rounded-full px-2.5 py-0.5 text-sm font-semibold ${work.consent ? 'bg-[#E3F0EC] text-[#083E37]' : 'bg-[#F1F3F2] text-[#5D6A65]'}`}>{work.consent ? '손님 동의 · 다른 손님에게 보임' : '손님 동의 전 · 나만 보임'}</span>
+                      </div>
+                      <PhotoStrip addLabel="사진 올리기" onAdd={(more) => setWorkPhotos({ ...workPhotos, [work.id]: [...(workPhotos[work.id] ?? []), ...more] })} photos={[...work.photos, ...(workPhotos[work.id] ?? [])]} />
+                    </article>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-sm leading-6 text-[#5D6A65]">작업 기록에는 구·동까지만 남아요. 사진은 손님이 동의한 것만 업체를 고르는 다른 손님에게 보여요. 사진 속 사람·문서·주소가 보이면 올리지 말아 주세요.</p>
+            </>
+          );
+        })() : (<>
         <p className="flex gap-2 rounded-xl bg-[#E3F0EC] p-3 text-[15px] leading-6 text-[#083E37]"><Lock aria-hidden="true" className="mt-0.5 size-5 shrink-0" />수락하기 전에는 구·동까지만 보여요. 상세 주소와 연락처는 수락한 뒤에 보여요.</p>
         {open.length === 0 && <p className="text-[15px] text-[#3E4B47]">지금은 들어온 요청이 없어요.</p>}
         <ul className="grid gap-3">
@@ -115,6 +148,7 @@ export function PartnerApp({ today = new Date() }: { today?: Date }) {
             );
           })}
         </ul>
+        </>)}
       </div>
     );
   }
