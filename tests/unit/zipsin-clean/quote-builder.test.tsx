@@ -14,7 +14,7 @@ describe('QuoteBuilder — 우리 집 청소 가격 바로 보기', () => {
     expect(within(result).getByText('325,000원')).toBeInTheDocument();
     expect(within(result).getByText('2명 · 약 7시간')).toBeInTheDocument();
     expect(within(result).getByText('작업을 시작한 뒤에는 가격이 바뀌지 않아요.')).toBeInTheDocument();
-    expect(within(result).getByText(/평수·방·욕실 수가 실제와 다를 때만/)).toBeInTheDocument();
+    expect(within(result).getByText(/작업 날 현장에서 다시 계산하지 않아요/)).toBeInTheDocument();
     expect(within(result).getByRole('button', { name: '예약하기 · 준비 중' })).toBeDisabled();
   });
 

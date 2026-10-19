@@ -190,8 +190,8 @@ export function CleanApp({ today = new Date() }: { today?: Date }) {
         </dl>
         <div className="grid gap-2 rounded-2xl bg-white p-4 text-[15px] leading-6 text-[#3E4B47]">
           <p className="flex gap-2"><Check aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-[#0B6655]" />작업을 시작한 뒤에는 가격이 바뀌지 않아요.</p>
-          <p className="flex gap-2"><Check aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-[#0B6655]" />평수·방·욕실 수가 실제와 다를 때만, 시작 전에 다시 계산해요.</p>
-          <p className="flex gap-2"><Check aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-[#0B6655]" />쓰레기 더미·화재 같은 집은 위약금 없이 취소할 수 있어요.</p>
+          <p className="flex gap-2"><Check aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-[#0B6655]" />작업 날 현장에서 다시 계산하지 않아요.</p>
+          <p className="flex gap-2"><Check aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-[#0B6655]" />쓰레기 더미·화재처럼 청소를 시작할 수 없는 집이면, 서로 위약금 없이 취소해요.</p>
         </div>
         <Primary onClick={() => { setStage('booked'); go('progress'); }}>예약하기 (체험)</Primary>
       </div>
@@ -234,7 +234,7 @@ export function CleanApp({ today = new Date() }: { today?: Date }) {
       {stage === 'precheck' && (
         <div className="grid gap-4 rounded-2xl border border-[#E1E6E3] bg-white p-4">
           <p className="text-[17px] font-bold">업체가 시작 전에 집을 확인했어요</p>
-          <p className="text-[15px] leading-7 text-[#3E4B47]">평수·방·욕실이 예약과 같아요. <strong>가격은 그대로 {won(result.priceWon)}</strong>이고, 작업을 시작하면 잠겨요.</p>
+          <p className="text-[15px] leading-7 text-[#3E4B47]"><strong>가격은 그대로 {won(result.priceWon)}</strong>이에요. 작업 날에는 바뀌지 않아요.</p>
           <p className="flex items-center gap-2 rounded-xl bg-[#E3F0EC] p-3 text-[15px] font-semibold text-[#083E37]"><Lock aria-hidden="true" className="size-5" />시작 후 추가요금 요구는 집신에서 바로 퇴출해요</p>
           <Primary onClick={() => setStage('working')}>작업 시작 (업체가 누름)</Primary>
         </div>

@@ -115,7 +115,7 @@ export function QuoteBuilder({ onBook }: { onBook?: (input: QuoteInput, result: 
           </div>
           <div className="rounded-xl bg-[#E3F0EC] p-4 text-[#083E37]">
             <p className="text-base font-bold">작업을 시작한 뒤에는 가격이 바뀌지 않아요.</p>
-            <p className="mt-1 text-[15px]">평수·방·욕실 수가 실제와 다를 때만 시작 전에 다시 계산해요. 곰팡이·스티커 같은 오염으로 추가요금을 받지 않아요.</p>
+            <p className="mt-1 text-[15px]">작업 날 현장에서 다시 계산하지 않아요. 곰팡이·스티커 같은 오염으로도 추가요금을 받지 않아요.</p>
           </div>
           {result.unknownCount > 0 && <p className="text-[15px] text-[#3E4B47]">모른다고 고른 {result.unknownCount}가지는 조금 넉넉하게 계산했어요. 현장에서 더 받지 않아요.</p>}
           <div>

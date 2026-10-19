@@ -29,26 +29,36 @@ describe('PartnerApp — 업체 화면 (체험)', () => {
     expect(contact()).toHaveTextContent('예시아파트 101동 1203호 (예시)');
     expect(screen.getByText('확정 가격')).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: '예약과 같아요 · 작업 시작' }));
+    await user.click(screen.getByRole('button', { name: '작업 시작' }));
     expect(screen.getByText(/추가요금 버튼은 없어요/)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /추가요금/ })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: '작업 끝 · 완료 사진 올리기 (체험)' }));
     await user.click(screen.getByRole('button', { name: '손님 검수 완료 보기 (체험)' }));
 
     expect(screen.getByRole('region', { name: '정산' })).toHaveTextContent('+ 추가요금0원');
+    expect(screen.getByRole('region', { name: '정산' })).not.toHaveTextContent('수수료');
     expect(contact()).not.toHaveTextContent('1203호');
     expect(contact()).toHaveTextContent('다시 가렸어요');
     await user.click(screen.getByRole('button', { name: '요청 목록으로' }));
     expect(screen.getByRole('button', { name: /마포구 공덕동/ })).toHaveTextContent('정산 완료');
   });
 
-  it('TEST-CL-PARTNER-002 sends pre-start issues to 집신 instead of charging more', async () => {
+  it('TEST-CL-PARTNER-002 has no on-site recalculation; a blocked house can only be cancelled', async () => {
     const user = await openFirstJob();
     await user.click(screen.getByRole('button', { name: '이 가격으로 수락하기' }));
-    await user.click(screen.getByRole('button', { name: '평수·방·욕실이 예약과 달라요' }));
-    expect(screen.getByRole('status')).toHaveTextContent('손님에게 먼저 물어봐요');
-    await user.click(screen.getByRole('button', { name: '쓰레기 더미·화재·누수 집이에요' }));
+    expect(screen.queryByRole('button', { name: /예약과 달라요|다시 계산/ })).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: '청소를 시작할 수 없는 집이에요' }));
+    const send = screen.getByRole('button', { name: '사진과 함께 집신에 보내기 (체험)' });
+    expect(send).toBeDisabled();
+    await user.click(screen.getByRole('radio', { name: '기타' }));
+    expect(send).toBeDisabled();
+    await user.type(screen.getByLabelText('어떤 상황인지 적어 주세요'), '현관 비밀번호가 바뀜');
+    expect(send).toBeEnabled();
+    await user.click(screen.getByRole('radio', { name: '이삿짐이 아직 안 빠짐' }));
+    await user.click(send);
     expect(screen.getByRole('status')).toHaveTextContent('위약금 없이 취소');
+    expect(screen.getByRole('status')).toHaveTextContent('추가요금을 받고 진행하는 방법은 없어요');
+    expect(screen.queryByRole('button', { name: '작업 시작' })).not.toBeInTheDocument();
   });
 
   it('TEST-CL-PARTNER-003 lets a partner decline a request', async () => {

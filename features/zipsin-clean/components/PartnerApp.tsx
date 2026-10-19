@@ -13,7 +13,8 @@ import { formatHour, nextDays } from '@/features/zipsin-clean/domain/schedule';
  */
 type Screen = 'invite' | 'list' | 'job';
 type Stage = 'offer' | 'accepted' | 'working' | 'waiting' | 'paid';
-type Issue = null | 'mismatch' | 'outside';
+const BLOCK_REASONS = ['쓰레기·짐 더미', '화재·그을음', '누수·물바다', '해충이 심함', '이삿짐이 아직 안 빠짐', '물·전기가 안 들어옴', '안전하지 않음', '기타'] as const;
+type BlockReason = (typeof BLOCK_REASONS)[number];
 
 const PARTNER = DEMO_PARTNERS[0];
 
@@ -43,7 +44,11 @@ export function PartnerApp({ today = new Date() }: { today?: Date }) {
   const [jobId, setJobId] = useState<string | null>(null);
   const [stages, setStages] = useState<Record<string, Stage>>({});
   const [declined, setDeclined] = useState<string[]>([]);
-  const [issue, setIssue] = useState<Issue>(null);
+  const [blockOpen, setBlockOpen] = useState(false);
+  const [blockReason, setBlockReason] = useState<BlockReason | null>(null);
+  const [blockNote, setBlockNote] = useState('');
+  const [blockSent, setBlockSent] = useState(false);
+  const resetBlock = () => { setBlockOpen(false); setBlockReason(null); setBlockNote(''); setBlockSent(false); };
 
   const quotes = useMemo(() => Object.fromEntries(DEMO_JOBS.map((job) => [job.id, quote(job.input)])), []);
   const dayLabel = (job: DemoJob) => { const day = days[job.dayOffset - 1]; return `${day.label} (${day.weekday})`; };
@@ -96,7 +101,7 @@ export function PartnerApp({ today = new Date() }: { today?: Date }) {
             const stage = stages[job.id];
             return (
               <li key={job.id}>
-                <button className="grid w-full gap-1.5 rounded-2xl border border-[#E1E6E3] bg-white p-4 text-left" onClick={() => { setJobId(job.id); setIssue(null); setScreen('job'); }} type="button">
+                <button className="grid w-full gap-1.5 rounded-2xl border border-[#E1E6E3] bg-white p-4 text-left" onClick={() => { setJobId(job.id); resetBlock(); setScreen('job'); }} type="button">
                   <span className="flex items-center justify-between gap-2">
                     <strong className="text-[17px]">{job.area}</strong>
                     <span className={`rounded-full px-2.5 py-0.5 text-sm font-semibold ${stage === 'paid' ? 'bg-[#F1F3F2] text-[#5D6A65]' : stage ? 'bg-[#E3F0EC] text-[#083E37]' : 'bg-[#F6EBD8] text-[#7A4E12]'}`}>{stage === 'paid' ? '정산 완료' : stage ? '수락함' : '새 요청'}</span>
@@ -160,12 +165,31 @@ export function PartnerApp({ today = new Date() }: { today?: Date }) {
         <div className="grid gap-4 rounded-2xl border border-[#E1E6E3] bg-white p-4">
           <p className="text-[17px] font-bold">작업 날, 시작 전에 확인해 주세요</p>
           {job.arrival !== null && <p className="flex items-center gap-2 text-[15px] text-[#3E4B47]"><Truck aria-hidden="true" className="size-5 text-[#0B6655]" />이삿짐이 {formatHour(job.arrival)}에 들어와요. 그 전에 끝나는 일정이에요.</p>}
-          <p className="text-[15px] leading-6 text-[#3E4B47]">평수·방·욕실이 예약과 같으면 시작해요. 시작을 누르면 가격이 잠겨요.</p>
-          {issue === 'mismatch' && <p className="rounded-xl bg-[#E3F0EC] p-3 text-[15px] text-[#083E37]" role="status">집신에 보냈어요(체험). 시작 전이라 집신이 다시 계산해서 손님에게 먼저 물어봐요.</p>}
-          {issue === 'outside' && <p className="rounded-xl bg-[#E3F0EC] p-3 text-[15px] text-[#083E37]" role="status">집신에 보냈어요(체험). 사진을 확인하고 서로 위약금 없이 취소해요.</p>}
-          <Primary onClick={() => { setIssue(null); setStage(job.id, 'working'); }}>예약과 같아요 · 작업 시작</Primary>
-          <Secondary onClick={() => setIssue('mismatch')}>평수·방·욕실이 예약과 달라요</Secondary>
-          <Secondary onClick={() => setIssue('outside')}>쓰레기 더미·화재·누수 집이에요</Secondary>
+          <p className="text-[15px] leading-6 text-[#3E4B47]">가격은 수락할 때 확정됐어요. 작업 날 현장에서 다시 계산하거나 더 받지 않아요.</p>
+          {blockSent ? (
+            <p className="rounded-xl bg-[#E3F0EC] p-3 text-[15px] leading-6 text-[#083E37]" role="status">집신에 보냈어요(체험). 집신이 사진을 확인하고 서로 위약금 없이 취소해요. 추가요금을 받고 진행하는 방법은 없어요.</p>
+          ) : blockOpen ? (
+            <div className="grid gap-3 rounded-xl border border-[#C9D1CD] p-3">
+              <fieldset className="grid gap-2">
+                <legend className="mb-1 text-[15px] font-bold">왜 시작할 수 없나요?</legend>
+                <div className="grid grid-cols-2 gap-2">
+                  {BLOCK_REASONS.map((reason) => (
+                    <label className={`flex min-h-12 cursor-pointer items-center justify-center rounded-xl px-2 text-center text-[15px] font-semibold ${blockReason === reason ? 'border-2 border-[#0B6655] bg-[#E3F0EC] text-[#083E37]' : 'border border-[#C9D1CD] bg-white'}`} key={reason}>
+                      <input checked={blockReason === reason} className="sr-only" name="block-reason" onChange={() => setBlockReason(reason)} type="radio" value={reason} />
+                      {reason}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              {blockReason === '기타' && (
+                <div className="grid gap-1"><label className="text-[15px] font-bold" htmlFor="block-note">어떤 상황인지 적어 주세요</label><input className="min-h-12 rounded-xl border border-[#C9D1CD] bg-white px-3 text-base" id="block-note" onChange={(event) => setBlockNote(event.target.value)} value={blockNote} /></div>
+              )}
+              <p className="text-sm text-[#5D6A65]">사진을 함께 보내야 해요. 오염이 심한 정도는 사유가 아니에요(등급에 포함).</p>
+              <Primary disabled={!blockReason || (blockReason === '기타' && !blockNote.trim())} onClick={() => setBlockSent(true)}>사진과 함께 집신에 보내기 (체험)</Primary>
+            </div>
+          ) : null}
+          {!blockSent && <Primary onClick={() => { resetBlock(); setStage(job.id, 'working'); }}>작업 시작</Primary>}
+          {!blockOpen && <Secondary onClick={() => setBlockOpen(true)}>청소를 시작할 수 없는 집이에요</Secondary>}
         </div>
       )}
 
@@ -192,7 +216,6 @@ export function PartnerApp({ today = new Date() }: { today?: Date }) {
             <dl className="divide-y divide-[#E1E6E3]">
               <Row label="확정 가격" value={won(result.priceWon)} />
               <Row label="+ 추가요금" value="0원" />
-              <Row label="집신 수수료" value="아직 정하지 않았어요" />
             </dl>
             <p className="text-sm text-[#5D6A65]">체험이라 실제로 돈이 나가지 않아요.</p>
           </section>
