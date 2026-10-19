@@ -20,8 +20,11 @@ export async function loginWithUsernameAction(formData: FormData, nextValue?: st
   const parsed = inputSchema.safeParse({
     username: formData.get('username'),
     password: formData.get('password'),
-    // 로그인 유지 선택 UI는 두지 않는다(2026-10-15 사용자 지시). 값이 없으면 기존처럼 유지 세션을 사용한다.
-    remember: formData.get('remember') === null ? true : formData.get('remember') === 'on',
+    // DEC-037(2026-10-19): 화면에 '30일 로그인 유지' 칸이 있다. 칸을 끄면 체크박스 값이 오지 않으므로
+    // remember_choice 표시가 있을 때만 '꺼짐'으로 본다. 표시가 없는 예전 요청은 기존처럼 유지 세션.
+    remember: formData.get('remember_choice') !== null
+      ? formData.get('remember') === 'on'
+      : formData.get('remember') === null ? true : formData.get('remember') === 'on',
   });
   if (!parsed.success) redirect('/login?error=invalid_credentials');
 

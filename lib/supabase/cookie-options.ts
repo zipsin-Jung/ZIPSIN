@@ -25,13 +25,20 @@ export function getRuntimeAuthCookieOptions(): AuthCookieOptions {
 // cookies as browser-session cookies so they disappear when the browser closes.
 export const SESSION_ONLY_COOKIE = 'zipsin-session-only';
 
+// DEC-037: "이 기기에서 30일 동안 로그인 유지". Supabase 기본(400일) 대신 30일로 줄인다.
+export const KEEP_SIGNED_IN_SECONDS = 60 * 60 * 24 * 30;
+
 export function toPersistenceCookieOptions<T extends { maxAge?: number; expires?: Date }>(
   options: T,
   value: string,
   sessionOnly: boolean,
 ): Omit<T, 'maxAge' | 'expires'> | T {
   const isDeletion = value === '' || options.maxAge === 0;
-  if (!sessionOnly || isDeletion) return options;
+  if (isDeletion) return options;
+  if (!sessionOnly) {
+    const { expires: _expires, ...rest } = options;
+    return { ...rest, maxAge: Math.min(options.maxAge ?? KEEP_SIGNED_IN_SECONDS, KEEP_SIGNED_IN_SECONDS) } as T;
+  }
   const { maxAge: _maxAge, expires: _expires, ...sessionOptions } = options;
   return sessionOptions;
 }

@@ -59,8 +59,12 @@ describe('TEST-AUTH-LOGIN-005 로그인 유지 해제 세션의 갱신', () => {
     expect(toPersistenceCookieOptions({ path: '/', maxAge: 0 }, '', true)).toEqual({ path: '/', maxAge: 0 });
   });
 
-  it('로그인 유지 사용자는 기존 만료 시간을 그대로 쓴다', () => {
+  it('로그인 유지 사용자는 30일보다 짧은 만료 시간은 그대로 쓴다', () => {
     expect(toPersistenceCookieOptions({ path: '/', maxAge: 100 }, 'token', false)).toEqual({ path: '/', maxAge: 100 });
+  });
+
+  it('DEC-037 로그인 유지는 최대 30일로 줄인다(Supabase 기본 400일)', () => {
+    expect(toPersistenceCookieOptions({ path: '/', maxAge: 34_560_000 }, 'token', false)).toEqual({ path: '/', maxAge: 2_592_000 });
   });
 
   it('proxy 갱신은 로그인 유지 해제 사용자의 쿠키를 브라우저 세션 쿠키로 유지한다', async () => {
@@ -74,10 +78,10 @@ describe('TEST-AUTH-LOGIN-005 로그인 유지 해제 세션의 갱신', () => {
     expect(cookie?.expires).toBeUndefined();
   });
 
-  it('proxy 갱신은 로그인 유지 사용자의 영속 쿠키를 바꾸지 않는다', async () => {
+  it('proxy 갱신은 로그인 유지 사용자의 쿠키를 30일 영속 쿠키로 둔다', async () => {
     const request = new NextRequest('https://zipsin.net/home', { headers: { cookie: 'sb-example-auth-token=old' } });
     const response = await updateSupabaseSession(request);
-    expect(response.cookies.get('sb-example-auth-token')?.maxAge).toBe(34_560_000);
+    expect(response.cookies.get('sb-example-auth-token')?.maxAge).toBe(2_592_000);
   });
 
   it('로그인 유지 해제 로그인은 세션 전용 표시를 브라우저 세션 쿠키로 남긴다', async () => {
@@ -101,10 +105,10 @@ describe('TEST-AUTH-LOGIN-005 로그인 유지 해제 세션의 갱신', () => {
     expect(cookieStore.jar.get('sb-example-auth-token')?.options).not.toHaveProperty('maxAge');
   });
 
-  it('표시가 없으면 다른 서버 작업은 영속 쿠키를 유지한다', async () => {
+  it('표시가 없으면 다른 서버 작업은 30일 영속 쿠키를 쓴다', async () => {
     await createServerSupabaseClient();
     lastAdapter().setAll([persistentAuthCookie]);
-    expect(cookieStore.jar.get('sb-example-auth-token')?.options).toMatchObject({ maxAge: 34_560_000 });
+    expect(cookieStore.jar.get('sb-example-auth-token')?.options).toMatchObject({ maxAge: 2_592_000 });
     expect(cookieStore.jar.has(SESSION_ONLY_COOKIE)).toBe(false);
   });
 });

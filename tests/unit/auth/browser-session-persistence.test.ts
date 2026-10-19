@@ -46,8 +46,8 @@ describe('TEST-AUTH-LOGIN-005 브라우저 자동 토큰 갱신', () => {
     expect(written).not.toMatch(/Max-Age|Expires/i);
   });
 
-  it('로그인 유지 사용자는 기존 만료 시간을 그대로 쓴다', () => {
-    expect(refresh()).toMatch(/Max-Age=34560000/i);
+  it('로그인 유지 사용자는 30일 만료 시간을 쓴다(DEC-037)', () => {
+    expect(refresh()).toMatch(/Max-Age=2592000/i);
   });
 
   it('기존 쿠키를 그대로 읽어 세션을 복원한다', () => {

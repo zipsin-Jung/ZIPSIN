@@ -55,6 +55,14 @@ describe('loginWithUsernameAction', () => {
     expect(createServerSupabaseClient).toHaveBeenCalledWith({ sessionOnly: false });
   });
 
+  it('DEC-037 화면에서 30일 유지 칸을 끄면(값 없음 + remember_choice) 세션 쿠키만 쓴다', async () => {
+    const data = form('home_owner', 'password123', false);
+    data.set('remember_choice', '1');
+    loginWithUsername.mockResolvedValue({ ok: false, error: 'invalid_credentials' });
+    await expect(loginWithUsernameAction(data)).rejects.toThrow('REDIRECT:/login?error=invalid_credentials');
+    expect(createServerSupabaseClient).toHaveBeenCalledWith({ sessionOnly: true });
+  });
+
   it('uses a session cookie only when remember is explicitly off', async () => {
     loginWithUsername.mockResolvedValue({ ok: false, error: 'invalid_credentials' });
     const data = form('home_owner', 'password123', false);
