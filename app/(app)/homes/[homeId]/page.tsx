@@ -77,8 +77,8 @@ export default async function HomeDetailPage({ params, searchParams }: Props) {
   return (
     <main className="mx-auto max-w-3xl px-4 py-3 sm:py-8">
       <div className="flex items-center gap-1">
-        <Link aria-label="집 목록으로" className="-ml-2 grid size-11 place-items-center rounded-xl text-[#16211E]" href="/homes"><ChevronLeft aria-hidden="true" className="size-6" /></Link>
-        <span className="flex-1 truncate text-[15px] text-[#3E4B47]">집 목록</span>
+        <Link aria-label="집 목록으로" className="-ml-2 grid size-11 place-items-center rounded-xl text-[#212124]" href="/homes"><ChevronLeft aria-hidden="true" className="size-6" /></Link>
+        <span className="flex-1 truncate text-[15px] text-[#4D5159]">집 목록</span>
         <Link aria-label="집 대화 보기" className="grid size-11 place-items-center rounded-xl text-[#0B6655]" href={sharedRoom ? `/chats/${sharedRoom.id}` : "/chats"}><MessageCircle aria-hidden="true" className="size-6" /></Link>
       </div>
 
@@ -100,17 +100,17 @@ export default async function HomeDetailPage({ params, searchParams }: Props) {
         <h2 className="sr-only" id="home-time-title">집의 시간</h2>
         <ol aria-label="계약 단계" className="flex gap-1 overflow-x-auto">
           {summary.lifecycle.map((step) => (
-            <li className={`flex min-h-10 flex-1 shrink-0 items-center justify-center gap-1 rounded-full px-3 text-sm ${step.completed ? "bg-[#E3F0EC] font-semibold text-[#083E37]" : "bg-[#F1F3F2] text-[#3E4B47]"}`} key={step.id}>
+            <li className={`flex min-h-10 flex-1 shrink-0 items-center justify-center gap-1 rounded-full px-3 text-sm ${step.completed ? "bg-[#E3F0EC] font-semibold text-[#083E37]" : "bg-[#F2F3F6] text-[#4D5159]"}`} key={step.id}>
               {step.completed && <span aria-hidden="true">✓</span>}{step.label}
             </li>
           ))}
         </ol>
-        <p className="mt-1 text-sm text-[#5D6A65]">집의 시간 · 계약부터 퇴거까지</p>
+        <p className="mt-1 text-sm text-[#6B7079]">집의 시간 · 계약부터 퇴거까지</p>
       </section>
 
       {summary.canEditContract && (
-        <details className="mt-4 rounded-2xl border border-[#E1E6E3] bg-white px-4 py-3" open={!summary.contract}>
-          <summary className="min-h-10 cursor-pointer text-base font-semibold text-[#16211E]">{summary.contract ? "계약 기간 고치기" : "계약 기간 등록하기"}</summary>
+        <details className="mt-4 rounded-2xl border border-[#EAEBEE] bg-white px-4 py-3" open={!summary.contract}>
+          <summary className="min-h-10 cursor-pointer text-base font-semibold text-[#212124]">{summary.contract ? "계약 기간 고치기" : "계약 기간 등록하기"}</summary>
           <div className="mt-3">
             <ContractForm
               contractExists={Boolean(summary.contract)}
@@ -128,9 +128,9 @@ export default async function HomeDetailPage({ params, searchParams }: Props) {
 
       {summary.nextActions.length > 0 && <div className="mt-6"><NextActions actions={summary.nextActions} /></div>}
 
-      <nav aria-label="집 메뉴" className="sticky top-14 z-10 -mx-4 mt-6 flex border-b border-[#E1E6E3] bg-[#F7F7F3] px-4 md:top-[68px]">
+      <nav aria-label="집 메뉴" className="sticky top-14 z-10 -mx-4 mt-6 flex border-b border-[#EAEBEE] bg-[#F2F3F6] px-4 md:top-[68px]">
         {tabs.map((item) => (
-          <Link aria-current={item.id === tab ? "page" : undefined} className={`flex min-h-12 flex-1 items-center justify-center border-b-2 text-base ${item.id === tab ? "border-[#0B6655] font-bold text-[#083E37]" : "border-transparent text-[#3E4B47]"}`} href={item.href} key={item.id}>
+          <Link aria-current={item.id === tab ? "page" : undefined} className={`flex min-h-12 flex-1 items-center justify-center border-b-2 text-base ${item.id === tab ? "border-[#0B6655] font-bold text-[#083E37]" : "border-transparent text-[#4D5159]"}`} href={item.href} key={item.id}>
             {item.label}
           </Link>
         ))}

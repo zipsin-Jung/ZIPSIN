@@ -65,8 +65,8 @@ export function ContractSummary({
       <div className="grid gap-7 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-end">
         <div>
           <p className="text-sm font-bold text-[#0B6655]">현재 집</p>
-          <h1 className="mt-2 text-3xl font-black tracking-[-0.045em] text-[#16211E] sm:text-4xl">{summary.homeLabel}</h1>
-          <p className="mt-3 text-sm text-[#5D6A65]">{summary.addressLine1} · 상세 주소 보호됨</p>
+          <h1 className="mt-2 text-3xl font-black tracking-[-0.045em] text-[#212124] sm:text-4xl">{summary.homeLabel}</h1>
+          <p className="mt-3 text-sm text-[#6B7079]">{summary.addressLine1} · 상세 주소 보호됨</p>
         </div>
         <div className="rounded-2xl bg-[#E3F0EC] px-6 py-5 lg:min-w-56">
           <p className="text-sm font-bold text-[#476772]">계약 만기</p>
@@ -76,15 +76,15 @@ export function ContractSummary({
       </div>
 
       <div className="border-t border-[#e3ebe8] bg-[#fbfcfc] p-6 sm:p-8" id="expiry-plan">
-        <h2 className="text-xl font-black text-[#16211E]">만기 뒤 계획</h2>
-        <p className="mt-2 text-sm leading-6 text-[#5D6A65]">계획을 정하면 지금부터 필요한 준비 순서를 알려드려요.</p>
+        <h2 className="text-xl font-black text-[#212124]">만기 뒤 계획</h2>
+        <p className="mt-2 text-sm leading-6 text-[#6B7079]">계획을 정하면 지금부터 필요한 준비 순서를 알려드려요.</p>
         {summary.contractId && summary.ownRelationship ? (
           <div className="mt-4 grid gap-2 sm:grid-cols-3">
             {(Object.keys(statusLabels) as PlanStatus[]).map((status) => (
-              <button aria-pressed={current === status} className="min-h-12 rounded-xl border border-[#bfd0cc] bg-white px-3 text-sm font-bold text-[#3E4B47] transition aria-pressed:border-[#0B6655] aria-pressed:bg-[#0B6655] aria-pressed:text-white" disabled={isPending} key={status} onClick={() => save(status)} type="button">{statusLabels[status]}</button>
+              <button aria-pressed={current === status} className="min-h-12 rounded-xl border border-[#bfd0cc] bg-white px-3 text-sm font-bold text-[#4D5159] transition aria-pressed:border-[#0B6655] aria-pressed:bg-[#0B6655] aria-pressed:text-white" disabled={isPending} key={status} onClick={() => save(status)} type="button">{statusLabels[status]}</button>
             ))}
           </div>
-        ) : <p className="mt-4 rounded-xl bg-white p-4 text-sm text-[#5D6A65]">현재 계약의 임대인 또는 임차인만 자신의 준비 상태를 바꿀 수 있습니다.</p>}
+        ) : <p className="mt-4 rounded-xl bg-white p-4 text-sm text-[#6B7079]">현재 계약의 임대인 또는 임차인만 자신의 준비 상태를 바꿀 수 있습니다.</p>}
         {visiblePlans.length > 0 && (
           <div aria-label="계약 당사자 준비 상태" className="mt-4 flex flex-wrap gap-2">
             {visiblePlans.map((item, index) => (

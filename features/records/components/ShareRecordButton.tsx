@@ -21,10 +21,10 @@ export function ShareRecordButton({ path, text, label = '카톡으로 보내기'
   }
   return (
     <span className="inline-flex flex-col">
-      <button className="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-[#C9D1CD] bg-white px-3 text-[15px] font-semibold text-[#16211E]" onClick={share} type="button">
+      <button className="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-[#DCDEE3] bg-white px-3 text-[15px] font-semibold text-[#212124]" onClick={share} type="button">
         <Share2 aria-hidden="true" className="size-4" />{label}
       </button>
-      {message && <span className="mt-1 text-sm text-[#3E4B47]" role="status">{message}</span>}
+      {message && <span className="mt-1 text-sm text-[#4D5159]" role="status">{message}</span>}
       <span className="sr-only">링크는 이 집에 연결된 사람만 열 수 있어요.</span>
     </span>
   );

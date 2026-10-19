@@ -22,31 +22,35 @@ describe('HomeStart', () => {
     expect(screen.queryByText(/서울|1203|등록된 집/)).not.toBeInTheDocument();
   });
 
-  it('TEST-ZH-HOME-001 sends a one-home user straight to the real home and next work', () => {
+  it('TEST-ZH-HOME-001 v2 같은 홈: 한 집 임차인도 내 집 목록과 금색 지금 할 일 하나를 본다', () => {
     render(<HomeStart
       primaryRole="tenant"
       offices={[]}
+      spaceKind="me"
       recentHomes={[{
         id: 'home-1',
         label: '성수동 집',
         address: '서울 성동구 · 상세 주소 보호됨',
+        relation: '사는 집',
         contractDay: { label: 'D-112', days: 112 },
         openTask: { id: 'task-1', title: '입주 사진 확인', dueAt: '2026-10-15T09:00:00+09:00' },
       }]}
+      nextTask={{ id: 'task-1', homeId: 'home-1', title: '입주 사진 확인', dueAt: null }}
     />);
 
-    expect(screen.getByRole('heading', { name: '성수동 집' })).toBeInTheDocument();
-    expect(screen.getByText('D-112')).toBeInTheDocument();
-    expect(screen.getByText('지금 할 일 · 입주 사진 확인')).toBeInTheDocument();
-    expect(screen.getByText('아직 등록된 사진이 없습니다')).toBeInTheDocument();
-    expect(screen.getByText('최근 사진과 문서')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '성수동 집 열기' })).toHaveAttribute('href', '/homes/home-1');
-    expect(screen.queryByText('첫 집부터 기록을 시작하세요')).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /내 집\s*1채/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /사진 없음\s*성수동 집/ })).toHaveAttribute('href', '/homes/home-1');
+    expect(screen.getByText('사는 집 · 서울 성동구 · 상세 주소 보호됨')).toBeInTheDocument();
+    expect(screen.getByText('만기 D-112')).toBeInTheDocument();
+    expect(screen.getAllByText('지금 할 일')).toHaveLength(1);
+    expect(screen.getByRole('link', { name: /지금 할 일/ })).toHaveAttribute('href', '/homes/home-1');
+    expect(screen.getByRole('link', { name: /집신 파트너 등록/ })).toHaveAttribute('href', '/partners/new');
   });
 
-  it('TEST-ZH-HOME-002 prioritizes expiry and open work for a multi-home office', () => {
+  it('TEST-ZH-HOME-002 사무소 공간: 사무소 집 목록 · 집 등록 · 새 대화', () => {
     render(<HomeStart
       primaryRole="principal_broker"
+      spaceKind="office"
       offices={[{ id: 'office-1', name: '집신 공인중개사무소', canRegisterHome: true }]}
       recentHomes={[
         { id: 'home-1', label: '집신아파트 1401호', address: '서울 노원구', contractDay: { label: 'D-21', days: 21 }, openTask: null },
@@ -55,16 +59,27 @@ describe('HomeStart', () => {
       unreadChatCount={3}
     />);
 
-    expect(screen.getByRole('heading', { name: '오늘 확인할 집' })).toBeInTheDocument();
-    expect(screen.getByText('집신 공인중개사무소')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /사무소 집\s*2채/ })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /집신아파트 1401호/ })).toHaveAttribute('href', '/homes/home-1');
     expect(screen.getByRole('link', { name: /성수동 집/ })).toHaveAttribute('href', '/homes/home-2');
-    expect(screen.getByText('D-21')).toBeInTheDocument();
+    expect(screen.getByText('만기 D-21')).toBeInTheDocument();
     expect(screen.getByText('계약서 확인')).toBeInTheDocument();
     expect(screen.getAllByText('사진 없음')).toHaveLength(2);
     expect(screen.getByRole('link', { name: /읽지 않은 메시지 3개/ })).toHaveAttribute('href', '/chats');
     expect(screen.getByRole('link', { name: '집 등록하기' })).toHaveAttribute('href', '/homes/new?office=office-1');
+    expect(screen.queryByRole('link', { name: /집신 파트너 등록/ })).not.toBeInTheDocument();
     expect(screen.queryByText(/체험|데모|가상|담당/)).not.toBeInTheDocument();
+  });
+
+  it('TEST-ZH-HOME-002b 개인 공간에 직접 연결된 집이 없으면 사무소로 바꾸는 길만 보여 준다', () => {
+    render(<HomeStart primaryRole="associate_broker" spaceKind="me" offices={[{ id: 'office-1', name: '공릉공인중개사사무소', canRegisterHome: false }]} recentHomes={[]} />);
+    expect(screen.getByRole('heading', { name: '직접 연결된 집이 아직 없어요' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '공릉공인중개사사무소로 바꾸기' })).toHaveAttribute('href', '/space?to=office-1');
+  });
+
+  it('TEST-ZH-HOME-002c 실제 사진이 있으면 그 사진을 썸네일로 쓴다', () => {
+    render(<HomeStart primaryRole="tenant" spaceKind="me" offices={[]} recentHomes={[{ id: 'home-1', label: '102호', address: '공릉동', photoUrl: 'https://example.test/signed.jpg' }]} />);
+    expect(screen.getByRole('img', { name: '102호 최근 사진' })).toHaveAttribute('src', 'https://example.test/signed.jpg');
   });
 
   it.each([
@@ -106,9 +121,10 @@ describe('HomeStart', () => {
       counts={{ totalHomes: 12, expiringSoon: 3, openTasks: 2 }}
       nextTask={{ id: 't1', homeId: 'home-1', title: '누수 확인', dueAt: null }}
     />);
-    expect(screen.getByRole('link', { name: /연결된 집\s*12채/ })).toHaveAttribute('href', '/homes?office=office-1');
+    expect(screen.getByRole('link', { name: /사무소 집\s*12채/ })).toHaveAttribute('href', '/homes?office=office-1');
     expect(screen.getByRole('link', { name: /90일 내 만기\s*3채/ })).toHaveAttribute('href', '/homes?office=office-1&filter=expiring');
-    expect(screen.getAllByText(/지금 할 일/)).toHaveLength(1);
+    expect(screen.getAllByText('지금 할 일')).toHaveLength(1);
+    expect(screen.getByRole('link', { name: '전체 보기' })).toHaveAttribute('href', '/homes?office=office-1');
   });
 
   it('TEST-ZH-HOME-010 shows the new-staff brief with office notes only right after joining', () => {
@@ -133,7 +149,7 @@ describe('HomeStart', () => {
     />);
 
     expect(container.querySelector('img[src*="public-home"]')).not.toBeInTheDocument();
-    expect(screen.getByText('아직 등록된 사진이 없습니다')).toBeInTheDocument();
+    expect(screen.getByText('사진 없음')).toBeInTheDocument();
   });
 
   it('TEST-ZH-HOME-MEDIA-002 여러 집 카드도 실제 사진 연결 전에는 중립 상태만 표시한다', () => {

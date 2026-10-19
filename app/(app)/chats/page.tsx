@@ -20,4 +20,4 @@ export default async function ChatsPage() {
   return <Page rooms={items} />;
 }
 
-function Page({ rooms }: { rooms: ChatListItem[] }) { return <main className="mx-auto max-w-4xl px-4 py-8 sm:px-5 sm:py-14"><p className="text-sm font-bold text-[#0B6655]">집신 안에서 안전하게</p><h1 className="mt-2 text-4xl font-extrabold tracking-[-0.05em] text-[#16211E]">채팅</h1><p className="mt-3 text-[#5D6A65]">개인 연락처 대신 집과 업무의 대화를 이어가세요.</p><div className="mt-8"><ChatList rooms={rooms} /></div></main>; }
+function Page({ rooms }: { rooms: ChatListItem[] }) { return <main className="mx-auto max-w-4xl px-4 py-8 sm:px-5 sm:py-14"><p className="text-sm font-bold text-[#0B6655]">집신 안에서 안전하게</p><h1 className="mt-2 text-4xl font-extrabold tracking-[-0.05em] text-[#212124]">채팅</h1><p className="mt-3 text-[#6B7079]">개인 연락처 대신 집과 업무의 대화를 이어가세요.</p><div className="mt-8"><ChatList rooms={rooms} /></div></main>; }

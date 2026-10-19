@@ -9,7 +9,7 @@ type Tab = 'username' | 'password';
 type FoundAccount = { maskedUsername: string; createdAt: string | null };
 
 const OTP_SECONDS = 5 * 60;
-const intro = 'text-base leading-relaxed text-[#3E4B47]';
+const intro = 'text-base leading-relaxed text-[#4D5159]';
 const errorBox = 'flex items-start gap-3 rounded-xl border border-[#E8B4AE] bg-[#FDF3F2] p-4 text-[15px] leading-relaxed text-[#8C1D18]';
 
 function formatDate(value: string | null) {
@@ -61,14 +61,14 @@ function UsernameFinder() {
       <div aria-live="polite">
         {state === 'found' && (
           <div className="flex flex-col gap-3 rounded-xl bg-[#EAF2EF] p-4" role="status">
-            <p className="text-sm text-[#3E4B47]">이 이메일로 가입된 아이디</p>
+            <p className="text-sm text-[#4D5159]">이 이메일로 가입된 아이디</p>
             {accounts.map((account) => (
               <div key={`${account.maskedUsername}-${account.createdAt ?? ''}`}>
-                <p className="text-[22px] font-bold tracking-[1px] text-[#16211E]">{account.maskedUsername}</p>
-                {formatDate(account.createdAt) && <p className="text-[13px] text-[#5D6A65]">가입일 {formatDate(account.createdAt)}</p>}
+                <p className="text-[22px] font-bold tracking-[1px] text-[#212124]">{account.maskedUsername}</p>
+                {formatDate(account.createdAt) && <p className="text-[13px] text-[#6B7079]">가입일 {formatDate(account.createdAt)}</p>}
               </div>
             ))}
-            <p className="text-[13px] leading-relaxed text-[#5D6A65]">안전을 위해 일부를 가렸어요.</p>
+            <p className="text-[13px] leading-relaxed text-[#6B7079]">안전을 위해 일부를 가렸어요.</p>
             <Link className={authPrimaryButtonClass} href="/login">이 아이디로 로그인하기</Link>
             <a className="inline-flex min-h-11 items-center justify-center text-sm font-medium text-[#0B6655]! underline! underline-offset-[3px]" href="/account-recovery?tab=password">비밀번호도 기억나지 않아요</a>
           </div>
@@ -79,7 +79,7 @@ function UsernameFinder() {
               <CircleAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
               <p>이 이메일로 가입된 아이디가 없어요. 오타가 없는지 확인하고 다시 찾아 주세요.</p>
             </div>
-            <p className="text-center text-sm text-[#5D6A65]">다른 이메일로 가입했을 수도 있어요. 아직 가입 전이라면 <Link className="font-semibold text-[#0B6655]! underline! underline-offset-[3px]" href="/signup">회원가입</Link></p>
+            <p className="text-center text-sm text-[#6B7079]">다른 이메일로 가입했을 수도 있어요. 아직 가입 전이라면 <Link className="font-semibold text-[#0B6655]! underline! underline-offset-[3px]" href="/signup">회원가입</Link></p>
           </div>
         )}
         {state === 'error' && <div className={errorBox} role="alert"><CircleAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0" /><p>{message}</p></div>}
@@ -190,7 +190,7 @@ function PasswordReset() {
         </div>
       )}
       {message && (
-        <p aria-live="polite" className={`text-sm leading-relaxed ${isError ? 'text-[#8C1D18]' : status === 'verified' ? 'font-semibold text-[#0B6655]' : 'text-[#3E4B47]'}`} role={isError ? 'alert' : 'status'}>{message}</p>
+        <p aria-live="polite" className={`text-sm leading-relaxed ${isError ? 'text-[#8C1D18]' : status === 'verified' ? 'font-semibold text-[#0B6655]' : 'text-[#4D5159]'}`} role={isError ? 'alert' : 'status'}>{message}</p>
       )}
     </div>
   );
@@ -198,7 +198,7 @@ function PasswordReset() {
 
 export function AccountRecoveryForm({ initialTab = 'username' }: { initialTab?: Tab }) {
   const [tab, setTab] = useState<Tab>(initialTab);
-  const tabClass = (active: boolean) => `min-h-11 rounded-[10px] text-[15px] transition ${active ? 'bg-white font-bold text-[#16211E] shadow-[0_1px_3px_rgba(22,33,30,0.12)]' : 'font-medium text-[#5D6A65] hover:text-[#16211E]'}`;
+  const tabClass = (active: boolean) => `min-h-11 rounded-[10px] text-[15px] transition ${active ? 'bg-white font-bold text-[#212124] shadow-[0_1px_3px_rgba(22,33,30,0.12)]' : 'font-medium text-[#6B7079] hover:text-[#212124]'}`;
   return (
     <div className="flex flex-col gap-6">
       <div aria-label="찾을 항목" className="grid grid-cols-2 rounded-xl bg-[#F1F3F1] p-1" role="tablist">

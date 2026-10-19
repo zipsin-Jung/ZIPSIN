@@ -27,7 +27,7 @@ function rememberUsername(value: string) {
 }
 
 const fieldClass = 'flex h-[52px] items-center rounded-xl border border-[#8A9792] bg-white focus-within:border-[#0B6655] focus-within:ring-[3px] focus-within:ring-[#0B6655]/15';
-const inputClass = 'min-w-0 flex-1 bg-transparent text-base text-[#16211E] outline-none placeholder:text-[#7A8681] focus-visible:outline-none!';
+const inputClass = 'min-w-0 flex-1 bg-transparent text-base text-[#212124] outline-none placeholder:text-[#7A8681] focus-visible:outline-none!';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -67,7 +67,7 @@ export function UsernameLoginForm({ next, hasError = false, describedBy }: Props
   return (
     <form action={submit} aria-describedby={describedBy} className="grid gap-[18px]">
       <div className="grid gap-2">
-        <label className="text-[15px] font-semibold text-[#16211E]" htmlFor="username">아이디</label>
+        <label className="text-[15px] font-semibold text-[#212124]" htmlFor="username">아이디</label>
         <div className={`${fieldClass} px-4`}>
           <input
             autoCapitalize="none"
@@ -86,7 +86,7 @@ export function UsernameLoginForm({ next, hasError = false, describedBy }: Props
         </div>
       </div>
       <div className="grid gap-2">
-        <label className="text-[15px] font-semibold text-[#16211E]" htmlFor="password">비밀번호</label>
+        <label className="text-[15px] font-semibold text-[#212124]" htmlFor="password">비밀번호</label>
         <div className={`${fieldClass} gap-1 pl-4 pr-1`}>
           <input
             autoComplete="current-password"
@@ -103,7 +103,7 @@ export function UsernameLoginForm({ next, hasError = false, describedBy }: Props
           <button
             aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
             aria-pressed={showPassword}
-            className="inline-flex h-11 items-center gap-1.5 rounded-[10px] px-3 text-sm font-medium text-[#3E4B47] hover:bg-[#F6F7F5]"
+            className="inline-flex h-11 items-center gap-1.5 rounded-[10px] px-3 text-sm font-medium text-[#4D5159] hover:bg-[#F6F7F5]"
             onClick={() => setShowPassword((value) => !value)}
             type="button"
           >

@@ -29,7 +29,7 @@ export default async function SignupPage({ searchParams }: Props) {
         <div className="flex flex-col gap-3">
           {socialOn && <Link className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#0B6655] px-5 text-[16px] font-bold text-white!" href={loginHref}>간편 로그인으로 시작</Link>}
           <Link className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#BFD3CD] px-5 text-[16px] font-bold text-[#0B6655]!" href="/ck">집신체크 바로 쓰기</Link>
-          <p className="text-center text-[15px] text-[#3E4B47]">
+          <p className="text-center text-[15px] text-[#4D5159]">
             이미 계정이 있나요?{' '}
             <Link className="inline-flex min-h-11 items-center font-semibold text-[#0B6655]! underline! underline-offset-[3px]" href={loginHref}>로그인</Link>
           </p>
@@ -51,7 +51,7 @@ export default async function SignupPage({ searchParams }: Props) {
     >
       {error && <p className="rounded-xl border border-[#E8B4AE] bg-[#FDF3F2] p-4 text-[15px] font-semibold text-[#8C1D18]" role="alert">{error}</p>}
       <PasswordSignupForm next={params.next ? next : undefined} />
-      <p className="text-center text-[15px] text-[#3E4B47]">
+      <p className="text-center text-[15px] text-[#4D5159]">
         이미 계정이 있나요?{' '}
         <Link className="inline-flex min-h-11 items-center font-semibold text-[#0B6655]! underline! underline-offset-[3px]" href={loginHref}>로그인</Link>
       </p>

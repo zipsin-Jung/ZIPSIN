@@ -13,8 +13,8 @@ const PASSWORD_RULES = [
   { label: '숫자', test: (value: string) => /[0-9]/.test(value) },
   { label: '특수문자', test: (value: string) => /[^A-Za-z0-9]/.test(value) },
 ];
-const sectionTitle = 'mb-1 text-lg font-bold text-[#16211E]';
-const helpText = 'text-sm leading-relaxed text-[#5D6A65]';
+const sectionTitle = 'mb-1 text-lg font-bold text-[#212124]';
+const helpText = 'text-sm leading-relaxed text-[#6B7079]';
 
 function formatSeconds(total: number) {
   return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
@@ -163,15 +163,15 @@ export function PasswordSignupForm({ next }: { next?: string }) {
     rate_limited: '확인 요청이 많습니다. 잠시 후 다시 시도해 주세요.',
     error: '지금 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.',
   }[usernameStatus];
-  const usernameTone = usernameStatus === 'available' ? 'text-[#0B6655] font-semibold' : usernameStatus === 'idle' || usernameStatus === 'checking' ? 'text-[#5D6A65]' : 'text-[#8C1D18]';
+  const usernameTone = usernameStatus === 'available' ? 'text-[#0B6655] font-semibold' : usernameStatus === 'idle' || usernameStatus === 'checking' ? 'text-[#6B7079]' : 'text-[#8C1D18]';
 
   return (
     <form action={formAction} className="flex flex-col gap-7" onInput={refreshValidity} ref={formRef}>
       <ol aria-label="가입 단계" className="flex gap-2">
         {steps.map((step, index) => (
           <li aria-current={index === currentStep ? 'step' : undefined} className="flex flex-1 flex-col gap-1.5" key={step.label}>
-            <span aria-hidden="true" className={`h-1 rounded-sm ${step.done || index === currentStep ? 'bg-[#0B6655]' : 'bg-[#E1E6E3]'}`} />
-            <span className={`text-[13px] ${step.done ? 'font-semibold text-[#0B6655]' : index === currentStep ? 'font-semibold text-[#16211E]' : 'text-[#5D6A65]'}`}>
+            <span aria-hidden="true" className={`h-1 rounded-sm ${step.done || index === currentStep ? 'bg-[#0B6655]' : 'bg-[#EAEBEE]'}`} />
+            <span className={`text-[13px] ${step.done ? 'font-semibold text-[#0B6655]' : index === currentStep ? 'font-semibold text-[#212124]' : 'text-[#6B7079]'}`}>
               {index + 1} {step.label}{step.done ? ' ✓' : ''}
             </span>
           </li>
@@ -206,7 +206,7 @@ export function PasswordSignupForm({ next }: { next?: string }) {
           <label className={authLabelClass} htmlFor="signup-password">비밀번호</label>
           <div className={`${authFieldClass} gap-1 pl-4 pr-1`}>
             <input aria-describedby="password-rule" autoComplete="new-password" className={authInputClass} id="signup-password" maxLength={128} minLength={8} name="password" onChange={(event) => setPassword(event.target.value)} pattern="(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}" required type={showPassword ? 'text' : 'password'} value={password} />
-            <button aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'} aria-pressed={showPassword} className="inline-flex h-11 items-center gap-1.5 rounded-[10px] px-3 text-sm font-medium text-[#3E4B47] hover:bg-[#F6F7F5]" onClick={() => setShowPassword((value) => !value)} type="button">
+            <button aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'} aria-pressed={showPassword} className="inline-flex h-11 items-center gap-1.5 rounded-[10px] px-3 text-sm font-medium text-[#4D5159] hover:bg-[#F6F7F5]" onClick={() => setShowPassword((value) => !value)} type="button">
               {showPassword ? <EyeOff aria-hidden="true" className="size-[18px]" /> : <Eye aria-hidden="true" className="size-[18px]" />}
               <span aria-hidden="true">{showPassword ? '숨기기' : '보기'}</span>
             </button>
@@ -214,7 +214,7 @@ export function PasswordSignupForm({ next }: { next?: string }) {
           <ul aria-label="영문 소문자·숫자·특수문자를 포함해 8자 이상" className="flex flex-wrap gap-x-3.5 gap-y-1.5 text-[13px]" id="password-rule">
             {PASSWORD_RULES.map((rule) => {
               const ok = rule.test(password);
-              return <li className={ok ? 'text-[#0B6655]' : 'text-[#5D6A65]'} key={rule.label}>{ok ? '✓' : '○'} {rule.label}</li>;
+              return <li className={ok ? 'text-[#0B6655]' : 'text-[#6B7079]'} key={rule.label}>{ok ? '✓' : '○'} {rule.label}</li>;
             })}
           </ul>
         </div>
@@ -237,7 +237,7 @@ export function PasswordSignupForm({ next }: { next?: string }) {
         </div>
       </fieldset>
 
-      <fieldset className="flex min-w-0 flex-col gap-3.5 border-t border-[#E1E6E3] pt-6">
+      <fieldset className="flex min-w-0 flex-col gap-3.5 border-t border-[#EAEBEE] pt-6">
         <legend className={`${sectionTitle} float-left w-full`}>2. 휴대폰 본인 확인</legend>
         <div className="grid grid-cols-[minmax(0,1fr)] gap-2">
           <label className={authLabelClass} htmlFor="signup-phone">휴대폰 번호</label>
@@ -293,10 +293,10 @@ export function PasswordSignupForm({ next }: { next?: string }) {
             </div>
           </div>
         )}
-        {phoneMessage && <p aria-live="polite" className={`text-sm ${phoneMessageIsError ? 'text-[#8C1D18]' : phoneDone ? 'font-semibold text-[#0B6655]' : 'text-[#3E4B47]'}`} id="phone-status" role={phoneMessageIsError ? 'alert' : undefined}>{phoneDone && <Check aria-hidden="true" className="mr-1 inline size-4 align-[-3px]" />}{phoneMessage}</p>}
+        {phoneMessage && <p aria-live="polite" className={`text-sm ${phoneMessageIsError ? 'text-[#8C1D18]' : phoneDone ? 'font-semibold text-[#0B6655]' : 'text-[#4D5159]'}`} id="phone-status" role={phoneMessageIsError ? 'alert' : undefined}>{phoneDone && <Check aria-hidden="true" className="mr-1 inline size-4 align-[-3px]" />}{phoneMessage}</p>}
       </fieldset>
 
-      <fieldset className="flex min-w-0 flex-col gap-1 border-t border-[#E1E6E3] pt-6">
+      <fieldset className="flex min-w-0 flex-col gap-1 border-t border-[#EAEBEE] pt-6">
         <legend className={`${sectionTitle} float-left mb-2.5 w-full`}>3. 약관 동의</legend>
         <label className="flex min-h-12 items-center gap-3 rounded-xl bg-[#F6F7F5] px-3.5 text-base font-bold"><input checked={allRequired} className="size-5 accent-[#0B6655]" onChange={(event) => { setTermsAccepted(event.target.checked); setPrivacyAccepted(event.target.checked); refreshValidity(); }} type="checkbox" /> 필수 항목 전체 동의</label>
         <label className="flex min-h-12 items-center gap-3 px-3.5 text-[15px]"><input checked={termsAccepted} className="size-5 accent-[#0B6655]" name="termsAccepted" onChange={(event) => setTermsAccepted(event.target.checked)} required type="checkbox" /> [필수] 서비스 이용약관에 동의합니다.</label>
@@ -309,7 +309,7 @@ export function PasswordSignupForm({ next }: { next?: string }) {
           {isPending && <LoaderCircle aria-hidden="true" className="size-[18px] animate-spin" />}
           {isPending ? '가입하고 있어요…' : '회원가입 완료'}
         </button>
-        {!(usernameStatus === 'available' && phoneDone && allRequired) && <p className="text-center text-sm text-[#5D6A65]">아이디 중복 확인, 휴대폰 인증, 필수 동의를 마치면 버튼이 켜져요.</p>}
+        {!(usernameStatus === 'available' && phoneDone && allRequired) && <p className="text-center text-sm text-[#6B7079]">아이디 중복 확인, 휴대폰 인증, 필수 동의를 마치면 버튼이 켜져요.</p>}
       </div>
     </form>
   );

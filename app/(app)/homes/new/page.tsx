@@ -20,8 +20,8 @@ export default async function NewHomePage({ searchParams }: { searchParams: Prom
   return (
     <main className="mx-auto max-w-xl px-4 py-4 sm:py-8">
       <div className="mb-4 flex items-center gap-1">
-        <Link aria-label="홈으로" className="-ml-2 grid size-11 place-items-center rounded-xl text-[#16211E]" href="/home"><ChevronLeft aria-hidden="true" className="size-6" /></Link>
-        <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#16211E]">집 등록하기</h1>
+        <Link aria-label="홈으로" className="-ml-2 grid size-11 place-items-center rounded-xl text-[#212124]" href="/home"><ChevronLeft aria-hidden="true" className="size-6" /></Link>
+        <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#212124]">집 등록하기</h1>
       </div>
       <HomeForm officeId={membership.office_id} idempotencyKey={randomUUID()} action={createHomeAction} />
     </main>

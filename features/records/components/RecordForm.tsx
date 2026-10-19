@@ -132,7 +132,7 @@ export function RecordForm({
     finally { setPending(false); }
   }
 
-  const choice = (on: boolean) => `flex min-h-[64px] w-full flex-col items-start justify-center gap-0.5 rounded-xl px-4 py-2 text-left ${on ? 'border-2 border-[#0B6655] bg-[#E3F0EC] text-[#083E37]' : 'border border-[#C9D1CD] bg-white text-[#3E4B47]'}`;
+  const choice = (on: boolean) => `flex min-h-[64px] w-full flex-col items-start justify-center gap-0.5 rounded-xl px-4 py-2 text-left ${on ? 'border-2 border-[#0B6655] bg-[#E3F0EC] text-[#083E37]' : 'border border-[#DCDEE3] bg-white text-[#4D5159]'}`;
   const saved = uploads.filter((upload) => upload.status === 'saved').length;
   const failed = uploads.filter((upload) => upload.status === 'failed');
   const locked = pending || Boolean(recordId);
@@ -145,7 +145,7 @@ export function RecordForm({
       <input type="hidden" name="taskAssignedTo" value="" />
 
       <fieldset className="grid gap-2" disabled={locked}>
-        <legend className="mb-2 text-base font-bold text-[#16211E]">무엇을 남길까요?</legend>
+        <legend className="mb-2 text-base font-bold text-[#212124]">무엇을 남길까요?</legend>
         <div className={`grid gap-2 ${canRepair ? 'grid-cols-2' : ''}`}>
           <button aria-pressed={kind === 'photo'} className={choice(kind === 'photo')} onClick={() => setKind('photo')} type="button"><strong className="text-base">사진 · 메모</strong><span className="text-sm">입주 사진, 통화 메모</span></button>
           {canRepair && <button aria-pressed={kind === 'repair'} className={choice(kind === 'repair')} onClick={() => setKind('repair')} type="button"><strong className="text-base">수리 접수</strong><span className="text-sm">고장 · 하자 · 수리 요청</span></button>}
@@ -153,23 +153,23 @@ export function RecordForm({
       </fieldset>
 
       <fieldset className="grid gap-2" disabled={locked}>
-        <legend className="mb-2 text-base font-bold text-[#16211E]">누가 볼 수 있나요?</legend>
+        <legend className="mb-2 text-base font-bold text-[#212124]">누가 볼 수 있나요?</legend>
         {spaces.includes('office_internal') && <button aria-pressed={space === 'office_internal'} className={choice(space === 'office_internal')} onClick={() => setSpace('office_internal')} type="button"><strong className="text-base">사무소 내부</strong><span className="text-sm">우리 사무소 직원만 봐요</span></button>}
         {spaces.includes('current_contract') && <button aria-pressed={space === 'current_contract'} className={choice(space === 'current_contract')} onClick={() => setSpace('current_contract')} type="button"><strong className="text-base">이번 계약 공유</strong><span className="text-sm">사무소 + 지금 임대인·임차인이 봐요</span></button>}
-        <div aria-disabled="true" className="flex min-h-[64px] w-full flex-col items-start justify-center gap-0.5 rounded-xl border border-dashed border-[#C9D1CD] bg-[#F7F7F3] px-4 py-2 text-[#5D6A65]">
+        <div aria-disabled="true" className="flex min-h-[64px] w-full flex-col items-start justify-center gap-0.5 rounded-xl border border-dashed border-[#DCDEE3] bg-[#F2F3F6] px-4 py-2 text-[#6B7079]">
           <strong className="text-base">집 이력 <span className="text-sm font-normal">· 준비 중</span></strong>
           <span className="text-sm">임대인이 승인한 집에서 열려요. 이름·연락처는 빼고 남아요.</span>
         </div>
-        {!spaces.includes('current_contract') && spaces.includes('office_internal') && <p className="text-sm text-[#5D6A65]">이번 계약 공유는 계약 기간을 등록하면 고를 수 있어요.</p>}
+        {!spaces.includes('current_contract') && spaces.includes('office_internal') && <p className="text-sm text-[#6B7079]">이번 계약 공유는 계약 기간을 등록하면 고를 수 있어요.</p>}
       </fieldset>
 
       <div className="grid gap-2">
-        <span className="text-base font-bold text-[#16211E]">사진 · 동영상 <span className="text-sm font-normal text-[#5D6A65]">(최대 {ATTACHMENT_MAX_COUNT}개 · 동영상 {VIDEO_MAX_SECONDS}초 · 사진 위치정보는 지우고 올려요)</span></span>
+        <span className="text-base font-bold text-[#212124]">사진 · 동영상 <span className="text-sm font-normal text-[#6B7079]">(최대 {ATTACHMENT_MAX_COUNT}개 · 동영상 {VIDEO_MAX_SECONDS}초 · 사진 위치정보는 지우고 올려요)</span></span>
         <div className="grid grid-cols-4 gap-2">
           {picks.map((pick) => (
-            <div className="relative aspect-square overflow-hidden rounded-xl border border-[#E1E6E3] bg-[#EEF1EF]" key={pick.id}>
-              <span className="absolute inset-0 grid place-items-center p-1 text-center text-xs text-[#3E4B47] [overflow-wrap:anywhere]">{pick.durationSeconds ? `동영상 ${Math.round(pick.durationSeconds)}초` : pick.file.name}</span>
-              {!locked && <button aria-label={`${pick.file.name} 빼기`} className="absolute right-1 top-1 grid size-8 place-items-center rounded-full bg-white/90 text-[#16211E]" onClick={() => setPicks(picks.filter((item) => item.id !== pick.id))} type="button"><X aria-hidden="true" className="size-4" /></button>}
+            <div className="relative aspect-square overflow-hidden rounded-xl border border-[#EAEBEE] bg-[#F2F3F6]" key={pick.id}>
+              <span className="absolute inset-0 grid place-items-center p-1 text-center text-xs text-[#4D5159] [overflow-wrap:anywhere]">{pick.durationSeconds ? `동영상 ${Math.round(pick.durationSeconds)}초` : pick.file.name}</span>
+              {!locked && <button aria-label={`${pick.file.name} 빼기`} className="absolute right-1 top-1 grid size-8 place-items-center rounded-full bg-white/90 text-[#212124]" onClick={() => setPicks(picks.filter((item) => item.id !== pick.id))} type="button"><X aria-hidden="true" className="size-4" /></button>}
             </div>
           ))}
           {!locked && picks.length < ATTACHMENT_MAX_COUNT && (
@@ -182,17 +182,17 @@ export function RecordForm({
       </div>
 
       <div className="grid gap-2">
-        <label className="text-base font-bold text-[#16211E]" htmlFor="title">제목</label>
-        <input className="min-h-14 w-full rounded-xl border border-[#C9D1CD] bg-white px-4 text-base" id="title" maxLength={120} name="title" placeholder={kind === 'repair' ? '예: 욕실 천장 누수' : '예: 입주 전 거실 벽지 상태'} readOnly={locked} required />
+        <label className="text-base font-bold text-[#212124]" htmlFor="title">제목</label>
+        <input className="min-h-14 w-full rounded-xl border border-[#DCDEE3] bg-white px-4 text-base" id="title" maxLength={120} name="title" placeholder={kind === 'repair' ? '예: 욕실 천장 누수' : '예: 입주 전 거실 벽지 상태'} readOnly={locked} required />
         {state.fieldErrors?.title && <p className="text-[15px] text-red-700">{state.fieldErrors.title}</p>}
       </div>
       <div className="grid gap-2">
-        <label className="text-base font-bold text-[#16211E]" htmlFor="body">내용</label>
-        <textarea className="w-full rounded-xl border border-[#C9D1CD] bg-white p-4 text-base" id="body" maxLength={10000} name="body" readOnly={locked} rows={4} />
+        <label className="text-base font-bold text-[#212124]" htmlFor="body">내용</label>
+        <textarea className="w-full rounded-xl border border-[#DCDEE3] bg-white p-4 text-base" id="body" maxLength={10000} name="body" readOnly={locked} rows={4} />
       </div>
 
       {uploads.length > 0 && (
-        <div className="rounded-xl bg-[#F1F3F2] p-4" role="status">
+        <div className="rounded-xl bg-[#F2F3F6] p-4" role="status">
           <p className="text-[15px] font-semibold">사진 {uploads.length}개 중 {saved}개 저장</p>
           {failed.length > 0 && <ul className="mt-2 grid gap-1 text-[15px] text-red-700">{failed.map((upload, index) => <li key={`${upload.name}-${index}`}>{upload.name} · {upload.message}</li>)}</ul>}
         </div>
@@ -203,7 +203,7 @@ export function RecordForm({
       {recordId && failed.length > 0 ? (
         <div className="grid gap-2">
           <button className="app-primary min-h-14 rounded-xl text-[17px] font-bold text-white disabled:opacity-60" disabled={pending} onClick={retryFailed} type="button">실패한 사진 {failed.length}개 다시 올리기</button>
-          <button className="min-h-12 rounded-xl border border-[#C9D1CD] bg-white text-base font-semibold" onClick={() => router.push(`/homes/${homeId}`)} type="button">사진 없이 집 화면으로</button>
+          <button className="min-h-12 rounded-xl border border-[#DCDEE3] bg-white text-base font-semibold" onClick={() => router.push(`/homes/${homeId}`)} type="button">사진 없이 집 화면으로</button>
         </div>
       ) : (
         <button className="app-primary min-h-14 rounded-xl text-[17px] font-bold text-white disabled:opacity-60" disabled={locked} type="submit">

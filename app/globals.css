@@ -8,12 +8,12 @@
 .brand-icon{width:44px;height:40px;place-items:center;overflow:hidden}.brand-logo-image{display:block;width:44px;height:38px;object-fit:contain}.phone-top .brand-icon{width:32px;height:28px}.phone-top .brand-logo-image{width:32px;height:28px}@media(max-width:600px){.brand-icon{width:40px;height:36px}.brand-logo-image{width:40px;height:34px}.phone-top .brand-icon{width:30px;height:27px}.phone-top .brand-logo-image{width:30px;height:26px}}
 @media(max-width:360px){.container{width:calc(100% - 24px)}.hero h1{font-size:36px}.cta{font-size:12px!important;padding:0 11px!important}.hero-mascot{width:88px;left:-5px}.phone{width:288px}.role-tabs button{font-size:10px!important;padding-inline:5px!important}.role-content{padding-inline:9px}.price strong{font-size:23px}.price-card{padding-inline:11px}.form-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
-/* 로그인 후 앱 화면 디자인 바탕 (2026-10-18 승인 시안). 공개 홈에는 영향 없음: .app-shell 안에서만 적용. */
-.app-shell{min-height:100vh;background:#F7F7F3;color:#16211E;font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+/* 로그인 후 앱 화면 디자인 바탕 (2026-10-19 v2 시안: 흰 바탕·선 #EAEBEE·회색 바탕 #F2F3F6). 공개 홈에는 영향 없음: .app-shell 안에서만 적용. */
+.app-shell{min-height:100vh;background:#FFFFFF;color:#212124;font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
 --text-xs:.875rem;--text-xs--line-height:1.5;--text-sm:.9375rem;--text-sm--line-height:1.6;--text-base:1rem;
---color-primary:#0B6655;--color-ring:#0B6655;--color-foreground:#16211E;--color-muted-foreground:#5D6A65;--color-border:#E1E6E3;--color-input:#C9D1CD}
-.app-header{position:sticky;top:0;z-index:40;border-bottom:1px solid #E1E6E3;background:#FFFFFF}
-.app-panel{border:1px solid #E1E6E3;background:#FFFFFF;box-shadow:none}
+--color-primary:#0B6655;--color-ring:#0B6655;--color-foreground:#212124;--color-muted-foreground:#6B7079;--color-border:#EAEBEE;--color-input:#DCDEE3}
+.app-header{position:sticky;top:0;z-index:40;border-bottom:1px solid #EAEBEE;background:#FFFFFF}
+.app-panel{border:1px solid #EAEBEE;background:#FFFFFF;box-shadow:none}
 .app-primary{background:#0B6655;box-shadow:none}
 .app-primary:hover{background:#083E37}
 .app-shell :focus-visible{outline:3px solid #0B6655;outline-offset:2px}

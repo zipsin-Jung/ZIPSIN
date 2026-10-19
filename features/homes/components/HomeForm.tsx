@@ -67,45 +67,45 @@ export function HomeForm({ officeId, idempotencyKey, action }: {
 
   if (saved) {
     return (
-      <section aria-live="polite" className="rounded-[20px] border border-[#E1E6E3] bg-white p-6 text-center sm:p-10">
+      <section aria-live="polite" className="rounded-[20px] border border-[#EAEBEE] bg-white p-6 text-center sm:p-10">
         <Mascot className="mx-auto !mb-3 !w-[110px]" pose="happy" />
-        <h2 className="text-[22px] font-bold tracking-[-0.02em] text-[#16211E]">{saved.name} 등록 끝</h2>
-        <p className="mt-2 text-base text-[#3E4B47]">사진은 휴대폰 앨범에서 한꺼번에 골라 올리면 돼요.</p>
+        <h2 className="text-[22px] font-bold tracking-[-0.02em] text-[#212124]">{saved.name} 등록 끝</h2>
+        <p className="mt-2 text-base text-[#4D5159]">사진은 휴대폰 앨범에서 한꺼번에 골라 올리면 돼요.</p>
         <div className="mt-6 grid gap-2">
           <Link className="app-primary flex min-h-14 items-center justify-center rounded-xl text-[17px] font-bold text-white" href={`/records/bulk?homeId=${encodeURIComponent(saved.homeId)}`}>앨범에서 사진 한꺼번에 올리기</Link>
-          <Link className="flex min-h-12 items-center justify-center rounded-xl border border-[#C9D1CD] bg-white text-base font-semibold text-[#16211E]" href={`/homes/${saved.homeId}`}>집 화면 보기</Link>
+          <Link className="flex min-h-12 items-center justify-center rounded-xl border border-[#DCDEE3] bg-white text-base font-semibold text-[#212124]" href={`/homes/${saved.homeId}`}>집 화면 보기</Link>
           <button className="min-h-12 text-base font-semibold text-[#0B6655]" onClick={() => { setSaved(null); setValues({ addressLine1: '', addressDetail: '', homeLabel: '' }); }} type="button">다른 집 등록하기</button>
         </div>
       </section>
     );
   }
 
-  const fieldClass = 'min-h-14 w-full rounded-xl border border-[#C9D1CD] bg-white px-4 text-base text-[#16211E] outline-none placeholder:text-[#5D6A65] focus:border-[#0B6655] focus:ring-4 focus:ring-[#0B6655]/10';
+  const fieldClass = 'min-h-14 w-full rounded-xl border border-[#DCDEE3] bg-white px-4 text-base text-[#212124] outline-none placeholder:text-[#6B7079] focus:border-[#0B6655] focus:ring-4 focus:ring-[#0B6655]/10';
   const field = (name: 'addressLine1' | 'addressDetail' | 'homeLabel', label: string, max: number, placeholder: string, hint?: string) => (
     <div>
-      <label className="mb-2 block text-[15px] font-semibold text-[#16211E]" htmlFor={name}>{label}</label>
+      <label className="mb-2 block text-[15px] font-semibold text-[#212124]" htmlFor={name}>{label}</label>
       <input aria-invalid={!!state.fieldErrors?.[name]} aria-describedby={state.fieldErrors?.[name] ? `${name}-error` : hint ? `${name}-hint` : undefined} className={fieldClass} id={name} name={name} maxLength={max} placeholder={placeholder} readOnly={pending} value={values[name]} onChange={(event) => setValues({ ...values, [name]: event.target.value })} />
-      {hint && !state.fieldErrors?.[name] && <p className="mt-1.5 text-sm text-[#5D6A65]" id={`${name}-hint`}>{hint}</p>}
+      {hint && !state.fieldErrors?.[name] && <p className="mt-1.5 text-sm text-[#6B7079]" id={`${name}-hint`}>{hint}</p>}
       {state.fieldErrors?.[name] && <p id={`${name}-error`} className="mt-2 text-[15px] text-red-700">{state.fieldErrors[name]}</p>}
     </div>
   );
   return (
-    <form className="grid gap-5 rounded-[20px] border border-[#E1E6E3] bg-white p-5 sm:p-8" noValidate onSubmit={submit} ref={formRef} aria-busy={pending}>
+    <form className="grid gap-5 rounded-[20px] border border-[#EAEBEE] bg-white p-5 sm:p-8" noValidate onSubmit={submit} ref={formRef} aria-busy={pending}>
       <input type="hidden" name="officeId" value={officeId} />
       <input type="hidden" name="idempotencyKey" value={requestKey} />
-      <p className="text-base leading-7 text-[#3E4B47]">주소와 호수만 적으면 끝나요. 계약 기간은 나중에 채워도 돼요.</p>
+      <p className="text-base leading-7 text-[#4D5159]">주소와 호수만 적으면 끝나요. 계약 기간은 나중에 채워도 돼요.</p>
       {sameBuildingNote && <p className="rounded-xl bg-[#E3F0EC] px-4 py-3 text-[15px] font-semibold text-[#083E37]" role="status">{sameBuildingNote}</p>}
       {field('addressLine1', '주소', 200, '예: 서울 노원구 공릉로 10')}
       {field('addressDetail', '동·호수 (선택)', 120, '예: 201호')}
-      <details className="rounded-xl border border-[#E1E6E3] px-4 py-3">
-        <summary className="cursor-pointer text-[15px] font-semibold text-[#3E4B47]">사무소에서 부르는 이름 적기 (선택)</summary>
+      <details className="rounded-xl border border-[#EAEBEE] px-4 py-3">
+        <summary className="cursor-pointer text-[15px] font-semibold text-[#4D5159]">사무소에서 부르는 이름 적기 (선택)</summary>
         <div className="mt-3">{field('homeLabel', '내부 구분명 (선택)', 80, '예: 공릉 첫 집')}</div>
       </details>
-      <p className="text-sm leading-6 text-[#5D6A65]">이 사무소의 비공개 기록 공간을 만들어요. 같은 주소여도 자동으로 합치지 않습니다. 권한이 있는 사람만 볼 수 있어요.</p>
+      <p className="text-sm leading-6 text-[#6B7079]">이 사무소의 비공개 기록 공간을 만들어요. 같은 주소여도 자동으로 합치지 않습니다. 권한이 있는 사람만 볼 수 있어요.</p>
       {state.error && <p role="alert" className="text-[15px] text-red-700">{state.error}</p>}
       <div className="grid gap-2">
         <button className="app-primary min-h-14 rounded-xl px-5 text-[17px] font-bold text-white disabled:opacity-60" disabled={pending} name="intent" type="submit" value="done">{pending ? '저장 중…' : '집 등록하기'}</button>
-        <button className="min-h-12 rounded-xl border border-[#C9D1CD] bg-white px-4 text-base font-semibold text-[#16211E] disabled:opacity-60" disabled={pending} name="intent" type="submit" value="same-building">등록하고 같은 건물 다른 호수 바로 추가</button>
+        <button className="min-h-12 rounded-xl border border-[#DCDEE3] bg-white px-4 text-base font-semibold text-[#212124] disabled:opacity-60" disabled={pending} name="intent" type="submit" value="same-building">등록하고 같은 건물 다른 호수 바로 추가</button>
       </div>
     </form>
   );

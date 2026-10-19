@@ -125,9 +125,9 @@ export function BulkPhotoUploader({
 
   if (!homes.length) {
     return (
-      <div className="rounded-[20px] border border-[#E1E6E3] bg-white p-8 text-center">
-        <p className="text-base font-bold text-[#16211E]">사진을 올릴 집이 아직 없어요.</p>
-        <p className="mt-1 text-[15px] text-[#5D6A65]">집을 먼저 등록하면 사진을 집별로 나눠 올릴 수 있어요.</p>
+      <div className="rounded-[20px] border border-[#EAEBEE] bg-white p-8 text-center">
+        <p className="text-base font-bold text-[#212124]">사진을 올릴 집이 아직 없어요.</p>
+        <p className="mt-1 text-[15px] text-[#6B7079]">집을 먼저 등록하면 사진을 집별로 나눠 올릴 수 있어요.</p>
         <Link className="mt-4 inline-flex min-h-12 items-center font-semibold text-[#0B6655]" href="/homes/new">집 등록하기</Link>
       </div>
     );
@@ -137,16 +137,16 @@ export function BulkPhotoUploader({
 
   return (
     <div className="grid gap-4">
-      <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#16211E]">{title}</h1>
+      <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#212124]">{title}</h1>
 
       {(phase === 'pick' || phase === 'reading') && (
         <>
-          <p className="text-[15px] leading-7 text-[#3E4B47]">휴대폰 앨범에서 여러 장을 한꺼번에 고르세요. 찍은 날짜와 장소로 묶어 드려요. 사진 속 위치정보는 올릴 때 지워요.</p>
+          <p className="text-[15px] leading-7 text-[#4D5159]">휴대폰 앨범에서 여러 장을 한꺼번에 고르세요. 찍은 날짜와 장소로 묶어 드려요. 사진 속 위치정보는 올릴 때 지워요.</p>
           <label className={`flex min-h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-[20px] border-2 border-dashed border-[#0B6655] bg-white text-[#0B6655] ${phase === 'reading' ? 'pointer-events-none opacity-60' : ''}`}>
             <input accept="image/*" aria-label="앨범에서 사진 고르기" className="sr-only" disabled={phase === 'reading'} multiple onChange={(event) => { const list = event.target.files; void choose(list).finally(() => { event.target.value = ''; }); }} type="file" />
             <Images aria-hidden="true" className="size-8" />
             <span className="text-[17px] font-bold">{phase === 'reading' ? '사진 정보를 읽는 중…' : '앨범에서 사진 고르기'}</span>
-            <span className="text-sm text-[#3E4B47]">한 번에 {BULK_MAX_PHOTOS}장까지</span>
+            <span className="text-sm text-[#4D5159]">한 번에 {BULK_MAX_PHOTOS}장까지</span>
           </label>
           {error && <p className="text-[15px] font-bold text-red-700" role="alert">{error}</p>}
         </>
@@ -154,11 +154,11 @@ export function BulkPhotoUploader({
 
       {phase === 'sort' && (
         <>
-          <p className="text-[15px] leading-7 text-[#3E4B47]">찍은 날짜와 장소로 묶어 봤어요. 맞는 집을 골라 주세요. 사진 속 위치정보는 올릴 때 지워요.</p>
+          <p className="text-[15px] leading-7 text-[#4D5159]">찍은 날짜와 장소로 묶어 봤어요. 맞는 집을 골라 주세요. 사진 속 위치정보는 올릴 때 지워요.</p>
           <ul className="grid gap-3">
             {groups.map((group) => (
-              <li className="grid gap-2 rounded-[14px] border border-[#E1E6E3] bg-white p-3" key={group.key}>
-                <strong className="text-[15px] text-[#16211E]">{group.label} · {group.ids.length}장</strong>
+              <li className="grid gap-2 rounded-[14px] border border-[#EAEBEE] bg-white p-3" key={group.key}>
+                <strong className="text-[15px] text-[#212124]">{group.label} · {group.ids.length}장</strong>
                 <ul aria-hidden="true" className="grid grid-cols-6 gap-1">
                   {group.ids.slice(0, 6).map((id) => (
                     <li className="relative aspect-square overflow-hidden rounded-md bg-[#DCE3DF]" key={id}>
@@ -167,8 +167,8 @@ export function BulkPhotoUploader({
                     </li>
                   ))}
                 </ul>
-                {group.ids.length > 6 && <span className="text-sm text-[#5D6A65]">외 {group.ids.length - 6}장</span>}
-                <label className="flex min-h-12 items-center gap-2 rounded-[10px] border border-[#8A9792] bg-white px-3 text-[15px] font-semibold text-[#16211E]">
+                {group.ids.length > 6 && <span className="text-sm text-[#6B7079]">외 {group.ids.length - 6}장</span>}
+                <label className="flex min-h-12 items-center gap-2 rounded-[10px] border border-[#8A9792] bg-white px-3 text-[15px] font-semibold text-[#212124]">
                   <span aria-hidden="true">집:</span>
                   <select aria-label={`${group.label} 사진의 집`} className="min-h-11 flex-1 bg-transparent text-[15px] font-semibold outline-none" onChange={(event) => setChoice({ ...choice, [group.key]: event.target.value })} value={choice[group.key] ?? ''}>
                     <option value="">고르지 않음</option>
@@ -178,15 +178,15 @@ export function BulkPhotoUploader({
               </li>
             ))}
           </ul>
-          {skippedCount > 0 && <p className="text-[15px] text-[#3E4B47]">집을 고르지 않은 사진 {skippedCount}장은 올리지 않아요.</p>}
+          {skippedCount > 0 && <p className="text-[15px] text-[#4D5159]">집을 고르지 않은 사진 {skippedCount}장은 올리지 않아요.</p>}
           <button className="app-primary min-h-14 w-full rounded-xl text-[17px] font-bold text-white disabled:opacity-60" disabled={chosenCount === 0} onClick={start} type="button">{chosenCount}장 올리기</button>
         </>
       )}
 
       {phase === 'uploading' && (
-        <div aria-busy="true" className="rounded-xl bg-[#F1F3F2] p-4" role="status">
+        <div aria-busy="true" className="rounded-xl bg-[#F2F3F6] p-4" role="status">
           <p className="text-[15px] font-semibold">사진 {totalToUpload}장 중 {savedCount}장 올림</p>
-          <p className="mt-1 text-sm text-[#3E4B47]">다 올라갈 때까지 이 화면을 닫지 말아 주세요.</p>
+          <p className="mt-1 text-sm text-[#4D5159]">다 올라갈 때까지 이 화면을 닫지 말아 주세요.</p>
         </div>
       )}
 
@@ -202,7 +202,7 @@ export function BulkPhotoUploader({
                 </ul>
               </div>
               <button className="app-primary min-h-14 rounded-xl text-[17px] font-bold text-white" onClick={() => void run(batches)} type="button">못 올린 {failedCount}장 다시 올리기</button>
-              <Link className="flex min-h-12 items-center justify-center rounded-xl border border-[#C9D1CD] bg-white text-base font-semibold text-[#16211E]" href="/records">올린 사진만 보러 가기</Link>
+              <Link className="flex min-h-12 items-center justify-center rounded-xl border border-[#DCDEE3] bg-white text-base font-semibold text-[#212124]" href="/records">올린 사진만 보러 가기</Link>
             </>
           ) : (
             <>

@@ -42,8 +42,8 @@ export default async function HomesPage({ searchParams }: Props) {
   return (
     <main className="mx-auto max-w-6xl px-4 py-4 sm:px-6 sm:py-8">
       <div className="flex items-center gap-1">
-        <Link aria-label="홈으로" className="-ml-2 grid size-11 place-items-center rounded-xl text-[#16211E]" href="/home"><ChevronLeft aria-hidden="true" className="size-6" /></Link>
-        <h1 className="flex-1 text-[22px] font-bold tracking-[-0.02em] text-[#16211E]">연결된 집 {homes?.length ? `${homes.length}채` : ''}</h1>
+        <Link aria-label="홈으로" className="-ml-2 grid size-11 place-items-center rounded-xl text-[#212124]" href="/home"><ChevronLeft aria-hidden="true" className="size-6" /></Link>
+        <h1 className="flex-1 text-[22px] font-bold tracking-[-0.02em] text-[#212124]">연결된 집 {homes?.length ? `${homes.length}채` : ''}</h1>
         {registrationOffice && <Link href={`/homes/new?office=${registrationOffice}`} className="app-primary inline-flex min-h-11 items-center rounded-xl px-4 text-[15px] font-bold text-white">+ 집 등록</Link>}
       </div>
       {homes?.length ? (
@@ -58,9 +58,9 @@ export default async function HomesPage({ searchParams }: Props) {
           }))}
         />
       ) : (
-        <section className="mt-6 rounded-[20px] border border-[#E1E6E3] bg-white p-8 text-center sm:p-12">
-          <p className="text-lg font-bold text-[#16211E]">아직 연결된 집이 없습니다.</p>
-          <p className="mt-2 text-[15px] text-[#5D6A65]">{registrationOffice ? '첫 집을 등록하면 그 집의 사진과 업무를 한곳에서 이어갈 수 있습니다.' : '받은 초대 링크를 수락하면 그 집이 여기에 보입니다.'}</p>
+        <section className="mt-6 rounded-[20px] border border-[#EAEBEE] bg-white p-8 text-center sm:p-12">
+          <p className="text-lg font-bold text-[#212124]">아직 연결된 집이 없습니다.</p>
+          <p className="mt-2 text-[15px] text-[#6B7079]">{registrationOffice ? '첫 집을 등록하면 그 집의 사진과 업무를 한곳에서 이어갈 수 있습니다.' : '받은 초대 링크를 수락하면 그 집이 여기에 보입니다.'}</p>
           {registrationOffice && <Link href={`/homes/new?office=${registrationOffice}`} className="app-primary mt-5 inline-flex min-h-14 items-center rounded-xl px-6 text-[17px] font-bold text-white">첫 집 등록하기</Link>}
         </section>
       )}

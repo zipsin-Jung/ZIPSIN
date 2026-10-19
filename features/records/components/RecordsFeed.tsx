@@ -42,27 +42,27 @@ export function RecordsFeed({ records, now, showOfficeSpace = true }: { records:
   return (
     <main className="mx-auto max-w-3xl px-4 py-4 sm:py-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#16211E]">기록</h1>
+        <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#212124]">기록</h1>
         <Link className="flex min-h-11 items-center text-[15px] font-semibold text-[#0B6655]" href="/homes">모든 집</Link>
       </div>
       <div aria-label="누가 보는 기록인지 고르기" className="mt-3 flex gap-2 overflow-x-auto pb-1" role="group">
         {chips.map((chip) => (
-          <button aria-pressed={filter === chip.id} className={`min-h-11 shrink-0 rounded-full px-4 text-[15px] ${filter === chip.id ? 'border border-[#0B6655] bg-[#0B6655] font-semibold text-white' : 'border border-[#C9D1CD] bg-white text-[#16211E]'}`} key={chip.id} onClick={() => setFilter(chip.id)} type="button">{chip.label}</button>
+          <button aria-pressed={filter === chip.id} className={`min-h-11 shrink-0 rounded-full px-4 text-[15px] ${filter === chip.id ? 'border border-[#0B6655] bg-[#0B6655] font-semibold text-white' : 'border border-[#DCDEE3] bg-white text-[#212124]'}`} key={chip.id} onClick={() => setFilter(chip.id)} type="button">{chip.label}</button>
         ))}
       </div>
       {days.length ? days.map((group) => (
         <section className="mt-5" key={group.day}>
-          <h2 className="mb-2 text-[15px] font-bold text-[#3E4B47]">{group.day}</h2>
+          <h2 className="mb-2 text-[15px] font-bold text-[#4D5159]">{group.day}</h2>
           <ul className="grid gap-2">
             {group.items.map((record) => {
               const Icon = record.kind === 'repair' ? Wrench : record.files ? ImageIcon : FileText;
               return (
                 <li key={record.id}>
-                  <Link className="flex min-h-[72px] items-center gap-3 rounded-2xl border border-[#E1E6E3] bg-white p-3 hover:border-[#0B6655]" href={`/homes/${record.homeId}`}>
-                    <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-[#EEF1EF] text-[#3E4B47]"><Icon aria-hidden="true" className="size-5" /></span>
+                  <Link className="flex min-h-[72px] items-center gap-3 rounded-2xl border border-[#EAEBEE] bg-white p-3 hover:border-[#0B6655]" href={`/homes/${record.homeId}`}>
+                    <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-[#F2F3F6] text-[#4D5159]"><Icon aria-hidden="true" className="size-5" /></span>
                     <span className="min-w-0">
-                      <span className="block truncate text-sm text-[#3E4B47]">{record.homeName} · {spaceLabels[record.space]}</span>
-                      <strong className="block truncate text-base text-[#16211E]">{record.title}{record.files ? ` · 파일 ${record.files}개` : ''}</strong>
+                      <span className="block truncate text-sm text-[#4D5159]">{record.homeName} · {spaceLabels[record.space]}</span>
+                      <strong className="block truncate text-base text-[#212124]">{record.title}{record.files ? ` · 파일 ${record.files}개` : ''}</strong>
                     </span>
                   </Link>
                 </li>
@@ -71,9 +71,9 @@ export function RecordsFeed({ records, now, showOfficeSpace = true }: { records:
           </ul>
         </section>
       )) : (
-        <div className="mt-6 rounded-[20px] border border-[#E1E6E3] bg-white p-8 text-center">
+        <div className="mt-6 rounded-[20px] border border-[#EAEBEE] bg-white p-8 text-center">
           <p className="text-base font-bold">{filter === 'all' ? '아직 남긴 기록이 없어요.' : `${spaceLabels[filter]} 기록이 없어요.`}</p>
-          <p className="mt-1 text-[15px] text-[#5D6A65]">아래 + 버튼으로 첫 사진이나 메모를 남겨 보세요.</p>
+          <p className="mt-1 text-[15px] text-[#6B7079]">아래 + 버튼으로 첫 사진이나 메모를 남겨 보세요.</p>
         </div>
       )}
     </main>

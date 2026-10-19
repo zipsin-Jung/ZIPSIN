@@ -32,9 +32,9 @@ export function PhotoGallery({ albums, homeId }: { albums: GalleryAlbum[]; homeI
 
   if (!albums.length) {
     return (
-      <div className="rounded-[20px] border border-[#E1E6E3] bg-white p-8 text-center">
-        <p className="text-lg font-bold text-[#16211E]">아직 올린 사진이 없어요.</p>
-        <p className="mt-2 text-[15px] text-[#5D6A65]">입주 사진, 고장 사진을 올리면 날짜별로 모여요.</p>
+      <div className="rounded-[20px] border border-[#EAEBEE] bg-white p-8 text-center">
+        <p className="text-lg font-bold text-[#212124]">아직 올린 사진이 없어요.</p>
+        <p className="mt-2 text-[15px] text-[#6B7079]">입주 사진, 고장 사진을 올리면 날짜별로 모여요.</p>
         <Link className="app-primary mt-5 inline-flex min-h-12 items-center rounded-xl px-5 text-base font-bold text-white" href={`/homes/${homeId}/records/new`}>사진 올리기</Link>
       </div>
     );
@@ -44,16 +44,16 @@ export function PhotoGallery({ albums, homeId }: { albums: GalleryAlbum[]; homeI
       {albums.map((album) => (
         <section key={album.id}>
           <div className="mb-2 flex items-baseline justify-between gap-3">
-            <h3 className="truncate text-base font-bold text-[#16211E]">{album.title}</h3>
-            <span className="shrink-0 text-sm text-[#3E4B47]">{new Date(album.occurredAt).toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul' })} · {spaceLabels[album.space]}</span>
+            <h3 className="truncate text-base font-bold text-[#212124]">{album.title}</h3>
+            <span className="shrink-0 text-sm text-[#4D5159]">{new Date(album.occurredAt).toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul' })} · {spaceLabels[album.space]}</span>
           </div>
           <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4">
             {album.photos.map((photo) => (
-              <button aria-label={`${photo.name} 크게 보기`} className="aspect-square overflow-hidden rounded-lg bg-[#EEF1EF]" key={photo.id} onClick={() => setView({ album, photo })} type="button">
+              <button aria-label={`${photo.name} 크게 보기`} className="aspect-square overflow-hidden rounded-lg bg-[#F2F3F6]" key={photo.id} onClick={() => setView({ album, photo })} type="button">
                 {photo.url
                   // eslint-disable-next-line @next/next/no-img-element
                   ? <img alt="" className="size-full object-cover" loading="lazy" src={photo.url} />
-                  : <span className="grid size-full place-items-center p-1 text-xs text-[#3E4B47]">미리보기 없음</span>}
+                  : <span className="grid size-full place-items-center p-1 text-xs text-[#4D5159]">미리보기 없음</span>}
               </button>
             ))}
           </div>
@@ -70,7 +70,7 @@ export function PhotoGallery({ albums, homeId }: { albums: GalleryAlbum[]; homeI
               // eslint-disable-next-line @next/next/no-img-element
               ? <img alt={view.photo.name} className="max-h-[70vh] w-full rounded-lg object-contain" src={view.photo.url} />
               : <p className="p-6 text-center">이 사진은 미리 볼 수 없어요.</p>}
-            <p className="text-sm leading-6 text-[#3E4B47]">올린 날짜와 올린 사람이 함께 남아요. {spaceNote[view.album.space]}</p>
+            <p className="text-sm leading-6 text-[#4D5159]">올린 날짜와 올린 사람이 함께 남아요. {spaceNote[view.album.space]}</p>
           </div>
         )}
       </dialog>

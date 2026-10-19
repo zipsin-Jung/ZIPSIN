@@ -10,6 +10,7 @@ vi.mock('@/features/auth/guards/require-onboarding', () => ({
   requireOnboardingComplete: onboardingGuard,
   requireUser: userGuard,
 }));
+vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock('@/features/attachments/components/AttachmentUploader', () => ({
   AttachmentUploader: () => null,
 }));
@@ -85,7 +86,7 @@ describe('assignment-free office flow copy', () => {
   });
 
   it('shows only working top-level routes in the app header', async () => {
-    userGuard.mockResolvedValue({ id: 'user-1' });
+    userGuard.mockResolvedValue({ supabase: database({}), user: { id: 'user-1' } });
 
     render(await AppLayout({ children: <div>본문</div> }));
 

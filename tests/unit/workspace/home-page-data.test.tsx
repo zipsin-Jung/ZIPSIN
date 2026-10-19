@@ -7,6 +7,11 @@ vi.mock('@/features/workspace/services/home-dashboard', async (importOriginal) =
   const original = await importOriginal<typeof import('@/features/workspace/services/home-dashboard')>();
   return { ...original, loadHomeDashboardFromSupabase: loadDashboard };
 });
+vi.mock('next/headers', () => ({ cookies: async () => ({ get: () => undefined }) }));
+vi.mock('@/features/workspace/services/spaces', () => ({
+  loadSpaceContext: async () => ({ displayName: '김집신', offices: [{ id: 'office-1', name: '집신 공인중개사무소', canRegisterHome: true }], personalHomes: [] }),
+  loadHomeCoverPhotos: async () => new Map(),
+}));
 import HomePage from '@/app/(app)/home/page';
 
 describe('home page data boundary', () => {
@@ -19,7 +24,7 @@ describe('home page data boundary', () => {
     loadDashboard.mockResolvedValue({
       ok: true,
       offices: [{ id: 'office-1', name: '집신 공인중개사무소', canRegisterHome: true }],
-      homes: [{ id: 'home-1', label: '집신아파트 1401호', address: '서울 노원구', endsOn: '2027-02-02', contractDay: { label: 'D-112', days: 112 }, openTask: null, updatedAt: '2026-10-13T00:00:00Z' }],
+      homes: [{ id: 'home-1', label: '집신아파트 1401호', address: '서울 노원구', endsOn: '2027-02-02', contractDay: { label: 'D-112', days: 112 }, openTask: null, updatedAt: '2026-10-13T00:00:00Z', officeId: 'office-1' }],
       unreadChatCount: 2,
       notificationCount: 3,
     });

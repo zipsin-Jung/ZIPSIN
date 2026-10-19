@@ -46,7 +46,7 @@ export default async function ResetPasswordPage({ searchParams }: Props) {
         <CircleCheck aria-hidden="true" className="size-[18px]" />
         {verifiedWho ? `${verifiedWho} 확인됨` : '본인 확인이 끝났어요'}
       </div>
-      {mapping && <p className="-mt-3 text-[15px] text-[#3E4B47]">아이디 <strong className="text-[#16211E]">{mapping.username_normalized}</strong>의 비밀번호를 새로 정해요.</p>}
+      {mapping && <p className="-mt-3 text-[15px] text-[#4D5159]">아이디 <strong className="text-[#212124]">{mapping.username_normalized}</strong>의 비밀번호를 새로 정해요.</p>}
       {params.error && (
         <div className="flex items-start gap-3 rounded-xl border border-[#E8B4AE] bg-[#FDF3F2] p-4 text-[15px] text-[#8C1D18]" role="alert">
           <CircleAlert aria-hidden="true" className="mt-0.5 size-5 shrink-0" />

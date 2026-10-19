@@ -3,7 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { formatContractDay } from '@/features/contracts/domain/lifecycle';
 
 type DashboardRows = {
-  homes: Array<{ id: string; label: string; address: string; updatedAt: string }>;
+  homes: Array<{ id: string; label: string; address: string; updatedAt: string; officeId?: string | null }>;
   contracts: Array<{ id: string; homeId: string; endsOn: string | null }>;
   records: Array<{ id: string; homeId: string; kind: string; title: string; taskStatus: string | null; taskDueAt: string | null; occurredAt: string }>;
   notifications: Array<{ kind: string; readAt: string | null }>;
@@ -22,6 +22,7 @@ export type DashboardHome = {
   contractDay: ReturnType<typeof formatContractDay>;
   openTask: { id: string; title: string; dueAt: string | null } | null;
   updatedAt: string;
+  officeId?: string | null;
 };
 
 export type HomeDashboardResult =
@@ -71,7 +72,7 @@ export async function loadHomeDashboardFromSupabase(supabase: SupabaseClient, us
       if (membershipError) return { data: null, error: membershipError };
       const officeIds = (memberships ?? []).map((item) => item.office_id);
       const [{ data: homes, error: homeError }, { data: notifications, error: notificationError }, { data: offices, error: officeError }] = await Promise.all([
-        supabase.from('homes').select('id, home_label, address_line1, address_detail, updated_at').eq('status', 'active'),
+        supabase.from('homes').select('id, office_id, home_label, address_line1, address_detail, updated_at').eq('status', 'active'),
         supabase.from('notifications').select('notification_kind, read_at').eq('user_id', userId),
         officeIds.length ? supabase.from('offices').select('id, name').in('id', officeIds) : Promise.resolve({ data: [], error: null }),
       ]);
@@ -85,7 +86,7 @@ export async function loadHomeDashboardFromSupabase(supabase: SupabaseClient, us
       return {
         error: null,
         data: {
-          homes: (homes ?? []).map((home) => ({ id: home.id, label: home.home_label ?? home.address_line1, address: formatDashboardAddress(home.address_line1, home.address_detail), updatedAt: home.updated_at })),
+          homes: (homes ?? []).map((home) => ({ id: home.id, label: home.home_label ?? home.address_line1, address: formatDashboardAddress(home.address_line1, home.address_detail), updatedAt: home.updated_at, officeId: home.office_id ?? null })),
           contracts: (contracts ?? []).map((contract) => ({ id: contract.id, homeId: contract.home_id, endsOn: contract.ends_on })),
           records: (records ?? []).map((record) => ({ id: record.id, homeId: record.home_id, kind: record.record_kind, title: record.title, taskStatus: record.task_status, taskDueAt: record.task_due_at, occurredAt: record.occurred_at })),
           notifications: (notifications ?? []).map((notice) => ({ kind: notice.notification_kind, readAt: notice.read_at })),

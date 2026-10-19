@@ -36,10 +36,10 @@ export default async function NewRecordPage({ params, searchParams }: Props) {
     <main className="mx-auto max-w-xl px-4 py-4 sm:py-8">
       <div className="mb-5 flex items-center justify-between gap-2">
         <div className="min-w-0">
-          <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#16211E]">기록하기</h1>
-          <p className="truncate text-[15px] text-[#3E4B47]">{label}</p>
+          <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#212124]">기록하기</h1>
+          <p className="truncate text-[15px] text-[#4D5159]">{label}</p>
         </div>
-        <Link aria-label="닫기" className="grid size-11 shrink-0 place-items-center rounded-xl text-[#16211E]" href={`/homes/${homeId}`}><X aria-hidden="true" className="size-6" /></Link>
+        <Link aria-label="닫기" className="grid size-11 shrink-0 place-items-center rounded-xl text-[#212124]" href={`/homes/${homeId}`}><X aria-hidden="true" className="size-6" /></Link>
       </div>
       <RecordForm
         canNote={!isAssistant}

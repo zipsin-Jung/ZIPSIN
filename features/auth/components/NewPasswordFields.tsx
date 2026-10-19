@@ -36,7 +36,7 @@ export function NewPasswordFields() {
         <label className={authLabelClass} htmlFor="new-password">새 비밀번호</label>
         <div className={`${authFieldClass} gap-1 pl-4 pr-1`}>
           <input aria-describedby="new-password-rule" autoComplete="new-password" className={authInputClass} id="new-password" maxLength={128} minLength={8} name="password" onChange={(event) => setPassword(event.target.value)} required type={show ? 'text' : 'password'} value={password} />
-          <button aria-label={show ? '비밀번호 숨기기' : '비밀번호 보기'} aria-pressed={show} className="inline-flex h-11 items-center gap-1.5 rounded-[10px] px-3 text-sm font-medium text-[#3E4B47] hover:bg-[#F6F7F5]" onClick={() => setShow((value) => !value)} type="button">
+          <button aria-label={show ? '비밀번호 숨기기' : '비밀번호 보기'} aria-pressed={show} className="inline-flex h-11 items-center gap-1.5 rounded-[10px] px-3 text-sm font-medium text-[#4D5159] hover:bg-[#F6F7F5]" onClick={() => setShow((value) => !value)} type="button">
             {show ? <EyeOff aria-hidden="true" className="size-[18px]" /> : <Eye aria-hidden="true" className="size-[18px]" />}
             <span aria-hidden="true">{show ? '숨기기' : '보기'}</span>
           </button>
@@ -44,7 +44,7 @@ export function NewPasswordFields() {
         <ul aria-label="영문 소문자·숫자·특수문자를 포함해 8자 이상" className="flex flex-wrap gap-x-3.5 gap-y-1.5 text-[13px]" id="new-password-rule">
           {RULES.map((rule) => {
             const ok = rule.test(password);
-            return <li className={ok ? 'text-[#0B6655]' : 'text-[#5D6A65]'} key={rule.label}>{ok ? '✓' : '○'} {rule.label}</li>;
+            return <li className={ok ? 'text-[#0B6655]' : 'text-[#6B7079]'} key={rule.label}>{ok ? '✓' : '○'} {rule.label}</li>;
           })}
         </ul>
       </div>

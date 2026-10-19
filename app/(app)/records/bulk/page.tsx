@@ -32,7 +32,7 @@ export default async function BulkPhotosPage({ searchParams }: Props) {
   return (
     <main className="mx-auto max-w-xl px-4 py-4 sm:py-8">
       <div className="mb-2 flex justify-end">
-        <Link aria-label="닫기" className="grid size-11 place-items-center rounded-xl text-[#16211E]" href={initialHomeId ? `/homes/${initialHomeId}` : '/records'}><X aria-hidden="true" className="size-6" /></Link>
+        <Link aria-label="닫기" className="grid size-11 place-items-center rounded-xl text-[#212124]" href={initialHomeId ? `/homes/${initialHomeId}` : '/records'}><X aria-hidden="true" className="size-6" /></Link>
       </div>
       <BulkPhotoUploader homes={homes} initialHomeId={initialHomeId} />
     </main>
