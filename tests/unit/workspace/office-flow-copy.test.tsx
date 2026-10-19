@@ -91,10 +91,9 @@ describe('assignment-free office flow copy', () => {
     render(await AppLayout({ children: <div>본문</div> }));
 
     const mobile = screen.getByRole('navigation', { name: '모바일 주요 메뉴' });
-    expect(within(mobile).getByRole('link', { name: /^홈$/ })).toHaveAttribute('href', '/home');
-    expect(within(mobile).getByRole('link', { name: /^기록$/ })).toHaveAttribute('href', '/records');
-    expect(within(mobile).getByRole('link', { name: /^채팅$/ })).toHaveAttribute('href', '/chats');
-    expect(within(mobile).getByRole('link', { name: /^마이$/ })).toHaveAttribute('href', '/my');
+    expect(within(mobile).getByRole('link', { name: 'My Home' })).toHaveAttribute('href', '/home');
+    expect(within(mobile).getByRole('link', { name: '거주·관리' })).toHaveAttribute('href', '/living');
+    expect(within(mobile).getByRole('link', { name: '더보기' })).toHaveAttribute('href', '/more');
     const header = screen.getByRole('banner');
     expect(within(header).getByRole('link', { name: '채팅' })).toHaveAttribute('href', '/chats');
     expect(within(header).getByRole('link', { name: '알림' })).toHaveAttribute('href', '/notifications');

@@ -4,29 +4,24 @@ vi.mock('next/navigation', () => ({ usePathname: () => '/home' }));
 import { AppSidebar } from '@/features/navigation/components/AppSidebar';
 import { AppNavigation } from '@/features/navigation/components/AppNavigation';
 
-describe('AppNavigation', () => {
-  it('TEST-ZH-HOME-007 links the five mobile destinations (홈·기록·기록하기·채팅·마이) and marks the current route', () => {
+describe('AppNavigation (대표 Figma 2026-10-19)', () => {
+  it('TEST-ZH-HOME-007 휴대폰 아래 메뉴: My Home · 체크리스트 · 거주·관리 · 알림 · 더보기', () => {
     render(<AppNavigation />);
-
     const mobile = screen.getByRole('navigation', { name: '모바일 주요 메뉴' });
-    const names = within(mobile).getAllByRole('link').map((link) => link.textContent);
-    expect(names).toEqual(['홈', '기록', '기록하기', '채팅', '마이']);
-    expect(within(mobile).getByRole('link', { name: '홈' })).toHaveAttribute('href', '/home');
-    expect(within(mobile).getByRole('link', { name: '홈' })).toHaveAttribute('aria-current', 'page');
-    expect(within(mobile).getByRole('link', { name: '기록' })).toHaveAttribute('href', '/records');
-    expect(within(mobile).getByRole('link', { name: '기록하기' })).toHaveAttribute('href', '/records/new');
-    expect(within(mobile).getByRole('link', { name: '채팅' })).toHaveAttribute('href', '/chats');
-    expect(within(mobile).getByRole('link', { name: '마이' })).toHaveAttribute('href', '/my');
+    const links = within(mobile).getAllByRole('link');
+    expect(links.map((link) => link.textContent)).toEqual(['My Home', '체크리스트', '거주·관리', '알림', '더보기']);
+    expect(links.map((link) => link.getAttribute('href'))).toEqual(['/home', '/checklist', '/living', '/notifications', '/more']);
+    expect(within(mobile).getByRole('link', { name: 'My Home' })).toHaveAttribute('aria-current', 'page');
   });
 
-  it('TEST-APP-NAV-002 PC는 왼쪽 메뉴(Figma My Home): 있는 화면만 링크, 없는 화면은 준비 중', () => {
+  it('TEST-APP-NAV-002 PC 왼쪽 메뉴: Figma 메뉴가 모두 실제 화면으로 간다', () => {
     render(<AppSidebar />);
     const menu = screen.getByRole('complementary', { name: '메뉴' });
-    expect(within(menu).getByRole('link', { name: '내 집' })).toHaveAttribute('href', '/home');
-    expect(within(menu).getByRole('link', { name: '계약 · 입주' })).toHaveAttribute('href', '/homes');
-    expect(within(menu).getByRole('link', { name: '알림' })).toHaveAttribute('href', '/notifications');
-    expect(within(menu).getByRole('link', { name: '설정' })).toHaveAttribute('href', '/my');
-    expect(within(menu).queryByRole('link', { name: /체크리스트/ })).not.toBeInTheDocument();
-    expect(within(menu).getAllByText('준비 중').length).toBeGreaterThanOrEqual(2);
+    const expected: Array<[string, string]> = [
+      ['내 집', '/home'], ['체크리스트', '/checklist'], ['계약 · 입주', '/contract'], ['거주관리', '/living'],
+      ['만기 · 퇴거', '/expiry'], ['문서함', '/living?tab=document'], ['알림', '/notifications'], ['설정', '/my'],
+    ];
+    for (const [name, href] of expected) expect(within(menu).getByRole('link', { name })).toHaveAttribute('href', href);
+    expect(within(menu).getByRole('link', { name: '내 집' })).toHaveAttribute('aria-current', 'page');
   });
 });
