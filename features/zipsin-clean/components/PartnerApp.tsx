@@ -167,14 +167,14 @@ export function PartnerApp({ today = new Date() }: { today?: Date }) {
           {job.arrival !== null && <p className="flex items-center gap-2 text-[15px] text-[#3E4B47]"><Truck aria-hidden="true" className="size-5 text-[#0B6655]" />이삿짐이 {formatHour(job.arrival)}에 들어와요. 그 전에 끝나는 일정이에요.</p>}
           <p className="text-[15px] leading-6 text-[#3E4B47]">가격은 수락할 때 확정됐어요. 작업 날 현장에서 다시 계산하거나 더 받지 않아요.</p>
           {blockSent ? (
-            <p className="rounded-xl bg-[#E3F0EC] p-3 text-[15px] leading-6 text-[#083E37]" role="status">집신에 보냈어요(체험). 집신이 사진을 확인하고 서로 위약금 없이 취소해요. 추가요금을 받고 진행하는 방법은 없어요.</p>
+            <p className="rounded-xl bg-[#E3F0EC] p-3 text-[15px] leading-6 text-[#083E37]" role="status">집신에 보냈어요(체험). 집신이 사진을 확인하고 서로 위약금 없이 취소해요. 추가요금을 받고 진행하는 방법은 없어요. 손님에게는 특수 청소 방문 견적을 안내해요.</p>
           ) : blockOpen ? (
             <div className="grid gap-3 rounded-xl border border-[#C9D1CD] p-3">
               <fieldset className="grid gap-2">
                 <legend className="mb-1 text-[15px] font-bold">왜 시작할 수 없나요?</legend>
                 <div className="grid grid-cols-2 gap-2">
                   {BLOCK_REASONS.map((reason) => (
-                    <label className={`flex min-h-12 cursor-pointer items-center justify-center rounded-xl px-2 text-center text-[15px] font-semibold ${blockReason === reason ? 'border-2 border-[#0B6655] bg-[#E3F0EC] text-[#083E37]' : 'border border-[#C9D1CD] bg-white'}`} key={reason}>
+                    <label className={`flex min-h-12 cursor-pointer items-center justify-center break-keep rounded-xl px-2 text-center text-[15px] font-semibold ${blockReason === reason ? 'border-2 border-[#0B6655] bg-[#E3F0EC] text-[#083E37]' : 'border border-[#C9D1CD] bg-white'}`} key={reason}>
                       <input checked={blockReason === reason} className="sr-only" name="block-reason" onChange={() => setBlockReason(reason)} type="radio" value={reason} />
                       {reason}
                     </label>

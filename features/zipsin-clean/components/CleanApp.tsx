@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { BadgeCheck, CalendarClock, Check, ChevronLeft, Lock, Truck } from 'lucide-react';
+import { BadgeCheck, CalendarClock, Check, ChevronLeft, Home, Lock, Sparkles, Truck } from 'lucide-react';
 import { QuoteBuilder } from '@/features/zipsin-clean/components/QuoteBuilder';
 import { availablePartners, type DemoPartner } from '@/features/zipsin-clean/domain/demo';
 import { won, type Quote, type QuoteInput } from '@/features/zipsin-clean/domain/pricing';
@@ -11,9 +11,16 @@ import { checkSchedule, formatHour, nextDays, START_HOURS, type StartHour } from
  * 집신클린 체험(배포 전 눌러 보기). 가격 → 날짜·시간 → 업체 → 주소·연락처 → 확인 → 작업 진행까지.
  * 실제 예약·저장·전송은 없다. 입력한 주소·연락처는 화면 메모리에만 있고 어디에도 저장하지 않는다.
  */
-type Step = 'quote' | 'date' | 'partner' | 'info' | 'confirm' | 'progress';
+type Step = 'quote' | 'date' | 'partner' | 'info' | 'confirm' | 'progress' | 'visit' | 'visitSent';
+type VisitKind = 'move_in' | 'tidy' | 'special';
+const VISIT_KINDS: Array<{ value: VisitKind; label: string; hint: string }> = [
+  { value: 'move_in', label: '입주·이사 청소', hint: '빈집 전체' },
+  { value: 'tidy', label: '생활 정리 청소', hint: '사는 집' },
+  { value: 'special', label: '특수 청소', hint: '집을 봐야 해요' },
+];
+const SPECIAL_KINDS = ['쓰레기·짐 더미', '화재·그을음', '누수·침수 뒤', '해충 방제 뒤', '유품 정리', '기타'] as const;
 type Stage = 'booked' | 'precheck' | 'working' | 'done' | 'inspect' | 'saved';
-const STEP_TITLES: Record<Exclude<Step, 'quote' | 'progress'>, string> = { date: '언제 할까요?', partner: '어느 업체로 할까요?', info: '어디로 가면 될까요?', confirm: '예약 내용을 확인해 주세요' };
+const STEP_TITLES: Record<Exclude<Step, 'quote' | 'progress' | 'visit' | 'visitSent'>, string> = { date: '언제 할까요?', partner: '어느 업체로 할까요?', info: '어디로 가면 될까요?', confirm: '예약 내용을 확인해 주세요' };
 const ARRIVALS = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 const QUESTIONS = [
   { id: 'hood', text: '주방 후드 안쪽을 손가락으로 쓸었을 때 미끈거리나요?' },
@@ -47,6 +54,8 @@ export function CleanApp({ today = new Date() }: { today?: Date }) {
   const [stage, setStage] = useState<Stage>('booked');
   const [answers, setAnswers] = useState<Record<string, 'yes' | 'no' | undefined>>({});
   const [redoSent, setRedoSent] = useState(false);
+  const [visit, setVisit] = useState<{ kind: VisitKind; special: string[]; note: string; area: string; dayIndex: number | null; slot: '오전' | '오후' | null; phone: string }>({ kind: 'move_in', special: [], note: '', area: '', dayIndex: null, slot: null, phone: '' });
+  const [visitError, setVisitError] = useState('');
 
   // 휴대폰 뒤로가기로 이전 단계로 돌아가게 한다.
   useEffect(() => {
@@ -62,6 +71,97 @@ export function CleanApp({ today = new Date() }: { today?: Date }) {
   const day = dayIndex !== null ? days[dayIndex] : null;
   const partners = dayIndex !== null ? availablePartners(dayIndex) : [];
 
+  if (step === 'visit' || step === 'visitSent') {
+    const field = 'min-h-14 w-full rounded-xl border border-[#C9D1CD] bg-white px-4 text-[17px]';
+    const pill = (on: boolean) => `flex min-h-12 cursor-pointer items-center justify-center break-keep rounded-xl px-2 text-center text-[15px] font-semibold ${on ? 'border-2 border-[#0B6655] bg-[#E3F0EC] text-[#083E37]' : 'border border-[#C9D1CD] bg-white'}`;
+    const visitDay = visit.dayIndex !== null ? days[visit.dayIndex] : null;
+    const kindLabel = VISIT_KINDS.find((item) => item.value === visit.kind)?.label ?? '';
+    const send = () => {
+      if (visit.kind === 'special' && visit.special.length === 0) { setVisitError('어떤 특수 청소인지 골라 주세요.'); return; }
+      if (visit.special.includes('기타') && !visit.note.trim()) { setVisitError('기타 상황을 적어 주세요.'); return; }
+      if (!visit.area.trim()) { setVisitError('주소를 구·동까지 적어 주세요.'); return; }
+      if (visit.dayIndex === null || !visit.slot) { setVisitError('방문 날짜와 시간대를 골라 주세요.'); return; }
+      if (!/^0\d{1,2}-?\d{3,4}-?\d{4}$/.test(visit.phone.trim())) { setVisitError('연락처를 010-0000-0000처럼 적어 주세요.'); return; }
+      setVisitError(''); go('visitSent');
+    };
+    if (step === 'visitSent') {
+      return (
+        <div className="grid gap-5">
+          <DemoBanner />
+          <h1 className="!text-[22px] font-bold !leading-8 tracking-[-0.02em]">방문 견적을 요청했어요</h1>
+          <p className="rounded-xl bg-white px-4 py-3 text-[15px] text-[#3E4B47]" role="status">{kindLabel}{visit.special.length > 0 && ` · ${visit.special.join(', ')}`} · {visit.area} · {visitDay?.label} {visit.slot}</p>
+          <ol className="grid gap-3 rounded-2xl border border-[#E1E6E3] bg-white p-4 text-[15px] leading-6 text-[#3E4B47]">
+            <li className="flex gap-3"><b className="grid size-7 shrink-0 place-items-center rounded-full bg-[#E3F0EC] text-[#083E37]">1</b>집신 인증 업체가 집을 보러 가요.</li>
+            <li className="flex gap-3"><b className="grid size-7 shrink-0 place-items-center rounded-full bg-[#E3F0EC] text-[#083E37]">2</b>본 내용을 집신이 확인하고 가격 하나를 보내 드려요.</li>
+            <li className="flex gap-3"><b className="grid size-7 shrink-0 place-items-center rounded-full bg-[#E3F0EC] text-[#083E37]">3</b>마음에 들면 예약하고, 아니면 그대로 끝이에요.</li>
+            <li className="flex gap-3"><b className="grid size-7 shrink-0 place-items-center rounded-full bg-[#E3F0EC] text-[#083E37]">4</b>예약한 가격은 작업 날 바뀌지 않아요.</li>
+          </ol>
+          <p className="text-sm text-[#5D6A65]">체험용이라 실제로 요청되지 않아요. 입력한 내용은 저장되지 않아요.</p>
+          <Primary onClick={() => { setVisit({ kind: 'move_in', special: [], note: '', area: '', dayIndex: null, slot: null, phone: '' }); setStep('quote'); }}>처음으로</Primary>
+        </div>
+      );
+    }
+    return (
+      <div className="grid gap-6">
+        <div className="grid gap-3">
+          <DemoBanner />
+          <div className="flex items-center gap-1">
+            <button aria-label="이전 단계" className="grid size-11 place-items-center rounded-xl" onClick={back} type="button"><ChevronLeft aria-hidden="true" className="size-6" /></button>
+            <h1 className="!text-[22px] font-bold !leading-8 tracking-[-0.02em]">방문 견적 요청</h1>
+          </div>
+          <p className="text-[15px] leading-6 text-[#3E4B47]">인증 업체가 직접 보고 가격을 정해요. 고르기 어려운 집이나 특수 청소일 때 써 주세요.</p>
+        </div>
+        <fieldset className="grid gap-2">
+          <legend className="mb-2 text-base font-bold">어떤 청소인가요?</legend>
+          <div className="grid grid-cols-3 gap-2">
+            {VISIT_KINDS.map((item) => (
+              <label className={`${pill(visit.kind === item.value)} min-h-16 flex-col`} key={item.value}>
+                <input checked={visit.kind === item.value} className="sr-only" name="visit-kind" onChange={() => setVisit({ ...visit, kind: item.value, special: item.value === 'special' ? visit.special : [] })} type="radio" value={item.value} />
+                {item.label}<span className="text-sm font-normal">{item.hint}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        {visit.kind === 'special' && (
+          <fieldset className="grid gap-2">
+            <legend className="mb-2 text-base font-bold">어떤 특수 청소인가요? (여러 개 골라도 돼요)</legend>
+            <div className="grid grid-cols-2 gap-2">
+              {SPECIAL_KINDS.map((kind) => {
+                const on = visit.special.includes(kind);
+                return (
+                  <label className={pill(on)} key={kind}>
+                    <input checked={on} className="sr-only" onChange={() => setVisit({ ...visit, special: on ? visit.special.filter((item) => item !== kind) : [...visit.special, kind] })} type="checkbox" value={kind} />
+                    {kind}
+                  </label>
+                );
+              })}
+            </div>
+            {visit.special.includes('기타') && <div className="grid gap-1"><label className="text-[15px] font-bold" htmlFor="visit-note">어떤 상황인지 적어 주세요</label><input className={field} id="visit-note" onChange={(event) => setVisit({ ...visit, note: event.target.value })} value={visit.note} /></div>}
+            <p className="text-sm text-[#5D6A65]">곰팡이·물때처럼 더러운 정도는 특수 청소가 아니에요. 일반 청소 가격에 들어 있어요.</p>
+          </fieldset>
+        )}
+        <div className="grid gap-2"><label className="text-base font-bold" htmlFor="visit-area">주소 (구·동까지)</label><input className={field} id="visit-area" onChange={(event) => setVisit({ ...visit, area: event.target.value })} placeholder="예: 마포구 공덕동" value={visit.area} /></div>
+        <fieldset className="grid gap-2">
+          <legend className="mb-2 text-base font-bold">언제 보러 오면 될까요?</legend>
+          <div className="grid grid-cols-4 gap-2">
+            {days.slice(0, 8).map((option, index) => (
+              <button aria-pressed={visit.dayIndex === index} className={`min-h-16 rounded-xl px-1 text-center ${visit.dayIndex === index ? 'border-2 border-[#0B6655] bg-[#E3F0EC] text-[#083E37]' : 'border border-[#C9D1CD] bg-white'}`} key={option.iso} onClick={() => setVisit({ ...visit, dayIndex: index })} type="button">
+                <span className="block text-[15px] font-semibold">{option.label}</span><span className="block text-sm text-[#5D6A65]">{option.weekday}요일</span>
+              </button>
+            ))}
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {(['오전', '오후'] as const).map((slot) => <button aria-pressed={visit.slot === slot} className={pill(visit.slot === slot)} key={slot} onClick={() => setVisit({ ...visit, slot })} type="button">{slot}</button>)}
+          </div>
+        </fieldset>
+        <div className="grid gap-2"><label className="text-base font-bold" htmlFor="visit-phone">연락처</label><input className={field} id="visit-phone" inputMode="tel" onChange={(event) => setVisit({ ...visit, phone: event.target.value })} placeholder="010-0000-0000" value={visit.phone} /></div>
+        <div className="flex gap-2 rounded-xl bg-[#E3F0EC] p-4 text-[15px] leading-6 text-[#083E37]"><Lock aria-hidden="true" className="mt-0.5 size-5 shrink-0" /><p>연락처는 방문하는 업체 한 곳에게만 보여요. 상세 주소는 방문 날짜가 정해지면 알려 주세요.</p></div>
+        {visitError && <p className="text-[15px] font-bold text-red-700" role="alert">{visitError}</p>}
+        <Primary onClick={send}>방문 견적 요청하기 (체험)</Primary>
+      </div>
+    );
+  }
+
   if (step === 'quote' || !input || !result) {
     return (
       <div className="grid gap-6">
@@ -70,6 +170,15 @@ export function CleanApp({ today = new Date() }: { today?: Date }) {
           <p className="mt-2 text-base leading-7 text-[#3E4B47]">누구나 아는 것만 고르면 가격이 하나로 나와요. 물때·곰팡이를 직접 판단하지 않아도 돼요.</p>
         </div>
         <QuoteBuilder onBook={(nextInput, nextResult) => { setInput(nextInput); setResult(nextResult); go('date'); }} />
+        <section aria-label="집을 보고 가격 정하기" className="grid gap-3 rounded-2xl border border-[#E1E6E3] bg-white p-4">
+          <h2 className="!text-base font-bold !leading-6">가격이 바로 안 나오는 집이라면</h2>
+          <button className="flex min-h-14 items-center gap-3 rounded-xl border border-[#C9D1CD] px-4 text-left" onClick={() => { setVisit({ ...visit, kind: 'special' }); go('visit'); }} type="button">
+            <Sparkles aria-hidden="true" className="size-5 shrink-0 text-[#0B6655]" /><span><b className="block text-[15px]">특수 청소</b><span className="text-sm text-[#5D6A65]">쓰레기 더미·화재·누수·유품 정리</span></span>
+          </button>
+          <button className="flex min-h-14 items-center gap-3 rounded-xl border border-[#C9D1CD] px-4 text-left" onClick={() => { setVisit({ ...visit, kind: 'move_in' }); go('visit'); }} type="button">
+            <Home aria-hidden="true" className="size-5 shrink-0 text-[#0B6655]" /><span><b className="block text-[15px]">방문 견적 요청</b><span className="text-sm text-[#5D6A65]">업체가 직접 보고 가격을 정해요</span></span>
+          </button>
+        </section>
       </div>
     );
   }
