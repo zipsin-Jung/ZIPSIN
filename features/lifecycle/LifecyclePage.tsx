@@ -28,11 +28,11 @@ export function LifecyclePage({ title, lead, note, steps, sectionTitle, sectionL
         {steps.map((step, index) => (
           <li className="flex flex-1 items-start" key={step.label}>
             <div className="flex flex-1 flex-col items-center text-center">
-              <span className={`relative grid size-14 place-items-center rounded-full border md:size-16 ${step.done ? 'border-[#0B6655] bg-[#E3F0EC] text-[#083E37]' : 'border-[#DCDEE3] bg-white text-[#4D5159]'}`}>
+              <span className={`relative grid size-12 place-items-center rounded-full border md:size-16 ${step.done ? 'border-[#0B6655] bg-[#E3F0EC] text-[#083E37]' : 'border-[#DCDEE3] bg-white text-[#4D5159]'}`}>
                 <step.icon aria-hidden="true" className="size-6 md:size-7" strokeWidth={1.5} />
                 {step.done && <span aria-hidden="true" className="absolute -right-1 -top-1 grid size-5 place-items-center rounded-full bg-[#0B6655] text-white"><Check className="size-3" strokeWidth={3} /></span>}
               </span>
-              <span className="mt-2 text-sm font-semibold text-[#212124]">{step.label}<span className="sr-only">{step.done ? ' (완료)' : ' (아직)'}</span></span>
+              <span className="mt-2 text-[13px] font-semibold leading-tight text-[#212124] [word-break:keep-all] md:text-sm">{step.label}<span className="sr-only">{step.done ? ' (완료)' : ' (아직)'}</span></span>
             </div>
             {index < steps.length - 1 && <ArrowRight aria-hidden="true" className="mt-5 hidden size-5 shrink-0 text-[#9EA3AB] md:block" />}
           </li>

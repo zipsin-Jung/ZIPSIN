@@ -165,10 +165,10 @@ export default async function LivingPage({ searchParams }: Props) {
         <aside aria-label="요약" className="grid content-start gap-4">
           <section aria-labelledby="living-stats" className="rounded-2xl border border-[#E4E6EA] bg-white p-5">
             <h2 className="text-[17px] font-bold text-[#212124]" id="living-stats">기록 현황</h2>
-            <div className="mt-3 flex items-center gap-4">
+            <div className="mt-3 flex flex-col items-center gap-4 sm:flex-row lg:flex-col">
               <Donut counts={counts} total={total} />
-              <ul className="grid gap-1.5 text-sm">
-                {LEGEND.map((item) => <li className="flex items-center gap-2 text-[#4D5159]" key={item.id}><span aria-hidden="true" className="size-2.5 rounded-full" style={{ background: item.color }} />{item.label} <strong className="ml-auto pl-2 text-[#212124]">{counts[item.id]}</strong></li>)}
+              <ul className="grid w-full gap-1.5 text-sm">
+                {LEGEND.map((item) => <li className="flex items-center gap-2 whitespace-nowrap text-[#4D5159]" key={item.id}><span aria-hidden="true" className="size-2.5 rounded-full" style={{ background: item.color }} />{item.label} <strong className="ml-auto pl-2 text-[#212124]">{counts[item.id]}</strong></li>)}
               </ul>
             </div>
           </section>
