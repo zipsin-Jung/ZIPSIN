@@ -2,6 +2,9 @@ import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { requireOnboardingComplete } from '@/features/auth/guards/require-onboarding';
 import { logoutAction } from '@/features/auth/actions/logout';
+import { cookies } from 'next/headers';
+import { ModeSwitch } from '@/features/navigation/components/ModeSwitch';
+import { SPACE_COOKIE, pickSpace } from '@/features/workspace/domain/space';
 import { loadSpaceContext } from '@/features/workspace/services/spaces';
 
 const roleLabels: Record<string, string> = {
@@ -25,6 +28,7 @@ export default async function MyPage({ searchParams }: Props) {
     loadSpaceContext(supabase, user.id),
   ]);
   const displayName = profile?.display_name?.trim() || '사용자';
+  const space = pickSpace((await cookies()).get(SPACE_COOKIE)?.value, context.offices, context.personalHomes.length);
   const roleLabel = role?.primary_role ? roleLabels[role.primary_role] ?? '집신 사용자' : '집신 사용자';
   const idLine = [account?.username ? `아이디 ${account.username}` : null, profile?.phone_verified_at ? '휴대폰 확인됨' : null].filter(Boolean).join(' · ');
   const menu = [
@@ -47,11 +51,13 @@ export default async function MyPage({ searchParams }: Props) {
         </span>
       </section>
 
+      <div className="mt-5"><ModeSwitch mode={space.kind === 'office' ? 'partner' : 'customer'} partnerOfficeId={space.kind === 'office' ? space.office.id : context.offices[0]?.id ?? null} variant="row" /></div>
+
       <section aria-labelledby="my-accounts" className="mt-5 rounded-2xl bg-[#F2F3F6] p-4">
-        <h2 className="text-[15px] font-bold text-[#212124]" id="my-accounts">쓰는 곳 <span className="font-normal text-[#6B7079]">(위 이름 ▾에서 바꿔요)</span></h2>
+        <h2 className="text-[15px] font-bold text-[#212124]" id="my-accounts">쓰는 곳 <span className="font-normal text-[#6B7079]">(고객 ↔ 파트너 전환으로 바꿔요)</span></h2>
         <ul className="mt-2 grid gap-1 text-[15px] text-[#4D5159]">
-          <li>· {displayName} — 내 집 · <span>{roleLabel}</span></li>
-          {context.offices.map((office) => <li key={office.id}>· {office.name} — 사무소</li>)}
+          <li>· 고객 — {displayName}의 우리집 · <span>{roleLabel}</span></li>
+          {context.offices.map((office) => <li key={office.id}>· 파트너 — {office.name}</li>)}
         </ul>
       </section>
 

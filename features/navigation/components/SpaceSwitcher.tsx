@@ -47,12 +47,12 @@ export function SpaceSwitcher({ displayName, offices, currentOfficeId }: { displ
         <div className="absolute left-0 top-full z-50 mt-1 w-[min(320px,calc(100vw-32px))] overflow-hidden rounded-2xl border border-[#EAEBEE] bg-white py-1 shadow-[0_8px_24px_rgba(0,0,0,0.12)]" role="menu">
           <a aria-current={!current ? 'true' : undefined} className="flex min-h-14 flex-col justify-center px-4 hover:bg-[#F2F3F6]" href="/space?to=me" role="menuitem">
             <strong className="text-base text-[#212124]">{displayName}{!current && <span className="ml-1 text-[#0B6655]">✓</span>}</strong>
-            <span className="text-sm text-[#6B7079]">우리집 · 개인</span>
+            <span className="text-sm text-[#6B7079]">고객 모드 · 우리집</span>
           </a>
           {offices.map((office) => (
             <a aria-current={current?.id === office.id ? 'true' : undefined} className="flex min-h-14 flex-col justify-center border-t border-[#EAEBEE] px-4 hover:bg-[#F2F3F6]" href={`/space?to=${office.id}`} key={office.id} role="menuitem">
               <strong className="text-base text-[#212124]">{office.name}{current?.id === office.id && <span className="ml-1 text-[#0B6655]">✓</span>}</strong>
-              <span className="text-sm text-[#6B7079]">사무소</span>
+              <span className="text-sm text-[#6B7079]">파트너 모드 · 사무소</span>
             </a>
           ))}
           <Link className="flex min-h-12 items-center border-t border-[#EAEBEE] px-4 text-[15px] font-semibold text-[#0B6655] hover:bg-[#F2F3F6]" href="/partners/new" onClick={() => setOpen(false)} role="menuitem">+ 집신 파트너 등록</Link>

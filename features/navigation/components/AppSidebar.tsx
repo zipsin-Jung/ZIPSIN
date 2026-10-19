@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bell, CalendarClock, Camera, ClipboardCheck, FileText, Folder, Home, Settings, ShieldCheck } from 'lucide-react';
+import { Bell, Building2, CalendarClock, Camera, ClipboardCheck, FileText, Folder, Home, ListTodo, MessageCircle, Settings, ShieldCheck, Users } from 'lucide-react';
 
 /**
  * PC 왼쪽 메뉴 (대표 Figma "My Home", 2026-10-19).
  */
-const groups = [
+const customerGroups = [
   [
     { href: '/home', label: '내 집', icon: Home },
     { href: '/checklist', label: '체크리스트', icon: ClipboardCheck },
@@ -22,7 +22,24 @@ const groups = [
   ],
 ] as const;
 
-export function AppSidebar() {
+/** 파트너(사무소) 모드 메뉴. */
+const partnerGroups = [
+  [
+    { href: '/home', label: '사무소 홈', icon: Building2 },
+    { href: '/homes', label: '집 목록', icon: Home },
+    { href: '/tasks', label: '할 일', icon: ListTodo },
+    { href: '/records', label: '기록', icon: FileText },
+    { href: '/office/members', label: '직원', icon: Users },
+    { href: '/chats', label: '채팅', icon: MessageCircle },
+  ],
+  [
+    { href: '/notifications', label: '알림', icon: Bell },
+    { href: '/my', label: '설정', icon: Settings },
+  ],
+] as const;
+
+export function AppSidebar({ mode = 'customer' }: { mode?: 'customer' | 'partner' }) {
+  const groups: ReadonlyArray<ReadonlyArray<{ href: string; label: string; icon: typeof Home }>> = mode === 'partner' ? partnerGroups : customerGroups;
   const pathname = usePathname() ?? '';
   const current = (href: string) => {
     if (href.includes('?')) return false;
@@ -36,7 +53,7 @@ export function AppSidebar() {
         <img alt="" aria-hidden="true" className="h-9 w-10 object-contain" src="/images/zipsin-company-logo.jpg" />
         <span className="flex flex-col leading-none">
           <strong className="text-[22px] font-bold tracking-[0.02em] text-[#212124]">ZIPSIN</strong>
-          <small className="mt-1.5 text-[12px] text-[#6B7079]">기록이 자산이 됩니다.</small>
+          <small className="mt-1.5 text-[12px] text-[#6B7079]">{mode === 'partner' ? '파트너 · 사무소' : '기록이 자산이 됩니다.'}</small>
         </span>
       </Link>
       <nav className="flex-1 overflow-y-auto px-4 py-5">

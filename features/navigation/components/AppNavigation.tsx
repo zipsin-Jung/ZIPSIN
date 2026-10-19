@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Bell, Camera, ClipboardCheck, Home, MoreHorizontal } from 'lucide-react';
+import { Bell, Building2, Camera, ClipboardCheck, Home, MessageCircle, MoreHorizontal, Plus } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 /**
@@ -11,7 +11,7 @@ import { usePathname } from 'next/navigation';
 export const RECORDS_HREF = '/living';
 export const ADD_RECORD_HREF = '/records/new';
 
-const items = [
+const customerItems = [
   { href: '/home', label: 'My Home', icon: Home },
   { href: '/checklist', label: '체크리스트', icon: ClipboardCheck },
   { href: RECORDS_HREF, label: '거주·관리', icon: Camera, emphasized: true },
@@ -19,11 +19,21 @@ const items = [
   { href: '/more', label: '더보기', icon: MoreHorizontal },
 ] as const;
 
-export function AppNavigation() {
+/** 파트너(사무소) 모드: 사무소 홈 · 집 목록 · 기록하기 · 채팅 · 더보기. */
+const partnerItems = [
+  { href: '/home', label: '사무소 홈', icon: Building2 },
+  { href: '/homes', label: '집 목록', icon: Home },
+  { href: ADD_RECORD_HREF, label: '기록하기', icon: Plus, emphasized: true },
+  { href: '/chats', label: '채팅', icon: MessageCircle },
+  { href: '/more', label: '더보기', icon: MoreHorizontal },
+] as const;
+
+export function AppNavigation({ mode = 'customer' }: { mode?: 'customer' | 'partner' }) {
+  const items = mode === 'partner' ? partnerItems : customerItems;
   const pathname = usePathname() ?? '';
   const isCurrent = (href: string) => (href === '/home' ? pathname === '/home' : pathname === href || pathname.startsWith(`${href}/`));
   return (
-    <nav aria-label="모바일 주요 메뉴" className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-5 border-t border-[#EAEBEE] bg-white px-1 pb-[max(.5rem,env(safe-area-inset-bottom))] pt-1 md:hidden">
+    <nav aria-label="모바일 주요 메뉴" data-mode={mode} className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-5 border-t border-[#EAEBEE] bg-white px-1 pb-[max(.5rem,env(safe-area-inset-bottom))] pt-1 md:hidden">
       {items.map((item) => {
         const { href, label, icon: Icon } = item;
         const emphasized = 'emphasized' in item;

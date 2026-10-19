@@ -25,3 +25,31 @@ describe('AppNavigation (대표 Figma 2026-10-19)', () => {
     expect(within(menu).getByRole('link', { name: '내 집' })).toHaveAttribute('aria-current', 'page');
   });
 });
+
+import { ModeSwitch, modeSwitchTarget } from '@/features/navigation/components/ModeSwitch';
+
+describe('고객 ↔ 파트너 전환 (숨고 방식, 2026-10-19)', () => {
+  it('TEST-MODE-001 전환 버튼이 가는 곳: 파트너 계정이 없으면 파트너 등록', () => {
+    expect(modeSwitchTarget('customer', 'office-1')).toEqual({ href: '/space?to=office-1', label: '파트너로 전환' });
+    expect(modeSwitchTarget('customer', null)).toEqual({ href: '/partners/new', label: '파트너로 전환' });
+    expect(modeSwitchTarget('partner', 'office-1')).toEqual({ href: '/space?to=me', label: '고객으로 전환' });
+  });
+
+  it('TEST-MODE-002 파트너 모드 아래 메뉴: 사무소 홈 · 집 목록 · 기록하기 · 채팅 · 더보기', () => {
+    render(<AppNavigation mode="partner" />);
+    const mobile = screen.getByRole('navigation', { name: '모바일 주요 메뉴' });
+    expect(within(mobile).getAllByRole('link').map((link) => link.textContent)).toEqual(['사무소 홈', '집 목록', '기록하기', '채팅', '더보기']);
+  });
+
+  it('TEST-MODE-003 파트너 모드 PC 메뉴에 직원·할 일, 고객 메뉴(체크리스트)는 없음', () => {
+    render(<AppSidebar mode="partner" />);
+    const menu = screen.getByRole('complementary', { name: '메뉴' });
+    expect(within(menu).getByRole('link', { name: '직원' })).toHaveAttribute('href', '/office/members');
+    expect(within(menu).queryByRole('link', { name: '체크리스트' })).not.toBeInTheDocument();
+  });
+
+  it('TEST-MODE-004 전환 버튼 글자', () => {
+    render(<ModeSwitch mode="customer" partnerOfficeId={null} />);
+    expect(screen.getByRole('link', { name: '파트너로 전환' })).toHaveAttribute('href', '/partners/new');
+  });
+});

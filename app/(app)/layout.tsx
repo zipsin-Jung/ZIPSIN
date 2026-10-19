@@ -7,13 +7,15 @@ import { isAccountOpen } from '@/lib/site/account-launch';
 import { requireUser } from '@/features/auth/guards/require-onboarding';
 import { AppNavigation } from '@/features/navigation/components/AppNavigation';
 import { AppSidebar } from '@/features/navigation/components/AppSidebar';
+import { ModeSwitch } from '@/features/navigation/components/ModeSwitch';
 import { SpaceSwitcher } from '@/features/navigation/components/SpaceSwitcher';
 import { SPACE_COOKIE, pickSpace } from '@/features/workspace/domain/space';
 import { loadSpaceContext } from '@/features/workspace/services/spaces';
 
 /**
  * 로그인 후 바탕 (대표 Figma "My Home", 2026-10-19).
- * PC: 왼쪽 메뉴 + 위 '우리집 ▾ · 채팅 · 알림 · 내 프로필'. 휴대폰: 위 같은 줄(아이콘) + 아래 홈 · 기록 · + · 채팅 · 마이.
+ * PC: 왼쪽 메뉴 + 위 '우리집 ▾ · 고객/파트너 전환 · 채팅 · 알림 · 내 프로필'. 휴대폰: 위 같은 줄(아이콘) + 아래 메뉴.
+ * 고객 모드 = 내 집(개인), 파트너 모드 = 사무소. 숨고의 고객/고수 전환처럼 한 아이디에서 바꾼다(DEC-040).
  */
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   if (!isAccountOpen()) redirect('/');
@@ -24,14 +26,17 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   ]);
   const unreadCount = unread?.count ?? 0;
   const space = pickSpace((await cookies()).get(SPACE_COOKIE)?.value, context.offices, context.personalHomes.length);
+  const mode = space.kind === 'office' ? 'partner' : 'customer';
+  const partnerOfficeId = space.kind === 'office' ? space.office.id : context.offices[0]?.id ?? null;
   return (
     <div className="app-shell flex min-h-screen">
-      <AppSidebar />
+      <AppSidebar mode={mode} />
       <div className="min-w-0 flex-1">
         <header className="app-header">
           <div className="flex min-h-14 items-center justify-between gap-3 px-4 md:h-[88px] md:px-10">
             <SpaceSwitcher currentOfficeId={space.kind === 'office' ? space.office.id : null} displayName={context.displayName} offices={context.offices} />
             <div className="flex items-center gap-1 md:gap-2">
+              <ModeSwitch mode={mode} partnerOfficeId={partnerOfficeId} />
               <Link aria-label="채팅" className="grid size-11 place-items-center rounded-full text-[#212124] md:flex md:h-11 md:w-auto md:gap-2 md:bg-[#F2F3F6] md:px-4 md:text-[15px] md:font-semibold" href="/chats">
                 <MessageCircle aria-hidden="true" className="size-6 md:size-5" strokeWidth={1.7} /><span className="hidden md:inline">채팅</span>
               </Link>
@@ -46,7 +51,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             </div>
           </div>
         </header>
-        <AppNavigation />
+        <AppNavigation mode={mode} />
         <div className="pb-28 md:pb-10">{children}</div>
       </div>
     </div>

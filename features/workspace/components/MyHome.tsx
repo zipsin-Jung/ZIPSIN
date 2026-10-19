@@ -20,6 +20,8 @@ type Props = {
   counts: RecordCounts;
   nextTask?: { homeId: string; title: string; homeLabel?: string } | null;
   listHref?: string;
+  /** 파트너(사무소) 모드면 '집을 알아보고 있어요/계약했어요' 대신 사무소 요약을 보여 준다. */
+  officeStats?: { expiringSoon: number; openTasks: number } | null;
   children?: React.ReactNode;
 };
 
@@ -55,7 +57,7 @@ const dayLabel = (iso: string) => {
   return date.toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric', weekday: 'short' });
 };
 
-export function MyHome({ title = '우리집', homes, totalHomes, addHomeOfficeId, events, counts, nextTask, listHref = '/homes', children }: Props) {
+export function MyHome({ title = '우리집', homes, totalHomes, addHomeOfficeId, events, counts, nextTask, listHref = '/homes', officeStats = null, children }: Props) {
   const addHref = addHomeOfficeId ? `/homes/new?office=${addHomeOfficeId}` : null;
   const firstHome = homes[0];
   const contractHref = addHref ?? (firstHome ? `/homes/${firstHome.id}` : null);
@@ -90,6 +92,23 @@ export function MyHome({ title = '우리집', homes, totalHomes, addHomeOfficeId
       </div>
 
       <div className="mt-4 grid gap-4 md:grid-cols-2">
+        {officeStats ? (
+          <ul aria-label="사무소 요약" className="grid grid-cols-3 gap-3 md:col-span-2">
+            {[
+              { label: '사무소 집', value: `${totalHomes}채`, href: listHref },
+              { label: '90일 내 만기', value: `${officeStats.expiringSoon}채`, href: `${listHref}${listHref.includes('?') ? '&' : '?'}filter=expiring` },
+              { label: '할 일 있는 집', value: `${officeStats.openTasks}채`, href: '/tasks' },
+            ].map((stat) => (
+              <li key={stat.label}>
+                <Link className="flex min-h-[88px] flex-col justify-center rounded-2xl border border-[#E4E6EA] bg-white px-4 hover:bg-[#F7F7F8]" href={stat.href}>
+                  <span className="text-sm text-[#4D5159]">{stat.label}</span>
+                  <strong className="text-[24px] font-bold text-[#212124]">{stat.value}</strong>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <>
         <Card className="flex flex-col items-center px-6 py-8 text-center">
           <span aria-hidden="true" className="grid size-20 place-items-center rounded-full bg-[#F2F3F6] text-[#4D5159]"><Search className="size-10" strokeWidth={1.4} /></span>
           <h2 className="mt-4 text-[19px] font-bold text-[#212124]">집을 알아보고 있어요</h2>
@@ -104,6 +123,9 @@ export function MyHome({ title = '우리집', homes, totalHomes, addHomeOfficeId
             ? <Link className={outlineButton} href={contractHref}>계약 등록하기</Link>
             : <span className="mt-4 text-sm leading-6 text-[#6B7079]">중개사무소에서 보낸 초대 링크를 열면<br />계약한 집이 여기에 연결돼요.</span>}
         </Card>
+
+          </>
+        )}
 
         <Card>
           <CardHead href={totalHomes ? listHref : undefined} id="my-home-list" title="내 집 목록" />

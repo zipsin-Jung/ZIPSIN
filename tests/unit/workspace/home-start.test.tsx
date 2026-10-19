@@ -51,7 +51,7 @@ describe('HomeStart', () => {
     render(<HomeStart primaryRole="principal_broker" spaceKind="office" offices={[{ id: 'office-1', name: '공릉공인중개사사무소', canRegisterHome: true }]} recentHomes={[]} />);
     expect(screen.getByRole('link', { name: '집 추가' })).toHaveAttribute('href', '/homes/new?office=office-1');
     expect(screen.getByRole('link', { name: '집 추가하기' })).toHaveAttribute('href', '/homes/new?office=office-1');
-    expect(screen.getByRole('link', { name: '계약 등록하기' })).toHaveAttribute('href', '/homes/new?office=office-1');
+    expect(screen.queryByRole('link', { name: '계약 등록하기' })).not.toBeInTheDocument();
   });
 
   it('TEST-ZH-MYHOME-003 내 집 목록 · 실제 사진 · 금색 지금 할 일 하나 · 새 대화', () => {
@@ -87,5 +87,20 @@ describe('HomeStart', () => {
   it('TEST-ZH-MYHOME-005 개인 공간에 집이 없고 사무소가 있으면 사무소로 바꾸는 길', () => {
     render(<HomeStart primaryRole="associate_broker" spaceKind="me" offices={[{ id: 'office-1', name: '공릉공인중개사사무소', canRegisterHome: false }]} recentHomes={[]} />);
     expect(screen.getByRole('link', { name: '공릉공인중개사사무소' })).toHaveAttribute('href', '/space?to=office-1');
+  });
+});
+
+describe('HomeStart 파트너 모드', () => {
+  it('TEST-MODE-HOME-001 파트너(사무소) 모드 홈은 고객용 카드 대신 사무소 요약', () => {
+    render(<HomeStart
+      primaryRole="principal_broker"
+      spaceKind="office"
+      offices={[{ id: 'office-1', name: '공릉공인중개사사무소', canRegisterHome: true }]}
+      recentHomes={[{ id: 'h', label: '201호', address: '공릉동', contractDay: { label: 'D-40', days: 40 } }]}
+      counts={{ totalHomes: 12, expiringSoon: 3, openTasks: 2 }}
+    />);
+    expect(screen.queryByRole('heading', { name: '집을 알아보고 있어요' })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /사무소 집\s*12채/ })).toHaveAttribute('href', '/homes?office=office-1');
+    expect(screen.getByRole('link', { name: /90일 내 만기\s*3채/ })).toHaveAttribute('href', '/homes?office=office-1&filter=expiring');
   });
 });

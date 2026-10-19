@@ -143,6 +143,7 @@ export function HomeStart({
       events={events}
       homes={recentHomes}
       listHref={inOffice ? `/homes?office=${office.id}` : '/homes'}
+      officeStats={inOffice ? { expiringSoon: summary.expiringSoon, openTasks: summary.openTasks } : null}
       nextTask={nextTask ? { homeId: nextTask.homeId, title: nextTask.title, homeLabel: nextHome?.label } : null}
       title={inOffice ? office.name : '우리집'}
       totalHomes={summary.totalHomes}
