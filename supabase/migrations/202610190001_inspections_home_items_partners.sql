@@ -26,6 +26,8 @@ create table public.inspection_rooms (
   inspection_id uuid not null references public.home_inspections(id) on delete restrict,
   name text not null check (char_length(trim(name)) between 1 and 30),
   sort_order integer not null default 0,
+  -- 방 사진: 이번 계약 공유 '사진' 기록 하나에 모은다(기존 첨부·저장소 권한 그대로 사용).
+  record_id uuid references public.records(id) on delete restrict,
   created_at timestamptz not null default now()
 );
 create index inspection_rooms_inspection_idx on public.inspection_rooms(inspection_id, sort_order);
@@ -206,6 +208,25 @@ begin
   on conflict (inspection_id, reading_kind) do update set value = excluded.value, note = excluded.note, recorded_by = excluded.recorded_by, recorded_at = now();
 end;
 $$;
+
+-- 방 사진을 올릴 기록을 처음 한 번 만든다(보내기 전만).
+create or replace function public.ensure_inspection_room_record(p_room_id uuid) returns uuid
+language plpgsql security definer set search_path = public as $$
+declare v_room public.inspection_rooms; v public.home_inspections; v_record uuid;
+begin
+  select * into v_room from public.inspection_rooms where id = p_room_id for update;
+  if v_room.id is null then raise exception 'permission_denied'; end if;
+  v := public.require_inspection_editor(v_room.inspection_id);
+  if v_room.record_id is not null then return v_room.record_id; end if;
+  v_record := public.create_home_record(v.home_id, null, v.contract_id, 'current_contract', 'photo',
+    case v.inspection_kind when 'move_in' then '입주 상태 · ' else '퇴거 상태 · ' end || v_room.name,
+    null, gen_random_uuid(), null, null);
+  update public.inspection_rooms set record_id = v_record where id = p_room_id;
+  return v_record;
+end;
+$$;
+revoke all on function public.ensure_inspection_room_record(uuid) from public, anon;
+grant execute on function public.ensure_inspection_room_record(uuid) to authenticated;
 
 alter table public.notifications drop constraint if exists notifications_notification_kind_check;
 alter table public.notifications add constraint notifications_notification_kind_check

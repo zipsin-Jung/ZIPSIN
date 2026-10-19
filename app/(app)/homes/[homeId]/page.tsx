@@ -37,6 +37,15 @@ export default async function HomeDetailPage({ params, searchParams }: Props) {
     .limit(1)
     .maybeSingle();
   if (sharedRoomError) return <Unavailable />;
+  // 입주·퇴거 상태가 있는지(없거나 못 읽으면 '아직 없음'으로만 보여 준다).
+  const inspectionResult = summary.contract
+    ? await supabase.from("home_inspections").select("inspection_kind, status").eq("contract_id", summary.contract.id)
+    : null;
+  const inspections: Array<{ inspection_kind: string; status: string }> = inspectionResult?.data ?? [];
+  const inspectionStatus = (kind: string) => {
+    const row = inspections.find((item) => item.inspection_kind === kind);
+    return row ? (row.status === "sent" ? "보냄 · 확인 중" : "작성 중") : "아직 없음";
+  };
   const recordIds = records?.map((record) => record.id) ?? [];
   const { data: attachments, error: attachmentsError } = recordIds.length
     ? await supabase.from("attachments").select("id, record_id, original_name, media_type, storage_path").in("record_id", recordIds).eq("status", "ready")
@@ -108,6 +117,19 @@ export default async function HomeDetailPage({ params, searchParams }: Props) {
         <p className="mt-1 text-sm text-[#6B7079]">집의 시간 · 계약부터 퇴거까지</p>
       </section>
 
+      <nav aria-label="집 상태 기록" className="mt-4 grid grid-cols-3 gap-2">
+        {[
+          { href: `/homes/${homeId}/move-in`, title: "입주 상태", sub: inspectionStatus("move_in") },
+          { href: `/homes/${homeId}/move-out`, title: "퇴거 비교", sub: inspectionStatus("move_out") },
+          { href: `/homes/${homeId}/history`, title: "집 이력", sub: "보일러·도배" },
+        ].map((item) => (
+          <Link className="flex min-h-[72px] flex-col justify-center rounded-xl bg-[#F2F3F6] px-3" href={item.href} key={item.href}>
+            <strong className="text-base text-[#212124]">{item.title}</strong>
+            <span className="text-sm text-[#4D5159]">{item.sub}</span>
+          </Link>
+        ))}
+      </nav>
+
       {summary.canEditContract && (
         <details className="mt-4 rounded-2xl border border-[#EAEBEE] bg-white px-4 py-3" open={!summary.contract}>
           <summary className="min-h-10 cursor-pointer text-base font-semibold text-[#212124]">{summary.contract ? "계약 기간 고치기" : "계약 기간 등록하기"}</summary>
@@ -128,7 +150,7 @@ export default async function HomeDetailPage({ params, searchParams }: Props) {
 
       {summary.nextActions.length > 0 && <div className="mt-6"><NextActions actions={summary.nextActions} /></div>}
 
-      <nav aria-label="집 메뉴" className="sticky top-14 z-10 -mx-4 mt-6 flex border-b border-[#EAEBEE] bg-[#F2F3F6] px-4 md:top-[68px]">
+      <nav aria-label="집 메뉴" className="sticky top-14 z-10 -mx-4 mt-6 flex border-b border-[#EAEBEE] bg-white px-4 md:top-[64px]">
         {tabs.map((item) => (
           <Link aria-current={item.id === tab ? "page" : undefined} className={`flex min-h-12 flex-1 items-center justify-center border-b-2 text-base ${item.id === tab ? "border-[#0B6655] font-bold text-[#083E37]" : "border-transparent text-[#4D5159]"}`} href={item.href} key={item.id}>
             {item.label}

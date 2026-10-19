@@ -50,6 +50,7 @@ export function HomeRecordList({ homeId, homeName, records }: { homeId: string; 
               <h3 className="mt-2 text-[17px] font-bold text-[#212124]">{record.title}</h3>
               {record.attachments.length > 0 && <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">{record.attachments.map((attachment) => <AttachmentLink attachmentId={attachment.id} key={attachment.id} name={attachment.name} />)}</div>}
               <div className="mt-3 flex flex-wrap items-start gap-2">
+                {record.kind === 'repair' && record.space === 'current_contract' && <Link className="inline-flex min-h-11 items-center rounded-lg border border-[#DCDEE3] px-4 text-[15px] font-semibold text-[#0B6655]" href={`/homes/${homeId}/repairs/${record.id}`}>수리 단계 보기</Link>}
                 <ShareRecordButton path={`/homes/${homeId}#record-${record.id}`} text={`[집신] ${homeName} · ${record.title}`} />
               </div>
               <AttachmentUploader recordId={record.id} />

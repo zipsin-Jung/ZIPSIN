@@ -34,6 +34,11 @@ select zt_check.expect(zt_check.changed(format($q$update public.inspection_items
 select zt_check.expect(zt_check.try(format($q$select public.set_inspection_reading(%L, 'electric', '01234.5')$q$, (select v from zt_ids where k = 'insp'))) = 'ok', '전기 계량기 저장');
 select zt_check.expect(zt_check.try(format($q$select public.set_inspection_reading(%L, 'keys', '현관 2개')$q$, (select v from zt_ids where k = 'insp'))) = 'ok', '열쇠 개수 저장');
 
+-- ── 방 사진 기록
+insert into zt_ids select 'room_rec', public.ensure_inspection_room_record((select id from public.inspection_rooms where inspection_id = (select v from zt_ids where k = 'insp') and name = '안방'));
+select zt_check.expect((select record_space from public.records where id = (select v from zt_ids where k = 'room_rec')) = 'current_contract', '방 사진 기록 = 이번 계약 공유');
+select zt_check.expect(public.ensure_inspection_room_record((select id from public.inspection_rooms where inspection_id = (select v from zt_ids where k = 'insp') and name = '안방')) = (select v from zt_ids where k = 'room_rec'), '방 사진 기록은 하나');
+
 -- ── 보내기 전: 임차인 답 못 함 / 보낸 뒤 사무소 수정 못 함
 select zt_check.as_user('10000000-0000-4000-8000-000000000004');
 select zt_check.expect((select count(*) from public.inspection_items where inspection_id = (select v from zt_ids where k = 'insp')) > 0, '현재 임차인: 기록 봄');
@@ -42,6 +47,7 @@ select zt_check.as_user('10000000-0000-4000-8000-000000000001');
 select zt_check.expect(zt_check.try(format($q$select public.send_home_inspection(%L)$q$, (select v from zt_ids where k = 'insp'))) = 'ok', 'A 대표: 보냄');
 select zt_check.expect(zt_check.try(format($q$select public.set_inspection_item(%L, 'unchecked')$q$, (select v from zt_ids where k = 'item_ok'))) like '%inspection_locked%', '보낸 뒤 사무소도 못 고침');
 select zt_check.expect(zt_check.try(format($q$select public.set_inspection_reading(%L, 'gas', '1')$q$, (select v from zt_ids where k = 'insp'))) like '%inspection_locked%', '보낸 뒤 계량기도 못 고침');
+select zt_check.expect(zt_check.try(format($q$select public.ensure_inspection_room_record(%L)$q$, (select id from public.inspection_rooms where inspection_id = (select v from zt_ids where k = 'insp') and name = '욕실'))) like '%inspection_locked%', '보낸 뒤 새 방 사진 기록 못 만듦');
 
 select zt_check.as_user('10000000-0000-4000-8000-000000000004');
 select zt_check.expect((select count(*) from public.notifications where notification_kind = 'inspection_sent') = 1, '임차인: 확인 요청 알림 1건');
