@@ -108,7 +108,7 @@ export default function TermsPage() {
         <p>이 약관은 {LEGAL_EFFECTIVE_DATE}부터 시행합니다.</p>
       </Article>
       <footer className="border-t border-[#EAEBEE] pt-4 text-[15px] text-[#4D5159]">
-        상호 {show(COMPANY.name)} · 대표 {COMPANY.ceo} · 사업자등록번호 {show(COMPANY.businessNumber)} · 주소 {show(COMPANY.address)} · 문의 {show(COMPANY.email)}
+        {[`운영 ${show(COMPANY.name)}`, `대표 ${COMPANY.ceo}`, COMPANY.businessNumber && `사업자등록번호 ${COMPANY.businessNumber}`, COMPANY.address && `주소 ${COMPANY.address}`, `문의 ${show(COMPANY.email)}`].filter(Boolean).join(' · ')}
       </footer>
     </LegalLayout>
   );

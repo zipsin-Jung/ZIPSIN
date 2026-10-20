@@ -18,7 +18,8 @@ export const LEGAL_VERSION = '2026-10-02';
 export const LEGAL_EFFECTIVE_DATE = '2026년 10월 ○일';
 
 export const companyMissing = (): string[] => {
-  const labels: Record<string, string> = { name: '상호', businessNumber: '사업자등록번호', address: '주소', email: '이메일', dbRegion: '데이터 저장 지역' };
+  // 사업자등록번호·주소는 유료 판매 전까지 선택(2026-10-20 대표: 사업자 내일 신청). 비어 있으면 표시하지 않는다.
+  const labels: Record<string, string> = { name: '운영자', email: '이메일', dbRegion: '데이터 저장 지역' };
   return Object.entries(labels).filter(([key]) => !COMPANY[key as keyof typeof COMPANY]).map(([, label]) => label);
 };
 
