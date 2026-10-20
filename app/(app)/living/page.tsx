@@ -157,7 +157,7 @@ export default async function LivingPage({ searchParams }: Props) {
               })}
             </ul>
           ) : (
-            <p className="mt-3 rounded-xl border border-[#EAEBEE] px-4 py-10 text-center text-[15px] text-[#6B7079]">{homes.length ? '아직 남긴 기록이 없어요.' : '집이 연결되면 기록을 남길 수 있어요.'}</p>
+            <p className="mt-3 rounded-xl border border-[#EAEBEE] px-4 py-10 text-center text-[15px] text-[#6B7079]">{homes.length ? '아직 남긴 기록이 없어요.' : <>먼저 집을 추가하면 기록을 남길 수 있어요. <a className="font-semibold text-[#0B6655] underline underline-offset-4" href="/homes/new?mine=1">집 추가하기</a></>}</p>
           )}
           {tab.id === 'photo' && list.length > 0 && <p className="mt-3 text-center text-sm text-[#6B7079]">사진은 기록한 날짜 기준으로 정렬돼요.</p>}
         </section>

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bell, Building2, CalendarClock, Camera, ClipboardCheck, FileText, Folder, Home, ListTodo, MessageCircle, Settings, ShieldCheck, Users } from 'lucide-react';
+import { Bell, BookUser, Building2, CalendarClock, Camera, ClipboardCheck, FileText, Folder, Home, ListTodo, MessageCircle, Settings, ShieldCheck, Users } from 'lucide-react';
 
 /**
  * PC 왼쪽 메뉴 (대표 Figma "My Home", 2026-10-19).
@@ -15,6 +15,7 @@ const customerGroups = [
     { href: '/living', label: '거주관리', icon: Camera },
     { href: '/expiry', label: '만기 · 퇴거', icon: CalendarClock },
     { href: '/living?tab=document', label: '문서함', icon: Folder },
+    { href: '/contacts', label: '주소록', icon: BookUser },
   ],
   [
     { href: '/notifications', label: '알림', icon: Bell },

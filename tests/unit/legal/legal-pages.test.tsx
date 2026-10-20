@@ -27,7 +27,7 @@ describe('약관 · 개인정보처리방침 (2026-10-19)', () => {
   });
 
   it('TEST-LEGAL-004 새 로그인 후 화면도 회원가입이 닫혀 있으면 처음 화면으로 보낸다', () => {
-    for (const path of ['/checklist', '/contract', '/living', '/expiry', '/more', '/notifications', '/partners/new', '/space']) {
+    for (const path of ['/checklist', '/contract', '/living', '/expiry', '/more', '/notifications', '/partners/new', '/space', '/contacts']) {
       const response = closedAccountResponse(new NextRequest(`https://zipsin.net${path}`));
       expect(response.headers.get('location')).toBe('https://zipsin.net/');
     }

@@ -1,4 +1,5 @@
 import 'server-only';
+import { cache } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { formatContractDay } from '@/features/contracts/domain/lifecycle';
 
@@ -65,7 +66,8 @@ export async function loadHomeDashboard(repository: HomeDashboardRepository, inp
 }
 
 /* v8 ignore start -- external Supabase boundary is covered by Preview verification. */
-export async function loadHomeDashboardFromSupabase(supabase: SupabaseClient, userId: string, today?: Date): Promise<HomeDashboardResult> {
+/** 요청 한 번 안에서는 한 번만 읽는다(홈·체크리스트 등 여러 곳에서 씀). */
+export const loadHomeDashboardFromSupabase = cache(async (supabase: SupabaseClient, userId: string, today?: Date): Promise<HomeDashboardResult> => {
   return loadHomeDashboard({
     async load() {
       const { data: memberships, error: membershipError } = await supabase.from('office_memberships').select('office_id, office_role').eq('user_id', userId).eq('status', 'active').is('ended_at', null).lte('started_at', new Date().toISOString());
@@ -95,5 +97,5 @@ export async function loadHomeDashboardFromSupabase(supabase: SupabaseClient, us
       };
     },
   }, { today });
-}
+});
 /* v8 ignore stop */

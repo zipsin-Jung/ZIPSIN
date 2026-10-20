@@ -22,6 +22,7 @@ type Props = {
   listHref?: string;
   /** 파트너(사무소) 모드면 '집을 알아보고 있어요/계약했어요' 대신 사무소 요약을 보여 준다. */
   officeStats?: { expiringSoon: number; openTasks: number } | null;
+  personalAddHref?: string | null;
   children?: React.ReactNode;
 };
 
@@ -57,10 +58,10 @@ const dayLabel = (iso: string) => {
   return date.toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric', weekday: 'short' });
 };
 
-export function MyHome({ title = '우리집', homes, totalHomes, addHomeOfficeId, events, counts, nextTask, listHref = '/homes', officeStats = null, children }: Props) {
-  const addHref = addHomeOfficeId ? `/homes/new?office=${addHomeOfficeId}` : null;
+export function MyHome({ title = '우리집', homes, totalHomes, addHomeOfficeId, events, counts, nextTask, listHref = '/homes', officeStats = null, personalAddHref = null, children }: Props) {
+  const addHref = addHomeOfficeId ? `/homes/new?office=${addHomeOfficeId}` : personalAddHref;
   const firstHome = homes[0];
-  const contractHref = addHref ?? (firstHome ? `/homes/${firstHome.id}` : null);
+  const contractHref = firstHome ? `/homes/${firstHome.id}` : addHref;
   const tiles = [
     { label: '사진', unit: '장', value: counts.photo, icon: Camera },
     { label: '계약서', unit: '건', value: counts.document, icon: FileText },

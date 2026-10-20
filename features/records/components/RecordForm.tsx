@@ -26,6 +26,7 @@ export function RecordForm({
   contractId = null,
   idempotencyKey,
   spaces = ['office_internal'],
+  personal = false,
   canRepair = true,
   canNote = true,
   initialKind = 'photo',
@@ -35,6 +36,8 @@ export function RecordForm({
   contractId?: string | null;
   idempotencyKey: string;
   spaces?: RecordSpaceOption[];
+  /** 고객이 직접 추가한 집(개인 기록 공간)이면 '사무소 내부' 대신 '나만 보기'. */
+  personal?: boolean;
   canRepair?: boolean;
   canNote?: boolean;
   initialKind?: Kind;
@@ -154,7 +157,7 @@ export function RecordForm({
 
       <fieldset className="grid gap-2" disabled={locked}>
         <legend className="mb-2 text-base font-bold text-[#212124]">누가 볼 수 있나요?</legend>
-        {spaces.includes('office_internal') && <button aria-pressed={space === 'office_internal'} className={choice(space === 'office_internal')} onClick={() => setSpace('office_internal')} type="button"><strong className="text-base">사무소 내부</strong><span className="text-sm">우리 사무소 직원만 봐요</span></button>}
+        {spaces.includes('office_internal') && <button aria-pressed={space === 'office_internal'} className={choice(space === 'office_internal')} onClick={() => setSpace('office_internal')} type="button"><strong className="text-base">{personal ? '나만 보기' : '사무소 내부'}</strong><span className="text-sm">{personal ? '초대한 사람에게도 안 보여요' : '우리 사무소 직원만 봐요'}</span></button>}
         {spaces.includes('current_contract') && <button aria-pressed={space === 'current_contract'} className={choice(space === 'current_contract')} onClick={() => setSpace('current_contract')} type="button"><strong className="text-base">이번 계약 공유</strong><span className="text-sm">사무소 + 지금 임대인·임차인이 봐요</span></button>}
         <div aria-disabled="true" className="flex min-h-[64px] w-full flex-col items-start justify-center gap-0.5 rounded-xl border border-dashed border-[#DCDEE3] bg-[#F2F3F6] px-4 py-2 text-[#6B7079]">
           <strong className="text-base">집 이력 <span className="text-sm font-normal">· 준비 중</span></strong>

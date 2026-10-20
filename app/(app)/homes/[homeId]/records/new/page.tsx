@@ -24,6 +24,9 @@ export default async function NewRecordPage({ params, searchParams }: Props) {
     supabase.from('home_memberships').select('relationship_role, contract_id').eq('home_id', homeId).eq('user_id', user.id).eq('status', 'active').eq('access_scope', 'current_contract').is('ended_at', null).maybeSingle(),
   ]);
   const officeRole = membership?.office_role as string | undefined;
+  // 개인 기록 공간(202610200001)인지: 칸이 아직 없는 DB에서는 그냥 사무소로 본다.
+  const kindResult = await supabase.from('offices').select('office_kind').eq('id', home.office_id).maybeSingle();
+  const personal = !kindResult.error && kindResult.data?.office_kind === 'personal';
   const isOfficeWriter = officeRole === 'principal_broker' || officeRole === 'associate_broker';
   const isAssistant = officeRole === 'assistant';
   const isParty = Boolean(relation && contract && relation.contract_id === contract.id && ['landlord', 'tenant'].includes(relation.relationship_role));
@@ -49,6 +52,7 @@ export default async function NewRecordPage({ params, searchParams }: Props) {
         idempotencyKey={randomUUID()}
         initialKind={query.kind === 'repair' ? 'repair' : 'photo'}
         officeId={spaces.includes('office_internal') ? home.office_id : null}
+        personal={personal}
         spaces={spaces}
       />
     </main>

@@ -26,7 +26,14 @@ export default async function HomePage({ searchParams }: Props) {
   const relationByHome = new Map(context.personalHomes.map((item) => [item.homeId, item.relation]));
   const spaceHomes = dashboard.homes.filter((home) => space.kind === 'me' ? relationByHome.has(home.id) : home.officeId === space.office.id);
   const shown = spaceHomes.slice(0, 6);
-  const covers = await loadHomeCoverPhotos(supabase, shown.map((home) => home.id));
+  const spaceHomeIds = spaceHomes.map((home) => home.id);
+  // 사진·기록 숫자를 동시에 읽는다(서버와 DB가 멀어서 한 번 오가는 시간이 길다).
+  const [covers, recordResult] = await Promise.all([
+    loadHomeCoverPhotos(supabase, shown.map((home) => home.id)),
+    spaceHomeIds.length
+      ? supabase.from('records').select('id, home_id, record_kind, repair_stage, title, task_status, task_due_at').in('home_id', spaceHomeIds).limit(1000)
+      : Promise.resolve({ data: [] as Array<{ id: string; home_id: string; record_kind: string; repair_stage: string | null; title: string; task_status: string | null; task_due_at: string | null }> }),
+  ]);
   const recentHomes = shown.map((home) => {
     const relation = relationByHome.get(home.id);
     return {
@@ -41,11 +48,7 @@ export default async function HomePage({ searchParams }: Props) {
   });
   const nextHome = spaceHomes.find((home) => home.openTask);
   // 최근 기록 칸 숫자와 이번 달 일정: 이 공간 집의 실제 기록에서만 센다(RLS가 허락한 것만).
-  const spaceHomeIds = spaceHomes.map((home) => home.id);
-  const { data: recordRows } = spaceHomeIds.length
-    ? await supabase.from('records').select('id, home_id, record_kind, repair_stage, title, task_status, task_due_at').in('home_id', spaceHomeIds).limit(1000)
-    : { data: [] as Array<{ id: string; home_id: string; record_kind: string; repair_stage: string | null; title: string; task_status: string | null; task_due_at: string | null }> };
-  const rows = recordRows ?? [];
+  const rows = recordResult?.data ?? [];
   const recordCounts = {
     photo: rows.filter((row) => row.record_kind === 'photo').length,
     document: rows.filter((row) => row.record_kind === 'document').length,
@@ -71,7 +74,8 @@ export default async function HomePage({ searchParams }: Props) {
   const task = nextHome?.openTask;
   return <HomeStart
     createOfficeAction={createOffice}
-    offices={space.kind === 'office' ? [space.office, ...dashboard.offices.filter((office) => office.id !== space.office.id)] : dashboard.offices}
+    offices={space.kind === 'office' ? [space.office, ...context.offices.filter((office) => office.id !== space.office.id)] : context.offices}
+    personalAddHref={space.kind === 'me' ? '/homes/new?mine=1' : null}
     spaceKind={space.kind}
     events={events}
     recordCounts={recordCounts}

@@ -2,7 +2,7 @@
 -- 본인만 보고 본인만 바꾼다. 집과 연결은 선택(계약 전에는 집이 없을 수 있음). 집과 연결해도 다른 사람에게 보이지 않는다.
 begin;
 
-create table public.checklist_checks (
+create table if not exists public.checklist_checks (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   home_id uuid references public.homes(id) on delete restrict,
@@ -10,8 +10,9 @@ create table public.checklist_checks (
   item_key text not null check (item_key ~ '^[a-z0-9_]{2,40}$'),
   checked_at timestamptz not null default now()
 );
-create unique index checklist_checks_unique on public.checklist_checks (user_id, coalesce(home_id, '00000000-0000-0000-0000-000000000000'::uuid), stage, item_key);
+create unique index if not exists checklist_checks_unique on public.checklist_checks (user_id, coalesce(home_id, '00000000-0000-0000-0000-000000000000'::uuid), stage, item_key);
 alter table public.checklist_checks enable row level security;
+drop policy if exists "checklist_checks_select_own" on public.checklist_checks;
 create policy "checklist_checks_select_own" on public.checklist_checks for select to authenticated using (user_id = auth.uid());
 grant select on public.checklist_checks to authenticated;
 

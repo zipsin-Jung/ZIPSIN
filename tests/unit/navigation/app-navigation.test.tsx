@@ -19,7 +19,7 @@ describe('AppNavigation (대표 Figma 2026-10-19)', () => {
     const menu = screen.getByRole('complementary', { name: '메뉴' });
     const expected: Array<[string, string]> = [
       ['내 집', '/home'], ['체크리스트', '/checklist'], ['계약 · 입주', '/contract'], ['거주관리', '/living'],
-      ['만기 · 퇴거', '/expiry'], ['문서함', '/living?tab=document'], ['알림', '/notifications'], ['설정', '/my'],
+      ['만기 · 퇴거', '/expiry'], ['문서함', '/living?tab=document'], ['주소록', '/contacts'], ['알림', '/notifications'], ['설정', '/my'],
     ];
     for (const [name, href] of expected) expect(within(menu).getByRole('link', { name })).toHaveAttribute('href', href);
     expect(within(menu).getByRole('link', { name: '내 집' })).toHaveAttribute('aria-current', 'page');

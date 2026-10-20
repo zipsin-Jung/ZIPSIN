@@ -106,7 +106,10 @@ export function HomeStart({
   spaceKind,
   events = [],
   recordCounts = { photo: 0, document: 0, receipt: 0, note: 0, repair: 0 },
+  personalAddHref = null,
 }: {
+  /** 고객 모드에서 직접 집을 추가하는 주소(개인 기록 공간, 202610200001). */
+  personalAddHref?: string | null;
   /** 위쪽 '우리집 ▾'에서 고른 공간. 없으면 사무소가 있을 때 사무소로 본다. */
   spaceKind?: 'me' | 'office';
   staffNotes?: StaffBriefNote[] | null;
@@ -139,6 +142,7 @@ export function HomeStart({
   return (
     <MyHome
       addHomeOfficeId={inOffice && office.canRegisterHome ? office.id : null}
+      personalAddHref={inOffice ? null : personalAddHref}
       counts={recordCounts}
       events={events}
       homes={recentHomes}

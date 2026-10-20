@@ -95,3 +95,15 @@ describe('v2 한 아이디 여러 계정 (DEC-040)', () => {
     expect(recordTargetHref('h', 'evil')).toBe('/homes/h/records/new');
   });
 });
+
+import { normalizePhone } from '@/features/contacts/domain';
+describe('주소록', () => {
+  it('TEST-CONTACT-001 전화번호를 읽기 쉬운 모양으로, 이상한 값은 거절', () => {
+    expect(normalizePhone('01012345678')).toBe('010-1234-5678');
+    expect(normalizePhone('02 123 4567')).toBe('02-123-4567');
+    expect(normalizePhone('021234567 8')).toBe('02-1234-5678');
+    expect(normalizePhone('031-555-1234')).toBe('031-555-1234');
+    expect(normalizePhone('abc')).toBeNull();
+    expect(normalizePhone('12')).toBeNull();
+  });
+});

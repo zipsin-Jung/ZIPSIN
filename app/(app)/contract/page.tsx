@@ -28,7 +28,7 @@ export default async function ContractPage({ searchParams }: Props) {
       cards={cards}
       homeSwitch={space.ok ? <HomeSwitch basePath="/contract" homes={space.homes} selectedId={home?.id ?? null} /> : null}
       lead="계약부터 입주까지, 중요한 순간을 기록하고 관리하세요."
-      noHome={home ? null : <p className="mt-4 rounded-xl bg-[#F2F3F6] px-4 py-3 text-[15px] text-[#4D5159]">집이 연결되면 기록할 수 있어요. 중개사무소에서 보낸 초대 링크를 열어 주세요.</p>}
+      noHome={home ? null : <p className="mt-4 rounded-xl bg-[#F2F3F6] px-4 py-3 text-[15px] text-[#4D5159]">먼저 집을 추가하면 기록할 수 있어요. <a className="font-semibold text-[#0B6655] underline underline-offset-4" href="/homes/new?mine=1">집 추가하기</a></p>}
       note="한 번의 기록이 권리를 지킵니다."
       photos={photos}
       photosHref={home ? `/homes/${home.id}?tab=photos` : null}

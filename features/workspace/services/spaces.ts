@@ -1,4 +1,5 @@
 import 'server-only';
+import { cache } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { pickSpace, type Space, type SpaceOffice } from '@/features/workspace/domain/space';
 
@@ -9,29 +10,37 @@ export type SpaceContext = {
   offices: SpaceOffice[];
   /** 내가 임대인·임차인으로 직접 연결된 집 (개인 공간에 보이는 집). */
   personalHomes: Array<{ homeId: string; relation: 'landlord' | 'tenant' }>;
+  /** 개인 기록 공간(고객이 직접 추가한 집이 들어가는 곳). 없으면 null. */
+  personalOfficeId: string | null;
 };
 
 /* v8 ignore start -- external Supabase boundary is covered by Preview verification. */
-/** 위쪽 '이름 ▾'에 필요한 것: 내 이름, 내가 속한 사무소, 내가 직접 연결된 집. RLS가 허용한 행만 읽는다. */
-export async function loadSpaceContext(supabase: SupabaseClient, userId: string): Promise<SpaceContext> {
+/**
+ * 위쪽 '우리집 ▾'·모드 전환에 필요한 것: 내 이름, 내가 속한 사무소(개인 기록 공간 제외), 내가 직접 연결된 집.
+ * 요청 한 번 안에서는 한 번만 읽는다(React cache). 사무소 이름은 구성원 표에 붙여 한 번에 읽는다.
+ * office_kind 칸(202610200001)이 아직 없는 DB에서도 동작하도록, 실패하면 그 칸 없이 다시 읽는다.
+ */
+export const loadSpaceContext = cache(async (supabase: SupabaseClient, userId: string): Promise<SpaceContext> => {
   const now = new Date().toISOString();
-  const [{ data: profile }, { data: memberships }, { data: homeMemberships }] = await Promise.all([
+  const memberships = (select: string) => supabase.from('office_memberships').select(select).eq('user_id', userId).eq('status', 'active').is('ended_at', null).lte('started_at', now);
+  const [{ data: profile }, withKind, { data: homeMemberships }] = await Promise.all([
     supabase.from('profiles').select('display_name').eq('user_id', userId).maybeSingle(),
-    supabase.from('office_memberships').select('office_id, office_role').eq('user_id', userId).eq('status', 'active').is('ended_at', null).lte('started_at', now),
+    memberships('office_id, office_role, offices(id, name, office_kind)'),
     supabase.from('home_memberships').select('home_id, relationship_role').eq('user_id', userId).eq('status', 'active').in('relationship_role', ['landlord', 'tenant']),
   ]);
-  const officeIds = (memberships ?? []).map((item) => item.office_id);
-  const { data: offices } = officeIds.length ? await supabase.from('offices').select('id, name').in('id', officeIds) : { data: [] };
+  const rows = (withKind.error ? (await memberships('office_id, office_role, offices(id, name)')).data : withKind.data) as unknown as Array<{ office_id: string; office_role: string; offices: { id: string; name: string; office_kind?: string } | null }> | null;
+  const personal = (rows ?? []).find((row) => row.offices?.office_kind === 'personal');
   return {
     displayName: profile?.display_name?.trim() || '내 집',
-    offices: (offices ?? []).map((office) => ({
-      id: office.id,
-      name: office.name,
-      canRegisterHome: (memberships ?? []).some((item) => item.office_id === office.id && item.office_role === 'principal_broker'),
+    offices: (rows ?? []).filter((row) => row.offices && row.offices.office_kind !== 'personal').map((row) => ({
+      id: row.offices!.id,
+      name: row.offices!.name,
+      canRegisterHome: row.office_role === 'principal_broker',
     })),
+    personalOfficeId: personal?.office_id ?? null,
     personalHomes: (homeMemberships ?? []).map((item) => ({ homeId: item.home_id, relation: item.relationship_role as 'landlord' | 'tenant' })),
   };
-}
+});
 
 /** 집마다 가장 최근 사진 한 장(목록 썸네일). 서명 주소는 10분만 유효하다. */
 export async function loadHomeCoverPhotos(supabase: SupabaseClient, homeIds: string[]): Promise<Map<string, string>> {

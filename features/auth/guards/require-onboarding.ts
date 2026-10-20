@@ -1,4 +1,5 @@
 import 'server-only';
+import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import { isOnboardingComplete, type OnboardingProfile } from '@/features/auth/domain/profile';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
@@ -18,14 +19,15 @@ export function evaluateOnboarding(state: Evaluation): string | null {
 }
 
 /* v8 ignore start -- Supabase/Next server boundary is verified by integration and browser gates. */
-export async function requireUser() {
+/** 요청 한 번 안에서 로그인 확인은 한 번만(바탕 화면과 각 화면이 같은 결과를 함께 쓴다). */
+export const requireUser = cache(async () => {
   const supabase = await createServerSupabaseClient();
   const { data } = await supabase.auth.getUser();
   if (!data.user) redirect('/login');
   return { supabase, user: data.user };
-}
+});
 
-export async function requireOnboardingComplete() {
+export const requireOnboardingComplete = cache(async () => {
   const { supabase, user } = await requireUser();
   const [{ data: profile }, { data: consents }, { data: role }] = await Promise.all([
     supabase.from('profiles').select('phone_verified_at, usage_purpose').eq('user_id', user.id).maybeSingle(),
@@ -45,5 +47,5 @@ export async function requireOnboardingComplete() {
   });
   if (destination) redirect(destination);
   return { supabase, user, usagePurpose: profile!.usage_purpose, primaryRole: role?.primary_role ?? null };
-}
+});
 /* v8 ignore stop */

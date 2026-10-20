@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { cookies } from 'next/headers';
-import { CalendarClock, ChevronRight, FileText, Folder, Handshake, Headphones, House, ListTodo, MessageCircle, Settings, Users } from 'lucide-react';
+import { BookUser, CalendarClock, ChevronRight, FileText, Folder, Handshake, Headphones, House, ListTodo, MessageCircle, Settings, Users } from 'lucide-react';
 import { requireOnboardingComplete } from '@/features/auth/guards/require-onboarding';
 import { ModeSwitch } from '@/features/navigation/components/ModeSwitch';
 import { SPACE_COOKIE, pickSpace } from '@/features/workspace/domain/space';
@@ -10,6 +10,7 @@ const customerMenu = [
   { href: '/contract', label: '계약 · 입주', icon: FileText },
   { href: '/expiry', label: '만기 · 퇴거', icon: CalendarClock },
   { href: '/living?tab=document', label: '문서함', icon: Folder },
+  { href: '/contacts', label: '주소록', icon: BookUser },
   { href: '/homes', label: '집 목록', icon: House },
   { href: '/chats', label: '채팅', icon: MessageCircle },
   { href: '/partners/new', label: '집신 파트너 등록', icon: Handshake },

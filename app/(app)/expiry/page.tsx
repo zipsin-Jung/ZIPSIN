@@ -28,7 +28,7 @@ export default async function ExpiryPage({ searchParams }: Props) {
       cards={cards}
       homeSwitch={space.ok ? <HomeSwitch basePath="/expiry" homes={space.homes} selectedId={home?.id ?? null} /> : null}
       lead="계약 만료부터 퇴거까지, 놓치기 쉬운 항목을 확인하고 마무리하세요."
-      noHome={home ? null : <p className="mt-4 rounded-xl bg-[#F2F3F6] px-4 py-3 text-[15px] text-[#4D5159]">집이 연결되면 기록할 수 있어요.</p>}
+      noHome={home ? null : <p className="mt-4 rounded-xl bg-[#F2F3F6] px-4 py-3 text-[15px] text-[#4D5159]">먼저 집을 추가하면 기록할 수 있어요. <a className="font-semibold text-[#0B6655] underline underline-offset-4" href="/homes/new?mine=1">집 추가하기</a></p>}
       note="한 번의 기록이 권리를 지킵니다."
       photos={photos}
       photosHref={home ? `/homes/${home.id}/move-out` : null}
