@@ -8,6 +8,7 @@ import { loginWithUsername } from '@/features/auth/services/login-with-username'
 import { createAdminSupabaseClient } from '@/lib/supabase/admin';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { isAccountOpen } from '@/lib/site/account-launch';
+import { recordServerEvent } from '@/features/analytics/server-events';
 
 const inputSchema = z.object({
   username: z.string().trim().min(4).max(254),
@@ -80,5 +81,6 @@ export async function loginWithUsernameAction(formData: FormData, nextValue?: st
   }, parsed.data, process.env.PASSWORD_LOGIN_ENABLED === 'true');
 
   if (!result.ok) redirect(`/login?error=${result.error}`);
+  await recordServerEvent('login', '/login');
   redirect(sanitizeNextPath(nextValue));
 }

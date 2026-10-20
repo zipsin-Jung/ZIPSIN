@@ -5,6 +5,8 @@ import { isAccountOpen } from '@/lib/site/account-launch';
 import { updateSupabaseSession } from '@/lib/supabase/proxy';
 
 export async function proxy(request: NextRequest) {
+  // 이용 통계 받는 곳: 모든 사이트(집신·체크·청소·수리)에서 계정 없이 받는다. 세션·DB 세션 갱신 필요 없음.
+  if (request.nextUrl.pathname === '/api/events') return NextResponse.next();
   // cl.zipsin.net(집신청소)·rp.zipsin.net(집신수리)은 준비 중: 첫 화면만 열고, 다른 주소는 첫 화면으로 보낸다. 계정·DB는 부르지 않는다.
   if (subSiteForHost(request.headers.get('host'))) {
     if (request.nextUrl.pathname === '/') return NextResponse.next();
@@ -31,7 +33,7 @@ export async function proxy(request: NextRequest) {
  * 공개 홈과 집신체크는 DB 없이 열린다.
  */
 // 로그인 뒤에만 쓰는 화면(app/(app)). 닫힌 상태에서는 페이지가 DB를 부르기 전에 처음 화면으로 보낸다.
-const APP_PREFIXES = ['/home', '/homes', '/records', '/onboarding', '/my', '/chats', '/office', '/tasks', '/support', '/invitations', '/checklist', '/contract', '/living', '/expiry', '/more', '/notifications', '/partners', '/space', '/contacts'];
+const APP_PREFIXES = ['/home', '/homes', '/records', '/onboarding', '/my', '/chats', '/office', '/tasks', '/support', '/invitations', '/checklist', '/contract', '/living', '/expiry', '/more', '/notifications', '/partners', '/space', '/contacts', '/admin'];
 
 export function closedAccountResponse(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -70,6 +72,7 @@ export const config = {
     '/partners/:path*',
     '/space/:path*',
     '/contacts/:path*',
+    '/admin/:path*',
     '/signup/:path*',
     '/api/:path*',
     '/auth/callback',

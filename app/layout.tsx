@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { SiteTracker } from '@/features/analytics/SiteTracker';
 import { KakaoInquiryButton } from '@/features/support/components/KakaoInquiryButton';
 import './globals.css';
 
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {children}
         <KakaoInquiryButton />
+        <SiteTracker />
       </body>
     </html>
   );
